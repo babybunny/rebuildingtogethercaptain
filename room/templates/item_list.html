@@ -1,0 +1,63 @@
+{%extends "base.html"%}
+{% block script %}
+<link type="text/css" href="/static/tablesorter/themes/blue/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#item_list").tablesorter({
+    headers: { 0: { sorter: false }}});
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Items
+{% endblock %}
+{%block about_this_page %}
+<h2>All Items</h2>
+{%endblock%}
+{%block body%}
+<table class="list tablesorter" id="item_list">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>ID</th>
+      <th>Name</th>
+      <th>On Form</th>
+      <th>Section</th>
+      <th>Unit Cost ($)</th>
+      <th>Measure</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in entries %}
+    <tr>
+      <td>
+	{% if item.thumbnail %}
+	<a href="{% url room.views.ItemEdit item.key.id %}">
+	  <img src="{% url room.views.ItemThumbnail item.key.id %}">
+	</a>
+	{% endif %}
+      </td><td>
+	<a href="{%url room.views.ItemEdit item.key.id%}">
+	  (edit)
+	</a>
+	{{ item.key.id }}
+      </td><td>
+	  {{item.VisibleName|escape}}
+      </td><td>
+	{{ item.appears_on_order_form.name|escape }}
+      </td><td>
+	{{ item.VisibleOrderFormSection|escape }}
+      </td><td>
+	{{ item.unit_cost|floatformat:2 }}
+      </td><td>
+	{{ item.measure|escape }}
+    </td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<form action="{%url room.views.ItemNew%}"><input type=submit value="Add a new item"></form>
+
+{%endblock%}

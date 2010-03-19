@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Rebuilding Together, Peninsula - ROOM Sys</title>
+    <link type="text/css" rel="stylesheet" href="/static/styles.css">
+    {% block script %}{%endblock%}
+  </head>
+  <body>
+    <span class="breadcrumb">
+      ROOM Sys :  <a href="{% url views.Welcome %}">Welcome</a>
+      {% if user.staff %}
+      | <a href="{% url room.views.StaffHome %}">Staff Home</a>
+      {% endif %}
+      {% if user.captain %}
+      | <a href="{% url room.views.CaptainHome %}">Captain's Page</a>
+      {% endif %}
+      {% block breadcrumb %}{%endblock%}
+    </span>
+    <span class="userinfo">
+      {%if user %}      
+      {% ifequal user.nickname user.email %}
+      <b>{{user.email}}</b>
+      {% else %}
+      <b>{{user.nickname}} &lt;{{user.email}}&gt;</b>
+      {% endifequal %}
+      {%if user.staff %} | Staff Account {% endif %}
+      {%if user.captain %} | Captain Account {% endif %}
+      {%if is_admin%} | <a href="/_ah/admin">Admin</a>{%endif%}
+      {%if sign_out%} | <a href="{{sign_out}}">Sign out</a>{%endif%}
+      {% else %}
+      {%if sign_in%}<a href="{{sign_in}}">Sign in</a>{%endif%}
+      {%endif%}
+      | <a href="{% url room.views.Help %}">Help</a>
+    </span>
+    <hr>
+    <table>
+      <tr>
+	<td>
+	  <img src="/static/rtplogosm.gif" alt="RTP logo">
+	</td>
+	<td class="about_this_page">
+	  {% block about_this_page %}{%endblock%}
+	</td>
+      </tr>
+    </table>
+    {%block body%}{%endblock%}
+  </body>
+</html>

@@ -1,0 +1,184 @@
+<table class="site"> 
+  <tbody>
+  {% for site in entries %}
+  <tr> 
+    <td>
+      Site # 
+      <br>
+      <span class=big> 
+      {{ site.number }}
+      </span>
+      <br>
+      {% if site_list_detail %}
+      {% if user.staff %}
+      <a name="{{ site.number }}" href="{% url room.views.SiteEdit site.key.id %}">
+	Edit site info
+      </a>
+      {% endif %}
+      {% else %}
+      <a name="{{ site.number }}" href="{% url room.views.SiteList site.key.id %}">
+	View site info and orders
+      </a>
+      {% endif %}
+    </td>
+    <td>
+      {% if site_list_detail %}
+      <b>Location</b>
+      <p>
+	{{ site.StreetAddress }}
+      </p>
+      <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress }}&ie=UTF8&z=14" target="_blank"> 
+	<img src="http://maps.google.com/maps/api/staticmap?center={{ site.StreetAddress }}&markers=size:mid|color:red|{{ site.StreetAddress }}&zoom=11&size={{ map_width }}x{{ map_height }}&sensor=false&key=ABQIAAAAocapnBGvqx6JkB2K9HNychQhv5EN3SOvE9MJZZkkyl7jkpoomxR8v4PeXRpH7B7kzknEvwpb_hu-Jg" alt="map of {{ site.StreetAddress }}" width="{{ map_width }}" height="{{ map_height }}"> 
+	<br>(click to view on Google Maps)
+      </a>
+      {% else %}     
+      {{ site.street }}	
+      <br>{{ site.city }}
+      {% endif %}
+    </td>
+    <td>
+      <b>Recipient</b>
+      <p>
+	{{ site.name }}
+      </p>
+      {% ifnotequal site.applicant site.name %}
+      <p> 
+	Contact: 
+	<br>{{ site.applicant }}
+	{% endifnotequal %}
+      </p>
+    </td>
+    <td> 
+      <b>Captains</b>
+      {% if not site.sitecaptain_set %}
+      <p>No captains assigned yet!</p>
+      {% else %}
+      {% for sitecaptain in site.sitecaptain_set %}
+      <p> 
+	{{ sitecaptain.captain.name }}
+	({{ sitecaptain.type }})
+	{% if site_list_detail %}
+	<br>{{ sitecaptain.captain.email }}      
+	<br>primary: {{ sitecaptain.captain.phone1 }}
+	<br>secondary: {{ sitecaptain.captain.phone2 }}
+	{% endif %}
+      </p>
+      {% endfor %}
+      {% endif %}
+    </td>
+    <td>
+      <b>Dollars</b>
+      <table>
+	<tr>
+	  <td>
+	    Budget
+	  </td>
+	  <td>
+	    ${{ site.budget|floatformat:2 }}
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	    Spent
+	  </td>
+	  <td>
+	    ${{ site.OrderTotal|floatformat:2 }}
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	  </td>
+	  <td>
+	    <hr>
+	  </td>
+	</tr>	    
+	<tr>
+	  <td>
+	    Remaining
+	  </td>
+	  <td>
+	    ${{ site.BudgetRemaining|floatformat:2 }} 
+	  </td>
+	</tr>
+	</table>
+      </p>
+    </td>
+    <td class="notes"> 
+      {{ site.notes }}
+    </td>
+  </tr>
+  {% if site_list_detail %}
+  <tr>
+    <td></td>
+    <td colspan=4>
+      <table class=order_form_header>
+	<tr>
+	  <td class="order_form_section_header">
+	    Create New Order
+	  </td>
+	  <td colspan=20 class="order_form_section_header">
+	    Orders in progress
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	    <p>
+	      To create a new order, select an order sheet from the list below.
+	    </p>
+	    <ul>
+	      {% for sheet in order_sheets %}
+	      <li>
+		<a href="{% url room.views.OrderNew site.key.id sheet.code %}">
+		  {{ sheet.name }}
+		</a>
+	      </li>
+	      {% endfor %}
+	    </ul>
+	  </td>
+	  <td>
+	    <table class="list">	      
+	      <tr>
+		<th>Type</th>
+		<th>Last change</th>
+		<th>Status</th>
+		<th>Total</th>
+	      </tr>
+	      {% for order in site.VisibleOrders %}
+	      <tr>
+		<td>
+		  {{ order.order_sheet.name }}
+		</td>
+		<td>
+		  {{ order.modified|timesince }} ago
+		  <br>by {{ order.modified_by }}
+		</td>
+		<td>
+		  {{ order.state }}
+		  {% if order.CanMakeChanges %}
+		  <br>
+		  <a href="{% url room.views.OrderEdit order.key.id %}">
+		    make changes
+		  </a>
+		  {% endif %}
+		</td>
+		<td>
+		  ${{ order.grand_total|floatformat:2 }}
+		</td>
+	      </tr>  
+	      {% endfor %}
+	      <tr>
+		<td>Standard Kits</td>
+		<td>by RTP staff</td>
+		<td>Being Filled</td>
+		<td>${{ site.StandardKitCost|floatformat:2 }}</td>
+	      </tr>
+	    </table>
+	  </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+  {% endif %}
+  {% endfor %}
+  </tbody>
+</table> 

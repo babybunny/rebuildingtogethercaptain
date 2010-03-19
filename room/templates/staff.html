@@ -1,0 +1,20 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | Change a Staff
+{% endblock %}
+{%block body%}
+
+<h2>{{ what_you_are_doing }}</h2>
+{% if person.key.id %}
+<form action="{% url room.views.StaffEdit person.key.id %}" method="post">
+{% else %}
+<form action="{% url room.views.StaffNew %}" method="post">
+{% endif %}
+
+<table>
+{{form}}
+<tr><td><input type="submit" value="Save changes to this Staff"></td></tr>
+</table>
+</form>
+
+{%endblock%}

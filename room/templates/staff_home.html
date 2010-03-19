@@ -1,0 +1,148 @@
+{%extends "base.html"%}
+{%block breadcrumb%}
+{%endblock%}
+{%block about_this_page %}
+<h1>Hello RTP Staff!</h1>
+<p>
+  This is the Staff Page.  From here you can view or edit anything in the system.  
+</p>
+<p>
+  To create or change orders: <a href="{% url room.views.SiteList %}">View the list of Sites</a>, and choose the site from there.
+</p>
+{% endblock %}
+{%block body%}
+
+<table class="layout">
+  <tr>
+    <td class="layout">
+      <h2>Sites</h2>
+      <p>Enter a site number like 10100ZZZ
+	<form action="{% url room.views.SiteJump %}" method="GET">
+	  Site Number: 
+	  <input type="text" name="number" size="10">
+	  <input type="submit" name="site_jump" value="Jump to Site">
+	</form>
+      </p>
+      <p>
+	<a href="{% url room.views.SiteList %}">View a list</a> 
+	of all Sites.
+      </p>
+      <p>
+	<a href="{% url room.views.SiteNew %}">Add a new Site</a>.
+      </p>
+      <br/>
+      <h2>Captains</h2>
+      <p>
+	<a href="{% url room.views.CaptainList %}">View a list</a> 
+	of all Captains.
+      </p>
+      <p>
+	<a href="{% url room.views.CaptainNew %}">Add a new Captain</a>
+	.
+      </p>
+      <br/>
+      <h2>Staff</h2>
+      <p>
+	<a href="{% url room.views.StaffList %}">View a list</a> 
+	of all Staff.
+      </p>
+      <p>
+	<a href="{% url room.views.StaffNew %}">Add a new Staff</a>
+	.
+      </p>
+      <br/>
+      <h2>Suppliers</h2>
+      <p>
+	<a href="{% url room.views.SupplierList %}">View a list</a> 
+	of all Suppliers.
+      </p>
+      <p>
+	<a href="{% url room.views.SupplierNew %}">Add a new Supplier</a>
+	.
+      </p>
+      
+      
+    </td><td class="layout">
+      <h2>Orders</h2>
+      <p>
+	<a href="{% url room.views.OrderList %}">View a list</a> 
+	of all Orders.
+      </p>
+      
+      
+      <br>
+      <h2>Order Forms</h2>
+      <p>
+	<a href="{% url room.views.OrderSheetList %}">View a list</a> 
+	of all Order Forms.
+      </p>
+      <p>
+	<a href="{% url room.views.OrderSheetNew %}">Add a new Order Form</a>.
+      </p>
+      <br/>
+      <h2>Items</h2>
+      <p>
+	<a href="{% url room.views.ItemList %}">View a list</a> 
+	of all Items.
+      </p>
+      <p>
+	<a href="{% url room.views.ItemNew %}">Add a new Item</a> 
+      </p>
+      <br/>
+      
+      <h2>Inventory</h2>
+      <p>
+	<a href="{% url room.views.Inventory %}"> View current inventory</a> 
+	<br>and update quantities.
+      </p>
+    </td>
+    <td class="layout">      
+      <h2>Scoreboard</h2>
+      <p>
+	<span class=attr>
+	  Captains using system: <b>{{ num_captains_active }}</b>
+	  of {{ num_captains }} total, 
+	  <br>
+	  with 
+	  <b>{{ num_captains_with_tshirt }}</b> 
+	  updating their T-shirt size.
+	</span>
+      </p>
+      <p>
+	<span class=attr>
+	  Number of Sites in the system: <b>{{ num_sites }}</b> 
+	  <br>
+	  with total budget of <b>${{ total_site_budget }}</b>.
+	</span>
+      </p>
+      <p>
+	<span class=attr>
+	  Number of orders submitted to the system: 
+	  <b>{{ num_orders }}</b> 
+	  <br>
+	  across
+	  <b>{{ num_sites_with_orders }}</b> 
+	  sites
+	  <br>
+	  for goods and services totalling 
+	  <b>${{ total_ordered|floatformat:0 }}</b>.
+	</span>
+      </p>
+      <p>
+      <b>Recent Captain Logins</b>
+      <ul>
+	{% for welcomee in last_welcomes %}
+	<li>{{ welcomee.name }}, {{ welcomee.last_welcome|timesince }} ago</li>
+	{% endfor %}
+      </ul>
+      </p>
+    </td>
+  </tr>
+</table>
+
+<p>Contact Luke if you need to delete something, there's a way to do it in the back end.
+</p>
+
+
+
+{%endblock%}

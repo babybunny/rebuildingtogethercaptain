@@ -1,0 +1,72 @@
+{%extends "base.html"%}
+{% block script %}
+<link type="text/css" href="/static/tablesorter/themes/blue/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#order_list").tablesorter({
+    headers: { 7: { sorter: false }}});
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+ | List all Orders
+{% endblock %}
+{%block about_this_page %}
+<h2>All Orders</h2>
+<p>To make an order, go to the site 
+ (from <a href="{% url room.views.StaffHome %}">Staff Home</a>)
+and use the normal Create New Order links.  There is currently no way to 
+delete an order, just talk to Luke if this comes up.
+{%endblock%}
+{%block body%}
+<table class="list tablesorter" id="order_list">
+  <thead>
+    <tr>
+      <th>Id #
+	{% if user.staff %}
+	<br>(click to edit)
+	{% endif %}
+      </th>
+      <th>
+	Site
+      </th>
+      <th>
+	Form
+      </th>
+      <th>
+	Created
+      </th>
+      <th>
+	$ Grand Total
+      </th>
+    </tr>
+  </thead>
+  <tbody>    
+    {%for order in orders%}
+    <tr>
+      <td>
+	<a href="{% url room.views.OrderEdit order.key.id %}">
+	  {{ order.key.id }}
+	</a>
+      </td>
+      <td>
+	<a href="{% url room.views.SiteList order.site.key.id %}">
+	{{ order.site.number|escape }}
+	</a>
+      </td>
+      <td>
+	{{ order.order_sheet.name|escape }}
+      </td>
+      <td>
+	{{ order.created|date:"Y/m/d" }}
+      </td>
+      <td>
+	{{ order.grand_total }}
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+{%endblock%}

@@ -1,0 +1,117 @@
+1/19 demo w/ Al, Pete
+  Went over current state, took notes.
+
+1/23 practice production procedures
+  Wrote "run" script for loading / dumping data in CSV format using app_cfg.py.
+  Uploaded code to live site, "rebuildingtogethercaptain" app.
+  Imported data to live site.
+
+1/25 work day @RTP office
+  Download all data from live site to livedata/ CSV files.   Fixed Exporters.
+  Upload all data into local all.  Fixed Loaders.
+  Changed 'email' fields from User to Email (string) to deal with None values.
+  Added Staff list/edit/add pages.
+  Refactored Staff/Supplier common stuff into generic Person methods.
+  Three-column layout for staff home.
+  Sorted Captain list by first name.
+  Captain form submit redirects to Captain list, not Home (using urlresolvers).
+  Added column headers to Captain list.
+  Practiced loading data into live app and updating model definition codes.
+  Sorted all lists.  Refactored entry-list codes and made them generic.
+  
+1/30 data model updates for Sites and Captains and Orders per f2f with Al.
+  Removed Captain from Site, since a Site can have >1 Captain.
+  Added SiteCaptain model to support many-to-many site/capn associations.
+  Added CSV loaders/exporters for SiteCaptain to support bulk updates.
+  Modified Site fields, adding street, applicant, sponsors.
+  Modified Captain fields, dropping address and "since".
+  Removed Captain from Order, now and Order is just associated with a Site.
+  Added created_by and modified_by attributes to Order.
+  Manually edited data for Site, Captain, Order per loader changes.
+  Moved livedata to testdata, for better example data to play with.
+  Update UI for Site and Captain to reflect changed columns.
+  Added maps to list of Sites, using Google Maps Static API.
+  Added inputs to add captains to sites, and delete them.
+  Made site edit page change based on whether the user is a staff or captain.
+  Made Captain's home page have only their sites. 
+
+2/1
+  Uploaded new code and testdata to live site, fixed problem with missing links.
+  Replaced django/ dir with django.zip, saving 90% of file quota.
+  Captain's home page takes changes to contact info.
+
+2/2 @RTP
+  several fixes
+
+2/13 @home, uploading data
+  cleaned up files
+  uploaded Capt_FILE locally
+  added "ROOM Sys" text to base and welcome templates, per Al's request 
+  
+
+3/9 @home
+  data entry for appliance worksheet
+
+3/10 @rtp captains bbq, 
+  demo to captains
+  removed KIT from order sheets, it will be a site attribute.
+  data entry landscape
+
+3/10 @home
+  backup of live data
+  dumped live data as CSV, loaded into dev app.  fixed loaders
+  data entry lumber
+
+3/11 @rtp  
+  add "jump to site"
+  add "number of standard kits" field to site
+  make standard kit cost a function of that field, and use it in site totals
+  budget, spent, remaining on site list, fixed empty-spent error
+  update per-item cost using javascript
+  added sections to order forms and items
+  loaded Painting Supplies
+  removed captain's home link from order page when user is staff only
+  made site a link from order sheet
+  added delivery options to order
+  added instructions to order sheet
+  exposing delivery fields only for order_sheets that have delivery_options=Yes
+  list number of items per order sheet
+
+3/11 @home
+  customized optional delivery section in order form
+  customized optional durable section in order form
+  reformatted head of order form
+  adjust notes field size to show all notes with 80 columns
+
+3/12 @rtp
+  changing text of submit button on order sheet:  new or existing 
+  if no items on order sheet, nice message instead of empty table
+  added favicon
+  
+3/12 @home
+  uploaded items for Flooring Lumber Paint
+  sorted order forms by name in select
+  added Permits order sheet (see it's been done on live site)
+  added T-Shirts order sheet
+
+3/13 @home
+  added Help page
+  removed weird line wrapping in status section of order form page
+
+3/15 @home
+  replaced new order selection with links
+  keeping track of last welcome for captains and staff
+  investigated crash observed by Carlos, found an issue with saving invalid data
+  fixed help_contact mailto bug found by Pete
+  added default pickup_on=2010-04-24, number_of_days=1 for returnable items
+  fixed map_height on site list
+  fixed underlined column headers (looked clickable) on site list
+
+3/16 @home
+  Special Instructions -> Instructions from RTP
+  Captains' Notes label
+  formatting for order items on order form, sans-serif font
+  added updating subtotal to order form
+  enabled line breaks in instructions
+  fixed identity of original order creator (was current user)
+  added T-shirt size update reminder to welcome page
