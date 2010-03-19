@@ -1,0 +1,28 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | List Suppliers
+{% endblock %}
+{%block body%}
+<h2>All Suppliers</h2>
+
+<table><tr><th>Supplier</th></tr>
+{% for person in entries %}
+<tr><td>
+  <a href="{%url room.views.SupplierEdit person.key.id%}">{{person.name|escape}}</a>
+</td><td>
+{{ person.email|escape }}
+</td><td>
+{{ person.address|escape }}
+</td><td>
+{{ person.phone1|escape }}
+</td><td>
+{{ person.phone2|escape }}
+</td><td>
+{{ person.notes|escape }}
+</td></tr>
+{% endfor %}
+</table>
+
+<form action="{%url room.views.SupplierNew %}"><input type=submit value="Add a new Supplier"></form>
+
+{%endblock%}
