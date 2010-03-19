@@ -1,0 +1,55 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+{% endblock %}
+{%block about_this_page %}
+<h2>Welcome to ROOM Sys (RTP Online Order Management System)</h2>
+{% endblock %}
+{%block body%}
+
+
+
+<p class="announcement">
+  This is the online order system for Rebuilding Together Peninsula.   It enables ordering materials and services from forms that are similar to some of the ones in the Captain's Binder.  It's our primary place for storing order information, for your access and for RTP access to expedite the order fulfillment process.  
+</p>
+
+<p>
+  In addition to helping us keep track of orders, this system helps us eliminate paper waste!
+</p>
+
+{% if user %}
+<p>You are logged in as <em>{{ user.email }}</em>.  
+{% if last_welcome %}
+  Last login {{ last_welcome|timesince }} ago.
+{% endif %}
+{% if staff %}
+<p><strong>You have a Staff account</strong>, so you have access to all the functions in this site.  
+<a href="{% url room.views.StaffHome %}">Get started at the Staff Page</a>.
+{% endif %}
+
+{% if captain %}
+<p><strong>Since you have a Captain account</strong>, you can:
+<ul>
+<li>submit orders for the sites you're running</li>
+<li>review and change existing orders</li>
+<li>update your contact information and T-shirt size</li>
+</ul>
+<p>
+<b><a href="{% url room.views.CaptainHome %}">Click here to work on your account at your personalized Captain's Page</a>.</b>
+</p>
+{% endif %}
+
+{% else %}
+<p>You must be logged in to do anything interesting.  You can <a href="{{ sign_in }}">log in now</a> or request an account and one of the staff will set it up.
+
+<p>For demos, you can log in with Staff account <b>test@example.com</b> or Captain account <b>billy@joe.com</b>
+{% endif %}
+
+<p>
+  HELP! Contact <a href="mailto:{{ help_contact }}">{{ help_contact }}</a> for general help with your ROOM account in this brand-new system.
+</p>
+
+<p>
+As a backup, you can always use the existing forms (Word or Excel) at the <a href="http://www.rebuildingtogetherpeninsula.org/pages/captains/captainscorner_general.html">Captain's Corner</a> if you need to.
+</p>
+
+{%endblock%}

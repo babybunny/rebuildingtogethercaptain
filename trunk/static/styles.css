@@ -1,0 +1,131 @@
+body {
+  width: 950px;
+  margin-right: 10px;
+  font-family: Times;
+  font-size: 16px;
+}
+.userinfo { 
+  float: right;
+  display: inline;
+}
+.breadcrumb { 
+  display: inline;
+}
+.tiny { 
+  font-size: 8pt;
+}
+.listpic { 
+  text-align: right;
+}
+.big {
+  font-size: 30px;
+}
+.errorlist {
+  color: red;
+  text-align: left;
+}
+span.attr {
+  white-space: nowrap;
+}
+table.layout {
+  width: 950px;
+  padding: 5px;
+  border-spacing: 20px;
+}
+table.layout td.layout {
+  vertical-align: top;
+  padding: 5px;
+}
+table.layout th.layout {
+  border: 0px;
+  vertical-align: bottom;
+  font-size: 200%;
+}
+table.list {
+  padding: 0;
+  margin: 0;
+}
+table.list td,
+table.list th {
+  white-space: nowrap;
+}
+table.list td.notes {
+  white-space: normal;
+  min-width: 200px;
+}
+table.site tbody { 
+  margin-right: 10px;
+}
+table.site td { 
+  padding: 5px; 
+  margin: 0px; 
+  vertical-align: top;
+}
+td.vertical-separator {
+  border-left: 1px solid black;		      
+}
+table.tightform td { 
+  padding: 0; 
+  margin: 0; 
+  vertical-align: top;
+}
+table.order_form_header td, 
+table.order_item_list td,
+table.order_item_list td { 
+  padding-left: 10px; 
+  padding-top: 2px;
+  vertical-align: top;
+}
+table.order_item_list th { 
+  font-family: sans-serif;
+  text-align: left;		      
+  padding-left: 0px; 
+}
+table.order_item_list td.form-summary { 
+  text-align: right;
+}
+table.order_item_list td.subtotal { 
+  border-top: 1px solid black;		      
+}
+table.order_item_list td.quantity { 
+  padding-left: 0px; 
+  padding-top: 0px;
+}
+input {
+  font-family: Times;
+  font-size: 16px;
+}
+table.order_item_list td.quantity input { 
+  padding: 0; margin:0;		      
+}
+td.hr, td.hr-invis {
+  border-bottom: 1px solid #333;
+  padding: 3px;
+  margin: 0;
+}
+td.hr {
+  border-top: 1px solid #333;
+}
+td.about_this_page {
+  width: 80%; 		  
+  text-align: center;
+}
+td.dollar {
+  text-align: right;
+}
+td.measure {
+  text-align: right;
+  white-space: nowrap;
+}
+
+table.order_form_header td.order_form_section_header,
+td.order_form_section_header {
+  font-size: larger;
+  border-top: 1px solid black;
+  padding-top: 5px;
+  padding-left: 0px;
+}
+
+table.order_form_header span {
+  padding-right: 30px;			
+}

@@ -1,0 +1,17 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | View a Site
+{% endblock %}
+{%block about_this_page %}
+<h2>Here's site # {{ entries.0.number }}</h2>
+{% if user.captain %}
+<p>
+If you just made an order, please confirm that it's correct and check your budget.  
+<br><a href="{% url room.views.CaptainHome %}">Click here to go back to your Captain's Page</a>.
+</p>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+{% include "site_list.html" %}
+ {%endblock%}

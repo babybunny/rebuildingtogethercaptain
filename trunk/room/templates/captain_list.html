@@ -1,0 +1,99 @@
+{%extends "base.html"%}
+{% block script %}
+<link type="text/css" href="/static/tablesorter/themes/blue/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#captain_list").tablesorter({
+    headers: { 8: { sorter: false }}});
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Captains
+{% endblock %}
+{%block about_this_page %}
+<h2>All Captains</h2>
+{%endblock%}
+{%block body%}
+
+{% if user.staff %}
+<form action="{%url room.views.CaptainNew %}"><input type=submit value="Add a new Captain"></form>
+<br>
+{% endif %}
+
+<table class="list tablesorter" id="captain_list">
+  <thead>
+    <tr>
+      <th>Name
+	{% if user.staff %}
+	<br>(click to edit)
+	{% endif %}
+      </th>
+      <th>Email</th>
+      <th>Preferred Phone</th>
+      <th>Backup Phone</th>
+      <th>Sites</th>
+      <th>Type</th>
+      <th>T-Shirt</th>
+      <th>Last Welcome</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for captain in entries %}
+    <tr>
+      <td>
+	<a name="{{ captain.key.id }}"
+	   {% if user.staff %}
+	   href="{% url room.views.CaptainEdit captain.key.id %}"
+	   {% endif %}
+	   >
+	{{captain.name|escape}}
+	</a>
+      </td>
+      <td>
+	{{ captain.email|escape }}
+      </td>
+      <td>
+	{{ captain.phone1|escape }}
+      </td>
+      <td>
+	{{ captain.phone2|escape }}
+      </td>
+      <td>
+	{% for sitecaptain in captain.sitecaptains %}
+	<a href="{% url room.views.SiteList sitecaptain.site.key.id %}">	
+	  {{ sitecaptain.site.number }}
+	</a>
+	<br>
+	{% endfor %}
+      </td>
+      <td>
+	{% for sitecaptain in captain.sitecaptains %}
+	{{ sitecaptain.type }}
+	<br>
+	{% endfor %}
+      </td>
+      <td>
+	{{ captain.tshirt_size }}
+      </td>
+      <td>
+	{% if captain.last_welcome %}
+	{{ captain.last_welcome|timesince }} ago
+	{% endif %}	
+      </td>
+      <td class="notes">
+      {{ captain.notes|escape }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if user.staff %}
+<form action="{%url room.views.CaptainNew %}"><input type=submit value="Add a new Captain"></form>
+{% endif %}
+
+{%endblock%}

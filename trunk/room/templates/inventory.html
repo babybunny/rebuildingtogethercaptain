@@ -1,0 +1,41 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | <b>Inventory</b>
+{% endblock %}
+{%block body%}
+<h2>Inventory</h2>
+
+<form action="{% url room.views.Inventory %}" method="post">
+<table><tr><th>&nbsp;</th><th>Name</th><th>Measure</th>
+<th>Unit Cost</th>
+<th>Expected Quantity</th>
+<th>Actual Quantity</th>
+<th>&nbsp;</th></tr>
+{%for invitem in invitems %}
+<tr>
+<td>
+  <a href="{% url room.views.ItemEdit invitem.item.key.id %}">
+    <img src="{% url room.views.ItemThumbnail invitem.item.key.id %}">
+  </a>
+</td><td>
+  <a href="{% url room.views.ItemEdit invitem.item.key.id %}">{{invitem.item.name|escape}}</a>
+</td><td>
+{{ invitem.item.measure|escape }}
+</td><td>
+{{ invitem.item.unit_cost|escape }}
+</td><td>
+{{ invitem.quantity|escape }}
+</td><td>
+  <input type="text" name="item_{{ invitem.key }}" 
+         value="{{ invitem.quantity }}" size=5>
+</td><td>
+  - <span class=tiny>created {{invitem.item.created|date:"Y/m/d"}}, modified {{invitem.item.modified|date:"Y/m/d H:i:s"}}  by {{invitem.item.last_editor}}</span>
+</td></tr>
+{%endfor%}
+<tr><td colspan=10>
+  <input type="submit" value="Submit these change to the inventory">
+</td></tr>
+</table>
+</form>
+
+{%endblock%}

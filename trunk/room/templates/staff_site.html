@@ -1,0 +1,138 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | <a href="{% url room.views.SiteList %}">List Sites</a>
+  | Change a Site
+{% endblock %}
+{%block about_this_page %}
+<h2>{{ what_you_are_doing }}</h2>
+{% if site %}
+<p>
+  <a href="{% url room.views.SiteList site.key.id %}">
+    Click here to view site # {{ site.number }} and orders.
+  </a>
+</p>
+{% endif %}  
+{% endblock %}
+{%block body%}
+
+<table class="layout">
+  <tr>
+    <th class="layout">Site Info</th>
+    <th class="layout">Site Captains</th>
+  </tr>
+  <tr>
+    <td class="layout">
+      <form action="{% if site.key.id %}{% url room.views.SiteEdit site.key.id %}{% else %}{% url room.views.SiteNew %}{% endif %}" method="post">
+	<table>
+	  {{form}}
+	  <tr>
+	    <td></td>
+	    <td>
+	      <input name="submit" type="submit" value="{{ form_submit }}">
+	    </td>
+	  </tr>
+	</table>
+      </form>      
+    </td>
+    <td class="layout">
+      {% if not site %}
+      <p>
+	When creating a new site, first save changes to the site info to the left, then come back and add captains.
+      </p>
+      {% else %}
+      <table>	  
+	<tr>
+	  <th colspan=100>
+	    Existing Captains
+	  </th>
+	</tr>
+	{% if site.sitecaptain_set %}
+	<tr>
+	  <td colspan=2>
+	    {% for sitecaptain in site.sitecaptain_set %}
+	    <li>
+	      <a href="{% url room.views.CaptainList %}#{{ sitecaptain.captain.key.id }}">
+		{{ sitecaptain.captain.name }}
+	      </a>
+	      ({{ sitecaptain.type }} )
+	    </li>
+	    {% endfor %}
+	  </td>
+	</tr>
+	{% else %}
+	<tr>
+	  <td>
+	    <p>No Captains have been associated with this site.  RTP
+	      Staff have the ability to associate Captains with
+	      Sites.</p>
+	  </td>
+	</tr>	
+	{% endif %}
+	{% if staff %}
+	<tr>
+	  <th colspan=2>
+	    <hr>
+	  </th>
+	</tr>
+	<tr>
+	  <th colspan=2>
+	    Add Captain
+	  </th>
+	</tr>
+	<form action="" method="post">
+	  {{sitecaptain_form}}	    
+	  <tr>
+	    <td></td>
+	    <td>
+	      <input name="submit" type="submit" 
+		     value="{{ sitecaptain_form_submit }}">
+	    </td>
+	  </tr>
+	</form>
+	<tr>
+	  <th colspan=2>
+	    <hr>
+	  </th>
+	</tr>
+	{% if site.sitecaptain_set %}
+	<tr>
+	  <th colspan=100>
+	    Remove Captains from Site
+	  </th>
+	</tr>
+	<tr>
+	  <td colspan=100>
+	    Only affects the specific combination of Captain, Site, and Type.
+	    Does not remove Captains or Sites from the system in any way.
+	    <form action="" method="post">
+	      <ul>
+		{% for sitecaptain in site.sitecaptain_set %}
+		<li>
+		  <input type="checkbox" name="{{ delete_sitecaptain }}" 
+			 value="{{ sitecaptain.key.id }}">
+		  <a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id %}">
+		    {{ sitecaptain.captain.name }}
+		  </a>
+		  ({{ sitecaptain.type }} )
+		</li>
+		{% endfor %}
+	      </ul>
+	      <input name="submit" type="submit" 
+		     value="Remove checked Captains from this Site">
+	    </form>
+	  </td>
+	</tr>
+	{% endif %}
+	{% else %}
+	<tr>
+	  <td colspan=2>
+	    <p>Please contact {{ help_contact }} if the list of Captains for this Site is wrong.
+	  </td>
+	</tr>
+	{% endif %}
+      </table>
+      {% endif %}
+    </td>
+  </tr>
+</table>
+{%endblock%}
