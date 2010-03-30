@@ -42,6 +42,7 @@ MAP_HEIGHT = 200
 SALES_TAX_RATE = 0.0925
 START_NEW_ORDER_SUBMIT = 'Start New Order'
 HELP_CONTACT = 'al@rebuildingtogetherpeninsula.org'
+TEST_SITE_NUMBER = '10100ZZZ'
 
 
 def _GetUser(request, user=None):
@@ -169,6 +170,7 @@ def StaffHome(request):
        'total_site_budget': total_site_budget,
        'num_orders': num_orders,
        'total_ordered': total_ordered,
+       'test_site_number': TEST_SITE_NUMBER,
        }
   return _Respond(request, 'staff_home', d)
 
@@ -280,14 +282,25 @@ def SiteJump(request):
       urlresolvers.reverse(SiteList, args=[site.key().id()]))
     
 
+def SiteListByNumber(request, site_number):
+  site = models.NewSite.all().filter('number = ', site_number).get()
+  return _SiteListInternal(request, site)
+
+
 def SiteList(request, site_id=None, new_order_form=None):
+  site = None
+  if site_id is not None:
+    site = models.NewSite.get_by_id(int(site_id))
+  return _SiteListInternal(request, site, new_order_form)
+
+
+def _SiteListInternal(request, site=None, new_order_form=None):
   """Request / -- show all canned orders."""
   params = dict(map_width=MAP_WIDTH, map_height=MAP_HEIGHT)
   user, _, _ = _GetUser(request)
   d = {'user': user}
-  if site_id is not None:
+  if site is not None:
     template = 'site_list_one'
-    site = models.NewSite.get_by_id(int(site_id))
     if new_order_form is None:
       site.new_order_form = models.NewOrderForm(initial=dict(site=site.key()))
     else:
