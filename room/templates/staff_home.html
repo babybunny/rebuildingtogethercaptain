@@ -16,7 +16,10 @@
   <tr>
     <td class="layout">
       <h2>Sites</h2>
-      <p>Enter a site number like 10100ZZZ
+      <p>Enter a site number like 
+	<a href="{% url room.views.SiteListByNumber test_site_number %}">
+	{{ test_site_number }}
+	</a>
 	<form action="{% url room.views.SiteJump %}" method="GET">
 	  Site Number: 
 	  <input type="text" name="number" size="10">

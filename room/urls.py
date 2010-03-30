@@ -22,6 +22,7 @@ urlpatterns = patterns('room.views',
     (r'^site/jump$', 'SiteJump'),
     (r'^site/list$', 'SiteList'),
     (r'^site/list/(\d+)/$', 'SiteList'),
+    (r'^site/list/(\w+)/$', 'SiteListByNumber'),
     (r'^site/new$', 'SiteNew'),
     (r'^site/edit/(\d+)/$', 'SiteEdit'),
 
