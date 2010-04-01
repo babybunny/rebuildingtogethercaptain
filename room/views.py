@@ -17,10 +17,10 @@
 # TODO: combine Captain stuff with the generic Person stuff that handles 
 # the Staff and Supplier views.
 
+import csv
 import datetime
 import logging
 import os
-
 from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -635,7 +635,88 @@ def OrderList(request):
   return _Respond(request, 'order_list', 
                  {'orders': orders,
                   'order_sheets': order_sheets,
+                  'order_export_checkbox_prefix': ORDER_EXPORT_CHECKBOX_PREFIX,
                   })
+
+
+ORDER_EXPORT_CHECKBOX_PREFIX='order_export_'
+def OrderExport(request):
+  """Export orders as CSV."""
+  user, _, _ = _GetUser(request)
+  orders = []
+  for var in request.POST:
+    if var.startswith(ORDER_EXPORT_CHECKBOX_PREFIX):
+      order_id = int(var[len(ORDER_EXPORT_CHECKBOX_PREFIX):])
+      orders.append(models.Order.get_by_id(order_id))
+  response = http.HttpResponse(mimetype='text/csv')
+  response['Content-Disposition'] = (
+    'attachment; filename=%s_orders.csv' % user.email())
+  writer = csv.writer(response)
+  for o in orders:
+    writer.writerow(['Order ID',
+                     'site.number',
+                     'order_sheet.name',
+                     'sub_total',
+                     'sales_tax',
+                     'grand_total',
+                     'delivery_date',
+                     'delivery_contact',
+                     'delivery_contact_phone',
+                     'delivery_location',
+                     'pickup_on',
+                     'number_of_days',
+                     'return_on',
+                     'notes',
+                     'state',
+                     'created',
+                     'created_by',
+                     'modified',
+                     'modified_by',
+                     ])
+    writer.writerow([o.key().id(),
+                     o.site.number,
+                     o.order_sheet.name,
+                     o.sub_total,
+                     o.sales_tax,
+                     o.grand_total,
+                     o.delivery_date,
+                     o.delivery_contact,
+                     o.delivery_contact_phone,
+                     o.delivery_location,
+                     o.pickup_on,
+                     o.number_of_days,
+                     o.return_on,
+                     o.notes,
+                     o.state,
+                     o.created,
+                     o.created_by,
+                     o.modified,
+                     o.modified_by,
+                     ])
+    order_items = list(oi for oi in o.orderitem_set if oi.quantity)
+    if order_items:
+      order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
+      writer.writerow(['', 
+                       'item.order_form_section',
+                       'item.name', 
+                       'item.unit_cost',
+                       'item.measure',
+                       'quantity', 
+                       'supplier',
+                       ])
+    else:
+      writer.writerow(['', 'No Items in this Order!!!'])
+    for oi in order_items:
+      writer.writerow(['', 
+                       oi.item.order_form_section,
+                       oi.item.name,
+                       oi.item.unit_cost,
+                       oi.item.measure,
+                       oi.quantity,
+                       oi.supplier,
+                       ])
+    writer.writerow([''])
+  return response
 
 
 def _OrderEditInternal(request, user, order):
