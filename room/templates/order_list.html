@@ -14,7 +14,11 @@ $(document).ready(function(){
  | List all Orders
 {% endblock %}
 {%block about_this_page %}
-<h2>All Orders</h2>
+<h2>All Orders
+{% if order_sheet %}
+({{ order_sheet.name}})
+{% endif %}
+</h2>
 <p>To make an order, go to the site 
  (from <a href="{% url room.views.StaffHome %}">Staff Home</a>)
 and use the normal Create New Order links.  There is currently no way to 
@@ -31,7 +35,10 @@ delete an order, just talk to Luke if this comes up.
       <th>
 	<input type="submit" name="export" value="Export">
       </th>
-      <th>Id #
+      <th>
+	Order Status
+      </th>
+      <th>Order Id #
 	{% if user.staff %}
 	<br>(click to edit)
 	{% endif %}
@@ -56,6 +63,9 @@ delete an order, just talk to Luke if this comes up.
       <td>
 	<input type="checkbox" class="order_export_checkbox"
 	       name="{{ order_export_checkbox_prefix }}{{ order.key.id }}">
+      </td>
+      <td>
+	{{ order.state }}
       </td>
       <td>
 	<a href="{% url room.views.OrderEdit order.key.id %}">
