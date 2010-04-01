@@ -6,7 +6,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
   $("#order_list").tablesorter({
-    headers: { 7: { sorter: false }}});
+    headers: { 0: { sorter: false }}});
 });
 </script>
 {%endblock%}
@@ -21,9 +21,16 @@ and use the normal Create New Order links.  There is currently no way to
 delete an order, just talk to Luke if this comes up.
 {%endblock%}
 {%block body%}
+<form method="POST" action="{% url room.views.OrderExport %}">
+  To export as CSV, select some orders by checking their boxes and then 
+  click "Export".
+  <br>
 <table class="list tablesorter" id="order_list">
   <thead>
     <tr>
+      <th>
+	<input type="submit" name="export" value="Export">
+      </th>
       <th>Id #
 	{% if user.staff %}
 	<br>(click to edit)
@@ -47,6 +54,10 @@ delete an order, just talk to Luke if this comes up.
     {%for order in orders%}
     <tr>
       <td>
+	<input type="checkbox" class="order_export_checkbox"
+	       name="{{ order_export_checkbox_prefix }}{{ order.key.id }}">
+      </td>
+      <td>
 	<a href="{% url room.views.OrderEdit order.key.id %}">
 	  {{ order.key.id }}
 	</a>
@@ -69,4 +80,5 @@ delete an order, just talk to Luke if this comes up.
     {%endfor%}
   </tbody>
 </table>
+</form>
 {%endblock%}
