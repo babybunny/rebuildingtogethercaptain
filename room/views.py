@@ -148,6 +148,8 @@ def Help(request):
 
 def StaffHome(request):
   welcomes = models.Captain.all().order('-last_welcome').fetch(10)
+  order_sheets = list(models.OrderSheet.all())
+  order_sheets.sort(key=lambda x: x.name)
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
     'last_welcome != ', None).count()
@@ -162,6 +164,7 @@ def StaffHome(request):
   total_ordered = sum(o.grand_total for o in models.Order.all() 
                       if o.grand_total)
   d = {'last_welcomes': welcomes,
+       'order_sheets': order_sheets,
        'num_captains': num_captains,
        'num_captains_active': num_captains_active,
        'num_captains_with_tshirt': num_captains_with_tshirt,
@@ -461,7 +464,6 @@ def CaptainEdit(request, captain_id=None):
   template_dict = {'form': form, 'captain': captain, 
                    'what_you_are_doing': what}
 
-
   if request.POST:
     form = form_class(data=request.POST or None, instance=captain)
     template_dict['form'] = form
@@ -627,14 +629,18 @@ def ItemThumbnail(request, item_id):
   return ItemPicture(request, item_id, is_thumbnail=True)
 
 
-def OrderList(request):
+def OrderList(request, order_sheet_id=None, state=None):
   """Request / -- show all orders."""
   user, _, _ = _GetUser(request)
-  orders = db.GqlQuery('SELECT * FROM Order ORDER BY created DESC')
-  order_sheets = db.GqlQuery('SELECT * FROM OrderSheet ORDER BY created DESC')
+  q = models.Order.all().filter('state != ', 'new')
+  order_sheet = None
+  if order_sheet_id:
+    order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
+    q.filter('order_sheet = ', order_sheet)
+  orders = list(q)
   return _Respond(request, 'order_list', 
                  {'orders': orders,
-                  'order_sheets': order_sheets,
+                  'order_sheet': order_sheet,
                   'order_export_checkbox_prefix': ORDER_EXPORT_CHECKBOX_PREFIX,
                   })
 

@@ -1,6 +1,14 @@
 {%extends "base.html"%}
 {%block breadcrumb%}
 {%endblock%}
+{%block script%}
+<script type="text/javascript">
+function SetOrderListAction(f) {
+var order_sheet = f.getElementsByClassName("order_sheet")[0];
+f.action = f.action + order_sheet.value;
+}
+</script>
+{%endblock%}
 {%block about_this_page %}
 <h1>Hello RTP Staff!</h1>
 <p>
@@ -67,12 +75,23 @@
       
     </td><td class="layout">
       <h2>Orders</h2>
-      <p>
-	<a href="{% url room.views.OrderList %}">View a list</a> 
-	of all Orders.
-      </p>
-      
-      
+      <form method="GET" action="{% url room.views.OrderList %}" 
+	    onsubmit="SetOrderListAction(this)">
+	To view a list of Orders, select Order Form(s):
+	<br>
+      <select class="order_sheet">
+	<option value="">All Order Forms</option>
+      {% for os in order_sheets %}      
+      <option value="{{ os.key.id }}">
+	{{ os.name }}
+      </option>
+      {% endfor %}
+      </select>
+      <br>
+      ... then click 
+      <input type="submit" value="List Orders">
+      </form>
+
       <br>
       <h2>Order Forms</h2>
       <p>
