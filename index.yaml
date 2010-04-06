@@ -20,3 +20,8 @@ indexes:
   - name: order
   - name: order_form_section
   - name: name
+
+- kind: OrderItem
+  properties:
+  - name: order
+  - name: quantity

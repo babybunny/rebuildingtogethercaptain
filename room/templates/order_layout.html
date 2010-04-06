@@ -1,0 +1,272 @@
+  <table class="layout">
+    <tr>
+      <td class="layout">
+	<table class="order_form_header">
+	  <tr>
+	    <td colspan=20 class="order_form_section_header">
+	      {{ order.order_sheet.name }} Order Form
+	    </td>
+	  </tr>
+	  <tr>
+	    <td colspan=20>
+	      <span class="attr">
+		<b>
+		  Order ID # 
+		  {{ order.key.id }}
+		</b>
+	      </span>
+	      <span class="attr">
+		<b>
+		  Site # 
+		  <a href="{% url room.views.SiteList order.site.key.id %}">
+		    {{ order.site.number }}
+		  </a>
+		</b>
+	      </span>
+	      <br>
+	      <span  class="attr">
+		Status: {{ order.state }}
+	      </span>
+	      {% ifnotequal order.state "new" %}
+	      <span  class="attr">
+		    Submitted
+		    {{ order.created|date:"d M" }} 
+		    {% if created_by_user.captain %}
+		    by 
+		    {{ created_by_user.captain.name }}
+		    ({{ created_by_user.captain.sitecaptain_set.get.type }} 
+		    Captain)
+		    {% endif %}
+	      </span>
+	      {% ifnotequal order.created order.modified %}
+	      <span  class="attr">
+		    Last Modified
+		    {{ order.modified|timesince }} ago
+		    {% if modified_by_user.captain %}
+		    {% ifnotequal created_by_user modified_by_user %}
+		    by {{ modified_by_user.captain.name }}
+		    ({{ modified_by_user.captain.sitecaptain_set.get.type }} 
+		    Captain)
+		    {% endifnotequal %}
+		    {% endif %}
+	      </span>
+	      {% endifnotequal %}
+	      {% endifnotequal %}
+	      <br>
+	      {% if form %}
+	      <input name="submit" type="submit" 
+		       value="{{ submit_button_text }}">
+	      {% endif %}
+	    </td>
+	  </tr>
+	  <tr>
+	    <td colspan="20" class="order_form_section_header">
+	      Delivery
+	    </td>
+	  </tr>
+	  {% ifequal order.order_sheet.delivery_options "Yes" %}	  
+	  <tr>
+	    <td colspan=2>
+	      These items will be delivered directly to the site.
+	      
+	      {% if user.captain %}
+	      <p>If delivery contact and phone are blank we will use your contact info:
+	      <br>{{ user.captain.name }}
+	      <br>Primary: {{ user.captain.phone1 }}
+	      <br>Backup: {{ user.captain.phone2 }}
+	      </p>
+	      {% endif %}
+	    </td>
+	  </tr>
+	  {% for field in delivery_fields %}
+	  <tr>
+	    <th>
+              {{ field.label_tag }}
+	    </th>
+	    <td>
+	      {{ field.errors }}
+              {{ field }}
+	      {{ field.help_text }}
+	    </td>
+	  </tr>
+	  {% endfor %}
+	  {% else %}
+	  <tr>
+	    <td colspan=2>
+	      No delivery available for these items.
+	    </td>
+	  </tr>
+	  {% endifequal %}
+	  <tr>
+	    <td colspan=20 class="order_form_section_header">
+	      Returns
+	    </td>
+	  </tr>
+	  {% ifequal order.order_sheet.durable "Yes" %}
+	  <tr>
+	    <td colspan=2>
+	      These are durable items and must be returned.  
+	      Enter a <b>Pick-up date</b> and <b>Number of days needed</b> so we
+	      know when you'll have them.
+	    </td>
+	  </tr>
+	  {% for field in durable_fields %}
+	  <tr>
+	    <th>
+              {{ field.label_tag }}
+	    </th>
+	    <td>
+	      {{ field.errors }}
+              {{ field }}
+	      {{ field.help_text }}
+	    </td>
+	  </tr>
+	  {% endfor %}
+	  {% else %}
+	  <tr>
+	    <td colspan=2>
+	      These items should be consumed on-site.  Any left over material 
+	      can be dropped off at the RTP warehouse.
+	    </td>
+	  </tr>
+	  {% endifequal %}
+	  {% if order.order_sheet.instructions %}
+	  <tr>
+	    <td class="order_form_section_header">
+	      Instructions to Captains
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	      {{ order.order_sheet.instructions|linebreaks }}
+	    </td>
+	  </tr>
+	  {% endif %}
+	  <tr>
+	    <td class="order_form_section_header">
+	      Captains' Notes
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	      {% if form %}
+	      {{ notes_field }}
+	      {% else %}
+	      {{ order.notes }}
+	      {% endif %}
+	    </td>
+	  </tr>
+	</table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+	<table class="order_item_list">
+	  {% if order_items %}
+	  <tr>
+	    <th>
+	    </th>
+	    <th>
+	      Items
+	    </th>
+	    {% if form %}
+	    <th>
+	      $ Unit Cost
+	    </th>
+	    {% endif %}
+	    <th>
+	    </th>
+	    <th>
+	      Quantity
+	    </th>
+	    {% if form %}
+	    <th>
+	      $ Total
+	    </th>
+	    {% endif %}
+	  </tr>
+	  {% for order_item in order_items %}
+	  {% if order_item.first_in_section %}
+	  <tr>
+	    <td class="order_form_section_header" colspan=20>
+	      <b>{{ order_item.item.VisibleOrderFormSection }}</b>
+	    </td>
+	  </tr>
+	  {% endif %}
+	  <tr>
+	    <td class=listpic>
+	      {% if order_item.item.thumbnail %}
+	      <img src="{% url views.ItemThumbnail order_item.item.key.id %}">
+	      {% endif %}
+	    </td>
+	    <td>
+	      <b>{{ order_item.item.VisibleName }}</b>
+	      {% if order_item.item.description %} - {% endif %}
+	      {{ order_item.item.description }}
+	    </td>
+	    {% if form %}
+	    <td class="dollar">
+	      {{ order_item.item.unit_cost|floatformat:2 }}
+	    </td>
+	    {% endif %}
+	    <td class="measure">
+	      {{ order_item.item.measure }} x
+	    </td>
+	    <td class="quantity">
+	      {% if form %}
+	      <input type="text" name="item_{{ order_item.key }}" 
+		     value="{{ order_item.VisibleQuantity }}" size=5
+		     onChange="updateCost(this.value, 
+			       {{ order_item.item.unit_cost }}, 
+			       'total_{{ order_item.key }}');">
+	      =
+	      {% else %}
+	      {{ order_item.VisibleQuantity }}
+	      {% endif %}
+	    </td>
+	    {% if form %}
+	    <td class="dollar">
+	      <span id="total_{{ order_item.key }}" name="item_total">
+		{{ order_item.VisibleCost }}
+	      </span>
+	    </td>
+	    {% endif %}
+	  </tr>
+	  {%endfor%}
+	  {% if form %}
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      Subtotal 
+	      (does not include {{sales_tax_pct|floatformat:2 }}% sales tax)
+	    </td>
+	    <td class="dollar subtotal">
+	      <span id="sub_total">
+		{{ order.sub_total|floatformat:2 }}
+	      </span>
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	    </td>
+	    <td>
+	    </td>
+	    <td colspan=5 class="form-summary">
+	      <input name="submit" type="submit" 
+		     value="{{ submit_button_text }}">
+	    </td>
+	  </tr>
+	  {% endif %}
+	  {% else %}
+	  <tr>
+	    <td>
+	      There are no items associated with this order sheet.  
+	      We're probably still entering the data about the items.
+	    </td>
+	  </tr>
+	  {% endif %}
+	</table>
+      </td>
+    </tr>
+  </table>

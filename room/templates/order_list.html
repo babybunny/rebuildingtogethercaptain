@@ -66,6 +66,18 @@ delete an order, just talk to Luke if this comes up.
       </td>
       <td>
 	{{ order.state }}
+	{% ifequal order.state 'Received' %}
+	- 
+	{% if order_sheet %}
+	<a href="{% url room.views.OrderFulfill order.key.id order_sheet.key.id %}">
+	  Click to fulfill
+	</a>
+	{% else %}
+	<a href="{% url room.views.OrderFulfill order.key.id %}">
+	  Click to fulfill
+	</a>	
+	{% endif %}
+	{% endifequal %}
       </td>
       <td>
 	<a href="{% url room.views.OrderEdit order.key.id %}">
