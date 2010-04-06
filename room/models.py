@@ -394,7 +394,7 @@ class OrderItem(BaseModel):
             return ''
 
     def VisibleCost(self):
-        if self.quantity:
+        if self.quantity and self.item.unit_cost:
             return '%.2f' % (self.quantity * self.item.unit_cost)
         else:
             return ''

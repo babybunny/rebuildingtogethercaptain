@@ -828,7 +828,8 @@ def _OrderEditInternal(request, user, order):
         quantity = 0
       order_item.quantity = quantity
       order_item.put()
-      sub_total += quantity * order_item.item.unit_cost
+      if order_item.item.unit_cost:
+        sub_total += quantity * order_item.item.unit_cost
 
   order.sub_total = sub_total
   sales_tax = sub_total * SALES_TAX_RATE
