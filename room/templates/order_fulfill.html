@@ -1,0 +1,23 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+ | List all Orders
+{% endblock %}
+{%block about_this_page %}
+<h2>Fulfill Order ID {{ order.key.id }} for Site {{ order.site.number }}</h2>
+
+<a href="{{ confirm_url }}" onclick="javascript:window.print()">
+  Click here to print and confirm fulfillment has started</a>
+<br>
+- or -
+<br>
+<a href="{{ back_to_list_url }}">
+  Click here to go back to the list of 
+  {% if order_sheet %}
+  {{ order_sheet.name }}
+  {% endif %}
+  Orders.</a>
+
+{%endblock%}
+{%block body%}
+{% include "order_layout.html" %}
+{%endblock%}

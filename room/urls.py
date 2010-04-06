@@ -51,6 +51,10 @@ urlpatterns = patterns('room.views',
     (r'^order/new/(\d+)/$', 'OrderNew'),
     (r'^order/new/(\w+)/(\w+)/$', 'OrderNew'),
     (r'^order/edit/(\d+)/$', 'OrderEdit'),
+    (r'^order/fulfill/(\d+)/$', 'OrderFulfill'),
+    (r'^order/fulfill/(\d+)/(\d+)/$', 'OrderFulfill'),
+    (r'^order/fulfillconfirm/(\d+)/$', 'OrderFulfillConfirm'),
+    (r'^order/fulfillconfirm/(\d+)/(\d+)/$', 'OrderFulfillConfirm'),
 
     (r'^inventory$', 'Inventory'),
 )

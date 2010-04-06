@@ -644,6 +644,39 @@ def OrderList(request, order_sheet_id=None, state=None):
                   'order_export_checkbox_prefix': ORDER_EXPORT_CHECKBOX_PREFIX,
                   })
 
+def OrderFulfill(request, order_id, order_sheet_id=None):
+  """Start the fulfillment process for an order."""
+  order = models.Order.get_by_id(int(order_id))
+  q = models.OrderItem.all().filter('order = ', order).filter('quantity != ', 0)
+  order_items = list(q)
+  _SortOrderItemsWithSections(order_items)
+  order_sheet = None
+  list_args = []
+  confirm_args = [int(order_id)]
+  if order_sheet_id:
+    order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
+    list_args.append(int(order_sheet_id))
+    confirm_args.append(int(order_sheet_id))
+  list_url = urlresolvers.reverse(OrderList, args=list_args)
+  confirm_url = urlresolvers.reverse(OrderFulfillConfirm, args=confirm_args)
+  return _Respond(request, 'order_fulfill', 
+                  {'order': order,
+                   'order_sheet': order_sheet,
+                   'order_items': order_items,
+                   'back_to_list_url': list_url,
+                   'confirm_url': confirm_url,
+                   })
+
+def OrderFulfillConfirm(request, order_id, order_sheet_id=None):
+  order = models.Order.get_by_id(int(order_id))
+  order.state = 'Being Filled'
+  order.put()
+  args = []
+  if order_sheet_id is not None:
+    args = [int(order_sheet_id)]
+  return http.HttpResponseRedirect(urlresolvers.reverse(
+      OrderList, args=args))
+
 
 ORDER_EXPORT_CHECKBOX_PREFIX='order_export_'
 def OrderExport(request):
@@ -725,9 +758,7 @@ def OrderExport(request):
   return response
 
 
-def _OrderEditInternal(request, user, order):
-  logging.info('Order %s', order)
-  order_items = list(models.OrderItem.all().filter('order = ', order))
+def _SortOrderItemsWithSections(order_items):
   order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
   prev_section = None
   for o in order_items:
@@ -736,6 +767,11 @@ def _OrderEditInternal(request, user, order):
       o.first_in_section = True
     prev_section = new_section
 
+
+def _OrderEditInternal(request, user, order):
+  logging.info('Order %s', order)
+  order_items = list(models.OrderItem.all().filter('order = ', order))
+  _SortOrderItemsWithSections(order_items)
   if order.state == 'new':
     what = 'Starting a new order.'
     submit_button_text = "Submit this order"
@@ -748,7 +784,7 @@ def _OrderEditInternal(request, user, order):
     files=request.FILES or None,
     instance=order)
   # A little sketchy, but the best way to adjust HTML attributes of a field.
-  form['notes'].field.widget.attrs['cols'] = 80
+  form['notes'].field.widget.attrs['cols'] = 120
   form['notes'].field.widget.attrs['rows'] = max(
     5, len(form.instance.VisibleNotes().splitlines()))
   template_dict = {'form': form, 
