@@ -15,14 +15,21 @@ $(document).ready(function(){
 {% endblock %}
 {%block about_this_page %}
 <h2>All Captains</h2>
-{%endblock%}
-{%block body%}
-
 {% if user.staff %}
-<form action="{%url room.views.CaptainNew %}"><input type=submit value="Add a new Captain"></form>
-<br>
+<p>
+  <a href="{% url room.views.CaptainExport %}">
+    Click here to export all Captain data as CSV.
+  </a>
+</p>
+<p>
+  <a href="{% url room.views.CaptainNew %}">
+    Click here to add a new Captain.
+  </a>
+</p>
 {% endif %}
 
+{%endblock%}
+{%block body%}
 <table class="list tablesorter" id="captain_list">
   <thead>
     <tr>
@@ -91,9 +98,4 @@ $(document).ready(function(){
     {% endfor %}
   </tbody>
 </table>
-
-{% if user.staff %}
-<form action="{%url room.views.CaptainNew %}"><input type=submit value="Add a new Captain"></form>
-{% endif %}
-
 {%endblock%}
