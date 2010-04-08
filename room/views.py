@@ -438,6 +438,41 @@ def CaptainList(request):
   return _Respond(request, 'captain_list', d)
 
 
+def CaptainExport(request):
+  """Export all Captains as CSV."""
+  user, _, _ = _GetUser(request)
+  captains = list(models.Captain.all().order('name'))
+  response = http.HttpResponse(mimetype='text/csv')
+  response['Content-Disposition'] = 'attachment; filename=room_captains.csv'
+  writer = csv.writer(response)
+  writer.writerow(['Captain ID',
+                   'Name',
+                   'Email',
+                   'Preferred Phone',
+                   'Backup Phone',
+                   'Sites', 
+                   'Type',
+                   'T-Shirt',                     
+                   'Last Welcome',
+                   'Notes'])
+  for c in captains:
+    sc = list(c.sitecaptain_set)
+    sites = '+'.join(set(s.site.number for s in sc))
+    type = '+'.join(set(s.type for s in sc))
+    writer.writerow([c.key().id(),
+                     c.name,
+                     c.email,
+                     c.phone1,
+                     c.phone2,
+                     sites,
+                     type,
+                     c.tshirt_size,
+                     c.last_welcome,
+                     c.notes,
+                     ])
+  return response
+
+
 def CaptainEdit(request, captain_id=None):
   """Create or edit a Captain."""
   user, user_captain, staff = _GetUser(request)
