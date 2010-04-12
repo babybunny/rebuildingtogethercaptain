@@ -6,7 +6,9 @@
 <h2>Fulfill Order ID {{ order.key.id }} for Site {{ order.site.number }}</h2>
 
 <a href="{{ confirm_url }}" onclick="javascript:window.print()">
-  Click here to print and confirm fulfillment has started</a>
+  Click here to print and confirm fulfillment has started 
+  (no more captain changes).
+</a>
 <br>
 - or -
 <br>
@@ -15,7 +17,14 @@
   {% if order_sheet %}
   {{ order_sheet.name }}
   {% endif %}
-  Orders.</a>
+  Orders.
+</a>
+<br>
+- or -
+<br>
+<a href="{% url room.views.SiteList order.site.key.id %}">
+  Click here to go back to site {{ order.site.number }}
+</a>
 
 {%endblock%}
 {%block body%}
