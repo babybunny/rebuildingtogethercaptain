@@ -671,7 +671,8 @@ def OrderList(request, order_sheet_id=None, state=None):
   order_sheet = None
   if order_sheet_id:
     order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
-    q.filter('order_sheet = ', order_sheet)
+    if order_sheet is not None:
+      q.filter('order_sheet = ', order_sheet)
   orders = list(q)
   return _Respond(request, 'order_list', 
                  {'orders': orders,
@@ -707,11 +708,20 @@ def OrderFulfillConfirm(request, order_id, order_sheet_id=None):
   order.state = 'Being Filled'
   order.put()
   args = []
-  if order_sheet_id is not None:
-    args = [int(order_sheet_id)]
-  return http.HttpResponseRedirect(urlresolvers.reverse(
-      OrderList, args=args))
-
+  if order_sheet_id is None:
+    return http.HttpResponseRedirect(urlresolvers.reverse(OrderList))
+  else:
+    next_id = int(order_sheet_id)
+    next_object = models.OrderSheet.get_by_id(next_id)
+    if next_object is not None:
+      return http.HttpResponseRedirect(urlresolvers.reverse(
+          OrderList, args=[next_id]))
+      
+    next_object = models.NewSite.get_by_id(next_id)
+    if next_object is not None:
+      return http.HttpResponseRedirect(urlresolvers.reverse(
+          SiteList, args=[next_id]))
+  
 
 ORDER_EXPORT_CHECKBOX_PREFIX='order_export_'
 def OrderExport(request):
@@ -806,14 +816,14 @@ def _SortOrderItemsWithSections(order_items):
 def _OrderEditInternal(request, user, order):
   logging.info('Order %s', order)
   order_items = list(models.OrderItem.all().filter('order = ', order))
-  _SortOrderItemsWithSections(order_items)
+  _SortOrderItemsWithSections(order_items)  
   if order.state == 'new':
     what = 'Starting a new order.'
     submit_button_text = "Submit this order"
   else:
     what = 'Changing an existing order.'
-    submit_button_text = "Submit changes to this order"
-
+    submit_button_text = 'Submit changes to this order'
+  submit_button_fulfill_text = 'Submit and proceed to fulfillment (Staff only)'
   form = models.OrderForm(
     data=request.POST or None, 
     files=request.FILES or None,
@@ -836,7 +846,9 @@ def _OrderEditInternal(request, user, order):
                    'modified_by_user': _GetUser(request, order.modified_by)[0],
                    'sales_tax_pct': SALES_TAX_RATE * 100.,
                    'what_you_are_doing': what,
-                   'submit_button_text': submit_button_text}
+                   'submit_button_text': submit_button_text,
+                   'submit_button_fulfill_text': submit_button_fulfill_text,
+                   }
   
   if not request.POST or request.POST['submit'] == START_NEW_ORDER_SUBMIT:
     return _Respond(request, 'order', template_dict)
@@ -874,8 +886,14 @@ def _OrderEditInternal(request, user, order):
   order.state = 'Received'
   order.put()
 
-  return http.HttpResponseRedirect('/room/site/list/%s/' % order.site.key().id())
-
+  if request.POST['submit'] == submit_button_fulfill_text:
+    return http.HttpResponseRedirect(urlresolvers.reverse(OrderFulfill, 
+                                     args=[order.key().id(),
+                                           order.order_sheet.key().id()]))
+  else:
+    return http.HttpResponseRedirect('/room/site/list/%s/' 
+                                     % order.site.key().id())
+    
 
 def OrderEdit(request, order_id):
   """Create or edit a order.  GET shows a blank form, POST processes it."""

@@ -136,43 +136,7 @@
 	    </ul>
 	  </td>
 	  <td>
-	    <table class="list">	      
-	      <tr>
-		<th>Type</th>
-		<th>Last change</th>
-		<th>Status</th>
-		<th>Total</th>
-	      </tr>
-	      {% for order in site.VisibleOrders %}
-	      <tr>
-		<td>
-		  {{ order.order_sheet.name }}
-		</td>
-		<td>
-		  {{ order.modified|timesince }} ago
-		  <br>by {{ order.modified_by }}
-		</td>
-		<td>
-		  {{ order.state }}
-		  {% if order.CanMakeChanges %}
-		  <br>
-		  <a href="{% url room.views.OrderEdit order.key.id %}">
-		    make changes
-		  </a>
-		  {% endif %}
-		</td>
-		<td>
-		  ${{ order.grand_total|floatformat:2 }}
-		</td>
-	      </tr>  
-	      {% endfor %}
-	      <tr>
-		<td>Standard Kits</td>
-		<td>by RTP staff</td>
-		<td>Being Filled</td>
-		<td>${{ site.StandardKitCost|floatformat:2 }}</td>
-	      </tr>
-	    </table>
+	    {% include "orders_in_progress.html" %}
 	  </td>
 	</tr>
       </table>
