@@ -1,12 +1,17 @@
-1/19 demo w/ Al, Pete
+2009
+Oct-Dec 40 created prototype system
+
+
+2010
+1/19 2 demo w/ Al, Pete
   Went over current state, took notes.
 
-1/23 practice production procedures
+1/23 2 practice production procedures
   Wrote "run" script for loading / dumping data in CSV format using app_cfg.py.
   Uploaded code to live site, "rebuildingtogethercaptain" app.
   Imported data to live site.
 
-1/25 work day @RTP office
+1/25 6 work day @RTP office
   Download all data from live site to livedata/ CSV files.   Fixed Exporters.
   Upload all data into local all.  Fixed Loaders.
   Changed 'email' fields from User to Email (string) to deal with None values.
@@ -19,7 +24,7 @@
   Practiced loading data into live app and updating model definition codes.
   Sorted all lists.  Refactored entry-list codes and made them generic.
   
-1/30 data model updates for Sites and Captains and Orders per f2f with Al.
+1/30 6 data model updates for Sites and Captains and Orders per f2f with Al.
   Removed Captain from Site, since a Site can have >1 Captain.
   Added SiteCaptain model to support many-to-many site/capn associations.
   Added CSV loaders/exporters for SiteCaptain to support bulk updates.
@@ -35,34 +40,34 @@
   Made site edit page change based on whether the user is a staff or captain.
   Made Captain's home page have only their sites. 
 
-2/1
+2/1 3
   Uploaded new code and testdata to live site, fixed problem with missing links.
   Replaced django/ dir with django.zip, saving 90% of file quota.
   Captain's home page takes changes to contact info.
 
-2/2 @RTP
+2/2 2 @RTP
   several fixes
 
-2/13 @home, uploading data
+2/13 2 @home, uploading data
   cleaned up files
   uploaded Capt_FILE locally
   added "ROOM Sys" text to base and welcome templates, per Al's request 
   
 
-3/9 @home
+3/9 1 @home
   data entry for appliance worksheet
 
-3/10 @rtp captains bbq, 
+3/10 1 @rtp captains bbq, 
   demo to captains
   removed KIT from order sheets, it will be a site attribute.
   data entry landscape
 
-3/10 @home
+3/10 2 @home
   backup of live data
   dumped live data as CSV, loaded into dev app.  fixed loaders
   data entry lumber
 
-3/11 @rtp  
+3/11 4 @rtp  
   add "jump to site"
   add "number of standard kits" field to site
   make standard kit cost a function of that field, and use it in site totals
@@ -77,28 +82,28 @@
   exposing delivery fields only for order_sheets that have delivery_options=Yes
   list number of items per order sheet
 
-3/11 @home
+3/11 3 @home
   customized optional delivery section in order form
   customized optional durable section in order form
   reformatted head of order form
   adjust notes field size to show all notes with 80 columns
 
-3/12 @rtp
+3/12 2 @rtp
   changing text of submit button on order sheet:  new or existing 
   if no items on order sheet, nice message instead of empty table
   added favicon
   
-3/12 @home
+3/12 4 @home
   uploaded items for Flooring Lumber Paint
   sorted order forms by name in select
   added Permits order sheet (see it's been done on live site)
   added T-Shirts order sheet
 
-3/13 @home
+3/13 1 @home
   added Help page
   removed weird line wrapping in status section of order form page
 
-3/15 @home
+3/15 3 @home
   replaced new order selection with links
   keeping track of last welcome for captains and staff
   investigated crash observed by Carlos, found an issue with saving invalid data
@@ -107,7 +112,7 @@
   fixed map_height on site list
   fixed underlined column headers (looked clickable) on site list
 
-3/16 @home
+3/16 3 @home
   Special Instructions -> Instructions from RTP
   Captains' Notes label
   formatting for order items on order form, sans-serif font
@@ -115,3 +120,15 @@
   enabled line breaks in instructions
   fixed identity of original order creator (was current user)
   added T-shirt size update reminder to welcome page
+
+
+subsequent issue tracking took place at
+http://code.google.com/p/rebuildingtogethercaptain/issues/list 
+    10
+
+10/2 2 @rtp meet w/ Cari
+
+96 hours donated
+
+
+
