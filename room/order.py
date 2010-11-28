@@ -1,12 +1,24 @@
 """Views and methods related to handling orders."""
 
+import csv
+
+from django.core import urlresolvers 
+from django import http
+
 import common
 import models
+import views
+
+ORDER_EXPORT_CHECKBOX_PREFIX='order_export_'
 
 
 def OrderList(request, order_sheet_id=None, state=None):
   """Request / -- show all orders."""
   user, _, _ = common.GetUser(request)
+  d = _OrderListInternal(order_sheet_id, state)
+  return common.Respond(request, 'order_list', d)
+
+def _OrderListInternal(order_sheet_id, state):
   q = models.Order.all().filter('state != ', 'new')
   order_sheet = None
   if order_sheet_id:
@@ -14,15 +26,19 @@ def OrderList(request, order_sheet_id=None, state=None):
     if order_sheet is not None:
       q.filter('order_sheet = ', order_sheet)
   orders = list(q)
-  return common.Respond(request, 'order_list', 
-                        {'orders': orders,
-                         'order_sheet': order_sheet,
-                         'order_export_checkbox_prefix': 
-                         ORDER_EXPORT_CHECKBOX_PREFIX,
-                         })
+  return {'orders': orders,
+          'order_sheet': order_sheet,
+          'order_export_checkbox_prefix': 
+          ORDER_EXPORT_CHECKBOX_PREFIX,
+          }
+
 
 def OrderFulfill(request, order_id, order_sheet_id=None):
   """Start the fulfillment process for an order."""
+  d = _OrderFulfillInternal(order_id, order_sheet_id)
+  return common.Respond(request, 'order_fulfill', d)
+
+def _OrderFulfillInternal(order_id, order_sheet_id):
   order = models.Order.get_by_id(int(order_id))
   q = models.OrderItem.all().filter('order = ', order).filter('quantity != ', 0)
   order_items = list(q)
@@ -36,15 +52,17 @@ def OrderFulfill(request, order_id, order_sheet_id=None):
     confirm_args.append(int(order_sheet_id))
   list_url = urlresolvers.reverse(OrderList, args=list_args)
   confirm_url = urlresolvers.reverse(OrderFulfillConfirm, args=confirm_args)
-  return common.Respond(request, 'order_fulfill', 
-                        {'order': order,
-                         'order_sheet': order_sheet,
-                         'order_items': order_items,
-                         'back_to_list_url': list_url,
-                         'confirm_url': confirm_url,
-                         })
+  return {'order': order,
+          'order_sheet': order_sheet,
+          'order_items': order_items,
+          'back_to_list_url': list_url,
+          'confirm_url': confirm_url,
+          }
 
 def OrderFulfillConfirm(request, order_id, order_sheet_id=None):
+  return _OrderFulfillConfirmInternal(order_id, order_sheet_id)
+
+def _OrderFulfillConfirmInternal(order_id, order_sheet_id):
   order = models.Order.get_by_id(int(order_id))
   order.state = 'Being Filled'
   order.put()
@@ -61,22 +79,26 @@ def OrderFulfillConfirm(request, order_id, order_sheet_id=None):
     next_object = models.NewSite.get_by_id(next_id)
     if next_object is not None:
       return http.HttpResponseRedirect(urlresolvers.reverse(
-          SiteList, args=[next_id]))
+              views.SiteList, args=[next_id]))
   
 
-ORDER_EXPORT_CHECKBOX_PREFIX='order_export_'
 def OrderExport(request):
   """Export orders as CSV."""
   user, _, _ = common.GetUser(request)
-  orders = []
-  for var in request.POST:
-    if var.startswith(ORDER_EXPORT_CHECKBOX_PREFIX):
-      order_id = int(var[len(ORDER_EXPORT_CHECKBOX_PREFIX):])
-      orders.append(models.Order.get_by_id(order_id))
   response = http.HttpResponse(mimetype='text/csv')
   response['Content-Disposition'] = (
     'attachment; filename=%s_orders.csv' % user.email())
-  writer = csv.writer(response)
+  _OrderExportInternal(response, request.POST)
+  return response
+
+def _OrderExportInternal(writable, post_vars):
+  """Write orders as CSV to a file-like object."""   
+  orders = []
+  for var in post_vars:
+    if var.startswith(ORDER_EXPORT_CHECKBOX_PREFIX):
+      order_id = int(var[len(ORDER_EXPORT_CHECKBOX_PREFIX):])
+      orders.append(models.Order.get_by_id(order_id))
+  writer = csv.writer(writable)
   for o in orders:
     writer.writerow(['Order ID',
                      'site.number',
@@ -141,7 +163,6 @@ def OrderExport(request):
                        oi.supplier,
                        ])
     writer.writerow([''])
-  return response
 
 
 def _SortOrderItemsWithSections(order_items):
