@@ -12,7 +12,7 @@
 {% endblock %}
 {%block body%}
 
-<form action="{% url room.views.OrderEdit order.key.id %}" method="post">
+<form action="{% url room.order.OrderEdit order.key.id %}" method="post">
   <table class="layout">
     <tr>
       <td>

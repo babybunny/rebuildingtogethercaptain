@@ -18,12 +18,12 @@
       {{ order.state }}
       {% if order.CanMakeChanges %}
       <br>
-      <a href="{% url room.views.OrderEdit order.key.id %}">
+      <a href="{% url room.order.OrderEdit order.key.id %}">
 	make changes
       </a>
       {% if user.staff %}
       -or-
-      <a href="{% url room.views.OrderFulfill order.key.id site.key.id %}">
+      <a href="{% url room.order.OrderFulfill order.key.id site.key.id %}">
 	fulfill
       </a>
       {% endif %}

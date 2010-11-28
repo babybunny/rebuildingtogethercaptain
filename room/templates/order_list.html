@@ -25,7 +25,7 @@ and use the normal Create New Order links.  There is currently no way to
 delete an order, just talk to Luke if this comes up.
 {%endblock%}
 {%block body%}
-<form method="POST" action="{% url room.views.OrderExport %}">
+<form method="POST" action="{% url room.order.OrderExport %}">
   To export as CSV, select some orders by checking their boxes and then 
   click "Export".
   <br>
@@ -69,18 +69,18 @@ delete an order, just talk to Luke if this comes up.
 	{% ifequal order.state 'Received' %}
 	- 
 	{% if order_sheet %}
-	<a href="{% url room.views.OrderFulfill order.key.id order_sheet.key.id %}">
+	<a href="{% url room.order.OrderFulfill order.key.id order_sheet.key.id %}">
 	  Click to fulfill
 	</a>
 	{% else %}
-	<a href="{% url room.views.OrderFulfill order.key.id %}">
+	<a href="{% url room.order.OrderFulfill order.key.id %}">
 	  Click to fulfill
 	</a>	
 	{% endif %}
 	{% endifequal %}
       </td>
       <td>
-	<a href="{% url room.views.OrderEdit order.key.id %}">
+	<a href="{% url room.order.OrderEdit order.key.id %}">
 	  {{ order.key.id }}
 	</a>
       </td>

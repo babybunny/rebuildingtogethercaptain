@@ -128,7 +128,7 @@
 	    <ul>
 	      {% for sheet in order_sheets %}
 	      <li>
-		<a href="{% url room.views.OrderNew site.key.id sheet.code %}">
+		<a href="{% url room.order.OrderNew site.key.id sheet.code %}">
 		  {{ sheet.name }}
 		</a>
 	      </li>
