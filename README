@@ -22,3 +22,10 @@ and added to urls.py (based on gaeunit/urlsauto.py)
 
 # Install tablesorter and south-street date picker from jquery.  
 Again, I forget the details.
+
+
+# Running unit tests
+Start up the dev appserver.  Hit this URL to run all tests:
+http://localhost:8081/test
+To run just one module from the test/ dir:
+http://localhost:8081/test?name=test_order
