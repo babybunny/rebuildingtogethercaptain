@@ -7,4 +7,5 @@ urlpatterns = patterns(
     (r'^$', 'Welcome'),
     (r'^logout', 'LogOut'),
     (r'^room/', include('room.urls')),                      
+    (r'^test', include('gaeunit.urls')),
 )
