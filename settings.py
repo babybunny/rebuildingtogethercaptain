@@ -20,7 +20,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+     ('Luke Stone', 'babybunny@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -104,6 +104,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
      'appengine_django',
+     'gaeunit',    
 #     'django.contrib.humanize',
 #     'captains',
 #     'staff',

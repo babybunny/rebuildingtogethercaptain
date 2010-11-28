@@ -101,8 +101,9 @@ class NewSite(BaseModel):
     city = db.StringProperty()
     budget = db.IntegerProperty()
     number_of_standard_kits = db.IntegerProperty(default=1)
-
+    
     def __unicode__(self):
+        """Only works if self has been saved."""
         return 'Site #%s | %s' % (self.key().id(), self.name)
 
     def StreetAddress(self):
@@ -112,6 +113,7 @@ class NewSite(BaseModel):
         return STANDARD_KIT_COST * self.number_of_standard_kits
 
     def OrderTotal(self):
+        """Only works if self has been saved."""    
         cost = self.StandardKitCost()
         if self.order_set: 
             cost += sum(order.grand_total for order in self.order_set 
@@ -412,5 +414,3 @@ class InventoryItemForm(djangoforms.ModelForm):
      class Meta:
          model = InventoryItem
          exclude = ['last_editor', 'modified', 'item']
-
-
