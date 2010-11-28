@@ -1,17 +1,3 @@
-# Copyright 2008 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 """Views for staff functionailty."""
 
 # TODO: combine Captain stuff with the generic Person stuff that handles 
@@ -33,6 +19,7 @@ from django import shortcuts
 from django.core import urlresolvers 
 import models
 import response
+import common
 
 
 PICTURE_HEIGHT, PICTURE_WIDTH = 600, 400
@@ -41,18 +28,7 @@ MAP_WIDTH = 300
 MAP_HEIGHT = 200
 SALES_TAX_RATE = 0.0925
 START_NEW_ORDER_SUBMIT = 'Start New Order'
-HELP_CONTACT = 'al@rebuildingtogetherpeninsula.org'
 TEST_SITE_NUMBER = '10100ZZZ'
-
-
-def _GetUser(request, user=None):
-  if user is None:
-    user = users.GetCurrentUser()
-  captain = models.Captain.all().filter('email = ', user.email()).get()
-  user.captain = captain
-  staff = models.Staff.all().filter('email = ', user.email()).get()  
-  user.staff = staff
-  return user, captain, staff
 
 
 def _EntryList(request, model_cls, template, params=None):
@@ -66,13 +42,13 @@ def _EntryList(request, model_cls, template, params=None):
     model_cls: the class of model, like models.Captain
     template: name of template file, like 'captain_list'
     """
-  user, captain, staff = _GetUser(request)
+  user, captain, staff = common.GetUser(request)
   entries = list(model_cls.all())
   entries.sort(key=lambda x: x.name)
   d = {'entries': entries, 'user': user }
   if params:
     d.update(params)
-  return _Respond(request, template, d)
+  return common.Respond(request, template, d)
 
 
 def _TryToSaveForm(save_form):
@@ -95,39 +71,9 @@ def _TryToSaveForm(save_form):
   return not errors
 
 
-def _Respond(request, template_name, params=None):
-  """Helper to render a response, passing standard stuff to the response.
-
-  Args:
-    request: The request object.
-    template_name: The template name; '.html' is appended automatically.
-    params: A dict giving the template parameters; modified in-place.
-
-  Returns:
-    Whatever render_to_response(template_name, params) returns.
-
-  Raises:
-    Whatever render_to_response(template_name, params) raises.
-  """
-  user, _, _ = _GetUser(request)
-  if params is None:
-    params = {}
-  if user:
-    params['user'] = user
-    params['sign_out'] = users.CreateLogoutURL('/')
-    params['is_admin'] = (users.IsCurrentUserAdmin() and
-                          'Dev' in os.getenv('SERVER_SOFTWARE'))
-  else:
-    params['sign_in'] = users.CreateLoginURL(request.path)
-  params['help_contact'] = HELP_CONTACT
-  if not template_name.endswith('.html'):
-    template_name += '.html'
-  return shortcuts.render_to_response(template_name, params)
-
-
 def Welcome(request):
   params = {}
-  user, _, _  = _GetUser(request)
+  user, _, _  = common.GetUser(request)
   params['user'] = user
   if user.captain:
     params['last_welcome'] = user.captain.last_welcome
@@ -139,11 +85,11 @@ def Welcome(request):
     user.staff.last_welcome = datetime.datetime.now()
     user.staff.put()
     params['staff'] = user.staff
-  return _Respond(request, 'welcome', params)
+  return common.Respond(request, 'welcome', params)
     
 
 def Help(request):
-  return _Respond(request, 'help')  
+  return common.Respond(request, 'help')  
 
 
 def StaffHome(request):
@@ -175,11 +121,11 @@ def StaffHome(request):
        'total_ordered': total_ordered,
        'test_site_number': TEST_SITE_NUMBER,
        }
-  return _Respond(request, 'staff_home', d)
+  return common.Respond(request, 'staff_home', d)
 
 
 def CaptainHome(request):
-  user, captain, staff = _GetUser(request)
+  user, captain, staff = common.GetUser(request)
   if user is None:
     return http.HttpResponseRedirect('/')
   order_sheets = models.OrderSheet.all().order('name')
@@ -191,28 +137,29 @@ def CaptainHome(request):
   AnnotateSitesWithEditability(sites, captain, staff)
   captain_form = models.CaptainContactForm(data=request.POST or None,
                                            instance=captain)
-  return _Respond(request, 'captain_home', 
-                  {'order_sheets': order_sheets,
-                   'entries': sites,
-                   'captain': captain,
-                   'captain_form': captain_form,
-                   'captain_contact_submit': 
-                   'Save changes to personal info',
-                   'map_width': MAP_WIDTH, 'map_height': MAP_HEIGHT,
-                   'site_list_detail': True,
-                   'start_new_order_submit': START_NEW_ORDER_SUBMIT,
-                   })
+  return common.Respond(request, 'captain_home', 
+                        {'order_sheets': order_sheets,
+                         'entries': sites,
+                         'captain': captain,
+                         'captain_form': captain_form,
+                         'captain_contact_submit': 
+                         'Save changes to personal info',
+                         'map_width': MAP_WIDTH, 'map_height': MAP_HEIGHT,
+                         'site_list_detail': True,
+                         'start_new_order_submit': START_NEW_ORDER_SUBMIT,
+                         })
 
 
 def OrderSheetList(request):
   """Request / -- show all canned orders."""
   order_sheets = list(models.OrderSheet.all().order('name'))
-  return _Respond(request, 'order_sheet_list', {'order_sheets': order_sheets})
+  return common.Respond(request, 'order_sheet_list', 
+                        {'order_sheets': order_sheets})
 
 
 def OrderSheetEdit(request, order_sheet_id=None):
   """Create or edit a canned order."""
-  user, _, _ = _GetUser(request)
+  user, _, _ = common.GetUser(request)
   order_sheet = None
   if order_sheet_id:
     order_sheet = models.OrderSheet.get(
@@ -227,10 +174,10 @@ def OrderSheetEdit(request, order_sheet_id=None):
   form = models.OrderSheetForm(data=request.POST or None, 
                                 instance=order_sheet)
   if not request.POST:
-    return _Respond(request, 'order_sheet', 
-                    {'form': form, 
-                     'order_sheet': order_sheet, 
-                     'what_you_are_doing': what})
+    return common.Respond(request, 'order_sheet', 
+                          {'form': form, 
+                           'order_sheet': order_sheet, 
+                           'what_you_are_doing': what})
   
   errors = form.errors
   if not errors:
@@ -239,9 +186,9 @@ def OrderSheetEdit(request, order_sheet_id=None):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return _Respond(request, 'order_sheet', 
-                    {'form': form, 
-                     'order_sheet': order_sheet})
+    return common.Respond(request, 'order_sheet', 
+                          {'form': form, 
+                           'order_sheet': order_sheet})
 
   order_sheet.put()
 
@@ -273,7 +220,7 @@ def AnnotateSitesWithEditability(entries, captain, staff):
 
 
 def SiteJump(request):
-  user, _, _ = _GetUser(request)
+  user, _, _ = common.GetUser(request)
   d = {'user': user}
   number = request.GET['number']
   site = models.NewSite.all().filter('number = ', number).get()
@@ -300,7 +247,7 @@ def SiteList(request, site_id=None, new_order_form=None):
 def _SiteListInternal(request, site=None, new_order_form=None):
   """Request / -- show all canned orders."""
   params = dict(map_width=MAP_WIDTH, map_height=MAP_HEIGHT)
-  user, _, _ = _GetUser(request)
+  user, _, _ = common.GetUser(request)
   d = {'user': user}
   if site is not None:
     template = 'site_list_one'
@@ -321,11 +268,11 @@ def _SiteListInternal(request, site=None, new_order_form=None):
   d['order_sheets'] = order_sheets
   if params:
     d.update(params)
-  return _Respond(request, template, d)
+  return common.Respond(request, template, d)
 
 def SiteEdit(request, site_id=None):
   """Create or edit a canned order."""
-  user, captain, staff = _GetUser(request)
+  user, captain, staff = common.GetUser(request)
   site = None
   if site_id:
     site = models.NewSite.get_by_id(int(site_id))
@@ -343,7 +290,7 @@ def SiteEdit(request, site_id=None):
     form_class = models.CaptainSiteForm
   else:
     template_dict = {'what_you_are_doing': 'Not permitted to edit this site.'}
-    return _Respond(request, 'staff_site', template_dict)
+    return common.Respond(request, 'staff_site', template_dict)
 
   form = form_class(data=None, instance=site)
     
@@ -394,7 +341,7 @@ def SiteEdit(request, site_id=None):
 
       # Set the current site in the form, so it can be saved.
       if not save_form.is_valid():  # creates cleaned_data as a side effect
-        return _Respond(request, 'staff_site', template_dict)
+        return common.Respond(request, 'staff_site', template_dict)
       save_form.cleaned_data['site'] = site
       
       # Avoid entering duplicate SiteCaptains.
@@ -402,16 +349,16 @@ def SiteEdit(request, site_id=None):
         if (sitecaptain.captain == save_form.cleaned_data['captain']
             and sitecaptain.type == save_form.cleaned_data['type']):
           save_form.errors['__all__'] = 'That Captain already exists.'
-          return _Respond(request, 'staff_site', template_dict)
+          return common.Respond(request, 'staff_site', template_dict)
 
       if _TryToSaveForm(save_form):
         return http.HttpResponseRedirect(urlresolvers.reverse(SiteList, 
                                                               args=[site_id]))
     else:
-      return _Respond(request, 'staff_site', template_dict)
+      return common.Respond(request, 'staff_site', template_dict)
 
   else:
-    return _Respond(request, 'staff_site', template_dict)
+    return common.Respond(request, 'staff_site', template_dict)
   
 
 def SiteNew(request):
@@ -424,7 +371,7 @@ def CaptainList(request):
   Was   return _EntryList(request, models.Captain, 'captain_list')
   but we need special handling for sitecaptains.
   """
-  user, captain, staff = _GetUser(request)
+  user, captain, staff = common.GetUser(request)
   entries = list(models.Captain.all().order('name'))
   sitecaptains_by_captain = {}
   for sc in models.SiteCaptain.all():
@@ -435,12 +382,12 @@ def CaptainList(request):
       c.sitecaptains = sitecaptains_by_captain[k]
   d = {'entries': entries, 'user': user, 
        'sitecaptains_by_captain': sitecaptains_by_captain }
-  return _Respond(request, 'captain_list', d)
+  return common.Respond(request, 'captain_list', d)
 
 
 def CaptainExport(request):
   """Export all Captains as CSV."""
-  user, _, _ = _GetUser(request)
+  user, _, _ = common.GetUser(request)
   captains = list(models.Captain.all().order('name'))
   response = http.HttpResponse(mimetype='text/csv')
   response['Content-Disposition'] = 'attachment; filename=room_captains.csv'
@@ -475,7 +422,7 @@ def CaptainExport(request):
 
 def CaptainEdit(request, captain_id=None):
   """Create or edit a Captain."""
-  user, user_captain, staff = _GetUser(request)
+  user, user_captain, staff = common.GetUser(request)
   captain = None
   if captain_id:
     captain = models.Captain.get_by_id(int(captain_id))
@@ -493,7 +440,7 @@ def CaptainEdit(request, captain_id=None):
   else: 
     template_dict = {
       'what_you_are_doing': 'Not permitted to edit this Captain.'}
-    return _Respond(request, 'captain', template_dict)
+    return common.Respond(request, 'captain', template_dict)
 
   form = form_class(data=None, instance=captain)
   template_dict = {'form': form, 'captain': captain, 
@@ -508,14 +455,14 @@ def CaptainEdit(request, captain_id=None):
       else:
         return http.HttpResponseRedirect(urlresolvers.reverse(CaptainHome))
 
-  return _Respond(request, 'captain', template_dict)
+  return common.Respond(request, 'captain', template_dict)
 
 def CaptainNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return CaptainEdit(request, None)
 
 def _PersonEdit(request, id, person_cls, form_cls, template, readable):
-  user, _, _ = _GetUser(request)
+  user, _, _ = common.GetUser(request)
   person = None
   if id:
     person = person_cls.get_by_id(int(id))
@@ -527,9 +474,9 @@ def _PersonEdit(request, id, person_cls, form_cls, template, readable):
     what = 'Adding new %s' % readable
   form = form_cls(data=request.POST or None,  instance=person)
   if not request.POST:
-    return _Respond(request, template, 
-                    {'form': form, 'person': person,
-                     'what_you_are_doing': what})
+    return common.Respond(request, template, 
+                          {'form': form, 'person': person,
+                           'what_you_are_doing': what})
   errors = form.errors
   if not errors:
     try:
@@ -537,9 +484,9 @@ def _PersonEdit(request, id, person_cls, form_cls, template, readable):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return _Respond(request, 'person', 
-                    {'form': form, 
-                     'person': person})
+    return common.Respond(request, 'person', 
+                          {'form': form, 
+                           'person': person})
   person.put()
   return http.HttpResponseRedirect('/room/')
 
@@ -576,7 +523,7 @@ def ItemList(request):
 
 def ItemEdit(request, item_id=None):
   """Create or edit a item.  GET shows a blank form, POST processes it."""
-  user, _, _ = _GetUser(request)
+  user, _, _ = common.GetUser(request)
   if user is None:
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
 
@@ -594,8 +541,9 @@ def ItemEdit(request, item_id=None):
                          instance=item)
 
   if not request.POST:
-    return _Respond(request, 'item', {'form': form, 'item': item, 
-                                      'what_you_are_doing': what})
+    return common.Respond(request, 'item', 
+                          {'form': form, 'item': item, 
+                           'what_you_are_doing': what})
   
   errors = form.errors
   if not errors:
@@ -604,7 +552,8 @@ def ItemEdit(request, item_id=None):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return _Respond(request, 'item', {'form': form, 'item': item})
+    return common.Respond(request, 'item', 
+                          {'form': form, 'item': item})
 
   item.last_editor = user
   if item.picture:
@@ -664,272 +613,9 @@ def ItemThumbnail(request, item_id):
   return ItemPicture(request, item_id, is_thumbnail=True)
 
 
-def OrderList(request, order_sheet_id=None, state=None):
-  """Request / -- show all orders."""
-  user, _, _ = _GetUser(request)
-  q = models.Order.all().filter('state != ', 'new')
-  order_sheet = None
-  if order_sheet_id:
-    order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
-    if order_sheet is not None:
-      q.filter('order_sheet = ', order_sheet)
-  orders = list(q)
-  return _Respond(request, 'order_list', 
-                 {'orders': orders,
-                  'order_sheet': order_sheet,
-                  'order_export_checkbox_prefix': ORDER_EXPORT_CHECKBOX_PREFIX,
-                  })
-
-def OrderFulfill(request, order_id, order_sheet_id=None):
-  """Start the fulfillment process for an order."""
-  order = models.Order.get_by_id(int(order_id))
-  q = models.OrderItem.all().filter('order = ', order).filter('quantity != ', 0)
-  order_items = list(q)
-  _SortOrderItemsWithSections(order_items)
-  order_sheet = None
-  list_args = []
-  confirm_args = [int(order_id)]
-  if order_sheet_id:
-    order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
-    list_args.append(int(order_sheet_id))
-    confirm_args.append(int(order_sheet_id))
-  list_url = urlresolvers.reverse(OrderList, args=list_args)
-  confirm_url = urlresolvers.reverse(OrderFulfillConfirm, args=confirm_args)
-  return _Respond(request, 'order_fulfill', 
-                  {'order': order,
-                   'order_sheet': order_sheet,
-                   'order_items': order_items,
-                   'back_to_list_url': list_url,
-                   'confirm_url': confirm_url,
-                   })
-
-def OrderFulfillConfirm(request, order_id, order_sheet_id=None):
-  order = models.Order.get_by_id(int(order_id))
-  order.state = 'Being Filled'
-  order.put()
-  args = []
-  if order_sheet_id is None:
-    return http.HttpResponseRedirect(urlresolvers.reverse(OrderList))
-  else:
-    next_id = int(order_sheet_id)
-    next_object = models.OrderSheet.get_by_id(next_id)
-    if next_object is not None:
-      return http.HttpResponseRedirect(urlresolvers.reverse(
-          OrderList, args=[next_id]))
-      
-    next_object = models.NewSite.get_by_id(next_id)
-    if next_object is not None:
-      return http.HttpResponseRedirect(urlresolvers.reverse(
-          SiteList, args=[next_id]))
-  
-
-ORDER_EXPORT_CHECKBOX_PREFIX='order_export_'
-def OrderExport(request):
-  """Export orders as CSV."""
-  user, _, _ = _GetUser(request)
-  orders = []
-  for var in request.POST:
-    if var.startswith(ORDER_EXPORT_CHECKBOX_PREFIX):
-      order_id = int(var[len(ORDER_EXPORT_CHECKBOX_PREFIX):])
-      orders.append(models.Order.get_by_id(order_id))
-  response = http.HttpResponse(mimetype='text/csv')
-  response['Content-Disposition'] = (
-    'attachment; filename=%s_orders.csv' % user.email())
-  writer = csv.writer(response)
-  for o in orders:
-    writer.writerow(['Order ID',
-                     'site.number',
-                     'order_sheet.name',
-                     'sub_total',
-                     'sales_tax',
-                     'grand_total',
-                     'delivery_date',
-                     'delivery_contact',
-                     'delivery_contact_phone',
-                     'delivery_location',
-                     'pickup_on',
-                     'number_of_days',
-                     'return_on',
-                     'notes',
-                     'state',
-                     'created',
-                     'created_by',
-                     'modified',
-                     'modified_by',
-                     ])
-    writer.writerow([o.key().id(),
-                     o.site.number,
-                     o.order_sheet.name,
-                     o.sub_total,
-                     o.sales_tax,
-                     o.grand_total,
-                     o.delivery_date,
-                     o.delivery_contact,
-                     o.delivery_contact_phone,
-                     o.delivery_location,
-                     o.pickup_on,
-                     o.number_of_days,
-                     o.return_on,
-                     o.notes,
-                     o.state,
-                     o.created,
-                     o.created_by,
-                     o.modified,
-                     o.modified_by,
-                     ])
-    order_items = list(oi for oi in o.orderitem_set if oi.quantity)
-    if order_items:
-      order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
-      writer.writerow(['', 
-                       'item.order_form_section',
-                       'item.name', 
-                       'item.unit_cost',
-                       'item.measure',
-                       'quantity', 
-                       'supplier',
-                       ])
-    else:
-      writer.writerow(['', 'No Items in this Order!!!'])
-    for oi in order_items:
-      writer.writerow(['', 
-                       oi.item.order_form_section,
-                       oi.item.name,
-                       oi.item.unit_cost,
-                       oi.item.measure,
-                       oi.quantity,
-                       oi.supplier,
-                       ])
-    writer.writerow([''])
-  return response
-
-
-def _SortOrderItemsWithSections(order_items):
-  order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
-  prev_section = None
-  for o in order_items:
-    new_section = o.item.order_form_section or None
-    if prev_section != new_section:
-      o.first_in_section = True
-    prev_section = new_section
-
-
-def _OrderEditInternal(request, user, order):
-  logging.info('Order %s', order)
-  order_items = list(models.OrderItem.all().filter('order = ', order))
-  _SortOrderItemsWithSections(order_items)  
-  if order.state == 'new':
-    what = 'Starting a new order.'
-    submit_button_text = "Submit this order"
-  else:
-    what = 'Changing an existing order.'
-    submit_button_text = 'Submit changes to this order'
-  submit_button_fulfill_text = 'Submit and proceed to fulfillment (Staff only)'
-  form = models.OrderForm(
-    data=request.POST or None, 
-    files=request.FILES or None,
-    instance=order)
-  # A little sketchy, but the best way to adjust HTML attributes of a field.
-  form['notes'].field.widget.attrs['cols'] = 120
-  form['notes'].field.widget.attrs['rows'] = max(
-    5, len(form.instance.VisibleNotes().splitlines()))
-  template_dict = {'form': form, 
-                   'notes_field': form['notes'],
-                   'delivery_fields': (form['delivery_date'],
-                                       form['delivery_contact'],
-                                       form['delivery_contact_phone'],
-                                       form['delivery_location']),
-                   'durable_fields':  (form['pickup_on'],
-                                       form['number_of_days']),
-                   'order': order, 
-                   'order_items': order_items,
-                   'created_by_user': _GetUser(request, order.created_by)[0],
-                   'modified_by_user': _GetUser(request, order.modified_by)[0],
-                   'sales_tax_pct': SALES_TAX_RATE * 100.,
-                   'what_you_are_doing': what,
-                   'submit_button_text': submit_button_text,
-                   'submit_button_fulfill_text': submit_button_fulfill_text,
-                   }
-  
-  if not request.POST or request.POST['submit'] == START_NEW_ORDER_SUBMIT:
-    return _Respond(request, 'order', template_dict)
-
-  errors = form.errors
-  if not errors:
-    try:
-      order = form.save(commit=False)
-    except ValueError, err:
-      errors['__all__'] = unicode(err)
-  if errors:
-    template_dict['errors'] = errors
-    return _Respond(request, 'order', template_dict)
-
-  sub_total = 0.
-  for arg in request.POST:
-    if arg.startswith('item_'):
-      _, order_item_key = arg.split('_', 1)
-      order_item = models.OrderItem.get(order_item_key)
-      quantity = request.POST[arg]
-      if quantity.isdigit():
-        quantity = int(quantity)
-      else:
-        quantity = 0
-      order_item.quantity = quantity
-      order_item.put()
-      if order_item.item.unit_cost:
-        sub_total += quantity * order_item.item.unit_cost
-
-  order.sub_total = sub_total
-  sales_tax = sub_total * SALES_TAX_RATE
-  order.sales_tax = sales_tax
-  order.grand_total = sub_total + sales_tax
-  order.last_editor = user
-  order.state = 'Received'
-  order.put()
-
-  if request.POST['submit'] == submit_button_fulfill_text:
-    return http.HttpResponseRedirect(urlresolvers.reverse(OrderFulfill, 
-                                     args=[order.key().id(),
-                                           order.order_sheet.key().id()]))
-  else:
-    return http.HttpResponseRedirect('/room/site/list/%s/' 
-                                     % order.site.key().id())
-    
-
-def OrderEdit(request, order_id):
-  """Create or edit a order.  GET shows a blank form, POST processes it."""
-  user, _, _ = _GetUser(request)
-  if user is None:
-    return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
-  logging.info('OrderEdit(%s) POST(%s)', order_id, request.POST)
-  order = models.Order.get_by_id(int(order_id))
-  if order is None:
-    logging.warning('order is none')
-    return http.HttpResponseRedirect(urlresolvers.reverse(CaptainHome))
-  return _OrderEditInternal(request, user, order)
-
-
-def OrderNew(request, site_id=None, order_sheet_code=None):
-  """Create a new order and forward to the edit screen."""
-  user, _, _ = _GetUser(request)
-  if user is None:
-    return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
-  site = models.NewSite.get_by_id(int(site_id))
-  order_sheet = models.OrderSheet.all().filter(
-    'code = ', order_sheet_code).get()
-  order = models.Order(site=site, order_sheet=order_sheet, state='new')
-  order.put()
-
-  items = db.GqlQuery('SELECT * FROM Item WHERE appears_on_order_form = :1',
-                      order.order_sheet)
-  for item in items:
-    order_item = models.OrderItem(order=order, item=item)
-    order_item.put()
-  return _OrderEditInternal(request, user, order)
-
-
 def Inventory(request):
   """Update the inventory.  POST saves the form, GET just displays."""
-  user, _, _ = _GetUser(request)
+  user, _, _ = common.GetUser(request)
   if user is None:
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
 
@@ -948,5 +634,5 @@ def Inventory(request):
 
   inventory_items = list(models.InventoryItem.all())
   inventory_items.sort(key=lambda x: x.item.name)
-  return _Respond(request, 'inventory', 
-                  {'invitems': inventory_items})
+  return common.Respond(request, 'inventory', 
+                        {'invitems': inventory_items})
