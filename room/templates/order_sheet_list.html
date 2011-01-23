@@ -32,7 +32,7 @@
   {%for order_sheet in order_sheets%}
   <tr>
     <td>
-      <a href="{%url room.order.OrderSheetEdit order_sheet.key.id%}">{{order_sheet.code|escape}} (edit)</a>
+      <a href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">{{order_sheet.code|escape}} (edit)</a>
     </td>
     <td>
       {{ order_sheet.name|escape }}
@@ -56,6 +56,6 @@
   {%endfor%}
 </table>
 
-<form action="{%url room.order.OrderSheetNew %}"><input type=submit value="Add a new Order Form"></form>
+<form action="{%url room.views.OrderSheetNew %}"><input type=submit value="Add a new Order Form"></form>
 
 {%endblock%}
