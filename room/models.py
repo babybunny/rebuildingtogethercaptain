@@ -13,8 +13,10 @@ from django import forms  # DateField, DateTimeInput
 from google.appengine.ext import db
 from google.appengine.ext.db import djangoforms
 
+SALES_TAX_RATE = 0.0925
 STANDARD_KIT_COST = 250.
 NRD = '04/24/2010'
+
 
 def DateField(label):
     """Helper to produce data fields for forms."""
@@ -350,6 +352,13 @@ class Order(BaseModel):
         if self.notes is None:
             return ''
         return self.notes
+
+    def GrandTotal(self):
+        if self.sub_total is None:
+            return 0.
+        return self.sub_total * (1. + SALES_TAX_RATE)
+    
+
 
 
 class OrderForm(djangoforms.ModelForm):

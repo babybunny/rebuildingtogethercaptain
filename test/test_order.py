@@ -15,10 +15,22 @@ class SomeOrdersTest(unittest.TestCase):
     def setUp(self):
         self.os = models.OrderSheet()
         self.os.put()
+        self.os_id = self.os.key().id()
+        self.s = models.Supplier(email='bob@supplier.com')
+        self.s.put()
+        self.i = models.Item(name='test item', supplier=self.s, 
+                             unit_cost=50.,
+                             appears_on_order_form=self.os)
+        self.i.put()
+        self.i_id = self.i.key().id()
+        self.osi = models.OrderSheetItem(item=self.i, order_sheet=self.os)
+        self.osi.put()
         self.site = models.NewSite(number='1234')
         self.site.put()
+        self.site_id = self.site.key().id()
         self.order = models.Order(order_sheet=self.os, site=self.site)
         self.order.put()
+        self.order_id = self.order.key().id()
 
     def tearDown(self):
         self.os.delete()
@@ -32,28 +44,30 @@ class SomeOrdersTest(unittest.TestCase):
         self.assertEquals(d['orders'], [self.order])
 
     def testOrderFulfillInternalEmpty(self):
-        d = order._OrderFulfillInternal(3, 1)
+        d = order._OrderFulfillInternal(self.order_id, 1)
         self.assertEquals(d['back_to_list_url'], '/room/order/list/1')
-        self.assertEquals(d['confirm_url'], '/room/order/fulfillconfirm/3/1/')
+        self.assertEquals(d['confirm_url'], '/room/order/fulfillconfirm/%d/1/' 
+                          % self.order_id)
         self.assertEquals(d['order_sheet'], self.os)
         self.assertEquals(d['order'], self.order)
         self.assertEquals(d['order_items'], [])
 
     def testOrderFulfillConfirmInternalEmpty(self):
-        r = order._OrderFulfillConfirmInternal(3, None)
+        r = order._OrderFulfillConfirmInternal(self.order_id, None)
         self.assertEquals(r['Location'], '/room/order/list/')
 
     def testOrderFulfillConfirmInternalToList(self):
-        r = order._OrderFulfillConfirmInternal(3, 1)
+        r = order._OrderFulfillConfirmInternal(self.order_id, 1)
         self.assertEquals(r['Location'], '/room/order/list/1')
 
     def testOrderFulfillConfirmInternalToSite(self):
-        r = order._OrderFulfillConfirmInternal(3, 2)
-        self.assertEquals(r['Location'], '/room/site/list/2/')
+        r = order._OrderFulfillConfirmInternal(self.order_id, self.site_id)
+        self.assertEquals(r['Location'], '/room/site/list/%d/' % self.site_id)
 
     def testOrderExportInternal(self):
         writable = cStringIO.StringIO()
-        order._OrderExportInternal(writable, {'order_export_3': ''})
+        order._OrderExportInternal(writable, 
+                                   {'order_export_%d' % self.order_id: ''})
         csv = writable.getvalue()
         csv_lines = csv.splitlines()
         self.assertEquals(
@@ -62,7 +76,8 @@ class SomeOrdersTest(unittest.TestCase):
             ',delivery_location,pickup_on,number_of_days,return_on,notes,state'
             ',created,created_by,modified,modified_by',
             csv_lines[0])
-        self.assertTrue(csv_lines[1].startswith('3,1234,,,,,,,,,,1,,,,'))
+        self.assertTrue(csv_lines[1].startswith('%d,1234,,,,,,,,,,1,,,,'
+                                                % self.order_id))
         self.assertEquals(
             ',No Items in this Order!!!',
             csv_lines[2])
@@ -86,6 +101,76 @@ class SomeOrdersTest(unittest.TestCase):
         self.assertEquals(oi2, ois[1])
         self.assertTrue(oi2.first_in_section)
         
+    class MockRequest(object):
+        POST={}
+        FILES={}
+        
+    def testOrderEditBadOrderId(self):
+        request = self.MockRequest()
+        request.POST = {
+            'SUBMIT': 'Submit and proceed to fulfillment (Staff only)',
+            }
+        r, d = order._OrderEditInternal(request, {}, 99)
+        self.assertTrue(isinstance(r, order.http.HttpResponseRedirect))
+        o = list(order.models.Order.all())
+        self.assertEquals(1, len(o))
+        saved_o = o[0]
+        self.assertEquals(0., saved_o.GrandTotal())
+
+    def testOrderEditGoodOrderIdNewOrder(self):
+        request = self.MockRequest()
+        request.POST = {
+            'submit': 'Start New Order',
+            }
+        request.FILES = {}
+        r, d = order._OrderEditInternal(request, {}, self.order_id)
+        self.assertEquals(d['order'], self.order)
+        o = list(order.models.Order.all())
+        self.assertEquals(1, len(o))
+        saved_o = o[0]
+        self.assertEquals(0., saved_o.GrandTotal())
+
+    def testOrderEditGoodOrderIdFulfill(self):
+        request = self.MockRequest()
+        request.POST = {
+            'submit': 'Submit and proceed to fulfillment (Staff only)',
+            }
+        request.FILES = {}
+        r, d = order._OrderEditInternal(request, {}, self.order_id)
+        self.assertTrue(isinstance(r, order.http.HttpResponseRedirect))
+        self.assertEquals('/room/order/fulfill/%d/%d/' % 
+                          (self.order_id, self.os_id),
+                          r['Location'])
+        o = list(order.models.Order.all())
+        self.assertEquals(1, len(o))
+        saved_o = o[0]
+        self.assertEquals(0., saved_o.GrandTotal())
+
+    def testOrderEditGoodOrderIdOther(self):
+        request = self.MockRequest()
+        request.POST = {
+            'submit': 'Submit this order',
+            }
+        self.oi = models.OrderItem(order=self.order, item=self.i, 
+                                   supplier=self.s, quantity=9)
+        self.oi.put()
+        request.POST['item_%s' % self.oi.key()] = '100'
+        request.FILES = {}
+        r, d = order._OrderEditInternal(request, {}, self.order_id)
+        self.assertTrue(isinstance(r, order.http.HttpResponseRedirect))
+        self.assertEquals('/room/site/list/%d/' % self.site_id, r['Location'])
+        o = list(order.models.Order.all())
+        self.assertEquals(1, len(o))
+        saved_o = o[0]
+        self.assertEquals(5462.5, saved_o.GrandTotal())
+        oi = list(models.OrderItem.all().filter('order =', self.order.key()))
+        self.assertEquals(1, len(oi))
+
+    def testOrderNew(self):
+        request = self.MockRequest()
+        r = order.OrderNew(request, self.site_id, self.os.code)
+        self.assertEquals(2, len(list(models.Order.all())))
+
 
 if __name__ == "__main__":
     unittest.main()

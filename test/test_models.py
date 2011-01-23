@@ -97,6 +97,7 @@ class Test(unittest.TestCase):
         self.assertTrue(order)
         self.assertFalse(order.CanMakeChanges())
         self.assertEquals('', order.VisibleNotes())
+        self.assertEquals(0., order.GrandTotal())
 
     def testOrderForm(self):
         self.assertTrue(models.OrderForm())
