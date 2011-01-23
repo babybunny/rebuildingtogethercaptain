@@ -106,8 +106,7 @@ def StaffHome(request):
   total_site_budget = sum(s.budget for s in models.NewSite.all() 
                           if s.budget)
   num_orders = models.Order.all().count()
-  total_ordered = sum(o.grand_total for o in models.Order.all() 
-                      if o.grand_total)
+  total_ordered = sum(o.GrandTotal() for o in models.Order.all())
   d = {'last_welcomes': welcomes,
        'order_sheets': order_sheets,
        'num_captains': num_captains,
