@@ -1,15 +1,18 @@
 """Views and methods related to handling orders."""
 
 import csv
+import logging
 
 from django.core import urlresolvers 
 from django import http
+from google.appengine.ext import db
 
 import common
 import models
 import views
 
 ORDER_EXPORT_CHECKBOX_PREFIX='order_export_'
+SALES_TAX_RATE = 0.0925
 
 
 def OrderList(request, order_sheet_id=None, state=None):
@@ -175,7 +178,8 @@ def _SortOrderItemsWithSections(order_items):
     prev_section = new_section
 
 
-def _OrderEditInternal(request, user, order):
+# TODO: is user param unused?
+def _OrderPut(request, user, order):
   logging.info('Order %s', order)
   order_items = list(models.OrderItem.all().filter('order = ', order))
   _SortOrderItemsWithSections(order_items)  
@@ -190,10 +194,13 @@ def _OrderEditInternal(request, user, order):
     data=request.POST or None, 
     files=request.FILES or None,
     instance=order)
+
   # A little sketchy, but the best way to adjust HTML attributes of a field.
   form['notes'].field.widget.attrs['cols'] = 120
   form['notes'].field.widget.attrs['rows'] = max(
     5, len(form.instance.VisibleNotes().splitlines()))
+  created_by_user = common.GetUser(request, 
+                                   order.modified_by)[0],
   template_dict = {'form': form, 
                    'notes_field': form['notes'],
                    'delivery_fields': (form['delivery_date'],
@@ -213,9 +220,9 @@ def _OrderEditInternal(request, user, order):
                    'submit_button_text': submit_button_text,
                    'submit_button_fulfill_text': submit_button_fulfill_text,
                    }
-  
-  if not request.POST or request.POST['submit'] == START_NEW_ORDER_SUBMIT:
-    return common.Respond(request, 'order', template_dict)
+
+  if not request.POST or request.POST['submit'] == views.START_NEW_ORDER_SUBMIT:
+    return None, template_dict
 
   errors = form.errors
   if not errors:
@@ -225,7 +232,7 @@ def _OrderEditInternal(request, user, order):
       errors['__all__'] = unicode(err)
   if errors:
     template_dict['errors'] = errors
-    return common.Respond(request, 'order', template_dict)
+    return None, template_dict
 
   sub_total = 0.
   for arg in request.POST:
@@ -253,10 +260,10 @@ def _OrderEditInternal(request, user, order):
   if request.POST['submit'] == submit_button_fulfill_text:
     return http.HttpResponseRedirect(urlresolvers.reverse(OrderFulfill, 
                                      args=[order.key().id(),
-                                           order.order_sheet.key().id()]))
+                                           order.order_sheet.key().id()])), None
   else:
     return http.HttpResponseRedirect('/room/site/list/%s/' 
-                                     % order.site.key().id())
+                                     % order.site.key().id()), None
     
 
 def OrderEdit(request, order_id):
@@ -264,12 +271,20 @@ def OrderEdit(request, order_id):
   user, _, _ = common.GetUser(request)
   if user is None:
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
+  redirect, template_dict =  _OrderEditInternal(request, user, order_id)
+  if redirect is not None:
+      return redirect
+  else:
+      return common.Respond(request, 'order', template_dict)
+
+
+def _OrderEditInternal(request, user, order_id):
   logging.info('OrderEdit(%s) POST(%s)', order_id, request.POST)
   order = models.Order.get_by_id(int(order_id))
   if order is None:
     logging.warning('order is none')
-    return http.HttpResponseRedirect(urlresolvers.reverse(CaptainHome))
-  return _OrderEditInternal(request, user, order)
+    return http.HttpResponseRedirect(urlresolvers.reverse(views.CaptainHome)), None
+  return _OrderPut(request, user, order)
 
 
 def OrderNew(request, site_id=None, order_sheet_code=None):
@@ -280,6 +295,7 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
   site = models.NewSite.get_by_id(int(site_id))
   order_sheet = models.OrderSheet.all().filter(
     'code = ', order_sheet_code).get()
+  # TODO: error if order_sheet is None
   order = models.Order(site=site, order_sheet=order_sheet, state='new')
   order.put()
 
@@ -288,6 +304,10 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
   for item in items:
     order_item = models.OrderItem(order=order, item=item)
     order_item.put()
-  return _OrderEditInternal(request, user, order)
+  redirect, template_dict = _OrderPut(request, user, order)
+  if redirect is not None:
+      return redirect
+  else:
+      return common.Respond(request, 'order', template_dict)
 
 
