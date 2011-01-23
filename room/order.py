@@ -107,8 +107,6 @@ def _OrderExportInternal(writable, post_vars):
                      'site.number',
                      'order_sheet.name',
                      'sub_total',
-                     'sales_tax',
-                     'grand_total',
                      'delivery_date',
                      'delivery_contact',
                      'delivery_contact_phone',
@@ -127,8 +125,6 @@ def _OrderExportInternal(writable, post_vars):
                      o.site.number,
                      o.order_sheet.name,
                      o.sub_total,
-                     o.sales_tax,
-                     o.grand_total,
                      o.delivery_date,
                      o.delivery_contact,
                      o.delivery_contact_phone,
@@ -234,25 +230,22 @@ def _OrderPut(request, user, order):
     template_dict['errors'] = errors
     return None, template_dict
 
-  sub_total = 0.
+  # List of pairs: OrderItem key, new quantity
   for arg in request.POST:
     if arg.startswith('item_'):
       _, order_item_key = arg.split('_', 1)
-      order_item = models.OrderItem.get(order_item_key)
       quantity = request.POST[arg]
       if quantity.isdigit():
         quantity = int(quantity)
       else:
         quantity = 0
-      order_item.quantity = quantity
-      order_item.put()
-      if order_item.item.unit_cost:
-        sub_total += quantity * order_item.item.unit_cost
+      order_item = models.OrderItem.get(order_item_key)
+      if quantity != order_item.quantity:
+        order_item.quantity = quantity
+        order_item.put()
 
-  order.sub_total = sub_total
-  sales_tax = sub_total * SALES_TAX_RATE
-  order.sales_tax = sales_tax
-  order.grand_total = sub_total + sales_tax
+  order.UpdateSubTotal()
+
   order.last_editor = user
   order.state = 'Received'
   order.put()

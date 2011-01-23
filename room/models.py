@@ -118,8 +118,7 @@ class NewSite(BaseModel):
         """Only works if self has been saved."""    
         cost = self.StandardKitCost()
         if self.order_set: 
-            cost += sum(order.grand_total for order in self.order_set 
-                        if order.grand_total)
+            cost += sum(order.GrandTotal() for order in self.order_set)
         return cost
 
     def BudgetRemaining(self):
@@ -315,8 +314,8 @@ class Order(BaseModel):
     site = db.ReferenceProperty(NewSite, required=True)
     order_sheet = db.ReferenceProperty(OrderSheet, required=True)
     sub_total = db.FloatProperty()
-    sales_tax = db.FloatProperty()
-    grand_total = db.FloatProperty()
+    sales_tax = db.FloatProperty()  # Deprecated
+    grand_total = db.FloatProperty()  # Deprecated.  Use GrandTotal()
     delivery_date = db.StringProperty()
     delivery_date.verbose_name = 'Delivery Date (Mon-Fri only)'
     delivery_contact = db.StringProperty()
@@ -343,7 +342,7 @@ class Order(BaseModel):
         return ' '.join((self.site.number, self.site.name, 
                          self.order_sheet.name, 
                          '%d items' % len(list(self.orderitem_set)), 
-                         '$%0.2f' % self.grand_total))
+                         '$%0.2f' % self.GrandTotal()))
     
     def CanMakeChanges(self):
         return self.state in ('new', 'Received')
@@ -358,7 +357,16 @@ class Order(BaseModel):
             return 0.
         return self.sub_total * (1. + SALES_TAX_RATE)
     
-
+    def UpdateSubTotal(self):
+        """Recomputes sub_total by summing the cost of items and adding tax."""
+        sub_total = 0.
+        order_items = OrderItem.all().filter('order = ', self)
+        for oi in order_items:
+            if oi.item.unit_cost and oi.quantity:
+                sub_total += oi.quantity * oi.item.unit_cost 
+        if self.sub_total != sub_total:
+            self.sub_total = sub_total
+            self.put()
 
 
 class OrderForm(djangoforms.ModelForm):
