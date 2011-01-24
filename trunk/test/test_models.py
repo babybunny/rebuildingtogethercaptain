@@ -97,7 +97,20 @@ class Test(unittest.TestCase):
         self.assertTrue(order)
         self.assertFalse(order.CanMakeChanges())
         self.assertEquals('', order.VisibleNotes())
-        self.assertEquals(0., order.GrandTotal())
+        self.assertEquals(0., order.GrandTotal())        
+
+    def testOrderUpdateSubTotal(self):
+        os = models.OrderSheet().put()
+        site = models.NewSite(number='1234').put()
+        order = models.Order(order_sheet=os, site=site)
+        order.put()
+        item = models.Item(name='foo', unit_cost=2.4).put()        
+        models.OrderItem(order=order, item=item, quantity=2).put()
+        item2 = models.Item(name='foo2', unit_cost=0.3).put()
+        models.OrderItem(order=order, item=item2, quantity=0).put()
+        self.assertEquals(None, order.sub_total)  # before UpdateSubTotal call
+        order.UpdateSubTotal()
+        self.assertEquals(4.8, order.sub_total)
 
     def testOrderForm(self):
         self.assertTrue(models.OrderForm())
