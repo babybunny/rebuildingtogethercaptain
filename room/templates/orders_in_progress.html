@@ -1,16 +1,20 @@
-<table class="list">	      
+<table id="orders_in_progress" class="list tablesorter">	      
+  <thead>
   <tr>
     <th>Type</th>
     <th>Last change</th>
     <th>Status</th>
     <th>Total</th>
   </tr>
+  </thead>
+  <tbody>
   {% for order in site.VisibleOrders %}
   <tr>
     <td>
       {{ order.order_sheet.name }}
     </td>
     <td>
+      <span name="{{ order.modified }}"></span>
       {{ order.modified|timesince }} ago
       <br>by {{ order.modified_by }}
     </td>
@@ -40,4 +44,5 @@
     <td>Being Filled</td>
     <td>${{ site.StandardKitCost|floatformat:2 }}</td>
   </tr>
+  </tbody>
 </table>
