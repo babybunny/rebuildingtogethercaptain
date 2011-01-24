@@ -24,6 +24,11 @@ body {
   color: red;
   text-align: left;
 }
+.hidden {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
 span.attr {
   white-space: nowrap;
 }
