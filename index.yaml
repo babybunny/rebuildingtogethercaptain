@@ -17,6 +17,16 @@ indexes:
 
 - kind: OrderItem
   properties:
+  - name: item
+  - name: quantity
+
+- kind: OrderItem
+  properties:
+  - name: item
+  - name: supplier
+
+- kind: OrderItem
+  properties:
   - name: order
   - name: order_form_section
   - name: name
