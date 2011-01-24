@@ -6,7 +6,8 @@
 <script type="text/javascript">
 $(document).ready(function(){
   $("#captain_list").tablesorter({
-    headers: { 8: { sorter: false }}});
+    headers: { 8: { sorter: false }},
+    });
 });
 </script>
 {%endblock%}
@@ -52,6 +53,7 @@ $(document).ready(function(){
     {% for captain in entries %}
     <tr>
       <td>
+	<span name="{{captain.name|escape}}"></span>
 	<a name="{{ captain.key.id }}"
 	   {% if user.staff %}
 	   href="{% url room.views.CaptainEdit captain.key.id %}"
