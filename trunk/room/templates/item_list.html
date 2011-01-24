@@ -6,7 +6,11 @@
 <script type="text/javascript">
 $(document).ready(function(){
   $("#item_list").tablesorter({
-    headers: { 0: { sorter: false }}});
+    debug: true,
+    headers: { 0: { sorter: false },
+               5: { sorter: 'digit'},
+             },
+    });
 });
 </script>
 {%endblock%}
@@ -49,11 +53,10 @@ $(document).ready(function(){
 	{{ item.appears_on_order_form.name|escape }}
       </td><td>
 	{{ item.VisibleOrderFormSection|escape }}
-      </td><td>
-	{{ item.unit_cost|floatformat:2 }}
-      </td><td>
-	{{ item.measure|escape }}
-    </td></tr>
+      </td>
+      <td>{{ item.unit_cost|floatformat:2 }}</td>
+      <td>{{ item.measure|escape }}</td>
+    </tr>
     {% endfor %}
   </tbody>
 </table>
