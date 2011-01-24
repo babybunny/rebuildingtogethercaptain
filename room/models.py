@@ -6,6 +6,7 @@
 # their ModelForms.
 
 import datetime
+import logging
 from appengine_django.models import BaseModel
 # This don't work in appengine, we use djangoforms instead.
 # from django.forms import ModelForm
@@ -361,12 +362,15 @@ class Order(BaseModel):
         """Recomputes sub_total by summing the cost of items and adding tax."""
         sub_total = 0.
         order_items = OrderItem.all().filter('order = ', self)
+        order_items.filter('quantity !=', 0)
         for oi in order_items:
-            if oi.item.unit_cost and oi.quantity:
+            if oi.item.unit_cost is not None and oi.quantity is not None:
                 sub_total += oi.quantity * oi.item.unit_cost 
         if self.sub_total != sub_total:
             self.sub_total = sub_total
             self.put()
+            logging.info('Updated subtotal for order %d to %0.2f', 
+                         self.key().id(), sub_total)
 
 
 class OrderForm(djangoforms.ModelForm):

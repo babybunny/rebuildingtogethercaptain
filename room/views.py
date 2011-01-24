@@ -526,12 +526,14 @@ def ItemEdit(request, item_id=None):
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
 
   item = None
+  original_unit_cost = None
   if item_id:
     item = models.Item.get(db.Key.from_path(models.Item.kind(), int(item_id)))
     if item is None:
       return http.HttpResponseNotFound('No item exists with that key (%r)' %
                                        item_id)
     what = 'Changing existing Item'
+    original_unit_cost = item.unit_cost
   else:
     what = 'Adding new Item'
 
@@ -567,8 +569,22 @@ def ItemEdit(request, item_id=None):
   if not item_id:
     invitem = models.InventoryItem(item=item)
     invitem.put()
-
-  return http.HttpResponseRedirect('/room/')
+  
+  if original_unit_cost != item.unit_cost:
+    logging.info('unit_cost changed from %0.2f to %0.2f, updating orders', 
+                 original_unit_cost, item.unit_cost)
+    order_items = models.OrderItem.all().filter('item =', item)
+    order_items.filter('quantity !=', 0)
+    for order_item in order_items:
+      order = order_item.order
+      if order is None:
+        logging.info('skipping non-existent order')
+        continue
+      logging.info('updating sub_total for order %d with %d items', 
+                   order_item.order.key().id(), order_item.quantity)
+      order_item.order.UpdateSubTotal()
+      
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 
 def ItemNew(request):
