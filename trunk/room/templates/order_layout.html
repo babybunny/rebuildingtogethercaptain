@@ -82,18 +82,25 @@
 	      {% endif %}
 	    </td>
 	  </tr>
-	  {% for field in delivery_fields %}
 	  <tr>
-	    <th>
-              {{ field.label_tag }}
-	    </th>
 	    <td>
-	      {{ field.errors }}
-              {{ field }}
-	      {{ field.help_text }}
+	      <table>
+		<tbody>
+		  {% for field in delivery_fields %}
+		  <tr>
+		    <th>
+		      {{ field.label_tag }}
+		    </th>
+		    <td>
+		      {{ field.errors }}
+		      {{ field }}
+		      {{ field.help_text }}
+		    </td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	      </table>
 	    </td>
-	  </tr>
-	  {% endfor %}
 	  {% else %}
 	  <tr>
 	    <td colspan=2>
