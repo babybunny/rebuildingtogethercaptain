@@ -57,6 +57,7 @@ urlpatterns += patterns(
     (r'^order/new/(\d+)/$', 'OrderNew'),
     (r'^order/new/(\w+)/(\w+)/$', 'OrderNew'),
     (r'^order/edit/(\d+)/$', 'OrderEdit'),
+    (r'^order/view/(\d+)/$', 'OrderView'),
     (r'^order/fulfill/(\d+)/$', 'OrderFulfill'),
     (r'^order/fulfill/(\d+)/(\d+)/$', 'OrderFulfill'),
     (r'^order/fulfillconfirm/(\d+)/$', 'OrderFulfillConfirm'),

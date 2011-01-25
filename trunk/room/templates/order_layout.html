@@ -180,21 +180,17 @@
 	    <th>
 	      Items
 	    </th>
-	    {% if form %}
 	    <th>
-	      $ Unit Cost
+	      Unit Cost ($)
 	    </th>
-	    {% endif %}
 	    <th>
 	    </th>
 	    <th>
 	      Quantity
 	    </th>
-	    {% if form %}
 	    <th>
-	      $ Total
+	      Total ($)
 	    </th>
-	    {% endif %}
 	  </tr>
 	  {% for order_item in order_items %}
 	  {% if order_item.first_in_section %}
@@ -215,11 +211,9 @@
 	      {% if order_item.item.description %} - {% endif %}
 	      {{ order_item.item.description }}
 	    </td>
-	    {% if form %}
 	    <td class="dollar">
 	      {{ order_item.item.unit_cost|floatformat:2 }}
 	    </td>
-	    {% endif %}
 	    <td class="measure">
 	      {{ order_item.item.measure }} x
 	    </td>
@@ -235,29 +229,29 @@
 	      {{ order_item.VisibleQuantity }}
 	      {% endif %}
 	    </td>
-	    {% if form %}
 	    <td class="dollar">
 	      <span id="total_{{ order_item.key }}" name="item_total">
 		{{ order_item.VisibleCost }}
 	      </span>
 	    </td>
-	    {% endif %}
 	  </tr>
 	  {%endfor%}
-	  {% if form %}
 	  <tr>
 	    <td>
 	    </td>
 	    <td colspan=4 class="form-summary subtotal">
 	      Subtotal 
+	      {% if form %}
 	      (does not include {{sales_tax_pct|floatformat:2 }}% sales tax)
+	      {% endif %}
 	    </td>
 	    <td class="dollar subtotal">
 	      <span id="sub_total">
 		{{ order.sub_total|floatformat:2 }}
 	      </span>
 	    </td>
-	  </tr>
+	  </tr>	  
+	  {% if form %}	  
 	  <tr>
 	    <td>
 	    </td>
@@ -272,6 +266,27 @@
 	      {% endif %}
 	    </td>
 	  </tr>
+	  {% else %}
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      {{sales_tax_pct|floatformat:2 }}% Sales Tax
+	    </td>
+	    <td class="dollar subtotal">
+	      {{ order.SalesTax|floatformat:2 }}
+	    </td>
+	  </tr>	  
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      Grand Total
+	    </td>
+	    <td class="dollar subtotal">
+	      {{ order.GrandTotal|floatformat:2 }}
+	    </td>
+	  </tr>	  
 	  {% endif %}
 	  {% else %}
 	  <tr>

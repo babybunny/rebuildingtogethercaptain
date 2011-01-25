@@ -358,6 +358,11 @@ class Order(BaseModel):
             return 0.
         return self.sub_total * (1. + SALES_TAX_RATE)
     
+    def SalesTax(self):
+        if self.sub_total is None:
+            return 0.
+        return self.sub_total * SALES_TAX_RATE
+
     def UpdateSubTotal(self):
         """Recomputes sub_total by summing the cost of items and adding tax."""
         sub_total = 0.

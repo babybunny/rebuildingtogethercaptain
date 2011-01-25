@@ -171,6 +171,10 @@ class SomeOrdersTest(unittest.TestCase):
         r = order.OrderNew(request, self.site_id, self.os.code)
         self.assertEquals(2, len(list(models.Order.all())))
 
+    def testOrderView(self):
+        request = self.MockRequest()
+        r = order.OrderView(request, self.order_id)
+
 
 if __name__ == "__main__":
     unittest.main()
