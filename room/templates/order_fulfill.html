@@ -3,14 +3,17 @@
  | List all Orders
 {% endblock %}
 {%block about_this_page %}
-<h2>Fulfill Order ID {{ order.key.id }} for Site {{ order.site.number }}</h2>
+<h2>{{ action_verb }} Order ID {{ order.key.id }} for Site {{ order.site.number }}</h2>
 
+{% if confirm_url %}
 <a href="{{ confirm_url }}" onclick="javascript:window.print()">
   Click here to print and confirm fulfillment has started 
   (no more captain changes).
 </a>
 <br>
 - or -
+{% endif %}
+{% if back_to_list_url %}
 <br>
 <a href="{{ back_to_list_url }}">
   Click here to go back to the list of 
@@ -21,6 +24,7 @@
 </a>
 <br>
 - or -
+{% endif %}
 <br>
 <a href="{% url room.views.SiteList order.site.key.id %}">
   Click here to go back to site {{ order.site.number }}

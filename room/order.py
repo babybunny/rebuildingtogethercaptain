@@ -36,6 +36,17 @@ def _OrderListInternal(order_sheet_id, state):
           }
 
 
+def OrderView(request, order_id):
+  order = models.Order.get_by_id(int(order_id))
+  q = models.OrderItem.all().filter('order = ', order).filter('quantity != ', 0)
+  order_items = list(q)
+  _SortOrderItemsWithSections(order_items)
+  d = {'order': order,
+       'order_items': order_items,
+       'action_verb': 'Review',
+       }
+  return common.Respond(request, 'order_fulfill', d)
+  
 def OrderFulfill(request, order_id, order_sheet_id=None):
   """Start the fulfillment process for an order."""
   d = _OrderFulfillInternal(order_id, order_sheet_id)
@@ -60,6 +71,7 @@ def _OrderFulfillInternal(order_id, order_sheet_id):
           'order_items': order_items,
           'back_to_list_url': list_url,
           'confirm_url': confirm_url,
+          'action_verb': 'Fulfill',
           }
 
 def OrderFulfillConfirm(request, order_id, order_sheet_id=None):
@@ -176,7 +188,6 @@ def _SortOrderItemsWithSections(order_items):
 
 # TODO: is user param unused?
 def _OrderPut(request, user, order):
-  logging.info('Order %s', order)
   order_items = list(models.OrderItem.all().filter('order = ', order))
   _SortOrderItemsWithSections(order_items)  
   if order.state == 'new':
@@ -270,7 +281,6 @@ def OrderEdit(request, order_id):
   else:
       return common.Respond(request, 'order', template_dict)
 
-
 def _OrderEditInternal(request, user, order_id):
   logging.info('OrderEdit(%s) POST(%s)', order_id, request.POST)
   order = models.Order.get_by_id(int(order_id))
@@ -302,5 +312,3 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
       return redirect
   else:
       return common.Respond(request, 'order', template_dict)
-
-
