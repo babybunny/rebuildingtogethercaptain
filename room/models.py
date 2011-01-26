@@ -440,3 +440,26 @@ class InventoryItemForm(djangoforms.ModelForm):
      class Meta:
          model = InventoryItem
          exclude = ['last_editor', 'modified', 'item']
+
+class CheckRequest(BaseModel):
+    """A Check Request is a request for reimbursement."""
+    site = db.ReferenceProperty(NewSite)
+    payment_date = db.DateProperty()
+    captain = db.ReferenceProperty(Captain)
+    amount = db.FloatProperty()
+    description = db.TextProperty()
+    payable_to = db.StringProperty()
+    address = db.TextProperty()
+    receipts = db.StringProperty()
+    category = db.StringProperty(choices=('Labor', 'Non-labor'))
+    form_of_business = db.StringProperty(
+        choices=('Corporation', 'Partnership', 'Sole Proprietor', 
+                 'Don\'t Know'))
+    tax_id = db.StringProperty()
+    last_editor = db.UserProperty()
+    modified = db.DateTimeProperty(auto_now=True)
+    
+class CheckRequestForm(djangoforms.ModelForm):
+     class Meta:
+         model = CheckRequest
+         exclude = ['last_editor', 'modified']
