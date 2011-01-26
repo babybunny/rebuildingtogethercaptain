@@ -13,6 +13,7 @@ from room import order
 class SomeOrdersTest(unittest.TestCase):
 
     def setUp(self):
+        unittest.TestCase.setUp(self)
         self.os = models.OrderSheet()
         self.os.put()
         self.os_id = self.os.key().id()
@@ -34,20 +35,25 @@ class SomeOrdersTest(unittest.TestCase):
 
     def tearDown(self):
         self.os.delete()
+        self.s.delete()
+        self.i.delete()
+        self.osi.delete()
         self.site.delete()
         self.order.delete()
+        unittest.TestCase.tearDown(self)
 
     def testOrderListInternal(self):
-        d = order._OrderListInternal(1, 'unused')
+        d = order._OrderListInternal(self.os_id, 'unused')
         self.assertEquals(d['order_export_checkbox_prefix'], 'order_export_')
         self.assertEquals(d['order_sheet'], self.os)
         self.assertEquals(d['orders'], [self.order])
 
     def testOrderFulfillInternalEmpty(self):
-        d = order._OrderFulfillInternal(self.order_id, 1)
-        self.assertEquals(d['back_to_list_url'], '/room/order/list/1')
-        self.assertEquals(d['confirm_url'], '/room/order/fulfillconfirm/%d/1/' 
-                          % self.order_id)
+        d = order._OrderFulfillInternal(self.order_id, self.os_id)
+        self.assertEquals(d['back_to_list_url'], 
+                          '/room/order/list/%d' % self.os_id)
+        self.assertEquals(d['confirm_url'], '/room/order/fulfillconfirm/%d/%d/' 
+                          % (self.order_id, self.os_id))
         self.assertEquals(d['order_sheet'], self.os)
         self.assertEquals(d['order'], self.order)
         self.assertEquals(d['order_items'], [])
@@ -57,8 +63,8 @@ class SomeOrdersTest(unittest.TestCase):
         self.assertEquals(r['Location'], '/room/order/list/')
 
     def testOrderFulfillConfirmInternalToList(self):
-        r = order._OrderFulfillConfirmInternal(self.order_id, 1)
-        self.assertEquals(r['Location'], '/room/order/list/1')
+        r = order._OrderFulfillConfirmInternal(self.order_id, self.os_id)
+        self.assertEquals(r['Location'], '/room/order/list/%d' % self.os_id)
 
     def testOrderFulfillConfirmInternalToSite(self):
         r = order._OrderFulfillConfirmInternal(self.order_id, self.site_id)
