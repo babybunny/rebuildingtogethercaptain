@@ -7,6 +7,38 @@ from room import models
 
 class Test(unittest.TestCase):
 
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.captain = models.Captain(email='1234')
+        self.captain.put()
+        self.os = models.OrderSheet()
+        self.os.put()
+        self.site = models.NewSite(number='1234')
+        self.site.put()
+        self.order = models.Order(order_sheet=self.os, site=self.site)
+        self.order.put()
+        self.item = models.Item(name='foo', unit_cost=2.4)
+        self.item.put()
+        self.oi = models.OrderItem(order=self.order, 
+                                   item=self.item, quantity=2)
+        self.oi.put()
+        self.item2 = models.Item(name='foo2', unit_cost=0.3)
+        self.item2.put()
+        self.oi2 = models.OrderItem(order=self.order, 
+                                    item=self.item2, quantity=0)
+        self.oi2.put()
+
+    def tearDown(self):
+        self.captain.delete()
+        self.os.delete()
+        self.site.delete()
+        self.order.delete()
+        self.item.delete()
+        self.oi.delete()
+        self.item2.delete()
+        self.oi2.delete()
+        unittest.TestCase.tearDown(self)
+
     def testModels(self):
         self.assertTrue(models)
 
@@ -29,16 +61,19 @@ class Test(unittest.TestCase):
         site = models.NewSite(number='1234', name='Belle Haven',
                               street='Main Street', street_number='100',
                               city_state_zip='Menlo Park CA 94025', budget=1000)
-        self.assertTrue(site)
-        self.assertTrue(site.put())
-        self.assertEquals('Site #1 | Belle Haven', 
-                          site.__unicode__())
-        self.assertEquals('100 Main Street, Menlo Park CA 94025', 
-                          site.StreetAddress())
-        self.assertEquals(250, site.StandardKitCost())        
-        self.assertEquals(250, site.OrderTotal())
-        self.assertEquals(750, site.BudgetRemaining())
-        self.assertEquals([], list(site.VisibleOrders()))
+        try:
+            self.assertTrue(site)
+            self.assertTrue(site.put())
+            self.assertEquals('Site #%d | Belle Haven' % site.key().id(), 
+                              site.__unicode__())
+            self.assertEquals('100 Main Street, Menlo Park CA 94025', 
+                              site.StreetAddress())
+            self.assertEquals(250, site.StandardKitCost())        
+            self.assertEquals(250, site.OrderTotal())
+            self.assertEquals(750, site.BudgetRemaining())
+            self.assertEquals([], list(site.VisibleOrders()))
+        finally:
+            site.delete()
 
     def testSiteForm(self):
         self.assertTrue(models.SiteForm())
@@ -50,9 +85,8 @@ class Test(unittest.TestCase):
         self.assertTrue(models.CaptainSiteForm())
 
     def testSiteCaptain(self):
-        site = models.NewSite(number='1234').put()
-        captain = models.Captain(email='1234').put()
-        self.assertTrue(models.SiteCaptain(site=site, captain=captain))
+        self.assertTrue(models.SiteCaptain(site=self.site, 
+                                           captain=self.captain))
 
     def testSiteCaptainSiteForm(self):
         self.assertTrue(models.SiteCaptainSiteForm())
@@ -87,30 +121,23 @@ class Test(unittest.TestCase):
     def testOrderSheetItem(self):
         item = models.Item(name='10 foo', order_form_section='20 top').put()
         os = models.OrderSheet().put()
-        self.assertTrue(models.OrderSheetItem(order_sheet=os, item=item))
+        try:
+            osi = models.OrderSheetItem(order_sheet=os, item=item)
+            osi.put()
+            self.assertTrue(osi)
+        finally:
+            osi.delete()
 
     def testOrder(self):
-        os = models.OrderSheet().put()
-        site = models.NewSite(number='1234').put()
-        order = models.Order(order_sheet=os, site=site)
-        order.put()
-        self.assertTrue(order)
-        self.assertFalse(order.CanMakeChanges())
-        self.assertEquals('', order.VisibleNotes())
-        self.assertEquals(0., order.GrandTotal())        
+        self.assertTrue(self.order)
+        self.assertFalse(self.order.CanMakeChanges())
+        self.assertEquals('', self.order.VisibleNotes())
+        self.assertEquals(0., self.order.GrandTotal())        
 
     def testOrderUpdateSubTotal(self):
-        os = models.OrderSheet().put()
-        site = models.NewSite(number='1234').put()
-        order = models.Order(order_sheet=os, site=site)
-        order.put()
-        item = models.Item(name='foo', unit_cost=2.4).put()        
-        models.OrderItem(order=order, item=item, quantity=2).put()
-        item2 = models.Item(name='foo2', unit_cost=0.3).put()
-        models.OrderItem(order=order, item=item2, quantity=0).put()
-        self.assertEquals(None, order.sub_total)  # before UpdateSubTotal call
-        order.UpdateSubTotal()
-        self.assertEquals(4.8, order.sub_total)
+        self.assertEquals(None, self.order.sub_total)  
+        self.order.UpdateSubTotal()
+        self.assertEquals(4.8, self.order.sub_total)
 
     def testOrderForm(self):
         self.assertTrue(models.OrderForm())
@@ -122,26 +149,31 @@ class Test(unittest.TestCase):
         self.assertTrue(models.CaptainOrderForm())
 
     def testOrderItem(self):
-        os = models.OrderSheet().put()
-        site = models.NewSite(number='1234').put()
-        o = models.Order(order_sheet=os, site=site)
-        o.put()
-        item = models.Item(name='foo').put()
-        s = models.Supplier(email='1234').put()
-        oi = models.OrderItem(order=o, item=item, supplier=s, quantity=1)
-        oi.put()
-        self.assertTrue(oi)
-        self.assertEquals(1, oi.VisibleQuantity())
-        self.assertEquals('', oi.VisibleCost())
+        self.assertTrue(self.oi)
+        self.assertEquals(2, self.oi.VisibleQuantity())
+        self.assertEquals('4.80', self.oi.VisibleCost())
 
     def testInventoryItem(self):
-        item = models.Item(name='foo').put()
-        ii = models.InventoryItem(item=item)
-        ii.put()
-        self.assertTrue(ii)
+        ii = models.InventoryItem(item=self.item)
+        try:
+            ii.put()
+            self.assertTrue(ii)
+        finally:
+            ii.delete()
 
     def testInventoryItemForm(self):
         self.assertTrue(models.InventoryItemForm())
+
+    def testCheckRequest(self):
+        cr = models.CheckRequest()
+        try:
+            cr.put()
+            self.assertTrue(cr)
+        finally:
+            cr.delete()
+
+    def testCheckRequestForm(self):
+        self.assertTrue(models.CheckRequestForm())
 
 
 if __name__ == "__main__":
