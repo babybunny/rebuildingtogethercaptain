@@ -650,3 +650,49 @@ def Inventory(request):
   inventory_items.sort(key=lambda x: x.item.name)
   return common.Respond(request, 'inventory', 
                         {'invitems': inventory_items})
+
+def CheckRequestList(request):
+  """Request / -- show all CheckRequest."""
+  return _EntryList(request, models.CheckRequest, 'checkrequest_list')
+
+def CheckRequestEdit(request, id):
+  """Create or edit a CheckRequest."""
+  user, _, _ = common.GetUser(request)
+  check_request = None
+  readable = 'Check Request'
+  if id:
+    check_request = models.CheckRequest.get_by_id(int(id))
+    if check_request is None:
+      return http.HttpResponseNotFound(
+        'No %s exists with that key (%r)' % (readable, id))
+    what = 'Changing existing %s' % readable
+  else:
+    what = 'Adding new %s' % readable
+  form = models.CheckRequestForm(data=request.POST or None,  
+                                 instance=check_request)
+  if not request.POST:
+    return common.Respond(request, 'checkrequest', 
+                          {'form': form, 'check_request': check_request,
+                           'what_you_are_doing': what})
+  errors = form.errors
+  if not errors:
+    try:
+      check_request = form.save(commit=False)
+    except ValueError, err:
+      errors['__all__'] = unicode(err)
+  if errors:
+    return common.Respond(request, 'checkrequest', 
+                          {'form': form, 
+                           'check_request': check_request})
+  check_request.put()
+  return http.HttpResponseRedirect(urlresolvers.reverse(
+      SiteList, args=[check_request.site.key().id()]))
+
+def CheckRequestNew(request, site_id):
+  """Create a item.  GET shows a blank form, POST processes it."""
+  user, user_captain, staff = common.GetUser(request)
+  site = models.NewSite.get_by_id(int(site_id))
+  check_request = models.CheckRequest(site=site, captain=user_captain)
+  check_request.put()
+  return CheckRequestEdit(request, check_request.key().id())
+
