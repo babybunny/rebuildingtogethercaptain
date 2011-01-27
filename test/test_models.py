@@ -61,19 +61,23 @@ class Test(unittest.TestCase):
         site = models.NewSite(number='1234', name='Belle Haven',
                               street='Main Street', street_number='100',
                               city_state_zip='Menlo Park CA 94025', budget=1000)
+        self.assertTrue(site)
+        self.assertTrue(site.put())
+        cr = models.CheckRequest(site=site, amount=450.)
+        cr.put()
         try:
-            self.assertTrue(site)
-            self.assertTrue(site.put())
             self.assertEquals('Site #%d | Belle Haven' % site.key().id(), 
                               site.__unicode__())
             self.assertEquals('100 Main Street, Menlo Park CA 94025', 
                               site.StreetAddress())
             self.assertEquals(250, site.StandardKitCost())        
             self.assertEquals(250, site.OrderTotal())
-            self.assertEquals(750, site.BudgetRemaining())
+            self.assertEquals(450, site.CheckRequestTotal())
+            self.assertEquals(300, site.BudgetRemaining())
             self.assertEquals([], list(site.VisibleOrders()))
         finally:
             site.delete()
+            cr.delete()
 
     def testSiteForm(self):
         self.assertTrue(models.SiteForm())
