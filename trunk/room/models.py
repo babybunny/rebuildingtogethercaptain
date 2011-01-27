@@ -122,8 +122,14 @@ class NewSite(BaseModel):
             cost += sum(order.GrandTotal() for order in self.order_set)
         return cost
 
+    def CheckRequestTotal(self):
+        """Only works if self has been saved."""    
+        if self.checkrequest_set: 
+            return sum(cr.amount for cr in self.checkrequest_set)
+        return 0
+
     def BudgetRemaining(self):
-        return self.budget - self.OrderTotal()
+        return self.budget - self.OrderTotal() - self.CheckRequestTotal()
 
     def VisibleOrders(self):
         for order in sorted(self.order_set, 
@@ -447,19 +453,23 @@ class CheckRequest(BaseModel):
     payment_date = db.DateProperty()
     captain = db.ReferenceProperty(Captain)
     amount = db.FloatProperty()
+    amount.verbose_name = 'Check Amount ($)'
     description = db.TextProperty()
-    payable_to = db.StringProperty()
+    name = db.StringProperty()
+    name.verbose_name = 'Payable To'
+    tax_id = db.StringProperty()
     address = db.TextProperty()
-    receipts = db.StringProperty()
     category = db.StringProperty(choices=('Labor', 'Non-labor'))
     form_of_business = db.StringProperty(
         choices=('Corporation', 'Partnership', 'Sole Proprietor', 
                  'Don\'t Know'))
-    tax_id = db.StringProperty()
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
 class CheckRequestForm(djangoforms.ModelForm):
-     class Meta:
-         model = CheckRequest
-         exclude = ['last_editor', 'modified']
+    site = djangoforms.ModelChoiceField(Site, widget=forms.HiddenInput)
+    captain = djangoforms.ModelChoiceField(Captain, widget=forms.HiddenInput)
+    payment_date = DateField('Payment Date')
+    class Meta:
+        model = CheckRequest
+        exclude = ['last_editor', 'modified']

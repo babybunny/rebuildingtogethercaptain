@@ -79,10 +79,18 @@
 	</tr>
 	<tr>
 	  <td>
-	    Spent
+	    ROOM Orders
 	  </td>
 	  <td>
-	    ${{ site.OrderTotal|floatformat:2 }}
+	    (${{ site.OrderTotal|floatformat:2 }})
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	    Check Requests
+	  </td>
+	  <td>
+	    (${{ site.CheckRequestTotal|floatformat:2 }})
 	  </td>
 	</tr>
 	<tr>
@@ -98,6 +106,13 @@
 	  </td>
 	  <td>
 	    ${{ site.BudgetRemaining|floatformat:2 }} 
+	  </td>
+	</tr>
+	<tr>
+	  <td colspan=2>
+	    <a href="{% url room.views.CheckRequestNew site.key.id %}">
+	      Click here to make a Check Request</a>
+	    to be reimbursed for other expenses.
 	  </td>
 	</tr>
 	</table>
