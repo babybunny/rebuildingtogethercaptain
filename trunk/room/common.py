@@ -7,7 +7,7 @@ from django import shortcuts
 import models
 
 
-HELP_CONTACT = 'al@rebuildingtogetherpeninsula.org'
+HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
 
 
 def GetUser(request, user=None):
