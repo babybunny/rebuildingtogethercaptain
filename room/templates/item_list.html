@@ -52,7 +52,9 @@ $(document).ready(function(){
       </td><td>
 	{{ item.appears_on_order_form.name|escape }}
       </td><td>
+	{% if item.order_form_section %}
 	{{ item.order_form_section|escape }}
+	{% endif %}
       </td><td>
 	  {{item.name|escape}}
       </td>
