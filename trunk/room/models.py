@@ -173,6 +173,8 @@ class SiteCaptain(BaseModel):
             ))
 
 class SiteCaptainSiteForm(djangoforms.ModelForm):
+    captain = djangoforms.ModelChoiceField(
+        Captain, query=Captain.all().order('name'))
     class Meta:
         model = SiteCaptain
         exclude = ['site']
