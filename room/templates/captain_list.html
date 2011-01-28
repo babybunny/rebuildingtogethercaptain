@@ -6,7 +6,6 @@
 <script type="text/javascript">
 $(document).ready(function(){
   $("#captain_list").tablesorter({
-    headers: { 8: { sorter: false }},
     });
 });
 </script>
@@ -94,7 +93,9 @@ $(document).ready(function(){
 	{% endif %}	
       </td>
       <td class="notes">
-      {{ captain.notes|escape }}
+	{% if captain.notes %}
+	{{ captain.notes|linebreaksbr }}
+	{% endif %}
       </td>
     </tr>
     {% endfor %}
