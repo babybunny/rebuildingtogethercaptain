@@ -7,6 +7,7 @@
 $(document).ready(function(){
   $("#item_list").tablesorter({
     debug: true,
+    sortList: [[2, 0], [3, 0], [4, 0]],
     headers: { 0: { sorter: false },
                5: { sorter: 'digit'},
              },
@@ -26,9 +27,9 @@ $(document).ready(function(){
     <tr>
       <th>&nbsp;</th>
       <th>ID</th>
-      <th>Name</th>
       <th>On Form</th>
-      <th>Section</th>
+      <th>Section (includes sorting prefix number)</th>
+      <th>Name (includes sorting prefix number)</th>
       <th>Unit Cost ($)</th>
       <th>Measure</th>
     </tr>
@@ -48,11 +49,11 @@ $(document).ready(function(){
 	</a>
 	{{ item.key.id }}
       </td><td>
-	  {{item.VisibleName|escape}}
-      </td><td>
 	{{ item.appears_on_order_form.name|escape }}
       </td><td>
-	{{ item.VisibleOrderFormSection|escape }}
+	{{ item.order_form_section|escape }}
+      </td><td>
+	  {{item.name|escape}}
       </td>
       <td>{{ item.unit_cost|floatformat:2 }}</td>
       <td>{{ item.measure|escape }}</td>
