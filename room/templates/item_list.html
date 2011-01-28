@@ -32,6 +32,7 @@ $(document).ready(function(){
       <th>Name (includes sorting prefix number)</th>
       <th>Unit Cost ($)</th>
       <th>Measure</th>
+      <th>supplier</th>
     </tr>
   </thead>
   <tbody>
@@ -57,6 +58,11 @@ $(document).ready(function(){
       </td>
       <td>{{ item.unit_cost|floatformat:2 }}</td>
       <td>{{ item.measure|escape }}</td>
+      <td>
+	{% if item.supplier %}
+	{{ item.supplier|escape }}
+	{% endif %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
