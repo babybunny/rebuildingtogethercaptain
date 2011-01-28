@@ -177,7 +177,8 @@ def _OrderExportInternal(writable, post_vars):
 
 
 def _SortOrderItemsWithSections(order_items):
-  order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
+  order_items.sort(
+    key=lambda x: (x.item.order_form_section or None, x.item.name))
   prev_section = None
   for o in order_items:
     new_section = o.item.order_form_section or None

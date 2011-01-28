@@ -584,7 +584,7 @@ def ItemEdit(request, item_id=None):
                    order_item.order.key().id(), order_item.quantity)
       order_item.order.UpdateSubTotal()
       
-  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+  return http.HttpResponseRedirect(urlresolvers.reverse(ItemList))
 
 
 def ItemNew(request):
