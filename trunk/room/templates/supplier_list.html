@@ -1,26 +1,51 @@
 {%extends "base.html"%}
+{% block script %}
+<link type="text/css" href="/static/tablesorter/themes/blue/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#item_list").tablesorter({
+    });
+});
+</script>
+{%endblock%}
 {% block breadcrumb %}
   | List Suppliers
 {% endblock %}
 {%block body%}
 <h2>All Suppliers</h2>
 
-<table><tr><th>Supplier</th></tr>
-{% for person in entries %}
-<tr><td>
-  <a href="{%url room.views.SupplierEdit person.key.id%}">{{person.name|escape}}</a>
-</td><td>
-{{ person.email|escape }}
-</td><td>
-{{ person.address|escape }}
-</td><td>
-{{ person.phone1|escape }}
-</td><td>
-{{ person.phone2|escape }}
-</td><td>
-{{ person.notes|escape }}
-</td></tr>
-{% endfor %}
+<table class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Supplier</th>
+      <th>Email</th>
+      <th>Address</th>
+      <th>Phone 1</th>
+      <th>Phone 2</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for person in entries %}
+    <tr><td>
+	<a href="{%url room.views.SupplierEdit person.key.id%}">
+	  {{person.name|escape}}
+	</a>
+      </td><td>
+	{{ person.email|escape }}
+      </td><td>
+	{{ person.address|escape }}
+      </td><td>
+	{{ person.phone1|escape }}
+      </td><td>
+	{{ person.phone2|escape }}
+      </td><td>
+	{{ person.notes|escape|linebreaksbr }}
+    </td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 
 <form action="{%url room.views.SupplierNew %}"><input type=submit value="Add a new Supplier"></form>
