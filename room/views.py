@@ -17,7 +17,6 @@ import django
 from django import http
 from django import shortcuts
 from django.core import urlresolvers 
-from django.template import loader
 import models
 import response
 import common
@@ -695,17 +694,13 @@ def CheckRequestEdit(request, id):
   check_request.put()
   user = captain or staff
   if user: 
-    base_uri = common.GetBaseUri()
-    html = loader.render_to_string('checkrequest_email.html', 
-                                   {'check_request': check_request,
-                                    'base_uri': base_uri})
-    view_url = base_uri + urlresolvers.reverse(CheckRequestView, 
-                                               args=(check_request.key().id(),))
-    text = 'Check Request #%s was updated.\n%s\n%s' % (
+    subj = 'Check Request #%s for Site #%s Updated by %s' % (
       check_request.key().id(), 
-      str(check_request),
-      view_url)
-    common.NotifyAdminViaMail('Check Request Updated', text, html)
+      check_request.site.number,
+      user.name)
+    common.NotifyAdminViaMail(subj, 
+                              template='checkrequest_email.html', 
+                              template_dict={'check_request': check_request})
   return http.HttpResponseRedirect(urlresolvers.reverse(
       SiteList, args=[check_request.site.key().id()]))
 
