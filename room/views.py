@@ -17,6 +17,7 @@ import django
 from django import http
 from django import shortcuts
 from django.core import urlresolvers 
+from django.template import loader
 import models
 import response
 import common
@@ -655,9 +656,15 @@ def CheckRequestList(request):
   """Request / -- show all CheckRequest."""
   return _EntryList(request, models.CheckRequest, 'checkrequest_list')
 
+def CheckRequestView(request, id):
+  """Printable static view of a CheckRequest."""
+  check_request = models.CheckRequest.get_by_id(int(id))
+  return common.Respond(request, 'checkrequest_view', 
+                        {'check_request': check_request})
+
 def CheckRequestEdit(request, id):
   """Create or edit a CheckRequest."""
-  user, _, _ = common.GetUser(request)
+  user, captain, staff = common.GetUser(request)
   check_request = None
   readable = 'Check Request'
   if id:
@@ -684,7 +691,14 @@ def CheckRequestEdit(request, id):
     return common.Respond(request, 'checkrequest', 
                           {'form': form, 
                            'check_request': check_request})
+  check_request.last_editor = user
   check_request.put()
+  user = captain or staff
+  if user: 
+    html = loader.render_to_string('checkrequest_list.html', 
+                                   {'check_request': check_request})
+    text = 'Check Request #%s was updated.' % check_request.key().id()  
+    common.NotifyAdminViaMail('Check Request Updated', text, html)
   return http.HttpResponseRedirect(urlresolvers.reverse(
       SiteList, args=[check_request.site.key().id()]))
 

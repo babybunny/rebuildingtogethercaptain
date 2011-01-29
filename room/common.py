@@ -1,13 +1,30 @@
 """Methods common to all handlers."""
 
 import os
+from google.appengine.api import mail
 from google.appengine.api import users
 import django
 from django import shortcuts
 import models
 
-
+# TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
+
+# From: address of outbound emails.
+EMAIL_SENDER = 'rebuildingtogether.rooms@gmail.com'
+# CC'd on all emails as a logging mechanism.
+EMAIL_LOG = 'rebuildingtogethercaptain@googlegroups.com'
+
+
+def NotifyAdminViaMail(subject, text_body=None, html_body=None):
+  message = mail.EmailMessage(sender=EMAIL_SENDER)
+  message.subject = subject
+  message.to = EMAIL_LOG
+  if text_body is not None:
+    message.body = text_body
+  if html_body is not None:
+    message.html = html_body
+  message.send()
 
 
 def GetUser(request, user=None):
