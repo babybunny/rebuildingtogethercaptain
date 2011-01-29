@@ -7,6 +7,7 @@ import django
 from django import shortcuts
 import models
 
+
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
 
@@ -25,6 +26,12 @@ def NotifyAdminViaMail(subject, text_body=None, html_body=None):
   if html_body is not None:
     message.html = html_body
   message.send()
+
+
+def GetBaseUri():
+    if os.environ.get('SERVER_SOFTWARE', '').startswith('Development'):
+      return 'http://localhost:%s/' % os.environ.get('SERVER_PORT')
+    return 'http://%s.appspot.com/' % os.environ.get('APPLICATION_ID')
 
 
 def GetUser(request, user=None):
