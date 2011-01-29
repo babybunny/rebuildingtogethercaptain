@@ -152,6 +152,34 @@
 	  </td>
 	  <td>
 	    {% include "orders_in_progress.html" %}
+	    {% if site.checkrequest_set %}
+	    <br>	    
+	    <span class="order_form_section_header">
+	      Check Requests
+	    </span>
+	    <table class="list tablesorter">
+	      <tr>
+		<th>Captain</th>
+		<th>Payable To</th>
+		<th>Amount</th>
+		<th>Status</th>
+	      </tr>
+	      {% for check_request in site.checkrequest_set %}
+	      <tr><td>
+		  {{ check_request.captain.name|escape }}
+		</td><td>
+		  {{ check_request.name|escape }}
+		</td><td>
+		  {{ check_request.amount|escape }}
+		</td><td>
+		  <a name="{{ check_request.key.id }}"
+		     href="{%url room.views.CheckRequestView check_request.key.id%}">
+		    view
+		  </a>
+	      </td></tr>
+	      {% endfor %}
+	    </table>
+	    {% endif %}
 	  </td>
 	</tr>
       </table>
