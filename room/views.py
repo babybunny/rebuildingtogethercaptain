@@ -695,9 +695,16 @@ def CheckRequestEdit(request, id):
   check_request.put()
   user = captain or staff
   if user: 
-    html = loader.render_to_string('checkrequest_list.html', 
-                                   {'check_request': check_request})
-    text = 'Check Request #%s was updated.' % check_request.key().id()  
+    base_uri = common.GetBaseUri()
+    html = loader.render_to_string('checkrequest_email.html', 
+                                   {'check_request': check_request,
+                                    'base_uri': base_uri})
+    view_url = base_uri + urlresolvers.reverse(CheckRequestView, 
+                                               args=(check_request.key().id(),))
+    text = 'Check Request #%s was updated.\n%s\n%s' % (
+      check_request.key().id(), 
+      str(check_request),
+      view_url)
     common.NotifyAdminViaMail('Check Request Updated', text, html)
   return http.HttpResponseRedirect(urlresolvers.reverse(
       SiteList, args=[check_request.site.key().id()]))
