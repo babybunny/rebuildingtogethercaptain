@@ -1,10 +1,12 @@
 """Methods common to all handlers."""
 
 import os
+import pprint
 from google.appengine.api import mail
 from google.appengine.api import users
 import django
 from django import shortcuts
+from django.template import loader
 import models
 
 
@@ -17,19 +19,29 @@ EMAIL_SENDER = 'rebuildingtogether.rooms@gmail.com'
 EMAIL_LOG = 'rebuildingtogethercaptain@googlegroups.com'
 
 
-def NotifyAdminViaMail(subject, text_body=None, html_body=None):
+def NotifyAdminViaMail(subject, template, template_dict):
+  base_uri = GetBaseUri()
+  td = template_dict.copy()
+  td['is_dev'] = IsDev()
+  td['base_uri'] = base_uri
+  html = loader.render_to_string(template, td)                                 
+  text = pprint.pformat(td)
   message = mail.EmailMessage(sender=EMAIL_SENDER)
   message.subject = subject
   message.to = EMAIL_LOG
-  if text_body is not None:
-    message.body = text_body
-  if html_body is not None:
-    message.html = html_body
+  if text is not None:
+    message.body = text
+  if html is not None:
+    message.html = html
   message.send()
 
 
+def IsDev():
+  return os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
+
+
 def GetBaseUri():
-    if os.environ.get('SERVER_SOFTWARE', '').startswith('Development'):
+    if IsDev():
       return 'http://localhost:%s/' % os.environ.get('SERVER_PORT')
     return 'http://%s.appspot.com/' % os.environ.get('APPLICATION_ID')
 
