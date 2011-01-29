@@ -1,0 +1,98 @@
+<h2>
+  Check Request # {{ check_request.key.id}} 
+  for Site {{ check_request.site.number }}
+</h2>
+<hr>
+<table cellpadding=5><tr>
+<tr>
+  <td>Click to Edit</td>
+  <td>
+    <a name="{{ check_request.key.id }}"
+       href="{%url room.views.CheckRequestEdit check_request.key.id%}">
+      {{check_request.key.id|escape}}
+    </a>
+  </td>
+</tr>
+<tr><td>Site</td>
+  <td>
+    <a href="{% url room.views.SiteList check_request.site.key.id %}">
+      {{ check_request.site.number|escape }}
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>
+    Captain
+  </td>
+  <td>
+    {{ check_request.captain.name|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Payable To
+  </td>
+  <td>
+    {{ check_request.name|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Amount
+  </td>
+  <td>
+    {{ check_request.amount|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Address
+  </td>
+  <td>
+    {{ check_request.address|escape }}
+  </td>
+</tr>
+
+<tr>
+  <td>
+    Category
+  </td>
+  <td>
+    {{ check_request.category|escape }}
+  </td>
+</tr>
+
+<tr>
+  <td>
+    Business
+  </td>
+  <td>
+    {{ check_request.form_of_business|escape }}
+  </td>
+</tr>
+
+<tr>
+  <td>
+    Description
+  </td>
+  <td>
+    {{ check_request.description|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Last Modified
+  </td>
+  <td>
+    {{ check_request.modified }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Modified By
+  </td>
+  <td>
+    {{ check_request.last_editor|escape }}
+  </td>
+</tr>
+</table>
