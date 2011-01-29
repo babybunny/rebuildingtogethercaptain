@@ -125,7 +125,7 @@ class NewSite(BaseModel):
     def CheckRequestTotal(self):
         """Only works if self has been saved."""    
         if self.checkrequest_set: 
-            return sum(cr.amount for cr in self.checkrequest_set)
+            return sum(cr.amount or 0 for cr in self.checkrequest_set)
         return 0
 
     def BudgetRemaining(self):

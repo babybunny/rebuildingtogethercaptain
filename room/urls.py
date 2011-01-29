@@ -50,6 +50,7 @@ urlpatterns = patterns('room.views',
     (r'^checkrequest/list/$', 'CheckRequestList'),
     (r'^checkrequest/new/(\d+)/$', 'CheckRequestNew'),
     (r'^checkrequest/edit/(\d+)/$', 'CheckRequestEdit'),
+    (r'^checkrequest/view/(\d+)/$', 'CheckRequestView'),
 )
 
 urlpatterns += patterns(
