@@ -178,10 +178,10 @@ def _OrderPut(request, user, order):
   _SortOrderItemsWithSections(order_items)  
   if order.state == 'new':
     what = 'Starting a new order.'
-    submit_button_text = "Submit this order"
+    submit_button_text = "Submit this order and proceed to delivery options"
   else:
     what = 'Changing an existing order.'
-    submit_button_text = 'Submit changes to this order'
+    submit_button_text = 'Submit changes and proceed to delivery options'
   form = models.OrderForm(
     data=request.POST or None, 
     files=request.FILES or None,
@@ -239,9 +239,53 @@ def _OrderPut(request, user, order):
   order.state = 'Received'
   order.put()
 
-  return http.HttpResponseRedirect('/room/site/list/%s/' 
-                                   % order.site.key().id()), None
+  return http.HttpResponseRedirect('/room/order/logistics/%s/' 
+                                   % order.key().id()), None
+
+
+def OrderLogistics(request, order_id):
+  logging.info('OrderLogistics(%s) POST(%s)', order_id, request.POST)
+  order = models.Order.get_by_id(int(order_id))
+  if order is None:
+    logging.warning('order is none')
+    return http.HttpResponseRedirect(urlresolvers.reverse(views.CaptainHome))
+  
+  od = None
+  if order.orderdelivery_set:
+    od = list(order.orderdelivery_set)[0]
+    delivery = od.delivery
+  else:
+    delivery = models.Delivery(site=order.site)
+
+  form = models.DeliveryForm(
+    data=request.POST or None, 
+    files=request.FILES or None,
+    instance=delivery)
+
+  template_dict = {'form': form,
+                   'delivery': delivery,
+                   'order': order}
+
+  if not request.POST:
+    return common.Respond(request, 'order_logistics', template_dict)
     
+  errors = form.errors
+  if not errors:
+    try:
+      delivery = form.save(commit=False)
+    except ValueError, err:
+      errors['__all__'] = unicode(err)
+  if errors:
+    template_dict['errors'] = errors
+    return common.Respond(request, 'order_logistics', template_dict)
+  
+  
+  delivery.put()
+  if od is None:
+    models.OrderDelivery(delivery=delivery, order=order).put()
+  return http.HttpResponseRedirect('/room/site/list/%s/' 
+                                   % order.site.key().id())
+
 
 def OrderEdit(request, order_id):
   """Create or edit a order.  GET shows a blank form, POST processes it."""
