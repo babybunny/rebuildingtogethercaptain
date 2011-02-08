@@ -238,7 +238,10 @@ class OrderSheet(BaseModel):
     code =  db.StringProperty()    
     code.unique = True
     instructions = db.TextProperty(default='')
+    # Choose one of the next three.
     delivery_options = db.StringProperty(choices=['Yes', 'No'], default='No')
+    pickup_options = db.StringProperty(choices=['Yes', 'No'], default='No')
+    retrieval_options = db.StringProperty(choices=['Yes', 'No'], default='No')
     durable = db.StringProperty(choices=['Yes', 'No'], default='No')
     durable.verbose_name = 'Returns'
     default_supplier = db.ReferenceProperty(Supplier)
@@ -325,21 +328,6 @@ class Order(BaseModel):
     sub_total = db.FloatProperty()
     sales_tax = db.FloatProperty()  # Deprecated
     grand_total = db.FloatProperty()  # Deprecated.  Use GrandTotal()
-    delivery_date = db.StringProperty()
-    delivery_date.verbose_name = 'Delivery Date (Mon-Fri only)'
-    delivery_contact = db.StringProperty()
-    delivery_contact.verbose_name = "Delivery Contact Person"
-    delivery_contact_phone = db.StringProperty()    
-    delivery_location = db.TextProperty()
-    delivery_location.verbose_name = (
-        'Instructions for delivery person')
-    pickup_on = db.StringProperty()
-    pickup_on.verbose_name = 'Pick-up date'
-    number_of_days = db.IntegerProperty(
-        choices=(1,2,3,4,5,6,7,8,9,10,14,30,45,60), 
-        default=1)
-    number_of_days.verbose_name = 'Number of days needed'
-    return_on = db.DateProperty()    
     notes = db.TextProperty()    
     state = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
@@ -434,6 +422,66 @@ class OrderItem(BaseModel):
             return '%.2f' % (self.quantity * self.item.unit_cost)
         else:
             return ''
+
+
+class Delivery(BaseModel):
+    """Delivery to a site (no retrieval)."""
+    site = db.ReferenceProperty(NewSite, required=True)
+    date = db.StringProperty()
+    date.verbose_name = 'Delivery Date (Mon-Fri only)'
+    contact = db.StringProperty()
+    contact.verbose_name = "Contact person (who will accept delivery)"
+    contact_phone = db.StringProperty()    
+    notes = db.TextProperty()
+    notes.verbose_name = (
+        'Instructions for delivery person')
+    
+
+class OrderDelivery(BaseModel):
+    """Maps Order to Delivery."""
+    order = db.ReferenceProperty(Order, required=True)
+    delivery = db.ReferenceProperty(Delivery, required=True)
+
+
+class Pickup(BaseModel):
+    """Pick up from RTP warehouse."""
+    site = db.ReferenceProperty(NewSite, required=True)
+    date = db.StringProperty()
+    date.verbose_name = 'Pickup Date (Mon-Fri only)'
+    contact = db.StringProperty()
+    contact.verbose_name = "Contact person (who will pick up)"
+    contact_phone = db.StringProperty()    
+    notes = db.TextProperty()
+    notes.verbose_name = (
+        'Instructions for warehouse staff')
+
+
+class OrderPickup(BaseModel):
+    """Maps Order to Pickup."""
+    order = db.ReferenceProperty(Order, required=True)
+    pickup = db.ReferenceProperty(Pickup, required=True)
+
+
+class Retrieval(BaseModel):
+    """Delivery and retrieval to and from a site."""
+    site = db.ReferenceProperty(NewSite, required=True)
+    date = db.StringProperty()
+    date.verbose_name = 'Delivery Date (Mon-Fri only)'
+    retrieval_date = db.StringProperty()
+    retrieval_date.verbose_name = 'Retrieval Date (Mon-Fri only)'
+    contact = db.StringProperty()
+    contact.verbose_name = "Contact person (who will accept delivery)"
+    contact_phone = db.StringProperty()    
+    notes = db.TextProperty()
+    notes.verbose_name = (
+        'Instructions for delivery person')
+
+
+class OrderRetrieval(BaseModel):
+    """Maps Order to Retrieval."""
+    order = db.ReferenceProperty(Order, required=True)
+    retrieval = db.ReferenceProperty(Retrieval, required=True)
+
 
 class InventoryItem(BaseModel):
     """The Items that are in the inventory."""

@@ -78,12 +78,11 @@ class SomeOrdersTest(unittest.TestCase):
         csv_lines = csv.splitlines()
         self.assertEquals(
             'Order ID,site.number,order_sheet.name,sub_total'
-            ',delivery_date,delivery_contact,delivery_contact_phone'
-            ',delivery_location,pickup_on,number_of_days,return_on,notes,state'
+            ',notes,state'
             ',created,created_by,modified,modified_by',
             csv_lines[0])
-        self.assertTrue(csv_lines[1].startswith('%d,1234,,,,,,,,1,,,,'
-                                                % self.order_id))
+        self.assertTrue(csv_lines[1].startswith('%d,1234,,,,,'
+                                                % self.order_id), csv_lines[1])
         self.assertEquals(
             ',No Items in this Order!!!',
             csv_lines[2])
