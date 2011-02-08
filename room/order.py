@@ -182,7 +182,6 @@ def _OrderPut(request, user, order):
   else:
     what = 'Changing an existing order.'
     submit_button_text = 'Submit changes to this order'
-  submit_button_fulfill_text = 'Submit and proceed to fulfillment (Staff only)'
   form = models.OrderForm(
     data=request.POST or None, 
     files=request.FILES or None,
@@ -205,7 +204,6 @@ def _OrderPut(request, user, order):
                    'sales_tax_pct': SALES_TAX_RATE * 100.,
                    'what_you_are_doing': what,
                    'submit_button_text': submit_button_text,
-                   'submit_button_fulfill_text': submit_button_fulfill_text,
                    }
 
   if not request.POST or request.POST['submit'] == views.START_NEW_ORDER_SUBMIT:
@@ -241,13 +239,8 @@ def _OrderPut(request, user, order):
   order.state = 'Received'
   order.put()
 
-  if request.POST['submit'] == submit_button_fulfill_text:
-    return http.HttpResponseRedirect(urlresolvers.reverse(OrderFulfill, 
-                                     args=[order.key().id(),
-                                           order.order_sheet.key().id()])), None
-  else:
-    return http.HttpResponseRedirect('/room/site/list/%s/' 
-                                     % order.site.key().id()), None
+  return http.HttpResponseRedirect('/room/site/list/%s/' 
+                                   % order.site.key().id()), None
     
 
 def OrderEdit(request, order_id):
