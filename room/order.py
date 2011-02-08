@@ -251,8 +251,9 @@ def OrderLogistics(request, order_id):
     return http.HttpResponseRedirect(urlresolvers.reverse(views.CaptainHome))
   
   od = None
-  if order.orderdelivery_set:
-    od = list(order.orderdelivery_set)[0]
+  ods = list(order.orderdelivery_set)
+  if ods:
+    od = ods[0]
     delivery = od.delivery
   else:
     delivery = models.Delivery(site=order.site)
