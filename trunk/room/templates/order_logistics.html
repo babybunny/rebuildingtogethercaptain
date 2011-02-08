@@ -20,7 +20,10 @@ $.datepicker.setDefaults({
  | List all Orders
 {% endblock %}
 {%block about_this_page %}
-<h2>Logistics for Order ID {{ order.key.id }} for Site {{ order.site.number }}</h2>
+<h2>Logistics: {{ order.order_sheet.name }} Order for Site {{ order.site.number }}
+</h2>
+<p>Please set up the logistics for your order here.  Includes delivery, pickup, or rental options as appropriate.
+</p>
 {%endblock%}
 {%block body%}
 
@@ -32,7 +35,9 @@ $.datepicker.setDefaults({
 <tr>
 <td></td>
 <td>
-<p>Existing delivery dates, if any: 
+{% for d in order.site.delivery_set %}
+{% if forloop.first %}
+Existing logistics dates: 
 <table class="hint">
 <thead>
 <tr>
@@ -42,7 +47,7 @@ $.datepicker.setDefaults({
 </tr>
 </thead>
 <tbody>
-{% for d in order.site.delivery_set %}
+{% endif %}
 <tr>
 <td>Delivery</td>
 <td>
@@ -52,15 +57,18 @@ $.datepicker.setDefaults({
 </td>
 <td>{{ d.date }}</td>
 </tr>
-{% endfor %}
+{% if forloop.last %}
 </tbody>
 </table>
+<br>
+{% endif %}
+{% endfor %}
 </td>
 </tr>
 
 {{form}}
 <tr><td></td>
-<td><input type="submit" value="Save changes to this order"></td></tr>
+<td><input type="submit" value="Complete this order"></td></tr>
 </table>
 </form>
 
