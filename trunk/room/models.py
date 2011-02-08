@@ -242,8 +242,6 @@ class OrderSheet(BaseModel):
     delivery_options = db.StringProperty(choices=['Yes', 'No'], default='No')
     pickup_options = db.StringProperty(choices=['Yes', 'No'], default='No')
     retrieval_options = db.StringProperty(choices=['Yes', 'No'], default='No')
-    durable = db.StringProperty(choices=['Yes', 'No'], default='No')
-    durable.verbose_name = 'Returns'
     default_supplier = db.ReferenceProperty(Supplier)
     default_supplier.verbose_name = (
         'Default Supplier, used if Item\'s supplier is not set.')
@@ -436,6 +434,12 @@ class Delivery(BaseModel):
     notes.verbose_name = (
         'Instructions for delivery person')
     
+
+class DeliveryForm(djangoforms.ModelForm):
+     class Meta:
+         model = Delivery
+         exclude = ['site']
+
 
 class OrderDelivery(BaseModel):
     """Maps Order to Delivery."""

@@ -46,6 +46,11 @@ table.layout th.layout {
   vertical-align: bottom;
   font-size: 200%;
 }
+table.hint {
+  padding: 5;
+  margin: 5;
+  border: 1px solid black;
+}
 table.list {
   padding: 0;
   margin: 0;

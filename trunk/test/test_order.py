@@ -147,7 +147,8 @@ class SomeOrdersTest(unittest.TestCase):
         request.FILES = {}
         r, d = order._OrderEditInternal(request, {}, self.order_id)
         self.assertTrue(isinstance(r, order.http.HttpResponseRedirect))
-        self.assertEquals('/room/site/list/%d/' % self.site_id, r['Location'])
+        self.assertEquals('/room/order/logistics/%d/' % self.order_id, 
+                          r['Location'])
         o = list(order.models.Order.all())
         self.assertEquals(1, len(o))
         saved_o = o[0]
