@@ -119,13 +119,6 @@ def _OrderExportInternal(writable, post_vars):
                      'site.number',
                      'order_sheet.name',
                      'sub_total',
-                     'delivery_date',
-                     'delivery_contact',
-                     'delivery_contact_phone',
-                     'delivery_location',
-                     'pickup_on',
-                     'number_of_days',
-                     'return_on',
                      'notes',
                      'state',
                      'created',
@@ -137,13 +130,6 @@ def _OrderExportInternal(writable, post_vars):
                      o.site.number,
                      o.order_sheet.name,
                      o.sub_total,
-                     o.delivery_date,
-                     o.delivery_contact,
-                     o.delivery_contact_phone,
-                     o.delivery_location,
-                     o.pickup_on,
-                     o.number_of_days,
-                     o.return_on,
                      o.notes,
                      o.state,
                      o.created,
@@ -187,7 +173,6 @@ def _SortOrderItemsWithSections(order_items):
     prev_section = new_section
 
 
-# TODO: is user param unused?
 def _OrderPut(request, user, order):
   order_items = list(models.OrderItem.all().filter('order = ', order))
   _SortOrderItemsWithSections(order_items)  
@@ -211,12 +196,6 @@ def _OrderPut(request, user, order):
                                    order.modified_by)[0],
   template_dict = {'form': form, 
                    'notes_field': form['notes'],
-                   'delivery_fields': (form['delivery_date'],
-                                       form['delivery_contact'],
-                                       form['delivery_contact_phone'],
-                                       form['delivery_location']),
-                   'durable_fields':  (form['pickup_on'],
-                                       form['number_of_days']),
                    'order': order, 
                    'order_items': order_items,
                    'created_by_user': common.GetUser(request, 
