@@ -135,22 +135,6 @@ class SomeOrdersTest(unittest.TestCase):
         saved_o = o[0]
         self.assertEquals(0., saved_o.GrandTotal())
 
-    def testOrderEditGoodOrderIdFulfill(self):
-        request = self.MockRequest()
-        request.POST = {
-            'submit': 'Submit and proceed to fulfillment (Staff only)',
-            }
-        request.FILES = {}
-        r, d = order._OrderEditInternal(request, {}, self.order_id)
-        self.assertTrue(isinstance(r, order.http.HttpResponseRedirect))
-        self.assertEquals('/room/order/fulfill/%d/%d/' % 
-                          (self.order_id, self.os_id),
-                          r['Location'])
-        o = list(order.models.Order.all())
-        self.assertEquals(1, len(o))
-        saved_o = o[0]
-        self.assertEquals(0., saved_o.GrandTotal())
-
     def testOrderEditGoodOrderIdOther(self):
         request = self.MockRequest()
         request.POST = {

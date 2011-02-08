@@ -56,10 +56,6 @@
 	      {% if form %}
 	      <input name="submit" type="submit" 
 		       value="{{ submit_button_text }}">
-	      {% if user.staff %}
-	      <input name="submit" type="submit" 
-		       value="{{ submit_button_fulfill_text }}">
-	      {% endif %}
 	      {% endif %}
 	    </td>
 	  </tr>
@@ -182,10 +178,6 @@
 	    <td colspan=5 class="form-summary">
 	      <input name="submit" type="submit" 
 		     value="{{ submit_button_text }}">
-	      {% if user.staff %}
-	      <input name="submit" type="submit" 
-		       value="{{ submit_button_fulfill_text }}">
-	      {% endif %}
 	    </td>
 	  </tr>
 	  {% else %}
