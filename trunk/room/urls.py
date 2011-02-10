@@ -1,8 +1,8 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('room.views',
-    (r'^/$', 'Welcome'),
-    (r'^$', 'Welcome'),
+    (r'^/$', 'GoHome'),
+    (r'^$', 'GoHome'),
     (r'^help', 'Help'),
 
     (r'^item$', 'ItemList'),

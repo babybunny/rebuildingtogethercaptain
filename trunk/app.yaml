@@ -15,6 +15,10 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
 
-- url: /.*
+- url: /room/.*
   script: main.py
   login: required
+
+- url: /.*
+  script: main.py
+
