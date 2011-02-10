@@ -70,22 +70,24 @@ def _TryToSaveForm(save_form):
   return not errors
 
 
-def Welcome(request):
-  params = {}
-  user, _, _  = common.GetUser(request)
-  params['user'] = user
-  if user.captain:
-    params['last_welcome'] = user.captain.last_welcome
-    user.captain.last_welcome = datetime.datetime.now()
-    user.captain.put()
-    params['captain'] = user.captain
-  if user.staff:
-    params['last_welcome'] = user.staff.last_welcome
-    user.staff.last_welcome = datetime.datetime.now()
-    user.staff.put()
-    params['staff'] = user.staff
-  return common.Respond(request, 'welcome', params)
+def FindHome(user, default='/'):
+  """Return path of user's home page, or a default page."""
+  if user and user.email():
+    staff = models.Staff.all().filter('email = ', user.email()).get()
+    if staff:
+      return urlresolvers.reverse(StaffHome)
     
+    captain = models.Captain.all().filter('email = ', user.email()).get()
+    if captain:
+      return urlresolvers.reverse(CaptainHome)
+
+  return default
+
+
+def GoHome(request):
+  user = users.GetCurrentUser()
+  return http.HttpResponseRedirect(FindHome(user))
+
 
 def Help(request):
   return common.Respond(request, 'help')  
