@@ -95,10 +95,8 @@ def Help(request):
   return common.Respond(request, 'help')  
 
 
-def StaffHome(request):
+def Scoreboard(request):
   welcomes = models.Captain.all().order('-last_welcome').fetch(10)
-  order_sheets = list(models.OrderSheet.all())
-  order_sheets.sort(key=lambda x: x.name)
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
     'last_welcome != ', None).count()
@@ -112,7 +110,6 @@ def StaffHome(request):
   num_orders = models.Order.all().count()
   total_ordered = sum(o.GrandTotal() for o in models.Order.all())
   d = {'last_welcomes': welcomes,
-       'order_sheets': order_sheets,
        'num_captains': num_captains,
        'num_captains_active': num_captains_active,
        'num_captains_with_tshirt': num_captains_with_tshirt,
@@ -121,6 +118,14 @@ def StaffHome(request):
        'total_site_budget': total_site_budget,
        'num_orders': num_orders,
        'total_ordered': total_ordered,
+       }
+  return common.Respond(request, 'scoreboard', d)
+
+
+def StaffHome(request):
+  order_sheets = list(models.OrderSheet.all())
+  order_sheets.sort(key=lambda x: x.name)
+  d = {'order_sheets': order_sheets,
        'test_site_number': TEST_SITE_NUMBER,
        }
   return common.Respond(request, 'staff_home', d)
