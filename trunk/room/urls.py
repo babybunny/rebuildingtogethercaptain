@@ -34,6 +34,7 @@ urlpatterns = patterns('room.views',
 
     (r'^captain_home$', 'CaptainHome'),
     (r'^staff_home$', 'StaffHome'),
+    (r'^scoreboard$', 'Scoreboard'),
 
     (r'^staff$', 'StaffList'),
     (r'^staff/list$', 'StaffList'),

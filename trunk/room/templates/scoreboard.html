@@ -1,0 +1,53 @@
+{%extends "base.html"%}
+{%block breadcrumb%}
+{%endblock%}
+{%block about_this_page %}
+<h1>Scoreboard</h1>
+{% endblock %}
+{%block body%}
+
+<table class="layout">
+  <tr>
+    <td class="layout">      
+      <p>
+	<span class=attr>
+	  Captains using system: <b>{{ num_captains_active }}</b>
+	  of {{ num_captains }} total, 
+	  <br>
+	  with 
+	  <b>{{ num_captains_with_tshirt }}</b> 
+	  updating their T-shirt size.
+	</span>
+      </p>
+      <p>
+	<span class=attr>
+	  Number of Sites in the system: <b>{{ num_sites }}</b> 
+	  <br>
+	  with total budget of <b>${{ total_site_budget }}</b>.
+	</span>
+      </p>
+      <p>
+	<span class=attr>
+	  Number of orders submitted to the system: 
+	  <b>{{ num_orders }}</b> 
+	  <br>
+	  across
+	  <b>{{ num_sites_with_orders }}</b> 
+	  sites
+	  <br>
+	  for goods and services totalling 
+	  <b>${{ total_ordered|floatformat:0 }}</b>.
+	</span>
+      </p>
+      <p>
+      <b>Recent Captain Logins</b>
+      <ul>
+	{% for welcomee in last_welcomes %}
+	<li>{{ welcomee.name }}, {{ welcomee.last_welcome|timesince }} ago</li>
+	{% endfor %}
+      </ul>
+      </p>
+    </td>
+  </tr>
+</table>
+{%endblock%}
