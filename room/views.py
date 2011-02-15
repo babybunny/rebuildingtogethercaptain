@@ -81,6 +81,8 @@ def FindHome(user, default='/'):
     if captain:
       return urlresolvers.reverse(CaptainHome)
 
+  logging.info('Can not find Captain or Staff for user: %s' % user)
+
   return default
 
 

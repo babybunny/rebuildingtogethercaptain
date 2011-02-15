@@ -47,8 +47,8 @@ table.layout th.layout {
   font-size: 200%;
 }
 table.hint {
-  padding: 5;
-  margin: 5;
+  padding: 5px;
+  margin: 5px;
   border: 1px solid black;
 }
 table.list {
@@ -143,8 +143,8 @@ table.order_form_header span {
 
 #login_div {
   float: right;
-  min-width: 300;
-  height: 250;
+  min-width: 300px;
+  height: 250px;
   border: 1px solid #666;
   padding: 15px;
   margin: 20px;  
