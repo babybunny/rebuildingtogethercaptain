@@ -29,10 +29,22 @@
       <a id="login_button" href="{% url room.views.GoHome %}">LOGIN TO ROOMS</a>
       <br>
       <br>
+      {% if user %}
+      <br>You're logged in as <b>{{ user.email }}</b> 
+      <br>but this email is not 
+      associated with a ROOMS account.
+      {% endif %}
       <br>
       Please contact RTP Staff if you are a Captain 
       <br>
       but you don't yet have an account.
+      {% if user %}
+      <br>
+      <a href="{{ logout_url }}">
+	Click here
+      </a>
+      to log in with a different account.
+      {% endif %}
     </div>
     <p class="announcement">
       This is the online order system for <a href="http://www.rebuildingtogetherpeninsula.org">Rebuilding Together Peninsula</a>.   It enables ordering materials and services from forms that are similar to some of the ones in the Captain's Binder.  ROOMS keeps Captains up to date with their order status and helps RTP Staff to expedite the order fulfillment process.  
