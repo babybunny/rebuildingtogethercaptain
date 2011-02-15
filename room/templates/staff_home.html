@@ -12,7 +12,7 @@ f.action = f.action + order_sheet.value;
 {%block about_this_page %}
 <h1>Hello RTP Staff!</h1>
 <p>
-  This is the Staff Page.  From here you can view or edit anything in the system.  
+  This is the Staff Page.  From here you can view or edit anything in the system.  Also, check out the <a href="{% url room.views.Scoreboard %}">Scoreboard</a>.
 </p>
 <p>
   To create or change orders: <a href="{% url room.views.SiteList %}">View the list of Sites</a>, and choose the site from there.
@@ -111,53 +111,6 @@ f.action = f.action + order_sheet.value;
 	<a href="{% url room.views.ItemNew %}">Add a new Item</a> 
       </p>
       <br/>
-      
-      <h2>Inventory</h2>
-      <p>
-	<a href="{% url room.views.Inventory %}"> View current inventory</a> 
-	<br>and update quantities.
-      </p>
-    </td>
-    <td class="layout">      
-      <h2>Scoreboard</h2>
-      <p>
-	<span class=attr>
-	  Captains using system: <b>{{ num_captains_active }}</b>
-	  of {{ num_captains }} total, 
-	  <br>
-	  with 
-	  <b>{{ num_captains_with_tshirt }}</b> 
-	  updating their T-shirt size.
-	</span>
-      </p>
-      <p>
-	<span class=attr>
-	  Number of Sites in the system: <b>{{ num_sites }}</b> 
-	  <br>
-	  with total budget of <b>${{ total_site_budget }}</b>.
-	</span>
-      </p>
-      <p>
-	<span class=attr>
-	  Number of orders submitted to the system: 
-	  <b>{{ num_orders }}</b> 
-	  <br>
-	  across
-	  <b>{{ num_sites_with_orders }}</b> 
-	  sites
-	  <br>
-	  for goods and services totalling 
-	  <b>${{ total_ordered|floatformat:0 }}</b>.
-	</span>
-      </p>
-      <p>
-      <b>Recent Captain Logins</b>
-      <ul>
-	{% for welcomee in last_welcomes %}
-	<li>{{ welcomee.name }}, {{ welcomee.last_welcome|timesince }} ago</li>
-	{% endfor %}
-      </ul>
-      </p>
     </td>
   </tr>
 </table>
