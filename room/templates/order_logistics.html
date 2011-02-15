@@ -68,7 +68,16 @@ Existing logistics dates:
 
 {{form}}
 <tr><td></td>
-<td><input type="submit" value="Complete this order"></td></tr>
+<td>
+  <input name="submit" type="submit" 
+	 value="Complete this order and return to site">
+  {% if user.staff %}
+  <br>
+  <input name="submit" type="submit" 
+	 value="{{ proceed_to_fulfill }}">
+  {% endif %}
+</td>
+</tr>
 </table>
 </form>
 
