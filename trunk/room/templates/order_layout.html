@@ -59,7 +59,7 @@
 	      {% endif %}
 	    </td>
 	  </tr>
-	  {% if order.order_sheet.instructions %}
+	  {% if order.order_sheet.instructions %}	  
 	  <tr>
 	    <td class="order_form_section_header">
 	      Instructions to Captains
@@ -71,6 +71,7 @@
 	    </td>
 	  </tr>
 	  {% endif %}
+	  {% if form or order.notes %} 
 	  <tr>
 	    <td class="order_form_section_header">
 	      Captains' Notes
@@ -85,6 +86,7 @@
 	      {% endif %}
 	    </td>
 	  </tr>
+	  {% endif %}
 	</table>
       </td>
     </tr>

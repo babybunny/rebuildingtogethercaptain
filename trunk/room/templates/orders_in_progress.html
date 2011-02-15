@@ -1,8 +1,8 @@
 <table id="orders_in_progress" class="list tablesorter">	      
   <thead>
   <tr>
-    <th>Type</th>
-    <th>Last change</th>
+    <th>Order</th>
+    <th>Logistics</th>
     <th>Status</th>
     <th>Total</th>
   </tr>
@@ -11,12 +11,20 @@
   {% for order in site.VisibleOrders %}
   <tr>
     <td>
-      {{ order.order_sheet.name }}
+      <b>{{ order.order_sheet.name }}</b>
+      <br>#{{ order.key.id }}
     </td>
     <td>
-      <span name="{{ order.modified }}"></span>
-      {{ order.modified|timesince }} ago
-      <br>by {{ order.modified_by }}
+      {% for od in order.orderdelivery_set %}
+      {{ od.delivery.delivery_date }} (Delivery)
+      {% endfor %}
+      {% for od in order.orderpickup_set %}
+      {{ od.pickup.pickup_date }} (Pickup)
+      {% endfor %}
+      {% for od in order.orderretrieval_set %}
+      {{ od.retrieval.dropoff_date }} (Drop-off)
+      {{ od.retrieval.retrieval_date }} (Retrieval)
+      {% endfor %}
     </td>
     <td>
       {{ order.state }}
@@ -45,7 +53,7 @@
   {% endfor %}
   <tr>
     <td>Standard Kits</td>
-    <td>by RTP staff</td>
+    <td>???</td>
     <td>Being Filled</td>
     <td>${{ site.StandardKitCost|floatformat:2 }}</td>
   </tr>

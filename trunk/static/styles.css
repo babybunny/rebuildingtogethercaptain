@@ -51,6 +51,10 @@ table.hint {
   margin: 5px;
   border: 1px solid black;
 }
+table.hint td {
+  text-align: right;
+  padding-left: 25px;
+}
 table.list {
   padding: 0;
   margin: 0;
