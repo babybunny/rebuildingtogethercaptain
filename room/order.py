@@ -263,9 +263,11 @@ def OrderLogistics(request, order_id):
     files=request.FILES or None,
     instance=delivery)
 
+  proceed_to_fulfill = "Complete this order and proceed to fulfill"
   template_dict = {'form': form,
                    'delivery': delivery,
-                   'order': order}
+                   'order': order,
+                   'proceed_to_fulfill': proceed_to_fulfill}
 
   if not request.POST:
     return common.Respond(request, 'order_logistics', template_dict)
@@ -284,8 +286,13 @@ def OrderLogistics(request, order_id):
   delivery.put()
   if od is None:
     models.OrderDelivery(delivery=delivery, order=order).put()
-  return http.HttpResponseRedirect('/room/site/list/%s/' 
-                                   % order.site.key().id())
+  
+  if request.POST.get('submit') == proceed_to_fulfill:
+    return http.HttpResponseRedirect(urlresolvers.reverse(
+        OrderFulfill, args=[str(order.key().id())]))
+  
+  return http.HttpResponseRedirect(urlresolvers.reverse(
+      views.SiteList, args=[str(order.site.key().id())]))
 
 
 def OrderEdit(request, order_id):
