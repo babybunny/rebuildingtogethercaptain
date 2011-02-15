@@ -237,14 +237,26 @@ class OrderSheet(BaseModel):
     name.unique = True
     code =  db.StringProperty()    
     code.unique = True
+    code.verbose_name = 'Three-letter code like LUM for Lumber'
     instructions = db.TextProperty(default='')
-    # Choose one of the next three.
-    delivery_options = db.StringProperty(choices=['Yes', 'No'], default='No')
-    pickup_options = db.StringProperty(choices=['Yes', 'No'], default='No')
-    retrieval_options = db.StringProperty(choices=['Yes', 'No'], default='No')
+    instructions.verbose_name = (
+        'Instructions to Captain, appears on order form')
+    logistics_instructions = db.TextProperty(default='')
+    logistics_instructions.verbose_name = (
+        'Instructions to Captain, appears on logistics form')
     default_supplier = db.ReferenceProperty(Supplier)
     default_supplier.verbose_name = (
         'Default Supplier, used if Item\'s supplier is not set.')
+    # Choose one of the next three.
+    delivery_options = db.StringProperty(choices=['Yes', 'No'], default='No')
+    delivery_options.verbose_name = ('Allow Captain to select Delivery to site')
+    pickup_options = db.StringProperty(choices=['Yes', 'No'], default='No')
+    pickup_options.verbose_name = (
+        'Allow Captain to select Pick-up from RTP warehouse')
+    retrieval_options = db.StringProperty(choices=['Yes', 'No'], default='No')
+    retrieval_options.verbose_name = ('Drop-off and retrieval (like debris box)'
+                                      '  Note: do not set this with either'
+                                      ' delivery or pick-up')
 
     def __unicode__(self):
       return '%s' % (self.name)
@@ -425,8 +437,8 @@ class OrderItem(BaseModel):
 class Delivery(BaseModel):
     """Delivery to a site (no retrieval)."""
     site = db.ReferenceProperty(NewSite, required=True)
-    date = db.StringProperty()
-    date.verbose_name = 'Delivery Date (Mon-Fri only)'
+    delivery_date = db.StringProperty()
+    delivery_date.verbose_name = 'Delivery Date (Mon-Fri only)'
     contact = db.StringProperty()
     contact.verbose_name = "Contact person (who will accept delivery)"
     contact_phone = db.StringProperty()    
@@ -450,14 +462,22 @@ class OrderDelivery(BaseModel):
 class Pickup(BaseModel):
     """Pick up from RTP warehouse."""
     site = db.ReferenceProperty(NewSite, required=True)
-    date = db.StringProperty()
-    date.verbose_name = 'Pickup Date (Mon-Fri only)'
+    pickup_date = db.StringProperty()
+    pickup_date.verbose_name = 'Pickup Date (Mon-Fri only)'
+    return_date = db.StringProperty()
+    return_date.verbose_name = '(Optional) Return date for durable equipment'
     contact = db.StringProperty()
     contact.verbose_name = "Contact person (who will pick up)"
     contact_phone = db.StringProperty()    
     notes = db.TextProperty()
     notes.verbose_name = (
         'Instructions for warehouse staff')
+
+
+class PickupForm(djangoforms.ModelForm):
+     class Meta:
+         model = Pickup
+         exclude = ['site']
 
 
 class OrderPickup(BaseModel):
@@ -469,8 +489,8 @@ class OrderPickup(BaseModel):
 class Retrieval(BaseModel):
     """Delivery and retrieval to and from a site."""
     site = db.ReferenceProperty(NewSite, required=True)
-    date = db.StringProperty()
-    date.verbose_name = 'Delivery Date (Mon-Fri only)'
+    dropoff_date = db.StringProperty()
+    dropoff_date.verbose_name = 'Delivery Date (Mon-Fri only)'
     retrieval_date = db.StringProperty()
     retrieval_date.verbose_name = 'Retrieval Date (Mon-Fri only)'
     contact = db.StringProperty()
@@ -479,6 +499,12 @@ class Retrieval(BaseModel):
     notes = db.TextProperty()
     notes.verbose_name = (
         'Instructions for delivery person')
+
+
+class RetrievalForm(djangoforms.ModelForm):
+     class Meta:
+         model = Retrieval
+         exclude = ['site']
 
 
 class OrderRetrieval(BaseModel):

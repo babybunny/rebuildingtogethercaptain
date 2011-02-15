@@ -1,19 +1,25 @@
 {%extends "base.html"%}
 {% block script %}
-<link type="text/css" href="/static/south-street/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />
-    <script  type="text/javascript" src="/static/room.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/le-frog/jquery-ui.css" rel="Stylesheet" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
 <script type="text/javascript">
 $(function() {
-  $("#id_pickup_on").datepicker();
-  $("#id_date").datepicker();
+  $("#id_delivery_date").datepicker();
+  $("#id_pickup_date").datepicker();
+  $("#id_return_date").datepicker();
+  $("#id_dropoff_date").datepicker();
+  $("#id_retrieval_date").datepicker();
 });
 $.datepicker.setDefaults({
    showOn: 'both',
    buttonImageOnly: true,
    buttonImage: '/static/calendar.gif',
    buttonText: 'Calendar' });
+
+$(function() {
+$( "#tabs" ).tabs();
+});
 </script>
 {%endblock%}
 {% block breadcrumb %}
@@ -24,62 +30,143 @@ $.datepicker.setDefaults({
 </h2>
 <p>Please set up the logistics for your order here.  Includes delivery, pickup, or rental options as appropriate.
 </p>
-{%endblock%}
-{%block body%}
 
-<hr>
-<p>
-<form action="{% url room.order.OrderLogistics order.key.id %}" method="post">
-
+{% if existing_dates %}
 <table>
 <tr>
-<td></td>
 <td>
-{% for d in order.site.delivery_set %}
-{% if forloop.first %}
 Existing logistics dates: 
+<br>
+(for your reference)
+</td><td>
 <table class="hint">
 <thead>
 <tr>
-<th>Type</th>
-<th>Name</th>
 <th>Date</th>
+<th>Type</th>
+<th>Order</th>
 </tr>
 </thead>
 <tbody>
-{% endif %}
+{% for ed in existing_dates %}
 <tr>
-<td>Delivery</td>
-<td>
-  {% for od in d.orderdelivery_set %}
-  {{ od.order.order_sheet.name }}
-  {% endfor %}
+<td>{{ ed.0 }}</td>
+<td>{{ ed.1 }}</td>
+<td>{{ ed.2 }} (#{{ ed.3 }})
 </td>
-<td>{{ d.date }}</td>
 </tr>
-{% if forloop.last %}
+{% endfor %}
 </tbody>
 </table>
-<br>
-{% endif %}
-{% endfor %}
-</td>
-</tr>
-
-{{form}}
-<tr><td></td>
-<td>
-  <input name="submit" type="submit" 
-	 value="Complete this order and return to site">
-  {% if user.staff %}
-  <br>
-  <input name="submit" type="submit" 
-	 value="{{ proceed_to_fulfill }}">
-  {% endif %}
-</td>
-</tr>
+</td></tr>
 </table>
-</form>
+{% endif %}
+{%endblock%}
+{%block body%}
+
+{% if order.order_sheet.logistics_instructions %}
+<p>{{ order.order_sheet.logistics_instructions }}
+</p>
+{% endif %}
+
+<div id="tabs">
+  <ul>
+    {% ifequal order.order_sheet.delivery_options "Yes" %}
+    <li><a href="#tabs-1">Delivery</a></li>
+    {% endifequal %}
+    {% ifequal order.order_sheet.pickup_options "Yes" %}
+    <li><a href="#tabs-2">Pick-up at RTP</a></li>
+    {% endifequal %}
+    {% ifequal order.order_sheet.retrieval_options "Yes" %}
+    <li><a href="#tabs-3">Drop-off / Retrieval</a></li>
+    {% endifequal %}
+    </ul>
+  {% ifequal order.order_sheet.delivery_options "Yes" %}
+  <div id="tabs-1">
+    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+	  method="post">
+    <table>
+      {{ forms.delivery }}
+      <tr>
+	<td>
+	  {% if current.pickup %}
+	  Submitting these delivery options will override your previous 
+	  pickup choice.
+	  {% endif %}
+	</td>
+	<td>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.delivery }} and complete order">
+	  {% if user.staff %}
+	  <br>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.delivery }} and proceed directly to fulfill (STAFF ONLY)">
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+  {% endifequal %}
+  {% ifequal order.order_sheet.pickup_options "Yes" %}
+  <div id="tabs-2">
+    Items will be picked up at RTP warehouse by someone on your team.
+    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+	  method="post">
+    <table>
+      {{ forms.pickup }}
+      <tr>
+	<td>
+	  {% if current.delivery %}
+	  Submitting these pickup options will override your previous 
+	  delivery choice.
+	  {% endif %}
+	</td>
+	<td>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.pickup }} and complete order">
+	  {% if user.staff %}
+	  <br>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.pickup }} and proceed directly to fulfill (STAFF ONLY)">
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+  {% endifequal %}
+  {% ifequal order.order_sheet.retrieval_options "Yes" %}
+  <div id="tabs-3">
+    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+	  method="post">
+    <table>
+      {{ forms.retrieval }}
+      <tr>
+	<td>
+	  {% if current.pickup or current.delivery %}
+	  Submitting these delivery options will override your previous 
+	  delivery or pickup choice.  You should never see this.
+	  {% endif %}
+	</td>
+	<td>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.retrieval }} and complete order">
+	  {% if user.staff %}
+	  <br>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.retrieval }} and proceed directly to fulfill (STAFF ONLY)">
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+  {% endifequal %}
+</div>
+
+<hr>
+<p>
 
 
 {%endblock%}

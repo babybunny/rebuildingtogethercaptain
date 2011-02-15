@@ -258,36 +258,137 @@ def OrderLogistics(request, order_id):
   else:
     delivery = models.Delivery(site=order.site)
 
-  form = models.DeliveryForm(
+  op = None
+  ops = list(order.orderpickup_set)
+  if ops:
+    op = ops[0]
+    pickup = op.pickup
+  else:
+    pickup = models.Pickup(site=order.site)
+
+  ot = None
+  ots = list(order.orderretrieval_set)
+  if ots:
+    ot = ots[0]
+    retrieval = ot.retrieval
+  else:
+    retrieval = models.Retrieval(site=order.site)
+
+  current = {'delivery': od,
+             'pickup': op,
+             'retrieval': ot,
+             }
+
+  forms = {}
+  forms['delivery'] = models.DeliveryForm(
     data=request.POST or None, 
     files=request.FILES or None,
     instance=delivery)
+  forms['pickup'] = models.PickupForm(
+    data=request.POST or None, 
+    files=request.FILES or None,
+    instance=pickup)
+  forms['retrieval'] = models.RetrievalForm(
+    data=request.POST or None, 
+    files=request.FILES or None,
+    instance=retrieval)
 
-  proceed_to_fulfill = "Complete this order and proceed to fulfill"
-  template_dict = {'form': form,
-                   'delivery': delivery,
+  existing_dates = []
+  for d in order.site.delivery_set:
+    for o in d.orderdelivery_set:
+      existing_dates.append(
+        (d.delivery_date, 'Delivery', o.order.order_sheet.name, 
+         o.order.key().id()))
+  for d in order.site.pickup_set:
+    for o in d.orderpickup_set:
+      existing_dates.append(
+        (d.pickup_date, 'Pick-up', o.order.order_sheet.name, 
+         o.order.key().id()))
+  for d in order.site.retrieval_set:
+    for o in d.orderretrieval_set:
+      existing_dates.append(
+        (d.dropoff_date, 'Drop-off', o.order.order_sheet.name, 
+         o.order.key().id()))
+      existing_dates.append(
+        (d.retrieval_date, 'Retrieval', o.order.order_sheet.name, 
+         o.order.key().id()))
+
+  existing_dates.sort()
+
+  proceed_to_fulfill = "STAFF ONLY: proceed directly to fulfill"
+  complete = {}
+  complete['delivery'] = 'Choose these delivery options'
+  complete['pickup'] = 'Choose these pick-up options'
+  complete['retrieval'] = 'Choose these drop-off/retrieval options'
+  template_dict = {'forms': forms,
                    'order': order,
+                   'complete': complete,
+                   'existing_dates': existing_dates,
+                   'current': current,
                    'proceed_to_fulfill': proceed_to_fulfill}
 
   if not request.POST:
-    return common.Respond(request, 'order_logistics', template_dict)
-    
-  errors = form.errors
-  if not errors:
-    try:
-      delivery = form.save(commit=False)
-    except ValueError, err:
-      errors['__all__'] = unicode(err)
-  if errors:
-    template_dict['errors'] = errors
-    return common.Respond(request, 'order_logistics', template_dict)
+    return common.Respond(request, 'order_logistics', template_dict)  
+
+  if request.POST.get('submit', '').startswith(complete['delivery']):
+    errors = forms['delivery'].errors
+    if not errors:
+      try:
+        delivery = forms['delivery'].save(commit=False)
+      except ValueError, err:
+        errors['__all__'] = unicode(err)
+    if errors:
+      template_dict['errors'] = errors
+      return common.Respond(request, 'order_logistics', template_dict)
   
+    delivery.put()
+    if od is None:
+      models.OrderDelivery(delivery=delivery, order=order).put()
+    if op is not None:
+      logging.info('deleting OrderPickup for order %s', order.key().id())
+      op.delete()
+
+  if request.POST.get('submit', '').startswith(complete['pickup']):
+    errors = forms['pickup'].errors
+    if not errors:
+      try:
+        pickup = forms['pickup'].save(commit=False)
+      except ValueError, err:
+        errors['__all__'] = unicode(err)
+    if errors:
+      template_dict['errors'] = errors
+      return common.Respond(request, 'order_logistics', template_dict)
   
-  delivery.put()
-  if od is None:
-    models.OrderDelivery(delivery=delivery, order=order).put()
+    pickup.put()
+    if op is None:
+      models.OrderPickup(pickup=pickup, order=order).put()
+    if od is not None:
+      logging.info('deleting OrderDelivery for order %s', order.key().id())
+      od.delete()
+
+  if request.POST.get('submit', '').startswith(complete['retrieval']):
+    errors = forms['retrieval'].errors
+    if not errors:
+      try:
+        retrieval = forms['retrieval'].save(commit=False)
+      except ValueError, err:
+        errors['__all__'] = unicode(err)
+    if errors:
+      template_dict['errors'] = errors
+      return common.Respond(request, 'order_logistics', template_dict)
   
-  if request.POST.get('submit') == proceed_to_fulfill:
+    retrieval.put()
+    if od is None:
+      models.OrderRetrieval(retrieval=retrieval, order=order).put()
+    # These cases should never happen.
+    if od is not None:
+      logging.info('deleting OrderDelivery for order %s', order.key().id())
+      od.delete()
+    if op is not None:
+      logging.info('deleting OrderPickup for order %s', order.key().id())
+      op.delete()
+
+  if request.POST.get('submit', '').endswith('(STAFF ONLY)'):
     return http.HttpResponseRedirect(urlresolvers.reverse(
         OrderFulfill, args=[str(order.key().id())]))
   
