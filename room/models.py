@@ -261,6 +261,10 @@ class OrderSheet(BaseModel):
     def __unicode__(self):
       return '%s' % (self.name)
 
+    def HasLogistics(self):
+        return (self.delivery_options == 'Yes' or 
+                self.pickup_options == 'Yes' or 
+                self.retrieval_options == 'Yes')
 
 class OrderSheetForm(djangoforms.ModelForm):
      class Meta:
