@@ -178,10 +178,13 @@ def _OrderPut(request, user, order):
   _SortOrderItemsWithSections(order_items)  
   if order.state == 'new':
     what = 'Starting a new order.'
-    submit_button_text = "Submit this order and proceed to delivery options"
+    submit_button_text = 'Submit this order'
   else:
     what = 'Changing an existing order.'
-    submit_button_text = 'Submit changes and proceed to delivery options'
+    submit_button_text = 'Submit changes'
+  if order.order_sheet.HasLogistics():
+    submit_button_text += ' and proceed to delivery options'
+    
   form = models.OrderForm(
     data=request.POST or None, 
     files=request.FILES or None,
@@ -239,8 +242,12 @@ def _OrderPut(request, user, order):
   order.state = 'Received'
   order.put()
 
-  return http.HttpResponseRedirect('/room/order/logistics/%s/' 
-                                   % order.key().id()), None
+  if order.order_sheet.HasLogistics():
+    return http.HttpResponseRedirect(
+      urlresolvers.reverse(OrderLogistics, args=[str(order.key().id())])), None
+  else:
+    return http.HttpResponseRedirect(urlresolvers.reverse(
+        views.SiteList, args=[str(order.site.key().id())])), None
 
 
 def OrderLogistics(request, order_id):
