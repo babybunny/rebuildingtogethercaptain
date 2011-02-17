@@ -3,9 +3,6 @@ version: 1
 runtime: python
 api_version: 1
 
-builtins:
-- datastore_admin
-
 handlers:
 - url: /static
   static_dir: static
@@ -24,4 +21,7 @@ handlers:
 
 - url: /.*
   script: main.py
+
+builtins:
+- datastore_admin: on
 
