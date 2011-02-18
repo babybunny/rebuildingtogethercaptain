@@ -96,6 +96,8 @@ class NewSite(BaseModel):
     number.unique = True
     name = db.StringProperty()  # "Belle Haven"
     name.verbose_name = 'Recipient Name'
+    # sites entered in 2010 do not have this field set explicitly
+    year = db.IntegerProperty(default=2010)  
     applicant = db.StringProperty()
     applicant.verbose_name = 'Applicant Contact'
     street_number = db.StringProperty()  # Street number like 960, see street below.
