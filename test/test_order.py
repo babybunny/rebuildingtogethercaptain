@@ -15,6 +15,7 @@ class SomeOrdersTest(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.os = models.OrderSheet()
+        self.os.delivery_options = 'Yes'
         self.os.put()
         self.os_id = self.os.key().id()
         self.s = models.Supplier(email='bob@supplier.com')
