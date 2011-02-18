@@ -206,17 +206,6 @@ def OrderSheetNew(request):
   return OrderSheetEdit(request, None)
 
 
-def OrderSheetItemDelete(request, code):
-  """Delete Items that appear on the OrderSheet designated by code."""
-  ors = models.OrderSheet.all().filter('code = ', code).get()
-  ois = models.Item.all().filter('appears_on_order_form = ', ors).fetch(1000)
-  deleted = 0
-  for oi in ois:    
-    oi.delete()
-    deleted += 1
-  return StaffHome(request)
-
-
 def AnnotateSitesWithEditability(entries, captain, staff):
   for site in entries:
     if staff or (captain and site.sitecaptain_set 
