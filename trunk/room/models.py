@@ -337,13 +337,6 @@ class ItemForm(djangoforms.ModelForm):
         exclude = ['last_editor', 'created', 'modified', 'thumbnail']
 
 
-class OrderSheetItem(BaseModel):
-    """Items in a OrderSheet."""
-    order_sheet = db.ReferenceProperty(OrderSheet)
-    item = db.ReferenceProperty(Item)
-    quantity = db.IntegerProperty()
-
-
 class Order(BaseModel):
     """A Captain can make an Order for a list of Items."""
     site = db.ReferenceProperty(NewSite, required=True)
