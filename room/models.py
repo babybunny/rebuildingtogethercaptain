@@ -16,7 +16,7 @@ from google.appengine.ext.db import djangoforms
 
 SALES_TAX_RATE = 0.0925
 STANDARD_KIT_COST = 250.
-NRD = '04/24/2010'
+NRD = '04/24/2011'
 
 
 def DateField(label):
@@ -95,7 +95,7 @@ class NewSite(BaseModel):
     name = db.StringProperty()  # "Belle Haven"
     name.verbose_name = 'Recipient Name'
     # sites entered in 2010 do not have this field set explicitly
-    year = db.IntegerProperty(default=2010)  
+    year = db.IntegerProperty(default=2011)  
     applicant = db.StringProperty()
     applicant.verbose_name = 'Applicant Contact'
     applicant_home_phone = db.StringProperty()
