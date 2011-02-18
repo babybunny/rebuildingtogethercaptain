@@ -16,7 +16,6 @@ urlpatterns = patterns('room.views',
     (r'^order_sheet/list$', 'OrderSheetList'),
     (r'^order_sheet/new$', 'OrderSheetNew'),
     (r'^order_sheet/edit/(\d+)/$', 'OrderSheetEdit'),
-    (r'^order_sheet/itemdelete/(\w+)/$', 'OrderSheetItemDelete'),
 
     (r'^site$', 'SiteList'),
     (r'^site/jump$', 'SiteJump'),

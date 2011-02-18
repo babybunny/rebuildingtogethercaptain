@@ -122,16 +122,6 @@ class Test(unittest.TestCase):
     def testItemForm(self):
         self.assertTrue(models.ItemForm())
 
-    def testOrderSheetItem(self):
-        item = models.Item(name='10 foo', order_form_section='20 top').put()
-        os = models.OrderSheet().put()
-        try:
-            osi = models.OrderSheetItem(order_sheet=os, item=item)
-            osi.put()
-            self.assertTrue(osi)
-        finally:
-            osi.delete()
-
     def testOrder(self):
         self.assertTrue(self.order)
         self.assertFalse(self.order.CanMakeChanges())
