@@ -37,8 +37,6 @@ class Captain(BaseModel):
     # I was getting errors about users that didn't exist when loading sample 
     # data.
     email = db.EmailProperty()  # "joe@user.com"
-    email.unique = True
-    email.required = True
     phone1 = db.PhoneNumberProperty()  # In UI as "preferred phone"
     phone1.verbose_name = 'Preferred Phone'
     phone2 = db.PhoneNumberProperty()  # "backup phone"
@@ -100,6 +98,15 @@ class NewSite(BaseModel):
     year = db.IntegerProperty(default=2010)  
     applicant = db.StringProperty()
     applicant.verbose_name = 'Applicant Contact'
+    applicant_home_phone = db.StringProperty()
+    applicant_work_phone = db.StringProperty()
+    applicant_mobile_phone = db.StringProperty()
+    rating = db.StringProperty()
+    roof = db.StringProperty()
+    rrp_test = db.StringProperty()
+    rrp_level = db.StringProperty()
+    jurisdiction = db.StringProperty()
+    sponsor = db.StringProperty()
     street_number = db.StringProperty()  # Street number like 960, see street below.
     street = db.StringProperty()  # Not full street address, for privacy.
     city_state_zip = db.StringProperty()  # like Menlo Park CA 94025
