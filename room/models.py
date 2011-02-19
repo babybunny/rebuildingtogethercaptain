@@ -119,7 +119,7 @@ class NewSite(BaseModel):
         return 'Site #%s | %s' % (self.key().id(), self.name)
 
     def StreetAddress(self):
-        return '%s %s, %s' % (self.street_number, self.street, self.city_state_zip)
+        return '%s, %s' % (self.street_number, self.city_state_zip)
 
     def StandardKitCost(self):
         return STANDARD_KIT_COST * self.number_of_standard_kits

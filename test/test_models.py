@@ -59,7 +59,8 @@ class Test(unittest.TestCase):
 
     def testNewSite(self):
         site = models.NewSite(number='1234', name='Belle Haven',
-                              street='Main Street', street_number='100',
+                              street='Main Street', 
+                              street_number='100 Main Street',
                               city_state_zip='Menlo Park CA 94025', budget=1000)
         self.assertTrue(site)
         self.assertTrue(site.put())
