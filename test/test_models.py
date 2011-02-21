@@ -42,17 +42,8 @@ class Test(unittest.TestCase):
     def testModels(self):
         self.assertTrue(models)
 
-    def testDateField(self):
-        self.assertTrue(models.DateField('label'))
-        
     def testCaptain(self):
         self.assertTrue(models.Captain(email='luke'))
-
-    def testCaptainForm(self):
-        self.assertTrue(models.CaptainForm())
-
-    def testCaptainContactForm(self):
-        self.assertTrue(models.CaptainContactForm())
 
     def testSite(self):
         self.assertTrue(models.Site(number='1234'))
@@ -80,48 +71,24 @@ class Test(unittest.TestCase):
             site.delete()
             cr.delete()
 
-    def testSiteForm(self):
-        self.assertTrue(models.SiteForm())
-
-    def testNewSiteForm(self):
-        self.assertTrue(models.NewSiteForm())
-
-    def testCaptainSiteForm(self):
-        self.assertTrue(models.CaptainSiteForm())
-
     def testSiteCaptain(self):
         self.assertTrue(models.SiteCaptain(site=self.site, 
                                            captain=self.captain))
 
-    def testSiteCaptainSiteForm(self):
-        self.assertTrue(models.SiteCaptainSiteForm())
-
     def testStaff(self):
         self.assertTrue(models.Staff(email='foo'))
-
-    def testStaffForm(self):
-        self.assertTrue(models.StaffForm())
 
     def testSupplier(self):
         self.assertTrue(models.Supplier(email='foo'))
 
-    def testSupplierForm(self):
-        self.assertTrue(models.SupplierForm())
-
     def testOrderSheet(self):
         self.assertTrue(models.OrderSheet())
-
-    def testOrderSheetForm(self):
-        self.assertTrue(models.OrderSheetForm())
 
     def testItem(self):
         item = models.Item(name='10 foo', order_form_section='20 top')
         self.assertTrue(item)
         self.assertEquals('foo', item.VisibleName())
         self.assertEquals('top', item.VisibleOrderFormSection())
-
-    def testItemForm(self):
-        self.assertTrue(models.ItemForm())
 
     def testOrder(self):
         self.assertTrue(self.order)
@@ -133,15 +100,6 @@ class Test(unittest.TestCase):
         self.assertEquals(None, self.order.sub_total)  
         self.order.UpdateSubTotal()
         self.assertEquals(4.8, self.order.sub_total)
-
-    def testOrderForm(self):
-        self.assertTrue(models.OrderForm())
-
-    def testNewOrderForm(self):
-        self.assertTrue(models.NewOrderForm())
-
-    def testCaptainOrderForm(self):
-        self.assertTrue(models.CaptainOrderForm())
 
     def testOrderItem(self):
         self.assertTrue(self.oi)
@@ -156,9 +114,6 @@ class Test(unittest.TestCase):
         finally:
             ii.delete()
 
-    def testInventoryItemForm(self):
-        self.assertTrue(models.InventoryItemForm())
-
     def testCheckRequest(self):
         cr = models.CheckRequest()
         try:
@@ -166,9 +121,6 @@ class Test(unittest.TestCase):
             self.assertTrue(cr)
         finally:
             cr.delete()
-
-    def testCheckRequestForm(self):
-        self.assertTrue(models.CheckRequestForm())
 
 
 if __name__ == "__main__":

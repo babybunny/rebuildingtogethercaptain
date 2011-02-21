@@ -9,6 +9,7 @@ from django import shortcuts
 from django.template import loader
 import models
 
+NRD = '04/24/2011'
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
