@@ -2,33 +2,16 @@
 
 """Models defining all objects in the database."""
 
-# TODO: factor out a common Person class from Captain, Staff, Supplier, and 
-# their ModelForms.
+# TODO: factor out a common Person class from Captain, Staff, Supplier
 
 import datetime
 import logging
 from appengine_django.models import BaseModel
-# This don't work in appengine, we use djangoforms instead.
-# from django.forms import ModelForm
-from django import forms  # DateField, DateTimeInput
 from google.appengine.ext import db
-from google.appengine.ext.db import djangoforms
 
 SALES_TAX_RATE = 0.0925
 STANDARD_KIT_COST = 250.
-NRD = '04/24/2011'
 
-
-def DateField(label):
-    """Helper to produce data fields for forms."""
-    return forms.DateField(
-        label=label, required=False,  
-        help_text='mm/dd/yyyy',
-        widget=forms.DateTimeInput(attrs={'class':'input',
-                                          'size':'10'
-                                          },
-                                   format='%m/%d/%Y'
-                                   ))
 
 class Captain(BaseModel):
     """A work captain."""    
@@ -56,16 +39,6 @@ class Captain(BaseModel):
     def __unicode__(self):
         return self.name
 
-
-class CaptainForm(djangoforms.ModelForm):
-    class Meta:
-        model = Captain
-        exclude = ['modified', 'modified_by', 'last_welcome']
-
-class CaptainContactForm(djangoforms.ModelForm):
-    class Meta:
-         model = Captain
-         exclude = ['name', 'email', 'modified', 'modified_by', 'last_welcome']
 
 class Site(BaseModel):
     """A work site."""
@@ -146,30 +119,6 @@ class NewSite(BaseModel):
             if order.state != 'new':
                 yield order
 
-class SiteForm(djangoforms.ModelForm):
-    work_start = DateField('Work Start Date')
-    work_end = DateField('Work End Date')
-    number = forms.CharField(
-        max_length=100,
-        help_text = '"10001DAL" reads: 2010, #001, Daly City')
-    class Meta:
-         model = Site
-
-class NewSiteForm(djangoforms.ModelForm):
-    number = forms.CharField(
-        max_length=100,
-        help_text = '"10001DAL" reads: 2010, #001, Daly City')
-    class Meta:
-         model = NewSite
-
-class CaptainSiteForm(djangoforms.ModelForm):
-    work_start = DateField('Work Start Date')
-    work_end = DateField('Work End Date')
-    class Meta:
-         model = Site
-         exclude = ['number', 'name', 'street', 'applicant', 'sponsors', 
-                    'postal_address']
-
 
 class SiteCaptain(BaseModel):
     """Associates a site and a Captain."""
@@ -180,13 +129,6 @@ class SiteCaptain(BaseModel):
             'Team',
             'Volunteer',
             ))
-
-class SiteCaptainSiteForm(djangoforms.ModelForm):
-    captain = djangoforms.ModelChoiceField(
-        Captain, query=Captain.all().order('name'))
-    class Meta:
-        model = SiteCaptain
-        exclude = ['site']
 
 
 class Staff(BaseModel):
@@ -202,13 +144,6 @@ class Staff(BaseModel):
 
     def __unicode__(self):
         return self.name
-
-
-class StaffForm(djangoforms.ModelForm):
-    since = DateField('Since')
-    class Meta:
-         model = Staff
-         exclude = ['user', 'last_welcome']
 
 
 class Supplier(BaseModel):
@@ -227,14 +162,6 @@ class Supplier(BaseModel):
 
     def __unicode__(self):
         return self.name
-
-
-class SupplierForm(djangoforms.ModelForm):
-    since = DateField('Since')
-    class Meta:
-         model = Supplier
-         exclude = ['user']
-
 
 
 class OrderSheet(BaseModel):
@@ -274,11 +201,6 @@ class OrderSheet(BaseModel):
         return (self.delivery_options == 'Yes' or 
                 self.pickup_options == 'Yes' or 
                 self.retrieval_options == 'Yes')
-
-class OrderSheetForm(djangoforms.ModelForm):
-     class Meta:
-         model = OrderSheet
-         exclude = ['created']
 
 
 class Item(BaseModel):
@@ -329,12 +251,6 @@ class Item(BaseModel):
 
     def VisibleOrderFormSection(self):        
         return self.VisibleSortableLabel(self.order_form_section)
-
-
-class ItemForm(djangoforms.ModelForm):    
-    class Meta:
-        model = Item
-        exclude = ['last_editor', 'created', 'modified', 'thumbnail']
 
 
 class Order(BaseModel):
@@ -390,36 +306,6 @@ class Order(BaseModel):
                          self.key().id(), sub_total)
 
 
-class OrderForm(djangoforms.ModelForm):
-    initial = {'pickup_on': NRD}
-    class Meta:
-        model = Order
-        exclude = ['created', 'created_by', 'modified', 'modified_by',
-                   'order_sheet', 'site', 
-                   'sub_total', 'sales_tax', 'grand_total', 'state',
-                   'return_on'
-                   ]
-
-
-class CaptainOrderForm(djangoforms.ModelForm):
-    pickup_on = DateField('Pickup On')
-    return_on = DateField('Return On')
-
-    class Meta:
-        model = Order
-        exclude = ['last_editor', 'created', 'modified', 'order_sheet', 
-                   'sub_total', 'sales_tax', 'grand_total', 'state', 'captain']
-
-
-class NewOrderForm(djangoforms.ModelForm):    
-    site = djangoforms.ModelChoiceField(Site, widget=forms.HiddenInput)
-    order_sheet = djangoforms.ModelChoiceField(
-        OrderSheet, query=OrderSheet.all().order('name'))
-    class Meta:
-        model = Order
-        fields = ['site', 'order_sheet']
-
-
 class OrderItem(BaseModel):
     """The Items that are in a given Order."""
     item = db.ReferenceProperty(Item)
@@ -453,12 +339,6 @@ class Delivery(BaseModel):
         'Instructions for delivery person')
     
 
-class DeliveryForm(djangoforms.ModelForm):
-     class Meta:
-         model = Delivery
-         exclude = ['site']
-
-
 class OrderDelivery(BaseModel):
     """Maps Order to Delivery."""
     order = db.ReferenceProperty(Order, required=True)
@@ -478,12 +358,6 @@ class Pickup(BaseModel):
     notes = db.TextProperty()
     notes.verbose_name = (
         'Instructions for warehouse staff')
-
-
-class PickupForm(djangoforms.ModelForm):
-     class Meta:
-         model = Pickup
-         exclude = ['site']
 
 
 class OrderPickup(BaseModel):
@@ -507,12 +381,6 @@ class Retrieval(BaseModel):
         'Instructions for delivery person')
 
 
-class RetrievalForm(djangoforms.ModelForm):
-     class Meta:
-         model = Retrieval
-         exclude = ['site']
-
-
 class OrderRetrieval(BaseModel):
     """Maps Order to Retrieval."""
     order = db.ReferenceProperty(Order, required=True)
@@ -528,10 +396,6 @@ class InventoryItem(BaseModel):
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
-class InventoryItemForm(djangoforms.ModelForm):
-     class Meta:
-         model = InventoryItem
-         exclude = ['last_editor', 'modified', 'item']
 
 class CheckRequest(BaseModel):
     """A Check Request is a request for reimbursement."""
@@ -552,10 +416,3 @@ class CheckRequest(BaseModel):
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
-class CheckRequestForm(djangoforms.ModelForm):
-    site = djangoforms.ModelChoiceField(Site, widget=forms.HiddenInput)
-    captain = djangoforms.ModelChoiceField(Captain, widget=forms.HiddenInput)
-    payment_date = DateField('Payment Date')
-    class Meta:
-        model = CheckRequest
-        exclude = ['last_editor', 'modified']

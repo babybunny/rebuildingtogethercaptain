@@ -17,6 +17,7 @@ import django
 from django import http
 from django import shortcuts
 from django.core import urlresolvers 
+import forms
 import models
 import response
 import common
@@ -139,11 +140,11 @@ def CaptainHome(request):
   sites = []
   for sitecaptain in captain.sitecaptain_set:
     site = sitecaptain.site
-    site.new_order_form = models.NewOrderForm(initial=dict(site=site.key()))
+    site.new_order_form = forms.NewOrderForm(initial=dict(site=site.key()))
     sites.append(site)
   AnnotateSitesWithEditability(sites, captain, staff)
-  captain_form = models.CaptainContactForm(data=request.POST or None,
-                                           instance=captain)
+  captain_form = forms.CaptainContactForm(data=request.POST or None,
+                                          instance=captain)
   return common.Respond(request, 'captain_home', 
                         {'order_sheets': order_sheets,
                          'entries': sites,
@@ -178,8 +179,8 @@ def OrderSheetEdit(request, order_sheet_id=None):
   else:
     what = 'Adding new Order Form'
 
-  form = models.OrderSheetForm(data=request.POST or None, 
-                                instance=order_sheet)
+  form = forms.OrderSheetForm(data=request.POST or None, 
+                              instance=order_sheet)
   if not request.POST:
     return common.Respond(request, 'order_sheet', 
                           {'form': form, 
@@ -248,7 +249,7 @@ def _SiteListInternal(request, site=None, new_order_form=None):
   if site is not None:
     template = 'site_list_one'
     if new_order_form is None:
-      site.new_order_form = models.NewOrderForm(initial=dict(site=site.key()))
+      site.new_order_form = forms.NewOrderForm(initial=dict(site=site.key()))
     else:
       site.new_order_form = new_order_form
     entries = [site]
@@ -280,10 +281,10 @@ def SiteEdit(request, site_id=None):
     what = 'Adding new Site'
 
   if staff:
-    form_class = models.NewSiteForm
+    form_class = forms.NewSiteForm
   elif (captain and site.sitecaptain_set 
         and captain in [sc.captain for sc in site.sitecaptain_set]):
-    form_class = models.CaptainSiteForm
+    form_class = forms.CaptainSiteForm
   else:
     template_dict = {'what_you_are_doing': 'Not permitted to edit this site.'}
     return common.Respond(request, 'staff_site', template_dict)
@@ -291,7 +292,7 @@ def SiteEdit(request, site_id=None):
   form = form_class(data=None, instance=site)
     
   form_submit = 'Save changes to Site Info'
-  sitecaptain_form = models.SiteCaptainSiteForm()
+  sitecaptain_form = forms.SiteCaptainSiteForm()
   sitecaptain_form_submit = 'Add a Captain'
   sitecaptain_delete_form_submit = 'Delete'
   delete_sitecaptain = 'delete_sitecaptain'
@@ -331,7 +332,7 @@ def SiteEdit(request, site_id=None):
                                                             args=[site_id]))
 
     if request.POST['submit'] == sitecaptain_form_submit:
-      sitecaptain_form = models.SiteCaptainSiteForm(data=request.POST or None)
+      sitecaptain_form = forms.SiteCaptainSiteForm(data=request.POST or None)
       template_dict['sitecaptain_form'] = sitecaptain_form
       save_form = sitecaptain_form
 
@@ -430,9 +431,9 @@ def CaptainEdit(request, captain_id=None):
     what = 'Adding new Captain'
 
   if staff:
-    form_class = models.CaptainForm
+    form_class = forms.CaptainForm
   elif user_captain and user_captain == captain:
-    form_class = models.CaptainContactForm
+    form_class = forms.CaptainContactForm
   else: 
     template_dict = {
       'what_you_are_doing': 'Not permitted to edit this Captain.'}
@@ -492,7 +493,7 @@ def StaffList(request):
 
 def StaffEdit(request, staff_id=None):
   """Create or edit a Staff."""
-  return _PersonEdit(request, staff_id, models.Staff, models.StaffForm,
+  return _PersonEdit(request, staff_id, models.Staff, forms.StaffForm,
                      'staff', 'Staff')
 
 def StaffNew(request):
@@ -505,7 +506,7 @@ def SupplierList(request):
 
 def SupplierEdit(request, supplier_id=None):
   """Create or edit a Supplier."""
-  return _PersonEdit(request, supplier_id, models.Supplier, models.SupplierForm,
+  return _PersonEdit(request, supplier_id, models.Supplier, forms.SupplierForm,
                      'supplier', 'Supplier')
 
 def SupplierNew(request):
@@ -535,8 +536,8 @@ def ItemEdit(request, item_id=None):
   else:
     what = 'Adding new Item'
 
-  form = models.ItemForm(data=request.POST or None, files=request.FILES or None,
-                         instance=item)
+  form = forms.ItemForm(data=request.POST or None, files=request.FILES or None,
+                        instance=item)
 
   if not request.POST:
     return common.Respond(request, 'item', 
@@ -672,8 +673,8 @@ def CheckRequestEdit(request, id):
     what = 'Changing existing %s' % readable
   else:
     what = 'Adding new %s' % readable
-  form = models.CheckRequestForm(data=request.POST or None,  
-                                 instance=check_request)
+  form = forms.CheckRequestForm(data=request.POST or None,  
+                                instance=check_request)
   if not request.POST:
     return common.Respond(request, 'checkrequest', 
                           {'form': form, 'check_request': check_request,

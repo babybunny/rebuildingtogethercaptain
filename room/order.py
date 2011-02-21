@@ -8,6 +8,7 @@ from django import http
 from google.appengine.ext import db
 
 import common
+import forms
 import models
 import views
 
@@ -185,7 +186,7 @@ def _OrderPut(request, user, order):
   if order.order_sheet.HasLogistics():
     submit_button_text += ' and proceed to delivery options'
     
-  form = models.OrderForm(
+  form = forms.OrderForm(
     data=request.POST or None, 
     files=request.FILES or None,
     instance=order)
@@ -286,16 +287,16 @@ def OrderLogistics(request, order_id):
              'retrieval': ot,
              }
 
-  forms = {}
-  forms['delivery'] = models.DeliveryForm(
+  form_objects = {}
+  form_objects['delivery'] = forms.DeliveryForm(
     data=request.POST or None, 
     files=request.FILES or None,
     instance=delivery)
-  forms['pickup'] = models.PickupForm(
+  form_objects['pickup'] = forms.PickupForm(
     data=request.POST or None, 
     files=request.FILES or None,
     instance=pickup)
-  forms['retrieval'] = models.RetrievalForm(
+  form_objects['retrieval'] = forms.RetrievalForm(
     data=request.POST or None, 
     files=request.FILES or None,
     instance=retrieval)
@@ -327,7 +328,7 @@ def OrderLogistics(request, order_id):
   complete['delivery'] = 'Choose these delivery options'
   complete['pickup'] = 'Choose these pick-up options'
   complete['retrieval'] = 'Choose these drop-off/retrieval options'
-  template_dict = {'forms': forms,
+  template_dict = {'forms': form_objects,
                    'order': order,
                    'complete': complete,
                    'existing_dates': existing_dates,
@@ -338,10 +339,10 @@ def OrderLogistics(request, order_id):
     return common.Respond(request, 'order_logistics', template_dict)  
 
   if request.POST.get('submit', '').startswith(complete['delivery']):
-    errors = forms['delivery'].errors
+    errors = form_objects['delivery'].errors
     if not errors:
       try:
-        delivery = forms['delivery'].save(commit=False)
+        delivery = form_objects['delivery'].save(commit=False)
       except ValueError, err:
         errors['__all__'] = unicode(err)
     if errors:
@@ -356,10 +357,10 @@ def OrderLogistics(request, order_id):
       op.delete()
 
   if request.POST.get('submit', '').startswith(complete['pickup']):
-    errors = forms['pickup'].errors
+    errors = form_objects['pickup'].errors
     if not errors:
       try:
-        pickup = forms['pickup'].save(commit=False)
+        pickup = form_objects['pickup'].save(commit=False)
       except ValueError, err:
         errors['__all__'] = unicode(err)
     if errors:
@@ -374,10 +375,10 @@ def OrderLogistics(request, order_id):
       od.delete()
 
   if request.POST.get('submit', '').startswith(complete['retrieval']):
-    errors = forms['retrieval'].errors
+    errors = form_objects['retrieval'].errors
     if not errors:
       try:
-        retrieval = forms['retrieval'].save(commit=False)
+        retrieval = form_objects['retrieval'].save(commit=False)
       except ValueError, err:
         errors['__all__'] = unicode(err)
     if errors:
