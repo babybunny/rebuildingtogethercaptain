@@ -446,3 +446,10 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
       return redirect
   else:
       return common.Respond(request, 'order', template_dict)
+
+def OrderPreview(request, site_id=None):
+  order_sheets = models.OrderSheet.all().order('name')
+  site = models.NewSite.get_by_id(int(site_id))
+  t = {'order_sheets': order_sheets,
+       'site': site}
+  return common.Respond(request, 'order_preview', t)
