@@ -1,0 +1,56 @@
+{%extends "base.html"%}
+{% block script %}
+<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/le-frog/jquery-ui.css" rel="Stylesheet" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script src="http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js"></script>
+<style>
+.description {
+float: right;
+width: 500px;
+}
+
+#products img {
+margin:0 20px 10px 0;
+cursor:pointer;
+}
+
+.description {
+width:450px;
+min-height:400px;
+display:none;
+}
+.order_sheet button {
+  width: 300px;
+}
+
+</style>
+{%endblock%}
+{% block breadcrumb %}
+ | Choose an Order Form
+{% endblock %}
+{%block body%}    
+{% for sheet in order_sheets %}
+<div class="description" id="{{ sheet.code }}">
+  <h4>Items on the {{ sheet.name }} form</h4>
+  {% for i in sheet.item_set %}
+  {{ i.VisibleOrderFormSection }} : {{ i.VisibleName }}<br/>
+  {% endfor %}  
+</div>
+{% endfor %}
+<h4>Choose an order form from the list below.</h4>
+<div id="products">
+  {% for sheet in order_sheets %}
+  <div class="order_sheet">
+  <a href="{% url room.order.OrderNew site.key.id sheet.code %}">
+    <button>{{ sheet.name }}</button>
+  </a>
+  </div>
+  {% endfor %}
+</div>
+
+<script type="text/javascript">
+  $("#products").tabs("div.description", {event:'mouseover', tabs:'div'});    
+</script>
+
+
+{%endblock%}
