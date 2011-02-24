@@ -113,6 +113,13 @@ class NewSite(BaseModel):
     def BudgetRemaining(self):
         return self.budget - self.OrderTotal() - self.CheckRequestTotal()
 
+    def BudgetStatement(self):
+        if self.BudgetRemaining() > 0:
+            return '$%0.2f under budget' % self.BudgetRemaining()
+        else:
+            return '$%0.2f over budget' % (-1 * self.BudgetRemaining())
+
+
     def VisibleOrders(self):
         for order in sorted(self.order_set, 
                             key=lambda o: o.modified, reverse=True):
