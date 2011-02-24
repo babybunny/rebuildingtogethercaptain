@@ -10,6 +10,7 @@ from appengine_django.models import BaseModel
 from google.appengine.ext import db
 
 SALES_TAX_RATE = 0.0925
+# TODO: remove
 STANDARD_KIT_COST = 250.
 
 
@@ -85,6 +86,8 @@ class NewSite(BaseModel):
     city_state_zip = db.StringProperty()  # like Menlo Park CA 94025
     city = db.StringProperty()
     budget = db.IntegerProperty()
+
+    # TODO: remove
     number_of_standard_kits = db.IntegerProperty(default=1)
     
     def __unicode__(self):
@@ -94,11 +97,16 @@ class NewSite(BaseModel):
     def StreetAddress(self):
         return '%s, %s' % (self.street_number, self.city_state_zip)
 
+    def NeedsAttention(self):
+        return False
+    
+    # TODO: remove
     def StandardKitCost(self):
         return STANDARD_KIT_COST * self.number_of_standard_kits
 
     def OrderTotal(self):
         """Only works if self has been saved."""    
+        # TODO: remove
         cost = self.StandardKitCost()
         if self.order_set: 
             cost += sum(order.GrandTotal() for order in self.order_set)
