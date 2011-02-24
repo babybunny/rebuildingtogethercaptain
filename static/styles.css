@@ -80,7 +80,7 @@ table.site tbody {
   margin-right: 10px;
 }
 table.site td { 
-  padding: 5px; 
+  padding: 10px; 
   margin: 0px; 
   vertical-align: top;
 }
@@ -142,6 +142,9 @@ td.dollar {
 }
 td.measure {
   text-align: right;
+  white-space: nowrap;
+}
+td.action {
   white-space: nowrap;
 }
 td.lineitem {
