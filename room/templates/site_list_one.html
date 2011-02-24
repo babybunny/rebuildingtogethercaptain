@@ -16,6 +16,10 @@ $(document).ready(function(){
 {% endblock %}
 {%block about_this_page %}
 <h2>Here's site # {{ entries.0.number }}</h2>
+<a name="{{ site.number }}" href="{% url room.views.SiteEdit entries.0.key.id %}">
+  Edit Site Info
+</a>
+
 {% if user.captain %}
 <p>
 If you just made an order, please confirm that it's correct and check your budget.  
