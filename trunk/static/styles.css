@@ -32,6 +32,15 @@ body {
 span.attr {
   white-space: nowrap;
 }
+div.panel {
+  padding: 3px;
+  margin: 10px 0px 3px 0px;
+  border: 1px solid black;
+}
+div.panel h3 {
+  margin-top: 0;
+}
+
 table.layout {
   width: 950px;
   padding: 5px;
@@ -113,6 +122,9 @@ input {
 table.order_item_list td.quantity input { 
   padding: 0; margin:0;		      
 }
+table.budget {
+  border: 1px solid black;
+}
 td.hr, td.hr-invis {
   border-bottom: 1px solid #333;
   padding: 3px;
@@ -132,7 +144,9 @@ td.measure {
   text-align: right;
   white-space: nowrap;
 }
-
+td.lineitem {
+  font-weight: bold;
+}
 table.order_form_header td.order_form_section_header,
 td.order_form_section_header {
   font-size: larger;
