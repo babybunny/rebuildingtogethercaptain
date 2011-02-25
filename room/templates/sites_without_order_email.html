@@ -1,0 +1,14 @@
+{%extends "email.html"%}
+{%block body%}
+{% if is_dev %}
+<h3>DEVELOPMENT SERVER</h3>
+Originally To: {{ to }}
+<hr>
+{% endif %}
+Site #{{ site.number }}
+<br>
+{{ body }}
+{% if is_dev %}
+<h3>DEVELOPMENT SERVER</h3>
+{% endif %}
+{%endblock%}

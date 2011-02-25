@@ -22,7 +22,8 @@ f.action = f.action + order_sheet.value;
 
 <table class="layout">
   <tr>
-    <td class="layout">
+    <td>
+      <div class="panel">
       <h2>Sites</h2>
       <p>Enter a site number like 
 	<a href="{% url room.views.SiteListByNumber test_site_number %}">
@@ -34,46 +35,69 @@ f.action = f.action + order_sheet.value;
 	  <input type="submit" name="site_jump" value="Jump to Site">
 	</form>
       </p>
-      <p>
 	<a href="{% url room.views.SiteList %}">View a list</a> 
 	of all Sites.
-      </p>
-      <p>
+	<br>
 	<a href="{% url room.views.SiteNew %}">Add a new Site</a>.
-      </p>
-      <br/>
+      </div>
+
+      <div class="panel">
       <h2>Captains</h2>
-      <p>
 	<a href="{% url room.views.CaptainList %}">View a list</a> 
 	of all Captains.
-      </p>
-      <p>
+	<br>
 	<a href="{% url room.views.CaptainNew %}">Add a new Captain</a>
 	.
-      </p>
-      <br/>
+      </div>
+
+      <div class="panel">
       <h2>Staff</h2>
-      <p>
 	<a href="{% url room.views.StaffList %}">View a list</a> 
 	of all Staff.
-      </p>
-      <p>
+	<br>
 	<a href="{% url room.views.StaffNew %}">Add a new Staff</a>
 	.
-      </p>
-      <br/>
+      </div>
+
+      <div class="panel">
       <h2>Suppliers</h2>
-      <p>
 	<a href="{% url room.views.SupplierList %}">View a list</a> 
 	of all Suppliers.
-      </p>
-      <p>
+	<br>
 	<a href="{% url room.views.SupplierNew %}">Add a new Supplier</a>
 	.
-      </p>
-      
+      </div>
+
       
     </td><td class="layout">
+      <div class="panel">
+      <h2>Email Captains</h2>
+      <form method="GET" action="{% url room.views.SitesWithoutOrder %}" 
+	    onsubmit="SetOrderListAction(this)">
+	To email captains of sites that have not placed a specific type of 
+	order, select the order type
+	<br>
+      <select class="order_sheet">
+      {% for os in order_sheets %}      
+      <option value="{{ os.key.id }}">
+	{{ os.name }}
+      </option>
+      {% endfor %}
+      </select>
+      <br>
+      ... then click 
+      <input type="submit" value="Compose Email">
+      </form>
+      <p>
+	<a href="http://groups.google.com/group/rebuildingtogethercaptain">
+	  Click here
+	</a>
+	to view the email archive 
+	(new messages may take a few minutes to appear).
+	</p>
+      </div>
+
+      <div class="panel">
       <h2>Orders</h2>
       <form method="GET" action="{% url room.order.OrderList %}" 
 	    onsubmit="SetOrderListAction(this)">
@@ -91,26 +115,23 @@ f.action = f.action + order_sheet.value;
       ... then click 
       <input type="submit" value="List Orders">
       </form>
+      </div>
 
-      <br>
+      <div class="panel">
       <h2>Order Forms</h2>
-      <p>
-	<a href="{% url room.views.OrderSheetList %}">View a list</a> 
-	of all Order Forms.
-      </p>
-      <p>
-	<a href="{% url room.views.OrderSheetNew %}">Add a new Order Form</a>.
-      </p>
-      <br/>
+      <a href="{% url room.views.OrderSheetList %}">View a list</a> 
+      of all Order Forms.
+      <br>
+      <a href="{% url room.views.OrderSheetNew %}">Add a new Order Form</a>.
+      </div>
+
+      <div class="panel">
       <h2>Items</h2>
-      <p>
-	<a href="{% url room.views.ItemList %}">View a list</a> 
-	of all Items.
-      </p>
-      <p>
-	<a href="{% url room.views.ItemNew %}">Add a new Item</a> 
-      </p>
-      <br/>
+      <a href="{% url room.views.ItemList %}">View a list</a> 
+      of all Items.
+      <br>
+      <a href="{% url room.views.ItemNew %}">Add a new Item</a> 
+      </div>
     </td>
   </tr>
 </table>
