@@ -27,7 +27,7 @@ PICTURE_HEIGHT, PICTURE_WIDTH = 600, 400
 THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH = 50, 50
 MAP_WIDTH = 300
 MAP_HEIGHT = 200
-TEST_SITE_NUMBER = '10100ZZZ'
+TEST_SITE_NUMBER = '11999ZZZ'
 START_NEW_ORDER_SUBMIT = 'Start New Order'
 
 
@@ -361,6 +361,68 @@ def SiteEdit(request, site_id=None):
 def SiteNew(request):
   return SiteEdit(request, None)
 
+
+def SitesWithoutOrder(request, order_sheet_id):
+  order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
+  if order_sheet is None:
+    return http.HttpResponseNotFound(
+      'No order_sheet exists with that key (%r)' % order_sheet_id)
+  all_sites = list(models.NewSite.all())
+  orders = models.Order.all().filter('order_sheet =', order_sheet)
+  order_sites = [o.site for o in orders]
+  sites_without_order = [s for s in all_sites if s not in order_sites]
+  sites_without_order.sort(key=lambda s: s.number)
+  template_dict = {'sites': sites_without_order,
+                   'num_sites_without_order': len(sites_without_order),
+                   'num_sites': len(all_sites),
+                   'order_sheet': order_sheet,
+                   'EMAIL_SENDER': common.EMAIL_SENDER,
+                   'EMAIL_SENDER_READABLE': common.EMAIL_SENDER_READABLE,
+                   'EMAIL_LOG': common.EMAIL_LOG,
+                   }
+  return common.Respond(request, 'sites_without_order', template_dict)
+    
+
+def SitesWithoutOrderSendEmail(request, order_sheet_id):
+  subject = request.POST['subject']
+  body = request.POST['body']
+  logging.info(request.POST)
+  order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
+  if order_sheet is None:
+    return http.HttpResponseNotFound(
+      'No order_sheet exists with that key (%r)' % order_sheet_id)
+  captains_by_site = {}
+  site_captains = request.POST.getlist('site_captain')
+  for sc in site_captains:
+    site_id, captain_id = str(sc).split(' ')
+    if site_id not in captains_by_site:
+      captains_by_site[site_id] = []
+    captains_by_site[site_id].append(captain_id)
+  for site_id in captains_by_site:
+    site = models.NewSite.get_by_id(int(site_id))
+    if not site:
+      logging.warn('no site found for ID %s, skipping email', site_id)
+      continue
+    captains = []
+    for captain_id in captains_by_site[site_id]:
+      captain = models.Captain.get_by_id(int(captain_id))
+      if not captain:
+        logging.warn('no captain found for ID %s, skipping email', captain_id)
+        continue
+      captains.append(captain)
+    to = list(set([str(c.email) for c in captains]))
+    template_dict = {
+      'to': to,
+      'captains': captains,
+      'site': site,
+      'order_sheet': order_sheet,
+      'body': body,
+      }
+    
+    logging.info('sending mail re: %s to %s', subject, to)
+    common.SendMail(to, subject, body,
+                    'sites_without_order_email.html', template_dict)
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 def CaptainList(request):
   """Request / show all Captains.

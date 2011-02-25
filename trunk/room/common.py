@@ -47,6 +47,34 @@ def NotifyAdminViaMail(subject, template, template_dict):
   message.send()
 
 
+def SendMail(to, subject, text, template, template_dict):
+  base_uri = GetBaseUri()
+  td = template_dict.copy()
+  is_dev = IsDev()
+  td['is_dev'] = is_dev
+  td['base_uri'] = base_uri
+  html = loader.render_to_string(template, td)                                 
+  message = mail.EmailMessage()
+  # The "<Name> email" format of sender doesn't work with the dev server
+  # because it shells out to a sendmail command with the arguments unquoted.
+  if is_dev:
+    sender = EMAIL_SENDER
+  else:
+    sender = '%s <%s>' % (EMAIL_SENDER_READABLE, EMAIL_SENDER)
+  message.sender = sender
+  message.subject = subject
+  if is_dev:
+    message.to = EMAIL_LOG
+  else:
+    message.to = to
+  message.reply_to = EMAIL_LOG
+  if text is not None:
+    message.body = text
+  if html is not None:
+    message.html = html
+  message.send()
+
+
 def IsDev():
   return os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
 

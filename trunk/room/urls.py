@@ -5,6 +5,10 @@ urlpatterns = patterns('room.views',
     (r'^$', 'GoHome'),
     (r'^help', 'Help'),
 
+    (r'^site/without_order/$', 'SitesWithoutOrder'),
+    (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),
+    (r'^send_email/(\d+)/$$', 'SitesWithoutOrderSendEmail'),
+
     (r'^item$', 'ItemList'),
     (r'^item/list$', 'ItemList'),
     (r'^item/new$', 'ItemNew'),

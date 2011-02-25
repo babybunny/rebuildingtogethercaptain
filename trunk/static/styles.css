@@ -37,8 +37,16 @@ div.panel {
   margin: 10px 0px 3px 0px;
   border: 1px solid black;
 }
-div.panel h3 {
+div.panel h3,h2 {
   margin-top: 0;
+}
+div.left {
+  width: 400px;
+  float: left;
+}
+div.right {
+  width: 500px;
+  float: right;
 }
 
 table.layout {
