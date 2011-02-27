@@ -7,16 +7,16 @@
 <tr>
   <td>Click to Edit</td>
   <td>
-    <a name="{{ check_request.key.id }}"
-       href="{%url room.views.CheckRequestEdit check_request.key.id%}">
-      {{check_request.key.id|escape}}
+    <a name="{{ entity.key.id }}"
+       href="{%url room.views.CheckRequestEdit entity.key.id%}">
+      {{entity.key.id|escape}}
     </a>
   </td>
 </tr>
 <tr><td>Site</td>
   <td>
-    <a href="{% url room.views.SiteList check_request.site.key.id %}">
-      {{ check_request.site.number|escape }}
+    <a href="{% url room.views.SiteList entity.site.key.id %}">
+      {{ entity.site.number|escape }}
     </a>
   </td>
 </tr>
@@ -25,7 +25,7 @@
     Captain
   </td>
   <td>
-    {{ check_request.captain.name|escape }}
+    {{ entity.captain.name|escape }}
   </td>
 </tr>
 <tr>
@@ -33,7 +33,7 @@
     Payable To
   </td>
   <td>
-    {{ check_request.name|escape }}
+    {{ entity.name|escape }}
   </td>
 </tr>
 <tr>
@@ -41,7 +41,7 @@
     Amount
   </td>
   <td>
-    {{ check_request.amount|escape }}
+    {{ entity.amount|escape }}
   </td>
 </tr>
 <tr>
@@ -49,7 +49,7 @@
     Address
   </td>
   <td>
-    {{ check_request.address|escape }}
+    {{ entity.address|escape }}
   </td>
 </tr>
 
@@ -58,7 +58,7 @@
     Category
   </td>
   <td>
-    {{ check_request.category|escape }}
+    {{ entity.category|escape }}
   </td>
 </tr>
 
@@ -67,7 +67,7 @@
     Business
   </td>
   <td>
-    {{ check_request.form_of_business|escape }}
+    {{ entity.form_of_business|escape }}
   </td>
 </tr>
 
@@ -76,7 +76,7 @@
     Description
   </td>
   <td>
-    {{ check_request.description|escape }}
+    {{ entity.description|escape }}
   </td>
 </tr>
 <tr>
@@ -84,7 +84,7 @@
     Last Modified
   </td>
   <td>
-    {{ check_request.modified }}
+    {{ entity.modified }}
   </td>
 </tr>
 <tr>
@@ -92,7 +92,7 @@
     Modified By
   </td>
   <td>
-    {{ check_request.last_editor|escape }}
+    {{ entity.last_editor|escape }}
   </td>
 </tr>
 </table>

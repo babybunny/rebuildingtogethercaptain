@@ -16,26 +16,26 @@
 <th>Business</th>
 <th>Description</th>
 </tr>
-{% for person in entries %}
+{% for entity in entries %}
 <tr><td>
-  <a name="{{ person.key.id }}"
-     href="{%url room.views.CheckRequestEdit person.key.id%}">{{person.key.id|escape}}</a>
+  <a name="{{ entity.key.id }}"
+     href="{%url room.views.CheckRequestEdit entity.key.id%}">{{entity.key.id|escape}}</a>
 </td><td>
-{{ person.site.number|escape }}
+{{ entity.site.number|escape }}
 </td><td>
-{{ person.captain.name|escape }}
+{{ entity.captain.name|escape }}
 </td><td>
-{{ person.name|escape }}
+{{ entity.name|escape }}
 </td><td>
-{{ person.amount|escape }}
+{{ entity.amount|escape }}
 </td><td>
-{{ person.address|escape }}
+{{ entity.address|escape }}
 </td><td>
-{{ person.category|escape }}
+{{ entity.category|escape }}
 </td><td>
-{{ person.form_of_business|escape }}
+{{ entity.form_of_business|escape }}
 </td><td>
-{{ person.description|escape }}
+{{ entity.description|escape }}
 </td></tr>
 {% endfor %}
 </table>

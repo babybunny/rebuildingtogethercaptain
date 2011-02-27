@@ -13,7 +13,6 @@ SALES_TAX_RATE = 0.0925
 # TODO: remove
 STANDARD_KIT_COST = 250.
 
-
 class Captain(BaseModel):
     """A work captain."""    
     name = db.StringProperty()  # "Joe User"
@@ -115,8 +114,16 @@ class NewSite(BaseModel):
         """Only works if self has been saved."""    
         return sum(cr.amount or 0 for cr in self.checkrequest_set)
 
+    def VendorReceiptTotal(self):
+        """Only works if self has been saved."""    
+        return sum(cr.amount or 0 for cr in self.vendorreceipt_set)
+
     def BudgetRemaining(self):
-        return self.budget - self.OrderTotal() - self.CheckRequestTotal()
+        return (self.budget
+                - self.OrderTotal() 
+                - self.CheckRequestTotal()
+                - self.VendorReceiptTotal()
+                )
 
     def BudgetStatement(self):
         if self.BudgetRemaining() > 0:
@@ -425,6 +432,19 @@ class CheckRequest(BaseModel):
     form_of_business = db.StringProperty(
         choices=('Corporation', 'Partnership', 'Sole Proprietor', 
                  'Don\'t Know'))
+    last_editor = db.UserProperty()
+    modified = db.DateTimeProperty(auto_now=True)
+    
+class VendorReceipt(BaseModel):
+    """A Vendor Receipt is a report of a purchase outside of ROOMS."""
+    site = db.ReferenceProperty(NewSite)
+    purchase_date = db.DateProperty()
+    captain = db.ReferenceProperty(Captain)
+    amount = db.FloatProperty()
+    amount.verbose_name = 'Check Amount ($)'
+    description = db.TextProperty()
+    name = db.StringProperty()
+    name.verbose_name = 'vendor'
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
