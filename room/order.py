@@ -95,7 +95,7 @@ def _OrderFulfillConfirmInternal(order_id, order_sheet_id):
     next_object = models.NewSite.get_by_id(next_id)
     if next_object is not None:
       return http.HttpResponseRedirect(urlresolvers.reverse(
-              views.SiteList, args=[next_id]))
+              views.SiteView, args=[next_id]))
   
 
 def OrderExport(request):
@@ -248,7 +248,7 @@ def _OrderPut(request, user, order):
       urlresolvers.reverse(OrderLogistics, args=[str(order.key().id())])), None
   else:
     return http.HttpResponseRedirect(urlresolvers.reverse(
-        views.SiteList, args=[str(order.site.key().id())])), None
+        views.SiteView, args=[str(order.site.key().id())])), None
 
 
 def OrderLogistics(request, order_id):
@@ -401,7 +401,7 @@ def OrderLogistics(request, order_id):
         OrderFulfill, args=[str(order.key().id())]))
   
   return http.HttpResponseRedirect(urlresolvers.reverse(
-      views.SiteList, args=[str(order.site.key().id())]))
+      views.SiteView, args=[str(order.site.key().id())]))
 
 
 def OrderEdit(request, order_id):

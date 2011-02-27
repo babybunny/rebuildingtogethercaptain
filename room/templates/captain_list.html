@@ -72,7 +72,7 @@ $(document).ready(function(){
       </td>
       <td>
 	{% for sitecaptain in captain.sitecaptains %}
-	<a href="{% url room.views.SiteList sitecaptain.site.key.id %}">	
+	<a href="{% url room.views.SiteView sitecaptain.site.key.id %}">	
 	  {{ sitecaptain.site.number }}
 	</a>
 	<br>
