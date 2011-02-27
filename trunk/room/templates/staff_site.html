@@ -7,7 +7,7 @@
 <h2>{{ what_you_are_doing }}</h2>
 {% if site %}
 <p>
-  <a href="{% url room.views.SiteList site.key.id %}">
+  <a href="{% url room.views.SiteView site.key.id %}">
     Click here to view site # {{ site.number }} and orders.
   </a>
 </p>

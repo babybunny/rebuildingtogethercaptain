@@ -226,7 +226,7 @@ def SiteJump(request):
       urlresolvers.reverse(StaffHome))
   else:
     return http.HttpResponseRedirect(
-      urlresolvers.reverse(SiteList, args=[site.key().id()]))
+      urlresolvers.reverse(SiteView, args=[site.key().id()]))
     
 
 def SiteListByNumber(request, site_number):
@@ -234,7 +234,7 @@ def SiteListByNumber(request, site_number):
   return _SiteListInternal(request, site)
 
 
-def SiteList(request, site_id=None, new_order_form=None):
+def SiteView(request, site_id=None, new_order_form=None):
   site = None
   if site_id is not None:
     site = models.NewSite.get_by_id(int(site_id))
@@ -319,7 +319,7 @@ def SiteEdit(request, site_id=None):
       if _TryToSaveForm(form):
         if staff:
           return http.HttpResponseRedirect(
-            urlresolvers.reverse(SiteList, args=[form.instance.key().id()]))
+            urlresolvers.reverse(SiteView, args=[form.instance.key().id()]))
         else:
           return http.HttpResponseRedirect(
             urlresolvers.reverse(CaptainHome))
@@ -349,7 +349,7 @@ def SiteEdit(request, site_id=None):
           return common.Respond(request, 'staff_site', template_dict)
 
       if _TryToSaveForm(save_form):
-        return http.HttpResponseRedirect(urlresolvers.reverse(SiteList, 
+        return http.HttpResponseRedirect(urlresolvers.reverse(SiteView, 
                                                               args=[site_id]))
     else:
       return common.Respond(request, 'staff_site', template_dict)
@@ -362,7 +362,7 @@ def SiteNew(request):
   return SiteEdit(request, None)
 
 
-def SiteListTable(request):
+def SiteList(request):
   """Request / show all Sites.
 
   Was return _EntryList(request, models.NewSite, 'site_list')
@@ -824,7 +824,7 @@ class SiteExpense:
                                 template=cls.template_base + '_email.html', 
                                 template_dict={'entity': entity})
     return http.HttpResponseRedirect(urlresolvers.reverse(
-        SiteList, args=[entity.site.key().id()]))
+        SiteView, args=[entity.site.key().id()]))
   
   @classmethod
   def New(cls, request, site_id):

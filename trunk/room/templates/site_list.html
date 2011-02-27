@@ -47,7 +47,7 @@ $(document).ready(function(){
     {% for site in entries %}
     <tr>
       <td>
-	<a href="{% url room.views.SiteList site.key.id %}">
+	<a href="{% url room.views.SiteView site.key.id %}">
 	  {{site.number|escape}}
 	</a>
       </td>
