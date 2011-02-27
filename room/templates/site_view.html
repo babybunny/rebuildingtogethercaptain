@@ -1,0 +1,245 @@
+<table class="site"> 
+  <tbody>
+  {% for site in entries %}
+  <tr> 
+    <td>
+      <span class=big>
+	{{ site.name }}
+      </span>
+      <br>{{ site.StreetAddress }}
+      {% if site.applicant %}
+      {% ifnotequal site.applicant site.name %}
+      <p>
+      <i>Applicant's main contact</i>
+      <br><strong>{{ site.applicant }}</strong>
+      {% endifnotequal %}
+      {% if site.applicant_home_phone %}
+      <br>{{ site.applicant_home_phone }} <i>home</i> 
+      {% endif %}
+      {% if site.applicant_work_phone %}
+      <br>{{ site.applicant_work_phone }} <i>work</i> 
+      {% endif %}
+      {% if site.applicant_mobile_phone %}
+      <br>{{ site.applicant_mobile_phone }} <i>mobile</i> 
+      {% endif %}
+      {% endif %}
+      </p>
+
+      {% if site.sponsor %}
+      <p><i>Sponsored by:</i>
+      <br><strong>{{ site.sponsor }}</strong>
+      </p>
+      {% endif %}
+
+      {% if not site.sitecaptain_set %}
+      <p>
+	No captains assigned yet!
+      </p>
+      {% else %}
+      {% for sitecaptain in site.sitecaptain_set %}
+      <p> 
+	<strong>{{ sitecaptain.captain.name }}</strong>
+	<br>{{ sitecaptain.type }} Captain
+	{% if site_list_detail %}
+	<br>
+	<a href="mailto:{{ sitecaptain.captain.email }}">
+	  {{ sitecaptain.captain.email }}
+	</a>
+	<br>primary: {{ sitecaptain.captain.phone1 }}
+	{% if sitecaptain.captain.phone2 %}
+	<br>secondary: {{ sitecaptain.captain.phone2 }}
+	{% endif %}
+	{% endif %}
+      </p>
+      {% endfor %}
+      {% endif %}
+    </td>
+    <td>
+      {% if site.NeedsAttention %}
+      <span class="big">
+	Needs Attention
+      </span>
+      <div class="panel">
+	<p>
+	  We need to set up Porta Potty and Debris Box orders soon because we 
+	  get a discount from the vendor for ordering early. 
+	</p>
+	<p>T-Shirt orders also need to be entered soon because the shirts take
+	  some time to print.
+	</p>
+	
+      </div>
+      {% else %}
+      <span class="big">
+	Nothing Needs Attention
+      </span>
+      <p>
+	Pat yourself on the back - no items need attention.  
+	You have a clean bill of health.
+      </p>
+      {% endif %}
+      {% if site_list_detail %}
+      <p>{{ site.StreetAddress }}
+      <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress }}&ie=UTF8&z=14" target="_blank"> 
+	<img src="http://maps.google.com/maps/api/staticmap?center={{ site.StreetAddress }}&markers=size:mid|color:red|{{ site.StreetAddress }}&zoom=11&size={{ map_width }}x{{ map_height }}&sensor=false&key=ABQIAAAAocapnBGvqx6JkB2K9HNychQhv5EN3SOvE9MJZZkkyl7jkpoomxR8v4PeXRpH7B7kzknEvwpb_hu-Jg" alt="map of {{ site.StreetAddress }}" width="{{ map_width }}" height="{{ map_height }}"> 
+	<br>(click to view on Google Maps)
+      </a>
+      </p>
+      {% if site.notes %}
+      <strong>Notes:</strong>
+      <p>
+	{{ site.notes }}
+      </p>
+      {% endif %}
+      {% else %}     
+      {{ site.street }}	
+      <br>{{ site.city }}
+      {% endif %}
+    </td>
+    <td>
+      <span class="big">
+	{{ site.BudgetStatement }} 
+      </span>
+      <table class="budget">
+	<tbody>
+	  <tr>
+	    <td class="lineitem">
+	      Starting Budget
+	    </td>
+	    <td>
+	    ${{ site.budget|floatformat:2 }}
+	    </td>
+	    <td>
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	      <b>Orders</b>
+	      <br>
+	      <i>Materials and services ordered through ROOMS</i>
+	    </td>
+	    <td>
+	      (${{ site.OrderTotal|floatformat:2 }})
+	    <td class="action">
+	      <a href="{% url room.order.OrderPreview site.key.id %}">
+	      Place New Order
+	      </a>
+	      <br> 
+	      <a href="#orders_in_progress">
+		View/Edit 
+		5 orders in progress</a>
+	    </td>
+	  </tr>
+	  {% comment %} 
+	  <tr>
+	    <td>
+	      <b>Vendor Receipts</b>
+	      <br>
+	      <i>purchases through RTP's account with vendors like Home Depot</i>
+	    </td>
+	    <td>
+	      (${{ site.VendorReceiptTotal|floatformat:2 }})
+	    </td>
+	    <td class="action">
+	      <a href="{% url room.views.VendorReceiptNew site.key.id %}">
+		Enter Vendor Receipt
+	      </a>
+	      {% if site.vendorreceipt_set.count %}
+	      <br>
+	      <a href="#vendor_receipts_in_progress">
+		View vendor receipts
+	      </a>
+	      {% endif %}
+	    </td>
+	  </tr>
+	  {% endcomment %} 
+	  <tr>
+	    <td>
+	      <b>Check Requests</b>
+	      <br>
+	      <i>reimbursement for other expenses</i>
+	    </td>
+	    <td>
+	      (${{ site.CheckRequestTotal|floatformat:2 }})
+	    </td>
+	    <td class="action">
+	      <a href="{% url room.views.CheckRequestNew site.key.id %}">
+		Place New Check Request
+	      </a>
+	      {% if site.checkrequest_set.count %}
+	      <br>
+	      <a href="#check_requests_in_progress">
+		View check requests in progress
+	      </a>
+	      {% endif %}
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	      <hr>
+	    </td>
+	    <td>
+	      <hr>
+	    </td>
+	    <td>
+	    </td>
+	  </tr>	    
+	  <tr>
+	    <td>
+	      <b>Remaining</b>
+	    </td>
+	    <td>
+	      ${{ site.BudgetRemaining|floatformat:2 }} 
+	    </td>
+	    <td>	      
+	    </td>
+	  </tr>
+	</tbody>
+      </table>
+      <a name="orders_in_progress"></a>
+      <div class="panel">
+      <h3>Orders in progress</h3>
+      {% include "orders_in_progress.html" %}
+      </div>
+      {% if site.checkrequest_set.count %}
+      <a name="check_requests_in_progress"></a>
+      <div class="panel">
+      <h3>Check Requests</h3>
+      <table class="list tablesorter">
+	{% for check_request in site.checkrequest_set %}
+	{% if forloop.first %}
+	<tr>
+	  <th>Captain</th>
+	  <th>Payable To</th>
+	  <th>Amount</th>
+	  <th>Status</th>
+	</tr>
+	{% endif %}
+	<tr>
+	  <td>
+	    {{ check_request.captain.name|escape }}
+	  </td>
+	  <td>
+	    {{ check_request.name|escape }}
+	  </td>
+	  <td>
+	    {{ check_request.amount|escape }}
+	  </td>
+	  <td>
+	    <a name="{{ check_request.key.id }}"
+	       href="{%url room.views.CheckRequestView check_request.key.id%}">
+	      view
+	    </a>
+	  </td>
+	  <td colspan=2>
+	  </td>
+	</tr>
+	{% endfor %}
+      </table>
+      {% endif %}
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table> 
