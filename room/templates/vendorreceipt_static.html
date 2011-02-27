@@ -1,5 +1,5 @@
 <h2>
-  Check Request # {{ entity.key.id}} 
+  Vendor Receipt # {{ entity.key.id}} 
   for Site {{ entity.site.number }}
 </h2>
 <hr>
@@ -8,7 +8,7 @@
   <td>Click to Edit</td>
   <td>
     <a name="{{ entity.key.id }}"
-       href="{%url room.views.CheckRequestEdit entity.key.id%}">
+       href="{%url room.views.VendorReceiptEdit entity.key.id%}">
       {{entity.key.id|escape}}
     </a>
   </td>
@@ -30,10 +30,10 @@
 </tr>
 <tr>
   <td>
-    Payable To
+    Vendor
   </td>
   <td>
-    {{ entity.name|escape }}
+    {{ entity.vendor|escape }}
   </td>
 </tr>
 <tr>
@@ -44,33 +44,6 @@
     {{ entity.amount|escape }}
   </td>
 </tr>
-<tr>
-  <td>
-    Address
-  </td>
-  <td>
-    {{ entity.address|escape }}
-  </td>
-</tr>
-
-<tr>
-  <td>
-    Category
-  </td>
-  <td>
-    {{ entity.category|escape }}
-  </td>
-</tr>
-
-<tr>
-  <td>
-    Business
-  </td>
-  <td>
-    {{ entity.form_of_business|escape }}
-  </td>
-</tr>
-
 <tr>
   <td>
     Description
