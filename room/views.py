@@ -362,6 +362,51 @@ def SiteNew(request):
   return SiteEdit(request, None)
 
 
+def SiteListTable(request):
+  """Request / show all Sites.
+
+  Was return _EntryList(request, models.NewSite, 'site_list')
+  but we need special handling for sitecaptains.
+  """
+  user, captain, staff = common.GetUser(request)
+  entries = list(models.NewSite.all().order('number'))
+  sitecaptains_by_site = {}
+  for sc in models.SiteCaptain.all():
+    sitecaptains_by_site.setdefault(sc.site.key().id(), []).append(sc)
+  for s in entries:
+    k = s.key().id()
+    if k in sitecaptains_by_site:
+      s.sitecaptains = sitecaptains_by_site[k]
+  d = {'entries': entries, 'user': user, 
+       'sitecaptains_by_site': sitecaptains_by_site }
+  return common.Respond(request, 'site_list', d)
+
+
+# TODO: could be more complete
+def SiteExport(request):
+  """Export all Sites as CSV."""
+  user, _, _ = common.GetUser(request)
+  sites = list(models.NewSite.all().order('number'))
+  response = http.HttpResponse(mimetype='text/csv')
+  response['Content-Disposition'] = 'attachment; filename=room_sites.csv'
+  writer = csv.writer(response)
+  writer.writerow(['Site number',
+                   'Name',
+                   'Captains', 
+                   'Type',
+                   ])
+  for s in sites:
+    sc = list(s.sitecaptain_set)
+    captains = '+'.join(set(c.captain.name for c in sc))
+    type = '+'.join(set(c.type for c in sc))
+    writer.writerow([s.number,
+                     s.name,
+                     captains,
+                     type
+                     ])
+  return response
+
+
 def SitesWithoutOrder(request, order_sheet_id):
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
