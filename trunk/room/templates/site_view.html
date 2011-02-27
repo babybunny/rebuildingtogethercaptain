@@ -176,6 +176,27 @@
 	  </tr>
 	  <tr>
 	    <td>
+	      <b>Vendor Receipts</b>
+	      <br>
+	      <i>purchases from vendors on RTP account</i>
+	    </td>
+	    <td>
+	      (${{ site.VendorReceiptTotal|floatformat:2 }})
+	    </td>
+	    <td class="action">
+	      <a href="{% url room.views.VendorReceiptNew site.key.id %}">
+		Submit New Vendor Receipt
+	      </a>
+	      {% if site.vendorreceipt_set.count %}
+	      <br>
+	      <a href="#vendor_receipts_in_progress">
+		View submitted vendor receipts
+	      </a>
+	      {% endif %}
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
 	      <hr>
 	    </td>
 	    <td>
@@ -228,6 +249,43 @@
 	  <td>
 	    <a name="{{ check_request.key.id }}"
 	       href="{%url room.views.CheckRequestView check_request.key.id%}">
+	      view
+	    </a>
+	  </td>
+	  <td colspan=2>
+	  </td>
+	</tr>
+	{% endfor %}
+      </table>
+      {% endif %}
+      </div>
+      {% if site.vendorreceipt_set.count %}
+      <a name="vendor_receipts_in_progress"></a>
+      <div class="panel">
+      <h3>Vendor Receipts</h3>
+      <table class="list tablesorter">
+	{% for check_request in site.vendorreceipt_set %}
+	{% if forloop.first %}
+	<tr>
+	  <th>Captain</th>
+	  <th>Vendor</th>
+	  <th>Amount</th>
+	  <th>Status</th>
+	</tr>
+	{% endif %}
+	<tr>
+	  <td>
+	    {{ check_request.captain.name|escape }}
+	  </td>
+	  <td>
+	    {{ check_request.vendor|escape }}
+	  </td>
+	  <td>
+	    {{ check_request.amount|escape }}
+	  </td>
+	  <td>
+	    <a name="{{ check_request.key.id }}"
+	       href="{%url room.views.VendorReceiptView check_request.key.id%}">
 	      view
 	    </a>
 	  </td>

@@ -57,6 +57,11 @@ urlpatterns = patterns('room.views',
     (r'^checkrequest/new/(\d+)/$', 'CheckRequestNew'),
     (r'^checkrequest/edit/(\d+)/$', 'CheckRequestEdit'),
     (r'^checkrequest/view/(\d+)/$', 'CheckRequestView'),
+
+    (r'^vendorreceipt/list/$', 'VendorReceiptList'),
+    (r'^vendorreceipt/new/(\d+)/$', 'VendorReceiptNew'),
+    (r'^vendorreceipt/edit/(\d+)/$', 'VendorReceiptEdit'),
+    (r'^vendorreceipt/view/(\d+)/$', 'VendorReceiptView'),
 )
 
 urlpatterns += patterns(
