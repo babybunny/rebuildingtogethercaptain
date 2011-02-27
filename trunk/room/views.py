@@ -757,64 +757,95 @@ def Inventory(request):
   return common.Respond(request, 'inventory', 
                         {'invitems': inventory_items})
 
-def CheckRequestList(request):
-  """Request / -- show all CheckRequest."""
-  return _EntryList(request, models.CheckRequest, 'checkrequest_list')
+class SiteExpense:
+  """Generic class for check requests and vendor receipts."""
+  model = None  # class object of target model
+  template_base = ''  # prefix of templates
+  readable = ''  # Readable name of entity
+  form_cls = None
+  staff_form_cls = None
 
-def CheckRequestView(request, id):
-  """Printable static view of a CheckRequest."""
-  check_request = models.CheckRequest.get_by_id(int(id))
-  return common.Respond(request, 'checkrequest_view', 
-                        {'check_request': check_request})
+  @classmethod
+  def List(cls, request):
+    """Show all."""
+    return _EntryList(request, cls.model, cls.template_base + '_list')
+  
+  @classmethod
+  def View(cls, request, id):
+    """Printable static view of an expense."""
+    entity = cls.model.get_by_id(int(id))
+    return common.Respond(request, cls.template_base + '_view', 
+                          {'entity': entity})
 
-def CheckRequestEdit(request, id):
-  """Create or edit a CheckRequest."""
-  user, captain, staff = common.GetUser(request)
-  check_request = None
+  @classmethod
+  def Edit(cls, request, id):
+    """Create or edit an entity."""
+    user, captain, staff = common.GetUser(request)
+    entity = None
+    if id:
+      entity = cls.model.get_by_id(int(id))
+      if entity is None:
+        return http.HttpResponseNotFound(
+          'No %s exists with that key (%r)' % (cls.readable, id))
+      what = 'Changing existing %s' % cls.readable
+    else:
+      what = 'Adding new %s' % cls.readable
+    if staff:
+      form_cls = cls.staff_form_cls
+    else:
+      form_cls = cls.form_cls
+      
+    form = form_cls(data=request.POST or None,  
+                    instance=entity)
+    if not request.POST:
+      return common.Respond(request, 'checkrequest', 
+                            {'form': form, 'entity': entity,
+                             'what_you_are_doing': what})
+    errors = form.errors
+    if not errors:
+      try:
+        entity = form.save(commit=False)
+      except ValueError, err:
+        errors['__all__'] = unicode(err)
+    if errors:
+      return common.Respond(request, 'checkrequest', 
+                            {'form': form, 
+                             'entity': entity})
+    entity.last_editor = user
+    entity.put()
+    user = captain or staff
+    if user: 
+      subj = 'Check Request #%s for Site #%s Updated by %s' % (
+        entity.key().id(), 
+        entity.site.number,
+        user.name)
+      common.NotifyAdminViaMail(subj, 
+                                template=cls.template_base + '_email.html', 
+                                template_dict={'entity': entity})
+    return http.HttpResponseRedirect(urlresolvers.reverse(
+        SiteList, args=[entity.site.key().id()]))
+  
+  @classmethod
+  def New(cls, request, site_id):
+    """Create an entity.  GET shows a blank form, POST processes it."""
+    user, user_captain, staff = common.GetUser(request)
+    site = models.NewSite.get_by_id(int(site_id))
+    entity = cls.model(site=site, captain=user_captain)
+    entity.put()
+    return cls.Edit(request, entity.key().id())
+
+
+class CheckRequest(SiteExpense):
+  model = models.CheckRequest
+  template_base = 'checkrequest'
   readable = 'Check Request'
-  if id:
-    check_request = models.CheckRequest.get_by_id(int(id))
-    if check_request is None:
-      return http.HttpResponseNotFound(
-        'No %s exists with that key (%r)' % (readable, id))
-    what = 'Changing existing %s' % readable
-  else:
-    what = 'Adding new %s' % readable
-  form = forms.CheckRequestForm(data=request.POST or None,  
-                                instance=check_request)
-  if not request.POST:
-    return common.Respond(request, 'checkrequest', 
-                          {'form': form, 'check_request': check_request,
-                           'what_you_are_doing': what})
-  errors = form.errors
-  if not errors:
-    try:
-      check_request = form.save(commit=False)
-    except ValueError, err:
-      errors['__all__'] = unicode(err)
-  if errors:
-    return common.Respond(request, 'checkrequest', 
-                          {'form': form, 
-                           'check_request': check_request})
-  check_request.last_editor = user
-  check_request.put()
-  user = captain or staff
-  if user: 
-    subj = 'Check Request #%s for Site #%s Updated by %s' % (
-      check_request.key().id(), 
-      check_request.site.number,
-      user.name)
-    common.NotifyAdminViaMail(subj, 
-                              template='checkrequest_email.html', 
-                              template_dict={'check_request': check_request})
-  return http.HttpResponseRedirect(urlresolvers.reverse(
-      SiteList, args=[check_request.site.key().id()]))
+  form_cls = forms.CheckRequestCaptainForm
+  staff_form_cls = forms.CheckRequestForm
 
-def CheckRequestNew(request, site_id):
-  """Create a item.  GET shows a blank form, POST processes it."""
-  user, user_captain, staff = common.GetUser(request)
-  site = models.NewSite.get_by_id(int(site_id))
-  check_request = models.CheckRequest(site=site, captain=user_captain)
-  check_request.put()
-  return CheckRequestEdit(request, check_request.key().id())
 
+# If the urlpattern cappable name has a dot in it then Django tries to 
+# load the prefix as a module name.  This is a workaround.
+CheckRequestNew = CheckRequest.New
+CheckRequestEdit = CheckRequest.Edit
+CheckRequestList = CheckRequest.List
+CheckRequestView = CheckRequest.View

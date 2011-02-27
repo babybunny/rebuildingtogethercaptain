@@ -9,6 +9,16 @@ from google.appengine.ext.db import djangoforms
 import common
 import models
 
+VENDOR_SELECTIONS = (
+    'Home Depot',
+    'Kelly-Moore Paints',
+    'Palo Alto Hardware',
+    'Wisnom\'s ',
+    'Ocean Shore Hardware',
+    'AAA Rentals',
+    'San Mateo Rentals',
+    'Other',
+    )
 
 def DateField(label):
     """Helper to produce data fields for forms."""
@@ -153,9 +163,12 @@ class InventoryItemForm(djangoforms.ModelForm):
 class CheckRequestForm(djangoforms.ModelForm):
     site = djangoforms.ModelChoiceField(
         models.Site, widget=forms.HiddenInput)
-    captain = djangoforms.ModelChoiceField(
-        models.Captain, widget=forms.HiddenInput)
     payment_date = DateField('Payment Date')
     class Meta:
         model = models.CheckRequest
         exclude = ['last_editor', 'modified']
+
+class CheckRequestCaptainForm(CheckRequestForm):
+    captain = djangoforms.ModelChoiceField(
+        models.Captain, widget=forms.HiddenInput)
+
