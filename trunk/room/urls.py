@@ -26,6 +26,8 @@ urlpatterns = patterns('room.views',
     (r'^site/list$', 'SiteList'),
     (r'^site/list/(\d+)/$', 'SiteList'),
     (r'^site/list/(\w+)/$', 'SiteListByNumber'),
+    (r'^site/list_table$', 'SiteListTable'),
+    (r'^site/export$', 'SiteExport'),
     (r'^site/new$', 'SiteNew'),
     (r'^site/edit/(\d+)/$', 'SiteEdit'),
 

@@ -108,15 +108,12 @@ class NewSite(BaseModel):
         """Only works if self has been saved."""    
         # TODO: remove
         cost = self.StandardKitCost()
-        if self.order_set: 
-            cost += sum(order.GrandTotal() for order in self.order_set)
+        cost += sum(order.GrandTotal() for order in self.order_set)
         return cost
 
     def CheckRequestTotal(self):
         """Only works if self has been saved."""    
-        if self.checkrequest_set: 
-            return sum(cr.amount or 0 for cr in self.checkrequest_set)
-        return 0
+        return sum(cr.amount or 0 for cr in self.checkrequest_set)
 
     def BudgetRemaining(self):
         return self.budget - self.OrderTotal() - self.CheckRequestTotal()
