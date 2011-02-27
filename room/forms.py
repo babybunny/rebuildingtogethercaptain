@@ -17,7 +17,7 @@ VENDOR_SELECTIONS = (
     'Ocean Shore Hardware',
     'AAA Rentals',
     'San Mateo Rentals',
-    'Other',
+    'Other (put name in Description)',
     )
 
 def DateField(label):
@@ -30,6 +30,11 @@ def DateField(label):
                                           },
                                    format='%m/%d/%Y'
                                    ))
+
+def SortedCaptainChoiceField():
+    return djangoforms.ModelChoiceField(
+        models.Captain, 
+        models.Captain.all().order('name'))
 
 
 class CaptainForm(djangoforms.ModelForm):
@@ -72,8 +77,7 @@ class CaptainSiteForm(djangoforms.ModelForm):
 
 
 class SiteCaptainSiteForm(djangoforms.ModelForm):
-    captain = djangoforms.ModelChoiceField(
-        models.Captain, query=models.Captain.all().order('name'))
+    captain = SortedCaptainChoiceField()
     class Meta:
         model = models.SiteCaptain
         exclude = ['site']
@@ -161,6 +165,7 @@ class InventoryItemForm(djangoforms.ModelForm):
 
 
 class CheckRequestForm(djangoforms.ModelForm):
+    captain = SortedCaptainChoiceField()
     site = djangoforms.ModelChoiceField(
         models.Site, widget=forms.HiddenInput)
     payment_date = DateField('Payment Date')
@@ -172,3 +177,17 @@ class CheckRequestCaptainForm(CheckRequestForm):
     captain = djangoforms.ModelChoiceField(
         models.Captain, widget=forms.HiddenInput)
 
+
+class VendorReceiptForm(djangoforms.ModelForm):
+    captain = SortedCaptainChoiceField()
+    site = djangoforms.ModelChoiceField(
+        models.Site, widget=forms.HiddenInput)
+    purchase_date = DateField('Purchase Date')
+    vendor = forms.ChoiceField(choices=[(v, v) for v in VENDOR_SELECTIONS])
+    class Meta:
+        model = models.VendorReceipt
+        exclude = ['last_editor', 'modified']
+
+class VendorReceiptCaptainForm(VendorReceiptForm):
+    captain = djangoforms.ModelChoiceField(
+        models.Captain, widget=forms.HiddenInput)

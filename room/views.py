@@ -798,7 +798,7 @@ class SiteExpense:
     form = form_cls(data=request.POST or None,  
                     instance=entity)
     if not request.POST:
-      return common.Respond(request, 'checkrequest', 
+      return common.Respond(request, cls.template_base, 
                             {'form': form, 'entity': entity,
                              'what_you_are_doing': what})
     errors = form.errors
@@ -815,7 +815,8 @@ class SiteExpense:
     entity.put()
     user = captain or staff
     if user: 
-      subj = 'Check Request #%s for Site #%s Updated by %s' % (
+      subj = '%s #%s for Site #%s Updated by %s' % (
+        cls.readable,
         entity.key().id(), 
         entity.site.number,
         user.name)
@@ -849,3 +850,17 @@ CheckRequestNew = CheckRequest.New
 CheckRequestEdit = CheckRequest.Edit
 CheckRequestList = CheckRequest.List
 CheckRequestView = CheckRequest.View
+
+
+class VendorReceipt(SiteExpense):
+  model = models.VendorReceipt
+  template_base = 'vendorreceipt'
+  readable = 'Vendor Receipt'
+  form_cls = forms.VendorReceiptCaptainForm
+  staff_form_cls = forms.VendorReceiptForm
+
+
+VendorReceiptNew = VendorReceipt.New
+VendorReceiptEdit = VendorReceipt.Edit
+VendorReceiptList = VendorReceipt.List
+VendorReceiptView = VendorReceipt.View

@@ -419,8 +419,8 @@ class InventoryItem(BaseModel):
 class CheckRequest(BaseModel):
     """A Check Request is a request for reimbursement."""
     site = db.ReferenceProperty(NewSite)
-    payment_date = db.DateProperty()
     captain = db.ReferenceProperty(Captain)
+    payment_date = db.DateProperty()
     amount = db.FloatProperty()
     amount.verbose_name = 'Check Amount ($)'
     description = db.TextProperty()
@@ -438,13 +438,12 @@ class CheckRequest(BaseModel):
 class VendorReceipt(BaseModel):
     """A Vendor Receipt is a report of a purchase outside of ROOMS."""
     site = db.ReferenceProperty(NewSite)
-    purchase_date = db.DateProperty()
     captain = db.ReferenceProperty(Captain)
+    purchase_date = db.DateProperty()
+    vendor = db.StringProperty()
     amount = db.FloatProperty()
-    amount.verbose_name = 'Check Amount ($)'
+    amount.verbose_name = 'Purchase Amount ($)'
     description = db.TextProperty()
-    name = db.StringProperty()
-    name.verbose_name = 'vendor'
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
