@@ -4,7 +4,7 @@
 {% endblock %}
 {%block body%}
 
-<h2>Adding Check Request for Site {{ check_request.site.number }}</h2>
+<h2>Adding Check Request for Site {{ entity.site.number }}</h2>
 
 <h3>Note!  The check request cannot be processed without submitting the receipt(s).  Receipts can be submitted in person or by mail, fax, or email.  Please specify your name and the site number when submitting receipts.</h3>
 
@@ -39,7 +39,7 @@ Mailing Address:
 </table>
 
 <hr>
-<form action="{% url room.views.CheckRequestEdit check_request.key.id %}" method="post">
+<form action="{% url room.views.CheckRequestEdit entity.key.id %}" method="post">
 
 <table>  
 {{form}}
