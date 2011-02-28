@@ -21,11 +21,21 @@ $(document).ready(function(){
 
 <h2>Sites</h2>
 {% if entries %}
-<p>You're a Captain for the following site(s).  Contact 
+<p>You're a Captain for the following site(s):
+{% for site in entries %}
+  <a href="#site_{{ site.number }}">
+    {{ site.name }} (#{{ site.number }})
+  </a>
+{% if not forloop.last %}
+,
+{% endif %}
+{% endfor %}
+
+<br>Contact 
 <a href="mailto:{{ help_contact }}">{{ help_contact }}</a> 
 if this is incorrect.
 </p>
-{% include "site_list.html" %}
+{% include "site_view.html" %}
 {% else %}
 There are no sites assigned to you.  Contact 
 <a href="mailto:{{ help_contact }}">{{ help_contact }}</a> 
