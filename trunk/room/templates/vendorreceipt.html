@@ -22,7 +22,7 @@ $.datepicker.setDefaults({
 <h2>Submitting Vendor Receipt for Site {{ entity.site.number }}</h2>
 
 
-<form action="{% url room.views.VendorReceiptEdit entity.key.id %}" method="post">
+<form action="{% url room.views.VendorReceiptEdit edit_id %}" method="post">
 
 <table>  
 {{form}}

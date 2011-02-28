@@ -777,19 +777,31 @@ class SiteExpense:
     return common.Respond(request, cls.template_base + '_view', 
                           {'entity': entity})
 
+  
   @classmethod
-  def Edit(cls, request, id):
+  def New(cls, request, site_id):
+    """Create an entity.  GET shows a blank form, POST processes it."""
+    user, user_captain, staff = common.GetUser(request)
+    site = models.NewSite.get_by_id(int(site_id))
+    entity = cls.model(site=site, captain=user_captain)
+    return cls.Edit(request, entity=entity)
+  
+  @classmethod
+  def Edit(cls, request, id=0, entity=None):
     """Create or edit an entity."""
-    user, captain, staff = common.GetUser(request)
-    entity = None
+    id = int(id)
     if id:
-      entity = cls.model.get_by_id(int(id))
+      entity = cls.model.get_by_id(id)
       if entity is None:
         return http.HttpResponseNotFound(
           'No %s exists with that key (%r)' % (cls.readable, id))
       what = 'Changing existing %s' % cls.readable
+      edit_id = entity.key().id()
     else:
       what = 'Adding new %s' % cls.readable
+      edit_id = 0
+
+    user, captain, staff = common.GetUser(request)
     if staff:
       form_cls = cls.staff_form_cls
     else:
@@ -798,9 +810,13 @@ class SiteExpense:
     form = form_cls(data=request.POST or None,  
                     instance=entity)
     if not request.POST:
-      return common.Respond(request, cls.template_base, 
-                            {'form': form, 'entity': entity,
-                             'what_you_are_doing': what})
+      return common.Respond(
+        request, cls.template_base, 
+        {'form': form, 
+         'entity': entity,
+         'edit_id': edit_id,
+         'what_you_are_doing': what})
+
     errors = form.errors
     if not errors:
       try:
@@ -808,9 +824,13 @@ class SiteExpense:
       except ValueError, err:
         errors['__all__'] = unicode(err)
     if errors:
-      return common.Respond(request, 'checkrequest', 
-                            {'form': form, 
-                             'entity': entity})
+      return common.Respond(
+        request, cls.template_base, 
+        {'form': form, 
+         'entity': entity,
+         'edit_id': edit_id,
+         'what': 'Fix errors below and try submitting again.'})
+
     entity.last_editor = user
     entity.put()
     user = captain or staff
@@ -825,15 +845,6 @@ class SiteExpense:
                                 template_dict={'entity': entity})
     return http.HttpResponseRedirect(urlresolvers.reverse(
         SiteView, args=[entity.site.key().id()]))
-  
-  @classmethod
-  def New(cls, request, site_id):
-    """Create an entity.  GET shows a blank form, POST processes it."""
-    user, user_captain, staff = common.GetUser(request)
-    site = models.NewSite.get_by_id(int(site_id))
-    entity = cls.model(site=site, captain=user_captain)
-    entity.put()
-    return cls.Edit(request, entity.key().id())
 
 
 class CheckRequest(SiteExpense):

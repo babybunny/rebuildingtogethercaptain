@@ -112,7 +112,7 @@ class NewSite(BaseModel):
 
     def CheckRequestTotal(self):
         """Only works if self has been saved."""    
-        return sum(cr.amount or 0 for cr in self.checkrequest_set)
+        return sum(cr.Total() for cr in self.checkrequest_set)
 
     def VendorReceiptTotal(self):
         """Only works if self has been saved."""    
@@ -421,20 +421,29 @@ class CheckRequest(BaseModel):
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
     payment_date = db.DateProperty()
-    amount = db.FloatProperty()
-    amount.verbose_name = 'Check Amount ($)'
+    labor_amount = db.FloatProperty(default=0.0)
+    labor_amount.verbose_name = 'Labor Amount ($)'
+    materials_amount = db.FloatProperty(default=0.0)
+    materials_amount.verbose_name = 'Materials Amount ($)'
     description = db.TextProperty()
     name = db.StringProperty()
     name.verbose_name = 'Payable To'
-    tax_id = db.StringProperty()
     address = db.TextProperty()
-    category = db.StringProperty(choices=('Labor', 'Non-labor'))
+    address.verbose_name = "Payee Address"
+    tax_id = db.StringProperty()
+    tax_id.verbose_name = "Payee Tax ID"
+    tax_id.help_text = "we'll notify you if we still need this information to process the check"
     form_of_business = db.StringProperty(
         choices=('Corporation', 'Partnership', 'Sole Proprietor', 
                  'Don\'t Know'))
+    form_of_business.verbose_name = "Payee Business Type"
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
+
+    def Total(self):
+        return self.labor_amount + self.materials_amount
     
+
 class VendorReceipt(BaseModel):
     """A Vendor Receipt is a report of a purchase outside of ROOMS."""
     site = db.ReferenceProperty(NewSite)
