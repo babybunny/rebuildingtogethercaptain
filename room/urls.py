@@ -4,6 +4,7 @@ urlpatterns = patterns('room.views',
     (r'^/$', 'GoHome'),
     (r'^$', 'GoHome'),
     (r'^help', 'Help'),
+    (r'^fix_city', 'FixCity'),
 
     (r'^site/without_order/$', 'SitesWithoutOrder'),
     (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),

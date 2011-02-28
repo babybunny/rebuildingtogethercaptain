@@ -864,3 +864,15 @@ VendorReceiptNew = VendorReceipt.New
 VendorReceiptEdit = VendorReceipt.Edit
 VendorReceiptList = VendorReceipt.List
 VendorReceiptView = VendorReceipt.View
+
+import re
+def FixCity(request):
+  for s in models.NewSite.all():
+    m = re.match('(.+ [0-9-]+) (.*)', s.city_state_zip)  
+    if not m:
+      logging.info('not fixing site number %s: %r', s.number, s.city_state_zip)
+      continue
+    s.city_state_zip = m.groups()[0]
+    logging.info('fixing site number %s: %r', s.number, s.city_state_zip)
+    s.put()
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
