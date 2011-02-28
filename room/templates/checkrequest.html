@@ -23,6 +23,8 @@ $.datepicker.setDefaults({
 
 <h3>Note!  The check request cannot be processed without submitting the receipt(s).  Receipts can be submitted in person or by mail, fax, or email.  Please specify your name and the site number when submitting receipts.</h3>
 
+<p>Fill as completely as possible.  - if the form is incomplete then we'll follow up if necessary to process the check.</p>
+
 <table cellpadding=5>
 <tr>
 <td>
@@ -48,13 +50,16 @@ Mailing Address:
 </td>
 <td>
 <p>Email: 
-<br>info@RebuildingTogetherPeninsula.org
+<br>
+<a href="mailto:info@RebuildingTogetherPeninsula.org">
+info@RebuildingTogetherPeninsula.org
+</a>
 </td>
 </tr>
 </table>
 
 <hr>
-<form action="{% url room.views.CheckRequestEdit entity.key.id %}" method="post">
+<form action="{% url room.views.CheckRequestEdit edit_id %}" method="post">
 
 <table>  
 {{form}}
