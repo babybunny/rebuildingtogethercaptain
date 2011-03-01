@@ -200,7 +200,7 @@ def OrderSheetEdit(request, order_sheet_id=None):
 
   order_sheet.put()
 
-  return http.HttpResponseRedirect('/room/staff_home')
+  return http.HttpResponseRedirect('/room/order_sheet/list')
 
 def OrderSheetNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
