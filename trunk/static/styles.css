@@ -48,6 +48,9 @@ div.right {
   width: 500px;
   float: right;
 }
+div.footer {
+  font-size: smaller;
+}
 
 table.layout {
   width: 950px;
