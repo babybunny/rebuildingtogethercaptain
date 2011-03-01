@@ -45,6 +45,7 @@ def OrderView(request, order_id):
   d = {'order': order,
        'order_items': order_items,
        'action_verb': 'Review',
+       'show_logistics_details': True,
        }
   return common.Respond(request, 'order_fulfill', d)
   
@@ -73,6 +74,7 @@ def _OrderFulfillInternal(order_id, order_sheet_id):
           'back_to_list_url': list_url,
           'confirm_url': confirm_url,
           'action_verb': 'Fulfill',
+          'show_logistics_details': True,
           }
 
 def OrderFulfillConfirm(request, order_id, order_sheet_id=None):
@@ -207,6 +209,7 @@ def _OrderPut(request, user, order):
                                                       order.modified_by)[0],
                    'sales_tax_pct': SALES_TAX_RATE * 100.,
                    'what_you_are_doing': what,
+                   'show_instructions': True,
                    'submit_button_text': submit_button_text,
                    }
 

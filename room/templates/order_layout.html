@@ -59,7 +59,7 @@
 	      {% endif %}
 	    </td>
 	  </tr>
-	  {% if order.order_sheet.instructions %}	  
+	  {% if order.order_sheet.instructions and show_instructions %}	  
 	  <tr>
 	    <td class="order_form_section_header">
 	      Instructions to Captains
@@ -69,6 +69,66 @@
 	    <td>
 	      {{ order.order_sheet.instructions|linebreaks }}
 	    </td>
+	  </tr>
+	  {% endif %}
+	  {% if show_logistics_details and order.order_sheet.HasLogistics %}
+	  <tr>
+	    <td class="order_form_section_header">
+	      Logistics Details
+	    </td>
+	  </tr>
+	  <tr>
+	    {% for d in order.orderdelivery_set %}
+	    <td>
+	      <strong>Delivery</strong>
+	      <br>Delivery on {{ d.delivery.delivery_date }} 
+	      {% if d.delivery.contact %}
+	      <br>Contact: {{ d.delivery.contact }}
+	      {% endif %}
+	      {% if d.delivery.contact_phone %}
+	      ({{ d.delivery.contact_phone }})
+	      {% endif %}
+	      {% if d.delivery.notes %}
+	      <br>{{ d.delivery.notes|linebreaksbr }}
+	      {% endif %}
+	    </td>
+	    {% endfor %}
+	    {% for d in order.orderpickup_set %}
+	    <td>
+	      <strong>Pickup</strong>
+	      <br>Pickup on {{ d.pickup.pickup_date }} 
+	      {% if d.pickup.return_date %} 
+	      <br>Return durable items on {{ d.pickup.return_date }} 
+	      {% endif %}
+	      {% if d.pickup.contact %}
+	      <br>Contact: {{ d.pickup.contact }}
+	      {% endif %}
+	      {% if d.pickup.contact_phone %}
+	      ({{ d.pickup.contact_phone }})
+	      {% endif %}
+	      {% if d.pickup.notes %}
+	      <br>{{ d.pickup.notes|linebreaksbr }}
+	      {% endif %}
+	    </td>
+	    {% endfor %}
+	    {% for d in order.orderretrieval_set %}
+	    <td>
+	      <strong>Retrieval</strong>
+	      <br>Drop off on {{ d.retrieval.dropoff_date }} 
+	      {% if d.retrieval.retrieval_date %} 
+	      <br>Retrieval on {{ d.retrieval.retrieval_date }} 
+	      {% endif %}
+	      {% if d.retrieval.contact %}
+	      <br>Contact: {{ d.retrieval.contact }}
+	      {% endif %}
+	      {% if d.retrieval.contact_phone %}
+	      ({{ d.retrieval.contact_phone }})
+	      {% endif %}
+	      {% if d.retrieval.notes %}
+	      <br>{{ d.retrieval.notes|linebreaksbr }}
+	      {% endif %}
+	    </td>
+	    {% endfor %}
 	  </tr>
 	  {% endif %}
 	  {% if form or order.notes %} 
