@@ -190,6 +190,8 @@ class OrderSheet(BaseModel):
     """
     name = db.StringProperty()    
     name.unique = True
+    visibility = db.StringProperty(choices=('Everyone', 'Staff Only'), 
+                                   default='Everyone')
     code =  db.StringProperty()    
     code.unique = True
     code.verbose_name = 'Three-letter code like LUM for Lumber'

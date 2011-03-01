@@ -449,6 +449,7 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
 
 def OrderPreview(request, site_id=None):
   order_sheets = models.OrderSheet.all().order('name')
+  order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
   site = models.NewSite.get_by_id(int(site_id))
   t = {'order_sheets': order_sheets,
        'site': site}
