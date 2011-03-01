@@ -190,6 +190,11 @@
 	      <b>{{ order_item.item.VisibleName }}</b>
 	      {% if order_item.item.description %} - {% endif %}
 	      {{ order_item.item.description }}
+	      {% if order_item.item.url %} - {% endif %}
+	      <a target="empty" 
+		 href="{{ order_item.item.url }}">
+		... more details
+	      </a>
 	    </td>
 	    <td class="dollar">
 	      {{ order_item.item.unit_cost|floatformat:2 }}

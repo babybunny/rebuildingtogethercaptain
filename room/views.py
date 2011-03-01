@@ -876,6 +876,11 @@ VendorReceiptEdit = VendorReceipt.Edit
 VendorReceiptList = VendorReceipt.List
 VendorReceiptView = VendorReceipt.View
 
+
+def StandardKit(request):
+  return common.Respond(request, 'standard_kit.html', {})
+
+
 import re
 def FixCity(request):
   for s in models.NewSite.all():
@@ -887,3 +892,4 @@ def FixCity(request):
     logging.info('fixing site number %s: %r', s.number, s.city_state_zip)
     s.put()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
