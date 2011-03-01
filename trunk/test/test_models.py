@@ -55,7 +55,7 @@ class Test(unittest.TestCase):
                               city_state_zip='Menlo Park CA 94025', budget=1000)
         self.assertTrue(site)
         self.assertTrue(site.put())
-        cr = models.CheckRequest(site=site, amount=450.)
+        cr = models.CheckRequest(site=site, labor_amount=450.)
         cr.put()
         try:
             self.assertEquals('Site #%d | Belle Haven' % site.key().id(), 
