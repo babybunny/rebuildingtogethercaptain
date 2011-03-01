@@ -5,6 +5,8 @@ urlpatterns = patterns('room.views',
     (r'^$', 'GoHome'),
     (r'^help', 'Help'),
     (r'^fix_city', 'FixCity'),
+    (r'^standard_kit', 'StandardKit'),
+                       
 
     (r'^site/without_order/$', 'SitesWithoutOrder'),
     (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),
