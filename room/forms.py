@@ -168,10 +168,10 @@ class CheckRequestForm(djangoforms.ModelForm):
     captain = SortedCaptainChoiceField()
     site = djangoforms.ModelChoiceField(
         models.Site, widget=forms.HiddenInput)
-    payment_date = DateField('Payment Date')
     class Meta:
         model = models.CheckRequest
         exclude = ['last_editor', 'modified']
+
 
 class CheckRequestCaptainForm(CheckRequestForm):
     captain = djangoforms.ModelChoiceField(
@@ -182,7 +182,6 @@ class VendorReceiptForm(djangoforms.ModelForm):
     captain = SortedCaptainChoiceField()
     site = djangoforms.ModelChoiceField(
         models.Site, widget=forms.HiddenInput)
-    purchase_date = DateField('Purchase Date')
     vendor = forms.ChoiceField(choices=[(v, v) for v in VENDOR_SELECTIONS])
     class Meta:
         model = models.VendorReceipt
