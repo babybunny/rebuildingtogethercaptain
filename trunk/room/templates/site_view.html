@@ -104,6 +104,37 @@
       <table class="budget">
 	<tbody>
 	  <tr>
+	    <td>
+	      <b>In-kind Donations</b>
+	      <br>
+	      <i>not included in budgeting below</i>
+	    </td>
+	    <td>
+	      (${{ site.InKindDonationTotal|floatformat:2 }})
+	    </td>
+	    <td class="action">
+	      <a href="{% url room.views.InKindDonationNew site.key.id %}">
+		Submit New In-kind Donation
+	      </a>
+	      {% if site.inkinddonation_set.count %}
+	      <br>
+	      <a href="#inkinddonations_in_progress">
+		View submitted in-kind donations
+	      </a>
+	      {% endif %}
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	      <hr>
+	    </td>
+	    <td>
+	      <hr>
+	    </td>
+	    <td>
+	    </td>
+	  </tr>	    
+	  <tr>
 	    <td class="lineitem">
 	      Starting Budget
 	    </td>
@@ -131,29 +162,6 @@
 		5 orders in progress</a>
 	    </td>
 	  </tr>
-	  {% comment %} 
-	  <tr>
-	    <td>
-	      <b>Vendor Receipts</b>
-	      <br>
-	      <i>purchases through RTP's account with vendors like Home Depot</i>
-	    </td>
-	    <td>
-	      (${{ site.VendorReceiptTotal|floatformat:2 }})
-	    </td>
-	    <td class="action">
-	      <a href="{% url room.views.VendorReceiptNew site.key.id %}">
-		Enter Vendor Receipt
-	      </a>
-	      {% if site.vendorreceipt_set.count %}
-	      <br>
-	      <a href="#vendor_receipts_in_progress">
-		View vendor receipts
-	      </a>
-	      {% endif %}
-	    </td>
-	  </tr>
-	  {% endcomment %} 
 	  <tr>
 	    <td>
 	      <b>Check Requests</b>
@@ -226,76 +234,115 @@
       {% if site.checkrequest_set.count %}
       <a name="check_requests_in_progress"></a>
       <div class="panel">
-      <h3>Check Requests</h3>
-      <table class="list tablesorter">
-	{% for check_request in site.checkrequest_set %}
-	{% if forloop.first %}
-	<tr>
-	  <th>Captain</th>
-	  <th>Payable To</th>
-	  <th>Amount</th>
-	  <th>Status</th>
-	</tr>
-	{% endif %}
-	<tr>
-	  <td>
-	    {{ check_request.captain.name|escape }}
-	  </td>
-	  <td>
-	    {{ check_request.name|escape }}
-	  </td>
-	  <td>
-	    {{ check_request.Total|escape }}
-	  </td>
-	  <td>
-	    <a name="{{ check_request.key.id }}"
-	       href="{%url room.views.CheckRequestView check_request.key.id%}">
-	      view
-	    </a>
-	  </td>
-	  <td colspan=2>
-	  </td>
-	</tr>
-	{% endfor %}
-      </table>
-      {% endif %}
+	<h3>Check Requests</h3>
+	<table class="list tablesorter">
+	  {% for check_request in site.checkrequest_set %}
+	  {% if forloop.first %}
+	  <tr>
+	    <th>Captain</th>
+	    <th>Payable To</th>
+	    <th>Amount</th>
+	    <th>Status</th>
+	  </tr>
+	  {% endif %}
+	  <tr>
+	    <td>
+	      {{ check_request.captain.name|escape }}
+	    </td>
+	    <td>
+	      {{ check_request.name|escape }}
+	    </td>
+	    <td>
+	      {{ check_request.Total|escape }}
+	    </td>
+	    <td>
+	      <a name="{{ check_request.key.id }}"
+		 href="{%url room.views.CheckRequestView check_request.key.id%}">
+		view
+	      </a>
+	    </td>
+	    <td colspan=2>
+	    </td>
+	  </tr>
+	  {% endfor %}
+	</table>
       </div>
+      {% endif %}
+
       {% if site.vendorreceipt_set.count %}
       <a name="vendor_receipts_in_progress"></a>
       <div class="panel">
-      <h3>Vendor Receipts</h3>
-      <table class="list tablesorter">
-	{% for check_request in site.vendorreceipt_set %}
-	{% if forloop.first %}
-	<tr>
-	  <th>Captain</th>
-	  <th>Vendor</th>
-	  <th>Amount</th>
-	  <th>Status</th>
-	</tr>
+	<h3>Vendor Receipts</h3>
+	<table class="list tablesorter">
+	  {% for entity in site.vendorreceipt_set %}
+	  {% if forloop.first %}
+	  <tr>
+	    <th>Captain</th>
+	    <th>Vendor</th>
+	    <th>Amount</th>
+	    <th>Status</th>
+	  </tr>
+	  {% endif %}
+	  <tr>
+	    <td>
+	      {{ entity.captain.name|escape }}
+	    </td>
+	    <td>
+	      {{ entity.vendor|escape }}
+	    </td>
+	    <td>
+	      {{ entity.amount|escape }}
+	    </td>
+	    <td>
+	      <a name="{{ entity.key.id }}"
+		 href="{%url room.views.VendorReceiptView entity.key.id%}">
+		view
+	      </a>
+	    </td>
+	    <td colspan=2>
+	    </td>
+	  </tr>
+	  {% endfor %}
+	</table>
 	{% endif %}
-	<tr>
-	  <td>
-	    {{ check_request.captain.name|escape }}
-	  </td>
-	  <td>
-	    {{ check_request.vendor|escape }}
-	  </td>
-	  <td>
-	    {{ check_request.amount|escape }}
-	  </td>
-	  <td>
-	    <a name="{{ check_request.key.id }}"
-	       href="{%url room.views.VendorReceiptView check_request.key.id%}">
-	      view
-	    </a>
-	  </td>
-	  <td colspan=2>
-	  </td>
-	</tr>
-	{% endfor %}
-      </table>
-      {% endif %}
+
+      {% if site.inkinddonation_set.count %}
+      <a name="inkinddonations_in_progress"></a>
+      <div class="panel">
+	<h3>In-kind Donation</h3>
+	<table class="list tablesorter">
+	  {% for entity in site.inkinddonation_set %}
+	  {% if forloop.first %}
+	  <tr>
+	    <th>Captain</th>
+	    <th>Donor</th>
+	    <th>Amount</th>
+	    <th>Status</th>
+	  </tr>
+	  {% endif %}
+	  <tr>
+	    <td>
+	      {{ entity.captain.name|escape }}
+	    </td>
+	    <td>
+	      {{ entity.donor|escape }}
+	    </td>
+	    <td>
+	      {{ entity.Total|escape }}
+	    </td>
+	    <td>
+	      <a name="{{ entity.key.id }}"
+		 href="{%url room.views.InKindDonationView entity.key.id%}">
+		view
+	      </a>
+	    </td>
+	    <td colspan=2>
+	    </td>
+	  </tr>
+	  {% endfor %}
+	</table>
+	{% endif %}
+
       </div>
     </td>
   </tr>

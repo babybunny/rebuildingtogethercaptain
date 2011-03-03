@@ -118,6 +118,10 @@ class NewSite(BaseModel):
         """Only works if self has been saved."""    
         return sum(cr.amount or 0 for cr in self.vendorreceipt_set)
 
+    def InKindDonationTotal(self):
+        """Only works if self has been saved."""    
+        return sum(cr.Total() or 0 for cr in self.inkinddonation_set)
+
     def BudgetRemaining(self):
         return (self.budget
                 - self.OrderTotal() 
@@ -459,3 +463,25 @@ class VendorReceipt(BaseModel):
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
+
+class InKindDonation(BaseModel):
+    """An In-kind donation to a site."""
+    site = db.ReferenceProperty(NewSite)
+    captain = db.ReferenceProperty(Captain)
+    donation_date = db.DateProperty(required=True)
+    donor = db.StringProperty(required=True)
+    donor_phone = db.StringProperty(required=True)
+    donor_info = db.TextProperty()
+    donor_info.verbose_name = (
+        'Include as much of the following donor information as possible:'
+        ' donor name, company, address, phone, email.')
+    labor_amount = db.FloatProperty(default=0.0)
+    labor_amount.verbose_name = 'Labor Value ($)'
+    materials_amount = db.FloatProperty(default=0.0)
+    materials_amount.verbose_name = 'Materials Value ($)'
+    description = db.TextProperty(required=True)
+    last_editor = db.UserProperty()
+    modified = db.DateTimeProperty(auto_now=True)
+    
+    def Total(self):
+        return self.labor_amount + self.materials_amount

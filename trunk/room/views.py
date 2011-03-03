@@ -880,6 +880,20 @@ VendorReceiptList = VendorReceipt.List
 VendorReceiptView = VendorReceipt.View
 
 
+class InKindDonation(SiteExpense):
+  model = models.InKindDonation
+  template_base = 'inkinddonation'
+  readable = 'In-kind Donation'
+  form_cls = forms.InKindDonationCaptainForm
+  staff_form_cls = forms.InKindDonationForm
+
+
+InKindDonationNew = InKindDonation.New
+InKindDonationEdit = InKindDonation.Edit
+InKindDonationList = InKindDonation.List
+InKindDonationView = InKindDonation.View
+
+
 def StandardKit(request):
   return common.Respond(request, 'standard_kit.html', {})
 
