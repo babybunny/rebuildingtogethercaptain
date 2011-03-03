@@ -64,6 +64,11 @@ urlpatterns = patterns('room.views',
     (r'^vendorreceipt/new/(\d+)/$', 'VendorReceiptNew'),
     (r'^vendorreceipt/edit/(\d+)/$', 'VendorReceiptEdit'),
     (r'^vendorreceipt/view/(\d+)/$', 'VendorReceiptView'),
+
+    (r'^inkinddonation/list/$', 'InKindDonationList'),
+    (r'^inkinddonation/new/(\d+)/$', 'InKindDonationNew'),
+    (r'^inkinddonation/edit/(\d+)/$', 'InKindDonationEdit'),
+    (r'^inkinddonation/view/(\d+)/$', 'InKindDonationView'),
 )
 
 urlpatterns += patterns(

@@ -190,3 +190,16 @@ class VendorReceiptForm(djangoforms.ModelForm):
 class VendorReceiptCaptainForm(VendorReceiptForm):
     captain = djangoforms.ModelChoiceField(
         models.Captain, widget=forms.HiddenInput)
+
+
+class InKindDonationForm(djangoforms.ModelForm):
+    captain = SortedCaptainChoiceField()
+    site = djangoforms.ModelChoiceField(
+        models.Site, widget=forms.HiddenInput)
+    class Meta:
+        model = models.InKindDonation
+        exclude = ['last_editor', 'modified']
+
+class InKindDonationCaptainForm(InKindDonationForm):
+    captain = djangoforms.ModelChoiceField(
+        models.Captain, widget=forms.HiddenInput)

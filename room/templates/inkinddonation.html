@@ -1,0 +1,40 @@
+{%extends "base.html"%}
+{% block script %}
+<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/le-frog/jquery-ui.css" rel="Stylesheet" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
+<script type="text/javascript">
+$(function() {
+  $("#id_donation_date").datepicker();
+});
+$.datepicker.setDefaults({
+   showOn: 'both',
+   buttonImageOnly: true,
+   buttonImage: '/static/calendar.gif',
+   buttonText: 'Calendar' });
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | Make an In-kind Donation
+{% endblock %}
+{%block body%}
+
+<h2>Adding In-kind Donation for Site {{ entity.site.number }}</h2>
+
+<p>Fill as completely as possible.  - if the form is incomplete then we'll follow up if necessary to process the donation.</p>
+
+<form action="{% url room.views.InKindDonationEdit edit_id %}" method="post">
+
+<table>  
+{{form}}
+<tr>
+  <td>
+  </td>
+  <td>
+    <input type="submit" value="Save changes to this In-kind Donation">
+  </td>
+</tr>
+</table>
+</form>
+
+{%endblock%}

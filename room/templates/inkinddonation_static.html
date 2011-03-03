@@ -1,5 +1,5 @@
 <h2>
-  Check Request # {{ entity.key.id}} 
+  In-kind Donation # {{ entity.key.id}} 
   for Site {{ entity.site.number }}
 </h2>
 <hr>
@@ -8,7 +8,7 @@
   <td>Click to Edit</td>
   <td>
     <a name="{{ entity.key.id }}"
-       href="{%url room.views.CheckRequestEdit entity.key.id%}">
+       href="{%url room.views.InKindDonationEdit entity.key.id%}">
       {{entity.key.id|escape}}
     </a>
   </td>
@@ -30,6 +30,30 @@
 </tr>
 <tr>
   <td>
+    Donor
+  </td>
+  <td>
+    {{ entity.donor|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Donor Phone
+  </td>
+  <td>
+    {{ entity.donor_phone|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Donor Info
+  </td>
+  <td>
+    {{ entity.donor_info|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
     Labor Amount
   </td>
   <td>
@@ -42,38 +66,6 @@
   </td>
   <td>
     {{ entity.materials_amount|escape }}
-  </td>
-</tr>
-<tr>
-  <td>
-    Payment Date
-  </td>
-  <td>
-    {{ entity.payment_date|escape }}
-  </td>
-</tr>
-<tr>
-  <td>
-    Payable To
-  </td>
-  <td>
-    {{ entity.name|escape }}
-  </td>
-</tr>
-<tr>
-  <td>
-    Address
-  </td>
-  <td>
-    {{ entity.address|escape }}
-  </td>
-</tr>
-<tr>
-  <td>
-    Business
-  </td>
-  <td>
-    {{ entity.form_of_business|escape }}
   </td>
 </tr>
 <tr>
