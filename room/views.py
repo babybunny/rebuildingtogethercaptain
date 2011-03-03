@@ -783,11 +783,13 @@ class SiteExpense:
     """Create an entity.  GET shows a blank form, POST processes it."""
     user, user_captain, staff = common.GetUser(request)
     site = models.NewSite.get_by_id(int(site_id))
-    entity = cls.model(site=site, captain=user_captain)
-    return cls.Edit(request, entity=entity)
+    initial = {'site': site.key()}
+    if user_captain:
+      initial['captain'] = user_captain.key()
+    return cls.Edit(request, initial=initial)
   
   @classmethod
-  def Edit(cls, request, id=0, entity=None):
+  def Edit(cls, request, id=0, entity=None, initial=None):
     """Create or edit an entity."""
     id = int(id)
     if id:
@@ -808,7 +810,8 @@ class SiteExpense:
       form_cls = cls.form_cls
       
     form = form_cls(data=request.POST or None,  
-                    instance=entity)
+                    instance=entity,
+                    initial=initial)
     if not request.POST:
       return common.Respond(
         request, cls.template_base, 

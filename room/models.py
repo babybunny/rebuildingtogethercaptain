@@ -15,7 +15,7 @@ STANDARD_KIT_COST = 250.
 
 class Captain(BaseModel):
     """A work captain."""    
-    name = db.StringProperty()  # "Joe User"
+    name = db.StringProperty(required=True)  # "Joe User"
     # Using the UserProperty seems to be more hassle than it's worth.
     # I was getting errors about users that didn't exist when loading sample 
     # data.
@@ -422,19 +422,20 @@ class CheckRequest(BaseModel):
     """A Check Request is a request for reimbursement."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
-    payment_date = db.DateProperty()
+    payment_date = db.DateProperty(required=True)
     labor_amount = db.FloatProperty(default=0.0)
     labor_amount.verbose_name = 'Labor Amount ($)'
     materials_amount = db.FloatProperty(default=0.0)
     materials_amount.verbose_name = 'Materials Amount ($)'
-    description = db.TextProperty()
-    name = db.StringProperty()
+    description = db.TextProperty(required=True)
+    name = db.StringProperty(required=True)
     name.verbose_name = 'Payable To'
     address = db.TextProperty()
     address.verbose_name = "Payee Address"
     tax_id = db.StringProperty()
     tax_id.verbose_name = "Payee Tax ID"
-    tax_id.help_text = "we'll notify you if we still need this information to process the check"
+    tax_id.help_text = ("we'll notify you if we still need this information "
+                        "to process the check")
     form_of_business = db.StringProperty(
         choices=('Corporation', 'Partnership', 'Sole Proprietor', 
                  'Don\'t Know'))
@@ -450,9 +451,9 @@ class VendorReceipt(BaseModel):
     """A Vendor Receipt is a report of a purchase outside of ROOMS."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
-    purchase_date = db.DateProperty()
-    vendor = db.StringProperty()
-    amount = db.FloatProperty()
+    purchase_date = db.DateProperty(required=True)
+    vendor = db.StringProperty(required=True)
+    amount = db.FloatProperty(required=True)
     amount.verbose_name = 'Purchase Amount ($)'
     description = db.TextProperty()
     last_editor = db.UserProperty()
