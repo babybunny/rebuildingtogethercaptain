@@ -6,10 +6,14 @@
 {% endblock %}
 {%block body%}
 
-<p>If you’re having trouble placing orders on this system, please contact Al Zayha:  
+<p>If you’re having trouble placing orders on this system, 
+  please contact {{ help_person }}:  
   <a href="mailto:{{ help_contact }}">
     {{ help_contact }}
   </a>
-  or 650-366-6597 x223.
+  or {{ help_phone }}.
 </p>
+
+    {% include "tutorials.html" %}
+
 {%endblock%}

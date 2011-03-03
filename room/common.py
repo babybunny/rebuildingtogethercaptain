@@ -13,6 +13,8 @@ NRD = '04/24/2011'
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
+HELP_PERSON = 'Cari Pang Chen'
+HELP_PHONE = '650-366-6597 x224'
 
 # From: address of outbound emails.
 EMAIL_SENDER = 'rebuildingtogether.rooms@gmail.com'
@@ -120,6 +122,8 @@ def Respond(request, template_name, params=None):
   else:
     params['sign_in'] = users.CreateLoginURL(request.path)
   params['help_contact'] = HELP_CONTACT
+  params['help_phone'] = HELP_PHONE
+  params['help_person'] = HELP_PERSON
   if not template_name.endswith('.html'):
     template_name += '.html'
   return shortcuts.render_to_response(template_name, params)
