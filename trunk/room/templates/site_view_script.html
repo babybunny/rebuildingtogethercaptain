@@ -1,0 +1,33 @@
+<link type="text/css" 
+      href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" 
+      rel="Stylesheet" />
+<link type="text/css" 
+      href="/static/tablesorter/themes/blue/style.css" 
+      rel="Stylesheet" />
+<script type="text/javascript" 
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+</script>
+<script type="text/javascript" 
+	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+</script>
+<script type="text/javascript" 
+	src="/static/tablesorter/jquery.tablesorter.min.js">
+</script>
+<script type="text/javascript">
+var tables = [
+  "#orders",
+  "#checkrequests",
+  "#vendorreceipts",
+  "#inkinddonations"
+  ];
+$(document).ready(function() {
+  for (t in tables) {
+    $(tables[t]).tablesorter({ 
+      sortList: [[1,0]]
+    });
+  }
+});
+$(function() {
+  $("table.budget a").button();
+});
+</script>
