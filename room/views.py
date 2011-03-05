@@ -912,3 +912,32 @@ def FixCity(request):
     s.put()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+def AddStandardKitOrder(request, prefix):
+  skos = models.OrderSheet.all().filter('code = ', 'SDK').get() 
+  if not skos:
+    logging.warn('can not find SDK order sheet')
+    return http.HttpResponse(
+      urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+  i = skos.item_set.get()
+  if not i:
+    logging.warn('can not find item for SDK order sheet')
+    return http.HttpResponse(
+      urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+  for site in models.NewSite.all():
+    if not site.number.startswith(prefix):
+      logging.info('skipping site %r because wrong prefix %r', 
+                   site.number, prefix)
+      continue
+    if site.order_set.filter('order_sheet = ', skos).count():
+      logging.info('skipping site %r because has SDK order', site.number)      
+      continue
+    sko = models.Order(site=site, order_sheet=skos, state='Received')
+    sko.put()
+    oi = models.OrderItem(order=sko, item=i, quantity=1)
+    oi.put()
+    logging.info('created SDK order for site %r', site.number)
+    sko.UpdateSubTotal()
+    sko.put()
+
+  return http.HttpResponse(
+    urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))

@@ -10,8 +10,6 @@ from appengine_django.models import BaseModel
 from google.appengine.ext import db
 
 SALES_TAX_RATE = 0.0925
-# TODO: remove
-STANDARD_KIT_COST = 250.
 
 class Captain(BaseModel):
     """A work captain."""    
@@ -86,9 +84,6 @@ class NewSite(BaseModel):
     city = db.StringProperty()
     budget = db.IntegerProperty()
 
-    # TODO: remove
-    number_of_standard_kits = db.IntegerProperty(default=1)
-    
     def __unicode__(self):
         """Only works if self has been saved."""
         return 'Site #%s | %s' % (self.key().id(), self.name)
@@ -99,18 +94,9 @@ class NewSite(BaseModel):
     def NeedsAttention(self):
         return False
     
-    # TODO: remove
-    def StandardKitCost(self):
-        kits = self.number_of_standard_kits
-        if kits is None:
-            kits = 1
-        return STANDARD_KIT_COST * kits
-
     def OrderTotal(self):
         """Only works if self has been saved."""    
-        # TODO: remove
-        cost = self.StandardKitCost()
-        cost += sum(order.GrandTotal() for order in self.order_set)
+        cost = sum(order.GrandTotal() for order in self.order_set)
         return cost
 
     def CheckRequestTotal(self):
