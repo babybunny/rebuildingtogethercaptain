@@ -132,10 +132,12 @@ def StaffHome(request):
   return common.Respond(request, 'staff_home', d)
 
 
-def CaptainHome(request):
+def CaptainHome(request, captain_id=None):
   user, captain, staff = common.GetUser(request)
   if user is None:
     return http.HttpResponseRedirect('/')
+  if captain_id is not None:
+    captain = models.Captain.get_by_id(int(captain_id))
   order_sheets = models.OrderSheet.all().order('name')
   sites = []
   for sitecaptain in captain.sitecaptain_set:
