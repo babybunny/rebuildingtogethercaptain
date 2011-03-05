@@ -6,6 +6,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
   $("#captain_list").tablesorter({
+      headers: { 1: { sorter: false} }
     });
 });
 </script>
@@ -33,11 +34,8 @@ $(document).ready(function(){
 <table class="list tablesorter" id="captain_list">
   <thead>
     <tr>
-      <th>Name
-	{% if user.staff %}
-	<br>(click to edit)
-	{% endif %}
-      </th>
+      <th>Name</th>
+      <th></th>
       <th>Email</th>
       <th>Preferred Phone</th>
       <th>Backup Phone</th>
@@ -53,13 +51,20 @@ $(document).ready(function(){
     <tr>
       <td>
 	<span name="{{captain.name|escape}}"></span>
-	<a name="{{ captain.key.id }}"
-	   {% if user.staff %}
-	   href="{% url room.views.CaptainEdit captain.key.id %}"
-	   {% endif %}
-	   >
+	<a name="{{ captain.key.id }}">
 	{{captain.name|escape}}
 	</a>
+      </td>
+      <td>
+	{% if user.staff %}
+	<a href="{% url room.views.CaptainEdit captain.key.id %}">
+	edit
+	</a>
+	- 
+	<a href="{% url room.views.CaptainHome captain.key.id %}">
+	home
+	</a>
+	{% endif %}
       </td>
       <td>
 	{{ captain.email|escape }}

@@ -101,7 +101,10 @@ class NewSite(BaseModel):
     
     # TODO: remove
     def StandardKitCost(self):
-        return STANDARD_KIT_COST * self.number_of_standard_kits
+        kits = self.number_of_standard_kits
+        if kits is None:
+            kits = 1
+        return STANDARD_KIT_COST * kits
 
     def OrderTotal(self):
         """Only works if self has been saved."""    
@@ -112,7 +115,7 @@ class NewSite(BaseModel):
 
     def CheckRequestTotal(self):
         """Only works if self has been saved."""    
-        return sum(cr.Total() for cr in self.checkrequest_set)
+        return sum(cr.Total() or 0 for cr in self.checkrequest_set)
 
     def VendorReceiptTotal(self):
         """Only works if self has been saved."""    
@@ -131,7 +134,7 @@ class NewSite(BaseModel):
 
     def BudgetStatement(self):
         if self.BudgetRemaining() > 0:
-            return '$%0.2f under budget' % self.BudgetRemaining()
+            return '$%0.2f unspent budget' % self.BudgetRemaining()
         else:
             return '$%0.2f over budget' % (-1 * self.BudgetRemaining())
 
