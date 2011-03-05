@@ -38,6 +38,7 @@ urlpatterns = patterns('room.views',
     (r'^captain/export$', 'CaptainExport'),
     (r'^captain/new$', 'CaptainNew'),
     (r'^captain/edit/(\d+)/$', 'CaptainEdit'),
+    (r'^captain/home/(\d+)/$', 'CaptainHome'),
 
     (r'^captain_home$', 'CaptainHome'),
     (r'^staff_home$', 'StaffHome'),

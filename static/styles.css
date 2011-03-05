@@ -29,17 +29,27 @@ body {
   width: 0;
   height: 0;
 }
+.alert {
+  border: 5px solid red;
+  border-collapse: collapse;
+}
 span.attr {
   white-space: nowrap;
 }
 div.panel {
-  padding: 3px;
+  padding-top: 3px;
   margin: 10px 0px 3px 0px;
   border: 1px solid black;
 }
 div.panel h3,h2 {
   margin-top: 0;
+  margin-bottom: 5px;
+  padding-left: 5px;
 }
+div.panel table.tablesorter {
+  margin-top: 5px;
+}
+
 div.left {
   width: 400px;
   float: left;
@@ -51,7 +61,6 @@ div.right {
 div.footer {
   font-size: smaller;
 }
-
 table.layout {
   width: 950px;
   padding: 5px;
@@ -133,9 +142,6 @@ input {
 table.order_item_list td.quantity input { 
   padding: 0; margin:0;		      
 }
-table.budget {
-  border: 1px solid black;
-}
 td.hr, td.hr-invis {
   border-bottom: 1px solid #333;
   padding: 3px;
@@ -155,8 +161,39 @@ td.measure {
   text-align: right;
   white-space: nowrap;
 }
-td.action {
+table.budget {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+table.budget td {
+  padding-left: 5px;
+}
+table.budget span.budget-item-note {
+  font-size: smaller;
+  font-style: italic;
+}
+table.budget a {
+  font-size: 11px;
+  margin: 2px; padding: 0;
+}
+table.budget td.action {
   white-space: nowrap;
+  padding-right: 5px;
+  padding-left: 0px;
+}
+table.budget td.value {
+  white-space: nowrap;
+  text-align: right;
+}  
+table.budget tr.inkinddonation td {
+  border-top: 1px solid #666;
+  border-collapse: collapse;
+  border-left: 0; border-right: 0;
+}
+table.budget td.budget {
+  text-align: right;
+  white-space: nowrap;
+  width: 60%;
 }
 td.lineitem {
   font-weight: bold;
@@ -172,7 +209,6 @@ td.order_form_section_header {
 table.order_form_header span {
   padding-right: 30px;			
 }
-
 #login_div {
   float: right;
   min-width: 300px;
