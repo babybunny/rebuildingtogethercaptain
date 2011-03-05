@@ -39,7 +39,7 @@ span.attr {
 div.panel {
   padding-top: 3px;
   margin: 10px 0px 3px 0px;
-  border: 1px solid black;
+  border: 1px solid #999;
 }
 div.panel h3,h2 {
   margin-top: 0;
@@ -60,6 +60,8 @@ div.right {
 }
 div.footer {
   font-size: smaller;
+  clear: both;
+  margin-top: 10px;
 }
 table.layout {
   width: 950px;
@@ -78,7 +80,7 @@ table.layout th.layout {
 table.hint {
   padding: 5px;
   margin: 5px;
-  border: 1px solid black;
+  border: 1px solid #999;
 }
 table.hint td {
   text-align: right;
@@ -105,7 +107,7 @@ table.site td {
   vertical-align: top;
 }
 td.vertical-separator {
-  border-left: 1px solid black;		      
+  border-left: 1px solid #999;		      
 }
 table.tightform td { 
   padding: 0; 
@@ -128,7 +130,7 @@ table.order_item_list td.form-summary {
   text-align: right;
 }
 table.order_item_list td.subtotal { 
-  border-top: 1px solid black;		      
+  border-top: 1px solid #999;		      
 }
 table.order_item_list td.quantity { 
   text-align: right;
@@ -162,7 +164,7 @@ td.measure {
   white-space: nowrap;
 }
 table.budget {
-  border: 1px solid black;
+  border: 1px solid #999;
   border-collapse: collapse;
 }
 table.budget td {
@@ -178,15 +180,18 @@ table.budget a {
 }
 table.budget td.action {
   white-space: nowrap;
-  padding-right: 5px;
+  padding-right: 8px;
   padding-left: 0px;
+}
+table.budget td.action .ui-button {
+  width: 100%;
 }
 table.budget td.value {
   white-space: nowrap;
   text-align: right;
 }  
 table.budget tr.inkinddonation td {
-  border-top: 1px solid #666;
+  border-top: 1px solid #999;
   border-collapse: collapse;
   border-left: 0; border-right: 0;
 }
@@ -201,7 +206,7 @@ td.lineitem {
 table.order_form_header td.order_form_section_header,
 td.order_form_section_header {
   font-size: larger;
-  border-top: 1px solid black;
+  border-top: 1px solid #999;
   padding-top: 5px;
   padding-left: 0px;
 }

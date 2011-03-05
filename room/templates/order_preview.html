@@ -31,7 +31,7 @@ display:none;
 {%block body%}    
 {% for sheet in order_sheets %}
 <div class="description" id="{{ sheet.code }}">
-  <h4>Items on the {{ sheet.name }} form</h4>
+  <h4>Preview items on the {{ sheet.name }} form</h4>
   {% for i in sheet.item_set %}
   {{ i.VisibleOrderFormSection }} : {{ i.VisibleName }}<br/>
   {% endfor %}  
