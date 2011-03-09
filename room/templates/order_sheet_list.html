@@ -1,4 +1,13 @@
 {%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+  });
+});
+</script>
+{%endblock%}
 {% block breadcrumb %}
   | List Order Forms
 {% endblock %}
@@ -6,56 +15,64 @@
 <h2>All Order Forms</h2>
 
 <table>
-  <tr>
-    <th>
-      Code
-    </th>
-    <th>
-      Name
-    </th>
-    <th>
-      Delivery
-    </th>
-    <th>
-      Returns
-    </th>
-    <th>
-      Special Instructions
-    </th>
-    <th>
-      Number of Items
-    </th>
-    <th>
-      Default Supplier
-    </th>
-  </tr>
-  {%for order_sheet in order_sheets%}
-  <tr>
-    <td>
-      <a href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">{{order_sheet.code|escape}} (edit)</a>
-    </td>
-    <td>
-      {{ order_sheet.name|escape }}
-    </td>
-    <td>
-      {{ order_sheet.delivery_options|escape }}
-    </td>
-    <td>
-      {{ order_sheet.durable|escape }}
-    </td>
-    <td>
-      {{ order_sheet.instructions|escape }}
-    </td>
-    <td>
-      {{ order_sheet.item_set.count }}
-    </td>
-    <td>
-      {{ order_sheet.default_supplier }}
-    </td>
-  </tr>
-  {%endfor%}
+  <thead>
+    <tr>
+      <th>
+	Code
+      </th>
+      <th>
+	Name
+      </th>
+      <th>
+	Delivery
+      </th>
+      <th>
+	Returns
+      </th>
+      <th>
+	Special Instructions
+      </th>
+      <th>
+	Number of Items
+      </th>
+      <th>
+	Default Supplier
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for order_sheet in order_sheets%}
+    <tr>
+      <td>
+	<a href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">
+	  {{order_sheet.code|escape}} (edit)
+	</a>
+      </td>
+      <td>
+	{{ order_sheet.name|escape }}
+      </td>
+      <td>
+	{{ order_sheet.delivery_options|escape }}
+      </td>
+      <td>
+	{{ order_sheet.durable|escape }}
+      </td>
+      <td>
+	{{ order_sheet.instructions|escape }}
+      </td>
+      <td>
+	{{ order_sheet.item_set.count }}
+      </td>
+      <td>
+	{{ order_sheet.default_supplier }}
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
 </table>
 
-<form action="{%url room.views.OrderSheetNew %}"><input type=submit value="Add a new Order Form"></form>
+<form action="{%url room.views.OrderSheetNew %}">
+  <input type=submit value="Add a new Order Form">
+</form>
 
 {%endblock%}
