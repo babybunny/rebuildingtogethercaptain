@@ -101,16 +101,18 @@ def Help(request):
 
 
 def Scoreboard(request):
-  welcomes = models.Captain.all().order('-last_welcome').fetch(20)
-  staff_welcomes = models.Staff.all().order('-last_welcome').fetch(10)
+  welcomes = models.Captain.all().filter(
+    'last_welcome != ', None).order('-last_welcome').fetch(20)
+  staff_welcomes = models.Staff.all().filter(
+    'last_welcome != ', None).order('-last_welcome').fetch(10)
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
     'last_welcome != ', None).count()
   num_captains_with_tshirt = models.Captain.all().filter(
     'tshirt_size != ', None).count()
   num_sites = models.NewSite.all().count()
-  num_sites_with_orders = len(set(
-      (o.site for o in models.Order.all().filter('state != ', 'new'))))
+  q = models.Order.all().filter('state != ', 'new')
+  num_sites_with_orders = len(set((o.site.key().id() for o in q)))
   total_site_budget = sum(s.budget for s in models.NewSite.all() 
                           if s.budget)
   num_orders = models.Order.all().count()
