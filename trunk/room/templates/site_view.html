@@ -244,6 +244,7 @@
 	  </tr>
 	</tbody>
       </table>
+      {% if site.HasVisibleOrders %}
       <a name="order_panel"></a>
       <div class="panel">
       <h3>Orders in progress</h3>
@@ -303,6 +304,8 @@
 	</tbody>
       </table>
       </div>
+      {% endif %}
+
       {% if site.checkrequest_set.count %}
       <a name="checkrequests_panel"></a>
       <div class="panel">

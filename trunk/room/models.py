@@ -124,12 +124,16 @@ class NewSite(BaseModel):
         else:
             return '$%0.2f over budget' % (-1 * self.BudgetRemaining())
 
+    def VisibleOrderQuery(self):
+        return self.order_set.filter('state != ', 'new')
+
+    def HasVisibleOrders(self):
+        return self.VisibleOrderQuery().count()
 
     def VisibleOrders(self):
-        for order in sorted(self.order_set, 
+        for order in sorted(self.VisibleOrderQuery(), 
                             key=lambda o: o.modified, reverse=True):
-            if order.state != 'new':
-                yield order
+            yield order
 
 
 class SiteCaptain(BaseModel):
