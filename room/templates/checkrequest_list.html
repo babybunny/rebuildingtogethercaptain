@@ -1,43 +1,61 @@
 {%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+    });
+});
+</script>
+{% endblock %}
 {% block breadcrumb %}
   | List Check Requests
 {% endblock %}
 {%block body%}
 <h2>All Check Requests</h2>
 
-<table cellpadding=5><tr>
-<th>Click to Edit</th>
-<th>Site</th>
-<th>Captain</th>
-<th>Payable To</th>
-<th>Amount</th>
-<th>Address</th>
-<th>Category</th>
-<th>Business</th>
-<th>Description</th>
-</tr>
-{% for entity in entries %}
-<tr><td>
-  <a name="{{ entity.key.id }}"
-     href="{%url room.views.CheckRequestEdit entity.key.id%}">{{entity.key.id|escape}}</a>
-</td><td>
-{{ entity.site.number|escape }}
-</td><td>
-{{ entity.captain.name|escape }}
-</td><td>
-{{ entity.name|escape }}
-</td><td>
-{{ entity.amount|escape }}
-</td><td>
-{{ entity.address|escape }}
-</td><td>
-{{ entity.category|escape }}
-</td><td>
-{{ entity.form_of_business|escape }}
-</td><td>
-{{ entity.description|escape }}
-</td></tr>
-{% endfor %}
+<table cellpadding=5 class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Click to Edit</th>
+      <th>Site</th>
+      <th>Captain</th>
+      <th>Payable To</th>
+      <th>Amount</th>
+      <th>Address</th>
+      <th>Category</th>
+      <th>Business</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entity in entries %}
+    <tr>
+      <td>
+	<a name="{{ entity.key.id }}"
+	   href="{%url room.views.CheckRequestEdit entity.key.id%}">
+	  {{entity.key.id|escape}}
+	</a>
+      </td><td>
+	{{ entity.site.number|escape }}
+      </td><td>
+	{{ entity.captain.name|escape }}
+      </td><td>
+	{{ entity.name|escape }}
+      </td><td>
+	{{ entity.amount|escape }}
+      </td><td>
+	{{ entity.address|escape }}
+      </td><td>
+	{{ entity.category|escape }}
+      </td><td>
+	{{ entity.form_of_business|escape }}
+      </td><td>
+	{{ entity.description|escape }}
+    </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 
 {%endblock%}

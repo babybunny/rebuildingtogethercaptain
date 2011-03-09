@@ -1,45 +1,59 @@
 {%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+    });
+});
+</script>
+{%endblock%}
 {% block breadcrumb %}
   | List In-kind Donations
 {% endblock %}
 {%block body%}
 <h2>All In-kind Donations</h2>
 
-<table cellpadding=5><tr>
-<th>Click to Edit</th>
-<th>Site</th>
-<th>Captain</th>
-<th>Payable To</th>
-<th>Amount</th>
-<th>Address</th>
-<th>Category</th>
-<th>Business</th>
-<th>Description</th>
-</tr>
-{% for person in entries %}
-<tr><td>
-  <a name="{{ person.key.id }}"
-     href="{%url room.views.InKindDonationEdit person.key.id%}">
-    {{person.key.id|escape}}
-  </a>
-</td><td>
-{{ person.site.number|escape }}
-</td><td>
-{{ person.captain.name|escape }}
-</td><td>
-{{ person.name|escape }}
-</td><td>
-{{ person.amount|escape }}
-</td><td>
-{{ person.address|escape }}
-</td><td>
-{{ person.category|escape }}
-</td><td>
-{{ person.form_of_business|escape }}
-</td><td>
-{{ person.description|escape }}
-</td></tr>
-{% endfor %}
+<table cellpadding=5 class="list tablesorter">
+  <thead>  
+    <tr>
+      <th>Click to Edit</th>
+      <th>Site</th>
+      <th>Captain</th>
+      <th>Payable To</th>
+      <th>Amount</th>
+      <th>Address</th>
+      <th>Category</th>
+      <th>Business</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entity in entries %}
+    <tr><td>
+	<a name="{{ entity.key.id }}"
+	   href="{%url room.views.InKindDonationEdit entity.key.id%}">
+	  {{entity.key.id|escape}}
+	</a>
+      </td><td>
+	{{ entity.site.number|escape }}
+      </td><td>
+	{{ entity.captain.name|escape }}
+      </td><td>
+	{{ entity.name|escape }}
+      </td><td>
+	{{ entity.amount|escape }}
+      </td><td>
+	{{ entity.address|escape }}
+      </td><td>
+	{{ entity.category|escape }}
+      </td><td>
+	{{ entity.form_of_business|escape }}
+      </td><td>
+	{{ entity.description|escape }}
+    </td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 
 {%endblock%}

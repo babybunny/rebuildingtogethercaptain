@@ -15,6 +15,11 @@ indexes:
   - name: order_sheet
   - name: state
 
+- kind: Order
+  properties:
+  - name: site
+  - name: state
+
 - kind: OrderItem
   properties:
   - name: item

@@ -2,11 +2,19 @@
 {%block breadcrumb%}
 {%endblock%}
 {%block script%}
+<script 
+   type="text/javascript" 
+   src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+</script>
 <script type="text/javascript">
-function SetOrderListAction(f) {
-var order_sheet = f.getElementsByClassName("order_sheet")[0];
-f.action = f.action + order_sheet.value;
-}
+$(function() {
+  $(".order_type").submit(function(e) {
+    e.preventDefault();
+    var loc = this.action + $(this).children(".order_sheet")[0].value;
+    location = loc;
+    return false;
+  });
+});
 </script>
 {%endblock%}
 {%block about_this_page %}
@@ -72,8 +80,9 @@ f.action = f.action + order_sheet.value;
     </td><td class="layout">
       <div class="panel">
       <h2>Email Captains</h2>
-      <form method="GET" action="{% url room.views.SitesWithoutOrder %}" 
-	    onsubmit="SetOrderListAction(this)">
+      <form class="order_type" 
+	    method="GET" 
+	    action="{% url room.views.SitesWithoutOrder %}">
 	To email captains of sites that have not placed a specific type of 
 	order, select the order type
 	<br>
@@ -99,8 +108,9 @@ f.action = f.action + order_sheet.value;
 
       <div class="panel">
       <h2>Orders</h2>
-      <form method="GET" action="{% url room.order.OrderList %}" 
-	    onsubmit="SetOrderListAction(this)">
+      <form class="order_type" 
+	    method="GET" 
+	    action="{% url room.order.OrderList %}">
 	To view a list of Orders, select Order Form(s):
 	<br>
       <select class="order_sheet">
