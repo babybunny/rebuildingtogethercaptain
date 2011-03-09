@@ -23,10 +23,10 @@
 		  </a>
 		</b>
 	      </span>
-	      <br>
 	      <span  class="attr">
 		Status: {{ order.state }}
 	      </span>
+	      <br>
 	      {% ifnotequal order.state "new" %}
 	      <span  class="attr">
 		    Submitted
@@ -36,6 +36,11 @@
 		    {{ created_by_user.captain.name }}
 		    ({{ created_by_user.captain.sitecaptain_set.get.type }} 
 		    Captain)
+		    {% endif %}
+		    {% if created_by_user.staff %}
+		    by 
+		    {{ created_by_user.staff.name }}
+		    (Staff)
 		    {% endif %}
 	      </span>
 	      {% ifnotequal order.created order.modified %}
@@ -48,6 +53,11 @@
 		    ({{ modified_by_user.captain.sitecaptain_set.get.type }} 
 		    Captain)
 		    {% endifnotequal %}
+		    {% endif %}
+		    {% if created_by_user.staff %}
+		    by 
+		    {{ created_by_user.staff.name }}
+		    (Staff)
 		    {% endif %}
 	      </span>
 	      {% endifnotequal %}
