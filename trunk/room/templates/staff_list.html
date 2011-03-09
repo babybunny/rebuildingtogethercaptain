@@ -1,29 +1,44 @@
 {%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter();
+});
+</script>
+{%endblock%}
 {% block breadcrumb %}
   | List Staff
 {% endblock %}
 {%block body%}
 <h2>All Staff</h2>
 
-<table><tr><th>Staff</th></tr>
-{% for person in entries %}
-<tr><td>
-  <a name="{{ person.key.id }}"
-     href="{%url room.views.StaffEdit person.key.id%}">{{person.name|escape}}</a>
-</td><td>
-{{ person.email|escape }}
-</td><td>
-{{ person.address|escape }}
-</td><td>
-{{ person.phone1|escape }}
-</td><td>
-{{ person.phone2|escape }}
-</td><td>
-{{ person.notes|escape }}
-</td></tr>
-{% endfor %}
+<table class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for person in entries %}
+    <tr><td>
+	<a name="{{ person.key.id }}"
+	   href="{%url room.views.StaffEdit person.key.id%}">
+	  {{person.name|escape}}
+	</a>
+      </td><td>
+	{{ person.email|escape }}
+      </td><td>
+	{{ person.notes|escape }}
+    </td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 
-<form action="{%url room.views.StaffNew %}"><input type=submit value="Add a new Staff"></form>
+<form action="{%url room.views.StaffNew %}">
+  <input type=submit value="Add a new Staff">
+</form>
 
 {%endblock%}
