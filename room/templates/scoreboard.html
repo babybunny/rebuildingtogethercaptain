@@ -47,6 +47,14 @@
 	{% endfor %}
       </ul>
       </p>
+      <p>
+      <b>Recent Staff Logins</b>
+      <ul>
+	{% for welcomee in last_staff_welcomes %}
+	<li>{{ welcomee.name }}, {{ welcomee.last_welcome|timesince }} ago</li>
+	{% endfor %}
+      </ul>
+      </p>
     </td>
   </tr>
 </table>

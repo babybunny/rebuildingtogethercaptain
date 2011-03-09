@@ -76,10 +76,14 @@ def FindHome(user, default='/'):
   if user and user.email():
     staff = models.Staff.all().filter('email = ', user.email()).get()
     if staff:
+      staff.last_welcome = datetime.datetime.now()
+      staff.put()
       return urlresolvers.reverse(StaffHome)
     
     captain = models.Captain.all().filter('email = ', user.email()).get()
     if captain:
+      captain.last_welcome = datetime.datetime.now()
+      captain.put()
       return urlresolvers.reverse(CaptainHome)
 
   logging.info('Can not find Captain or Staff for user: %s' % user)
@@ -97,7 +101,8 @@ def Help(request):
 
 
 def Scoreboard(request):
-  welcomes = models.Captain.all().order('-last_welcome').fetch(10)
+  welcomes = models.Captain.all().order('-last_welcome').fetch(20)
+  staff_welcomes = models.Staff.all().order('-last_welcome').fetch(10)
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
     'last_welcome != ', None).count()
@@ -111,6 +116,7 @@ def Scoreboard(request):
   num_orders = models.Order.all().count()
   total_ordered = sum(o.GrandTotal() for o in models.Order.all())
   d = {'last_welcomes': welcomes,
+       'last_staff_welcomes': staff_welcomes,
        'num_captains': num_captains,
        'num_captains_active': num_captains_active,
        'num_captains_with_tshirt': num_captains_with_tshirt,
