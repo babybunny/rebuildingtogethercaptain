@@ -40,7 +40,7 @@ def SortedCaptainChoiceField():
 class CaptainForm(djangoforms.ModelForm):
     class Meta:
         model = models.Captain
-        exclude = ['modified', 'modified_by', 'last_welcome']
+        exclude = ['modified', 'modified_by']
 
 
 class CaptainContactForm(djangoforms.ModelForm):
