@@ -455,7 +455,11 @@ class VendorReceipt(BaseModel):
     description = db.TextProperty()
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
-    
+
+    @property 
+    def name(self):
+        return self.vendor
+
 
 class InKindDonation(BaseModel):
     """An In-kind donation to a site."""
@@ -476,5 +480,9 @@ class InKindDonation(BaseModel):
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
+    @property 
+    def name(self):
+        return self.donor
+
     def Total(self):
         return self.labor_amount + self.materials_amount

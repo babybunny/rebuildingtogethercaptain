@@ -30,7 +30,7 @@ $(function() {
 
 <table class="layout">
   <tr>
-    <td>
+    <td class="layout">
       <div class="panel">
       <h2>Sites</h2>
       <p>Enter a site number like 
@@ -141,6 +141,33 @@ $(function() {
       of all Items.
       <br>
       <a href="{% url room.views.ItemNew %}">Add a new Item</a> 
+      </div>
+
+      <div class="panel">
+      <h2>Check Requests</h2>
+      <a href="{% url room.views.CheckRequestList %}">
+	View a list of all Check Requests.
+      </a> 
+      <br>
+      Add a new Check Request from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>Vendor Receipts</h2>
+      <a href="{% url room.views.VendorReceiptList %}">
+	View a list of all Vendor Receipts.
+      </a> 
+      <br>
+      Add a new Vendor Receipt from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>In-kind Donations</h2>
+      <a href="{% url room.views.InKindDonationList %}">
+	View a list of all In-kind Donations.
+      </a> 
+      <br>
+      Add a new In-kind Donation from the site's page.
       </div>
     </td>
   </tr>
