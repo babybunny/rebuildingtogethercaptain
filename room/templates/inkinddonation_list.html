@@ -20,11 +20,12 @@ $(function(){
       <th>Click to Edit</th>
       <th>Site</th>
       <th>Captain</th>
-      <th>Payable To</th>
-      <th>Amount</th>
-      <th>Address</th>
-      <th>Category</th>
-      <th>Business</th>
+      <th>Donation Date</th>
+      <th>Donor</th>
+      <th>Donor Phone</th>
+      <th>Labor Amount</th>
+      <th>Materials Amount</th>
+      <th>Donor Info</th>
       <th>Description</th>
     </tr>
   </thead>
@@ -40,15 +41,17 @@ $(function(){
       </td><td>
 	{{ entity.captain.name|escape }}
       </td><td>
-	{{ entity.name|escape }}
+	{{ entity.donation_date|escape }}
       </td><td>
-	{{ entity.amount|escape }}
+	{{ entity.donor|escape }}
       </td><td>
-	{{ entity.address|escape }}
+	{{ entity.donor_phone|escape }}
       </td><td>
-	{{ entity.category|escape }}
+	{{ entity.labor_amount|escape }}
       </td><td>
-	{{ entity.form_of_business|escape }}
+	{{ entity.materials_amount|escape }}
+      </td><td>
+	{{ entity.donor_info|escape }}
       </td><td>
 	{{ entity.description|escape }}
     </td></tr>
