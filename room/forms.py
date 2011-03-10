@@ -164,24 +164,38 @@ class InventoryItemForm(djangoforms.ModelForm):
          exclude = ['last_editor', 'modified', 'item']
 
 
-class CheckRequestForm(djangoforms.ModelForm):
-    captain = SortedCaptainChoiceField()
+class SiteExpenseForm(djangoforms.ModelForm):
     site = djangoforms.ModelChoiceField(
         models.Site, widget=forms.HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        super(SiteExpenseForm, self).__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        if initial:
+            site_id = initial['site']
+            site = models.NewSite.get(site_id)
+            captains = [(sc.captain.key(), sc.captain.name) 
+                        for sc in site.sitecaptain_set]
+            captains.sort()
+            b = self.base_fields
+            b['captain'] = djangoforms.ModelChoiceField(
+                models.SiteCaptain,
+                choices=captains)
+        
+
+class CheckRequestForm(SiteExpenseForm):
+    captain = SortedCaptainChoiceField()
     class Meta:
         model = models.CheckRequest
         exclude = ['last_editor', 'modified']
-
-
+    
 class CheckRequestCaptainForm(CheckRequestForm):
     captain = djangoforms.ModelChoiceField(
         models.Captain, widget=forms.HiddenInput)
 
 
-class VendorReceiptForm(djangoforms.ModelForm):
+class VendorReceiptForm(SiteExpenseForm):
     captain = SortedCaptainChoiceField()
-    site = djangoforms.ModelChoiceField(
-        models.Site, widget=forms.HiddenInput)
     vendor = forms.ChoiceField(choices=[(v, v) for v in VENDOR_SELECTIONS])
     class Meta:
         model = models.VendorReceipt
@@ -192,10 +206,8 @@ class VendorReceiptCaptainForm(VendorReceiptForm):
         models.Captain, widget=forms.HiddenInput)
 
 
-class InKindDonationForm(djangoforms.ModelForm):
+class InKindDonationForm(SiteExpenseForm):
     captain = SortedCaptainChoiceField()
-    site = djangoforms.ModelChoiceField(
-        models.Site, widget=forms.HiddenInput)
     class Meta:
         model = models.InKindDonation
         exclude = ['last_editor', 'modified']
