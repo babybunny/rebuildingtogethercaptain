@@ -40,3 +40,8 @@ indexes:
   properties:
   - name: order
   - name: quantity
+
+- kind: SiteCaptain
+  properties:
+  - name: site
+  - name: captain
