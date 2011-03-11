@@ -793,25 +793,27 @@ class SiteExpense:
     """Create an entity.  GET shows a blank form, POST processes it."""
     user, user_captain, staff = common.GetUser(request)
     site = models.NewSite.get_by_id(int(site_id))
-    initial = {'site': site.key()}
     if user_captain:
-      initial['captain'] = user_captain.key()
-    return cls.Edit(request, initial=initial)
+      instance = cls.model(site=site, captain=user_captain)
+    else:
+      instance = cls.model(site=site)
+    instance.put()
+    return cls.Edit(request, instance.key().id())
   
   @classmethod
-  def Edit(cls, request, id=0, entity=None, initial=None):
+  def Edit(cls, request, id):
     """Create or edit an entity."""
     id = int(id)
-    if id:
-      entity = cls.model.get_by_id(id)
-      if entity is None:
-        return http.HttpResponseNotFound(
-          'No %s exists with that key (%r)' % (cls.readable, id))
-      what = 'Changing existing %s' % cls.readable
-      edit_id = entity.key().id()
-    else:
+    entity = cls.model.get_by_id(id)
+    if entity is None:
+      return http.HttpResponseNotFound(
+        'No %s exists with that key (%r)' % (cls.readable, id))
+    edit_id = entity.key().id()
+
+    if entity.state == 'new':      
       what = 'Adding new %s' % cls.readable
-      edit_id = 0
+    else:
+      what = 'Changing existing %s' % cls.readable
 
     user, captain, staff = common.GetUser(request)
     if staff:
@@ -820,8 +822,7 @@ class SiteExpense:
       form_cls = cls.form_cls
       
     form = form_cls(data=request.POST or None,  
-                    instance=entity,
-                    initial=initial)
+                    instance=entity)
     if not request.POST:
       return common.Respond(
         request, cls.template_base, 
@@ -845,6 +846,7 @@ class SiteExpense:
          'what': 'Fix errors below and try submitting again.'})
 
     entity.last_editor = user
+    entity.state = 'submitted'
     entity.put()
     user = captain or staff
     if user: 
