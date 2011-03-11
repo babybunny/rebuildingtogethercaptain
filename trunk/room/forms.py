@@ -9,7 +9,7 @@ from google.appengine.ext.db import djangoforms
 import common
 import models
 
-VENDOR_SELECTIONS = (
+VENDOR_SELECTIONS = (    
     'Home Depot',
     'Kelly-Moore Paints',
     'Palo Alto Hardware',
@@ -170,24 +170,26 @@ class SiteExpenseForm(djangoforms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SiteExpenseForm, self).__init__(*args, **kwargs)
-        initial = kwargs.get('initial')
-        if initial:
-            site_id = initial['site']
-            site = models.NewSite.get(site_id)
+        entity = kwargs.get('instance')
+        if entity:
+            site = entity.site
             captains = [(sc.captain.key(), sc.captain.name) 
                         for sc in site.sitecaptain_set]
             captains.sort()
-            b = self.base_fields
-            b['captain'] = djangoforms.ModelChoiceField(
+            if len(captains) > 1:
+                captains.insert(0, ('', '----------'))
+            self.fields['captain'] = djangoforms.ModelChoiceField(
                 models.SiteCaptain,
                 choices=captains)
-        
+
 
 class CheckRequestForm(SiteExpenseForm):
-    captain = SortedCaptainChoiceField()
+    payment_date = forms.DateField(required=True)
+    name = forms.CharField(required=True, label='Payable To')
+    description = forms.CharField(required=True, widget=forms.Textarea)
     class Meta:
         model = models.CheckRequest
-        exclude = ['last_editor', 'modified']
+        exclude = ['last_editor', 'modified', 'state']
     
 class CheckRequestCaptainForm(CheckRequestForm):
     captain = djangoforms.ModelChoiceField(
@@ -195,11 +197,13 @@ class CheckRequestCaptainForm(CheckRequestForm):
 
 
 class VendorReceiptForm(SiteExpenseForm):
-    captain = SortedCaptainChoiceField()
-    vendor = forms.ChoiceField(choices=[(v, v) for v in VENDOR_SELECTIONS])
+    purchase_date = forms.DateField(required=True)
+    vendor = forms.ChoiceField(choices=[(v, v) for v in VENDOR_SELECTIONS],
+                               required=True)
+    amount = forms.FloatField(required=True)
     class Meta:
         model = models.VendorReceipt
-        exclude = ['last_editor', 'modified']
+        exclude = ['last_editor', 'modified', 'state']
 
 class VendorReceiptCaptainForm(VendorReceiptForm):
     captain = djangoforms.ModelChoiceField(
@@ -207,10 +211,13 @@ class VendorReceiptCaptainForm(VendorReceiptForm):
 
 
 class InKindDonationForm(SiteExpenseForm):
-    captain = SortedCaptainChoiceField()
+    donation_date = forms.DateField(required=True)
+    donor = forms.CharField(required=True)
+    donor_phone = forms.CharField(required=True)
+    description = forms.CharField(required=True, widget=forms.Textarea)
     class Meta:
         model = models.InKindDonation
-        exclude = ['last_editor', 'modified']
+        exclude = ['last_editor', 'modified', 'state']
 
 class InKindDonationCaptainForm(InKindDonationForm):
     captain = djangoforms.ModelChoiceField(

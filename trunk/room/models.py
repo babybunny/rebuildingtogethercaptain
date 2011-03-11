@@ -84,6 +84,36 @@ class NewSite(BaseModel):
     city = db.StringProperty()
     budget = db.IntegerProperty()
 
+    class ActiveItems(object):
+        """Access user-input records with state and modified fields."""
+        def __init__(self, query):
+            """query: a bound backreference like self.order_set"""
+            self._query = query.filter('state != ', 'new')
+                        
+        def Count(self):
+            return self._query.count()
+        
+        def Items(self):
+            for item in sorted(self._query, 
+                               key=lambda o: o.modified, reverse=True):
+                yield item
+
+    @property 
+    def Orders(self):
+        return self.ActiveItems(self.order_set)
+
+    @property 
+    def CheckRequests(self):
+        return self.ActiveItems(self.checkrequest_set)
+
+    @property 
+    def VendorReceipts(self):
+        return self.ActiveItems(self.vendorreceipt_set)
+
+    @property 
+    def InKindDonations(self):
+        return self.ActiveItems(self.inkinddonation_set)
+
     def __unicode__(self):
         """Only works if self has been saved."""
         return 'Site #%s | %s' % (self.key().id(), self.name)
@@ -124,16 +154,6 @@ class NewSite(BaseModel):
         else:
             return '$%0.2f over budget' % (-1 * self.BudgetRemaining())
 
-    def VisibleOrderQuery(self):
-        return self.order_set.filter('state != ', 'new')
-
-    def HasVisibleOrders(self):
-        return self.VisibleOrderQuery().count()
-
-    def VisibleOrders(self):
-        for order in sorted(self.VisibleOrderQuery(), 
-                            key=lambda o: o.modified, reverse=True):
-            yield order
 
 
 class SiteCaptain(BaseModel):
@@ -419,13 +439,13 @@ class CheckRequest(BaseModel):
     """A Check Request is a request for reimbursement."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
-    payment_date = db.DateProperty(required=True)
+    payment_date = db.DateProperty()
     labor_amount = db.FloatProperty(default=0.0)
     labor_amount.verbose_name = 'Labor Amount ($)'
     materials_amount = db.FloatProperty(default=0.0)
     materials_amount.verbose_name = 'Materials Amount ($)'
-    description = db.TextProperty(required=True)
-    name = db.StringProperty(required=True)
+    description = db.TextProperty()
+    name = db.StringProperty()
     name.verbose_name = 'Payable To'
     address = db.TextProperty()
     address.verbose_name = "Payee Address"
@@ -437,6 +457,7 @@ class CheckRequest(BaseModel):
         choices=('Corporation', 'Partnership', 'Sole Proprietor', 
                  'Don\'t Know'))
     form_of_business.verbose_name = "Payee Business Type"
+    state = db.StringProperty(choices=('new','submitted'), default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
 
@@ -448,11 +469,12 @@ class VendorReceipt(BaseModel):
     """A Vendor Receipt is a report of a purchase outside of ROOMS."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
-    purchase_date = db.DateProperty(required=True)
-    vendor = db.StringProperty(required=True)
-    amount = db.FloatProperty(required=True)
+    purchase_date = db.DateProperty()
+    vendor = db.StringProperty()
+    amount = db.FloatProperty()
     amount.verbose_name = 'Purchase Amount ($)'
     description = db.TextProperty()
+    state = db.StringProperty(choices=('new','submitted'), default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
 
@@ -465,9 +487,9 @@ class InKindDonation(BaseModel):
     """An In-kind donation to a site."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
-    donation_date = db.DateProperty(required=True)
-    donor = db.StringProperty(required=True)
-    donor_phone = db.StringProperty(required=True)
+    donation_date = db.DateProperty()
+    donor = db.StringProperty()
+    donor_phone = db.StringProperty()
     donor_info = db.TextProperty()
     donor_info.verbose_name = (
         'Include as much of the following donor information as possible:'
@@ -476,7 +498,8 @@ class InKindDonation(BaseModel):
     labor_amount.verbose_name = 'Labor Value ($)'
     materials_amount = db.FloatProperty(default=0.0)
     materials_amount.verbose_name = 'Materials Value ($)'
-    description = db.TextProperty(required=True)
+    description = db.TextProperty()
+    state = db.StringProperty(choices=('new','submitted'), default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     

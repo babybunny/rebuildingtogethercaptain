@@ -10,6 +10,16 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: CheckRequest
+  properties:
+  - name: site
+  - name: state
+
+- kind: InKindDonation
+  properties:
+  - name: site
+  - name: state
+
 - kind: Order
   properties:
   - name: order_sheet
@@ -45,3 +55,8 @@ indexes:
   properties:
   - name: site
   - name: captain
+
+- kind: VendorReceipt
+  properties:
+  - name: site
+  - name: state
