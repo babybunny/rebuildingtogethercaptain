@@ -110,23 +110,42 @@ def Scoreboard(request):
     'last_welcome != ', None).count()
   num_captains_with_tshirt = models.Captain.all().filter(
     'tshirt_size != ', None).count()
-  num_sites = models.NewSite.all().count()
-  q = models.Order.all().filter('state != ', 'new')
-  num_sites_with_orders = len(set((o.site.key().id() for o in q)))
-  total_site_budget = sum(s.budget for s in models.NewSite.all() 
-                          if s.budget)
-  num_orders = models.Order.all().count()
-  total_ordered = sum(o.GrandTotal() for o in models.Order.all())
+  sites = [s for s in models.NewSite.all() if 'ZZZ' not in s.number]
+  num_sites = len(sites)
+  total_site_budget = sum(s.budget for s in sites if s.budget)
+
+  activity = []
+  activity_rows = [
+    ('All Orders', models.Order.all()),
+    ('Check Requests', models.CheckRequest.all()),
+    ('Vendor Receipts', models.VendorReceipt.all()),
+    ('In-kind Donations', models.InKindDonation.all()),
+    ]
+  for os in sorted(models.OrderSheet.all(), key=lambda x: x.name):
+      activity_rows.append(
+      ('Form: %s' % os.name, models.Order.all().filter('order_sheet =', os)))
+    
+
+  for a in activity_rows:
+    items = filter(lambda i: 'ZZZ' not in i.site.number, a[1])
+    started = len(items)
+    total = sum(i.Total() for i in items)
+    sites = len(set(i.site.number for i in items))
+    editors = len(set(i.last_editor for i in items))
+    submitted = len([i for i in items if i.state in ('Received', 'submitted')])
+    abandoned = len([i for i in items if i.state == 'new'])
+    activity.append(
+      (a[0], submitted, total, sites, editors, started, abandoned))
+
   d = {'last_welcomes': welcomes,
        'last_staff_welcomes': staff_welcomes,
+       'activity': activity,
+       'num_sites': num_sites,
        'num_captains': num_captains,
        'num_captains_active': num_captains_active,
+       'pct_captains_active': num_captains_active * 100.0 / num_captains,
        'num_captains_with_tshirt': num_captains_with_tshirt,
-       'num_sites': num_sites,
-       'num_sites_with_orders': num_sites_with_orders,
        'total_site_budget': total_site_budget,
-       'num_orders': num_orders,
-       'total_ordered': total_ordered,
        }
   return common.Respond(request, 'scoreboard', d)
 
