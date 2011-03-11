@@ -114,7 +114,7 @@ class OrderForm(djangoforms.ModelForm):
     class Meta:
         model = models.Order
         exclude = ['created', 'created_by', 'modified', 'modified_by',
-                   'order_sheet', 'site', 
+                   'order_sheet', 
                    'sub_total', 'sales_tax', 'grand_total', 'state',
                    'return_on'
                    ]

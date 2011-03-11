@@ -116,7 +116,7 @@ class NewSite(BaseModel):
 
     def __unicode__(self):
         """Only works if self has been saved."""
-        return 'Site #%s | %s' % (self.key().id(), self.name)
+        return 'Site #%s | %s' % (self.number, self.name)
 
     def StreetAddress(self):
         return '%s, %s' % (self.street_number, self.city_state_zip)
