@@ -16,12 +16,16 @@
 		</b>
 	      </span>
 	      <span class="attr">
+		{% if form and user.staff %}
+		{{ form.site }}
+		{% else %}
 		<b>
 		  Site # 
 		  <a href="{% url room.views.SiteView order.site.key.id %}">
 		    {{ order.site.number }}
 		  </a>
 		</b>
+		{% endif %}
 	      </span>
 	      <span  class="attr">
 		Status: {{ order.state }}
