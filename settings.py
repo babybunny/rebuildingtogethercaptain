@@ -105,7 +105,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
      'appengine_django',
      'gaeunit',    
-#     'django.contrib.humanize',
+     'django.contrib.humanize',
 #     'captains',
 #     'staff',
 #     'room',

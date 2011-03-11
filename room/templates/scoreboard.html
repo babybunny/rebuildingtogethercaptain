@@ -1,60 +1,118 @@
 {%extends "base.html"%}
+{% load humanize %}
 {%block breadcrumb%}
 {%endblock%}
 {%block about_this_page %}
 <h1>Scoreboard</h1>
+
+<h3>Summary of activity (excluding ZZZ test sites)</h3>
+<p>
+  <span class=attr>
+    Captains using system: <b>{{ num_captains_active }}</b>
+    of {{ num_captains }} total ({{ pct_captains_active|floatformat:1 }}%), 
+    with 
+    <b>{{ num_captains_with_tshirt }}</b> 
+    updating their T-shirt size.
+  </span>
+</p>
+<p>
+  <span class=attr>
+    Number of Sites in the system: <b>{{ num_sites }}</b>,
+    with total budget of <b>${{ total_site_budget|intcomma }}</b>.
+  </span>
+</p>
+
 {% endblock %}
 {%block body%}
 
 <table class="layout">
   <tr>
-    <td class="layout">      
-      <p>
-	<span class=attr>
-	  Captains using system: <b>{{ num_captains_active }}</b>
-	  of {{ num_captains }} total, 
-	  <br>
-	  with 
-	  <b>{{ num_captains_with_tshirt }}</b> 
-	  updating their T-shirt size.
-	</span>
-      </p>
-      <p>
-	<span class=attr>
-	  Number of Sites in the system: <b>{{ num_sites }}</b> 
-	  <br>
-	  with total budget of <b>${{ total_site_budget }}</b>.
-	</span>
-      </p>
-      <p>
-	<span class=attr>
-	  Number of orders submitted to the system: 
-	  <b>{{ num_orders }}</b> 
-	  <br>
-	  across
-	  <b>{{ num_sites_with_orders }}</b> 
-	  sites
-	  <br>
-	  for goods and services totalling 
-	  <b>${{ total_ordered|floatformat:0 }}</b>.
-	</span>
-      </p>
+    <td class="layout">
       <p>
       <b>Recent Captain Logins</b>
-      <ul>
+      <table>
 	{% for welcomee in last_welcomes %}
-	<li>{{ welcomee.name }}, {{ welcomee.last_welcome|timesince }} ago</li>
+	<tr>	  
+	  <td>
+	    {{ welcomee.last_welcome|timesince }} ago
+	  </td>
+	  <td>
+	    {{ welcomee.name }}
+	  </td>
+	</tr>
 	{% endfor %}
-      </ul>
+      </table>
       </p>
       <p>
       <b>Recent Staff Logins</b>
-      <ul>
+      <table>
 	{% for welcomee in last_staff_welcomes %}
-	<li>{{ welcomee.name }}, {{ welcomee.last_welcome|timesince }} ago</li>
+	<tr>	  
+	  <td>
+	    {{ welcomee.last_welcome|timesince }} ago
+	  </td>
+	  <td>
+	    {{ welcomee.name }}
+	  </td>
+	</tr>
 	{% endfor %}
-      </ul>
-      </p>
+      </table>
+    </td>
+    <td class="layout">
+      <table class="scoreboard">
+	<thead>
+	  <tr>
+	    <th>
+	      Category
+	    </th>
+	    <th>
+	      Submitted
+	    </th>
+	    <th>
+	      Total ($)
+	    </th>
+	    <th>
+	      Sites Affected
+	    </th>
+	    <th>
+	      Users making changes
+	    </th>
+	    <th>
+	      Started
+	    </th>
+	    <th>
+	      Abandoned
+	    </th>
+	  </tr>
+	  </thead>
+	<tbody>
+	  {% for k in activity %}
+	  <tr>
+	    <td class="name">
+	      {{ k.0 }}
+	    </td>
+	    <td>
+	      {{ k.1 }}
+	    </td>
+	    <td>
+	      {{ k.2|floatformat:2|intcomma }}
+	    </td>
+	    <td>
+	      {{ k.3 }}
+	    </td>
+	    <td>
+	      {{ k.4 }}
+	    </td>
+	    <td>
+	      {{ k.5 }}
+	    </td>
+	    <td>
+	      {{ k.6 }}
+	    </td>
+	  </tr>
+	  {% endfor %}
+	</tbody>
+      </table>
     </td>
   </tr>
 </table>
