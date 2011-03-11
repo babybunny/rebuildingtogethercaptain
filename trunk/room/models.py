@@ -305,6 +305,10 @@ class Order(BaseModel):
     modified = db.DateTimeProperty(auto_now=True)
     modified_by = db.UserProperty(auto_current_user=True)
 
+    @property
+    def last_editor(self):
+        return self.modified_by
+
     def __unicode__(self):
         return ' '.join((self.site.number, self.site.name, 
                          self.order_sheet.name, 
@@ -323,6 +327,9 @@ class Order(BaseModel):
         if self.sub_total is None:
             return 0.
         return self.sub_total * (1. + SALES_TAX_RATE)
+
+    def Total(self):
+        return self.GrandTotal()
     
     def SalesTax(self):
         if self.sub_total is None:
@@ -481,6 +488,9 @@ class VendorReceipt(BaseModel):
     @property 
     def name(self):
         return self.vendor
+
+    def Total(self):
+        return self.amount or 0
 
 
 class InKindDonation(BaseModel):
