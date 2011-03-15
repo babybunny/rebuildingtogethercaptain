@@ -796,7 +796,6 @@ class SiteExpense:
   template_base = ''  # prefix of templates
   readable = ''  # Readable name of entity
   form_cls = None
-  staff_form_cls = None
 
   @classmethod
   def List(cls, request):
@@ -839,13 +838,8 @@ class SiteExpense:
       what = 'Changing existing %s' % cls.readable
 
     user, captain, staff = common.GetUser(request)
-    if staff:
-      form_cls = cls.staff_form_cls
-    else:
-      form_cls = cls.form_cls
-      
-    form = form_cls(data=request.POST or None,  
-                    instance=entity)
+    form = cls.form_cls(data=request.POST or None,  
+                        instance=entity, staff=staff)
     if not request.POST:
       return common.Respond(
         request, cls.template_base, 
@@ -889,8 +883,7 @@ class CheckRequest(SiteExpense):
   model = models.CheckRequest
   template_base = 'checkrequest'
   readable = 'Check Request'
-  form_cls = forms.CheckRequestCaptainForm
-  staff_form_cls = forms.CheckRequestForm
+  form_cls = forms.CheckRequestForm
 
 
 # If the urlpattern cappable name has a dot in it then Django tries to 
@@ -905,8 +898,7 @@ class VendorReceipt(SiteExpense):
   model = models.VendorReceipt
   template_base = 'vendorreceipt'
   readable = 'Vendor Receipt'
-  form_cls = forms.VendorReceiptCaptainForm
-  staff_form_cls = forms.VendorReceiptForm
+  form_cls = forms.VendorReceiptForm
 
 
 VendorReceiptNew = VendorReceipt.New
@@ -919,8 +911,7 @@ class InKindDonation(SiteExpense):
   model = models.InKindDonation
   template_base = 'inkinddonation'
   readable = 'In-kind Donation'
-  form_cls = forms.InKindDonationCaptainForm
-  staff_form_cls = forms.InKindDonationForm
+  form_cls = forms.InKindDonationForm
 
 
 InKindDonationNew = InKindDonation.New
