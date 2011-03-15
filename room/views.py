@@ -121,7 +121,10 @@ def Scoreboard(request):
     ('Vendor Receipts', models.VendorReceipt.all()),
     ('In-kind Donations', models.InKindDonation.all()),
     ]
-  for os in sorted(models.OrderSheet.all(), key=lambda x: x.name):
+
+  order_sheets = models.OrderSheet.all().order('name')
+  order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
+  for os in order_sheets:
       activity_rows.append(
       ('Form: %s' % os.name, models.Order.all().filter('order_sheet =', os)))
     
@@ -443,6 +446,7 @@ def SitesWithoutOrder(request, order_sheet_id):
       'No order_sheet exists with that key (%r)' % order_sheet_id)
   all_sites = list(models.NewSite.all())
   orders = models.Order.all().filter('order_sheet =', order_sheet)
+  orders.filter('state != ', 'new')
   order_sites = [o.site for o in orders]
   sites_without_order = [s for s in all_sites if s not in order_sites]
   sites_without_order.sort(key=lambda s: s.number)
