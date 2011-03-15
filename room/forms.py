@@ -166,22 +166,30 @@ class InventoryItemForm(djangoforms.ModelForm):
 
 
 class SiteExpenseForm(djangoforms.ModelForm):
-    site = djangoforms.ModelChoiceField(
-        models.Site, widget=forms.HiddenInput)
-
     def __init__(self, *args, **kwargs):
+        staff = kwargs.pop('staff')
         super(SiteExpenseForm, self).__init__(*args, **kwargs)
-        entity = kwargs.get('instance')
-        if entity:
-            site = entity.site
-            captains = [(sc.captain.key(), sc.captain.name) 
-                        for sc in site.sitecaptain_set]
-            captains.sort()
-            if len(captains) > 1:
-                captains.insert(0, ('', '----------'))
+        if staff:
+            self.fields['site'] = djangoforms.ModelChoiceField(
+                models.NewSite, models.NewSite.all().order('number'))
+            entity = kwargs.get('instance')
+            if entity:
+                site = entity.site
+                captains = [(sc.captain.key(), sc.captain.name) 
+                            for sc in site.sitecaptain_set]
+                captains.sort()
+                if len(captains) > 1:
+                    captains.insert(0, ('', '----------'))
+                self.fields['captain'] = djangoforms.ModelChoiceField(
+                    models.SiteCaptain,
+                    choices=captains)
+
+        else:
+            self.fields['site'] = djangoforms.ModelChoiceField(
+                models.NewSite, widget=forms.HiddenInput)
             self.fields['captain'] = djangoforms.ModelChoiceField(
-                models.SiteCaptain,
-                choices=captains)
+                models.Captain, widget=forms.HiddenInput)
+
 
 
 class CheckRequestForm(SiteExpenseForm):
@@ -191,10 +199,6 @@ class CheckRequestForm(SiteExpenseForm):
     class Meta:
         model = models.CheckRequest
         exclude = ['last_editor', 'modified', 'state']
-    
-class CheckRequestCaptainForm(CheckRequestForm):
-    captain = djangoforms.ModelChoiceField(
-        models.Captain, widget=forms.HiddenInput)
 
 
 class VendorReceiptForm(SiteExpenseForm):
@@ -206,10 +210,6 @@ class VendorReceiptForm(SiteExpenseForm):
         model = models.VendorReceipt
         exclude = ['last_editor', 'modified', 'state']
 
-class VendorReceiptCaptainForm(VendorReceiptForm):
-    captain = djangoforms.ModelChoiceField(
-        models.Captain, widget=forms.HiddenInput)
-
 
 class InKindDonationForm(SiteExpenseForm):
     donation_date = forms.DateField(required=True)
@@ -219,7 +219,3 @@ class InKindDonationForm(SiteExpenseForm):
     class Meta:
         model = models.InKindDonation
         exclude = ['last_editor', 'modified', 'state']
-
-class InKindDonationCaptainForm(InKindDonationForm):
-    captain = djangoforms.ModelChoiceField(
-        models.Captain, widget=forms.HiddenInput)
