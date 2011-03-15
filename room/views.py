@@ -135,10 +135,15 @@ def Scoreboard(request):
     total = sum(i.Total() for i in items)
     sites = len(set(i.site.number for i in items))
     editors = len(set(i.last_editor for i in items))
-    submitted = len([i for i in items if i.state in ('Received', 'submitted')])
+    submitted_orders = [i for i in items 
+                        if i.state in ('Received', 'submitted')]
+    submitted = len(submitted_orders)
+    now = datetime.datetime.now()
+    one = datetime.timedelta(days=1)
+    recent = len([s for s in submitted_orders if now - s.modified < one])
     abandoned = len([i for i in items if i.state == 'new'])
     activity.append(
-      (a[0], submitted, total, sites, editors, started, abandoned))
+      (a[0], submitted, recent, total, sites, editors, started, abandoned))
 
   d = {'last_welcomes': welcomes,
        'last_staff_welcomes': staff_welcomes,
