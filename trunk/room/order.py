@@ -127,7 +127,7 @@ def _OrderExportInternal(writable, post_vars):
                      'created',
                      'created_by',
                      'modified',
-                     'modified_by',
+                     'last_editor',
                      ])
     writer.writerow([o.key().id(),
                      o.site.number,
@@ -138,7 +138,7 @@ def _OrderExportInternal(writable, post_vars):
                      o.created,
                      o.created_by,
                      o.modified,
-                     o.modified_by,
+                     o.last_editor,
                      ])
     order_items = list(oi for oi in o.orderitem_set if oi.quantity)
     if order_items:
@@ -188,7 +188,11 @@ def _OrderPut(request, user, order):
   if order.order_sheet.HasLogistics():
     submit_button_text += ' and proceed to delivery options'
     
-  form = forms.OrderForm(
+  form_cls = forms.CaptainOrderForm
+  if user.staff:
+    form_cls = forms.OrderForm
+
+  form = form_cls(
     data=request.POST or None, 
     files=request.FILES or None,
     instance=order)
@@ -198,7 +202,7 @@ def _OrderPut(request, user, order):
   form['notes'].field.widget.attrs['rows'] = max(
     5, len(form.instance.VisibleNotes().splitlines()))
   created_by_user = common.GetUser(request, 
-                                   order.modified_by)[0],
+                                   order.last_editor)[0],
   template_dict = {'form': form, 
                    'notes_field': form['notes'],
                    'order': order, 
@@ -206,7 +210,7 @@ def _OrderPut(request, user, order):
                    'created_by_user': common.GetUser(request, 
                                                      order.created_by)[0],
                    'modified_by_user': common.GetUser(request, 
-                                                      order.modified_by)[0],
+                                                      order.last_editor)[0],
                    'sales_tax_pct': SALES_TAX_RATE * 100.,
                    'what_you_are_doing': what,
                    'show_instructions': True,
@@ -224,6 +228,7 @@ def _OrderPut(request, user, order):
       errors['__all__'] = unicode(err)
   if errors:
     template_dict['errors'] = errors
+    logging.error('errors (%s)', errors)
     return None, template_dict
 
   # List of pairs: OrderItem key, new quantity

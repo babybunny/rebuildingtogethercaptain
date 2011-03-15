@@ -32,7 +32,7 @@ class Captain(BaseModel):
     notes = db.TextProperty()
     last_welcome = db.DateTimeProperty()
     modified = db.DateTimeProperty(auto_now=True)
-    modified_by = db.UserProperty(auto_current_user=True)
+    last_editor = db.UserProperty(auto_current_user=True)
 
     def __unicode__(self):
         return self.name
