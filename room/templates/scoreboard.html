@@ -66,22 +66,25 @@
 	      Category
 	    </th>
 	    <th>
-	      Submitted
+	      Submitted all time
+	    </th>
+	    <th>
+	      Submitted 24 hours
 	    </th>
 	    <th>
 	      Total ($)
 	    </th>
 	    <th>
-	      Sites Affected
+	      Unique Sites 
 	    </th>
 	    <th>
-	      Users making changes
+	      Unique Users
 	    </th>
 	    <th>
-	      Started
+	      Orders Started
 	    </th>
 	    <th>
-	      Abandoned
+	      Orders Abandoned
 	    </th>
 	  </tr>
 	  </thead>
@@ -95,10 +98,10 @@
 	      {{ k.1 }}
 	    </td>
 	    <td>
-	      {{ k.2|floatformat:2|intcomma }}
+	      {{ k.2 }}
 	    </td>
 	    <td>
-	      {{ k.3 }}
+	      {{ k.3|floatformat:2|intcomma }}
 	    </td>
 	    <td>
 	      {{ k.4 }}
@@ -108,6 +111,9 @@
 	    </td>
 	    <td>
 	      {{ k.6 }}
+	    </td>
+	    <td>
+	      {{ k.7 }}
 	    </td>
 	  </tr>
 	  {% endfor %}
