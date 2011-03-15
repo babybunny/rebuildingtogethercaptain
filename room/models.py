@@ -303,11 +303,7 @@ class Order(BaseModel):
     created = db.DateTimeProperty(auto_now_add=True)
     created_by = db.UserProperty(auto_current_user_add=True)
     modified = db.DateTimeProperty(auto_now=True)
-    modified_by = db.UserProperty(auto_current_user=True)
-
-    @property
-    def last_editor(self):
-        return self.modified_by
+    last_editor = db.UserProperty(auto_current_user=True)
 
     def __unicode__(self):
         return ' '.join((self.site.number, self.site.name, 
