@@ -40,13 +40,13 @@ def SortedCaptainChoiceField():
 class CaptainForm(djangoforms.ModelForm):
     class Meta:
         model = models.Captain
-        exclude = ['modified', 'modified_by']
+        exclude = ['modified', 'last_editor']
 
 
 class CaptainContactForm(djangoforms.ModelForm):
     class Meta:
          model = models.Captain
-         exclude = ['name', 'email', 'modified', 'modified_by', 'last_welcome']
+         exclude = ['name', 'email', 'modified', 'last_editor', 'last_welcome']
 
 
 class SiteForm(djangoforms.ModelForm):
@@ -113,10 +113,9 @@ class OrderForm(djangoforms.ModelForm):
     initial = {'pickup_on': common.NRD}
     class Meta:
         model = models.Order
-        exclude = ['created', 'created_by', 'modified', 'modified_by',
-                   'order_sheet', 
-                   'sub_total', 'sales_tax', 'grand_total', 'state',
-                   'return_on'
+        exclude = ['last_editor', 'created', 'created_by', 
+                   'modified', 'order_sheet', 
+                   'sub_total', 'sales_tax', 'grand_total', 'state', 
                    ]
 
 
@@ -126,8 +125,10 @@ class CaptainOrderForm(djangoforms.ModelForm):
 
     class Meta:
         model = models.Order
-        exclude = ['last_editor', 'created', 'modified', 'order_sheet', 
-                   'sub_total', 'sales_tax', 'grand_total', 'state', 'captain']
+        exclude = ['last_editor', 'created', 'created_by', 
+                   'modified', 'order_sheet', 
+                   'sub_total', 'sales_tax', 'grand_total', 'state', 
+                   'captain', 'site']
 
 
 class NewOrderForm(djangoforms.ModelForm):    
