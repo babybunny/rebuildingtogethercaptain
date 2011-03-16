@@ -36,6 +36,11 @@ def SortedCaptainChoiceField():
         models.Captain, 
         models.Captain.all().order('name'))
 
+def SortedSiteChoiceField():
+    return djangoforms.ModelChoiceField(
+        models.NewSite, 
+        models.NewSite.all().order('number'))
+
 
 class CaptainForm(djangoforms.ModelForm):
     class Meta:
@@ -111,6 +116,7 @@ class ItemForm(djangoforms.ModelForm):
 
 class OrderForm(djangoforms.ModelForm):
     initial = {'pickup_on': common.NRD}
+    site = SortedSiteChoiceField()
     class Meta:
         model = models.Order
         exclude = ['last_editor', 'created', 'created_by', 
