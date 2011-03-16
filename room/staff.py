@@ -82,6 +82,20 @@ def Scoreboard(request):
     'last_welcome != ', None).count()
   num_captains_with_tshirt = models.Captain.all().filter(
     'tshirt_size != ', None).count()
+
+  def GetUserActivity(user_cls):
+      user_activity = []
+      welcomes = user_cls.all().filter(
+          'last_welcome != ', None).order('-last_welcome').fetch(20)
+      for c in welcomes:
+          u = users.User(c.email)
+          equery = models.Order.all().filter('state IN ', 
+                                             ('Received', 'submitted'))
+          equery.filter('last_editor =', u)
+          orders = filter(lambda i: 'ZZZ' not in i.site.number, list(equery))
+          user_activity.append((c, len(orders)))
+      return user_activity
+
   sites = [s for s in models.NewSite.all() if 'ZZZ' not in s.number]
   num_sites = len(sites)
   total_site_budget = sum(s.budget for s in sites if s.budget)
@@ -127,6 +141,8 @@ def Scoreboard(request):
   d = {'last_welcomes': welcomes,
        'last_staff_welcomes': staff_welcomes,
        'activity': activity,
+       'captain_activity': GetUserActivity(models.Captain),
+       'staff_activity': GetUserActivity(models.Staff),
        'num_sites': num_sites,
        'num_captains': num_captains,
        'num_captains_active': num_captains_active,
@@ -200,3 +216,52 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
                     'sites_without_order_email.html', template_dict)
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+import re
+def FixCity(request):
+  for s in models.NewSite.all():
+    m = re.match('(.+ [0-9-]+) (.*)', s.city_state_zip)  
+    if not m:
+      logging.info('not fixing site number %s: %r', s.number, s.city_state_zip)
+      continue
+    s.city_state_zip = m.groups()[0]
+    logging.info('fixing site number %s: %r', s.number, s.city_state_zip)
+    s.put()
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
+def FixLastEditor(request):
+  for s in models.Order.all():
+    if not s.last_editor:
+      s.last_editor = s.modified_by
+      s.put()
+      logging.info('fixed last_editor for order #%d', s.key().id())
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
+def AddStandardKitOrder(request, prefix):
+  skos = models.OrderSheet.all().filter('code = ', 'SDK').get() 
+  if not skos:
+    logging.warn('can not find SDK order sheet')
+    return http.HttpResponse(
+      urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+  i = skos.item_set.get()
+  if not i:
+    logging.warn('can not find item for SDK order sheet')
+    return http.HttpResponse(
+      urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+  for site in models.NewSite.all():
+    if not site.number.startswith(prefix):
+      logging.info('skipping site %r because wrong prefix %r', 
+                   site.number, prefix)
+      continue
+    if site.order_set.filter('order_sheet = ', skos).count():
+      logging.info('skipping site %r because has SDK order', site.number)      
+      continue
+    sko = models.Order(site=site, order_sheet=skos, state='Received')
+    sko.put()
+    oi = models.OrderItem(order=sko, item=i, quantity=1)
+    oi.put()
+    logging.info('created SDK order for site %r', site.number)
+    sko.UpdateSubTotal()
+    sko.put()
+
+  return http.HttpResponse(
+    urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
