@@ -92,19 +92,18 @@
 	  {% for k in activity %}
 	  <tr>
 	    <td class="name">
+	      <a href="{{ k.1 }}">
 	      {{ k.0 }}
-	    </td>
-	    <td>
-	      {{ k.1 }}
+	      </a>
 	    </td>
 	    <td>
 	      {{ k.2 }}
 	    </td>
 	    <td>
-	      {{ k.3|floatformat:2|intcomma }}
+	      {{ k.3 }}
 	    </td>
 	    <td>
-	      {{ k.4 }}
+	      {{ k.4|floatformat:2|intcomma }}
 	    </td>
 	    <td>
 	      {{ k.5 }}
@@ -114,6 +113,9 @@
 	    </td>
 	    <td>
 	      {{ k.7 }}
+	    </td>
+	    <td>
+	      {{ k.8 }}
 	    </td>
 	  </tr>
 	  {% endfor %}
