@@ -10,7 +10,7 @@
     <span class="breadcrumb">
       <b>ROOM System</b>
       {% if user.staff %}
-      | <a href="{% url room.views.StaffHome %}">Staff Home</a>
+      | <a href="{% url room.staff.StaffHome %}">Staff Home</a>
       {% endif %}
       {% if user.captain %}
       | <a href="{% url room.views.CaptainHome %}">Captain's Page</a>

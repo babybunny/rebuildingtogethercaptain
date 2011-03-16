@@ -1,18 +1,25 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('room.views',
+urlpatterns = patterns(
+    'room.staff',
     (r'^/$', 'GoHome'),
     (r'^$', 'GoHome'),
+    (r'^staff_home$', 'StaffHome'),
+    (r'^scoreboard$', 'Scoreboard'),
+    (r'^site/jump$', 'SiteJump'),
+    (r'^site/without_order/$', 'SitesWithoutOrder'),
+    (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),
+    (r'^send_email/(\d+)/$$', 'SitesWithoutOrderSendEmail'),
+
+    )
+
+urlpatterns += patterns(
+    'room.views',
     (r'^help', 'Help'),
     (r'^standard_kit', 'StandardKit'),
     (r'^fix_city', 'FixCity'),
     (r'^add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
                        
-
-    (r'^site/without_order/$', 'SitesWithoutOrder'),
-    (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),
-    (r'^send_email/(\d+)/$$', 'SitesWithoutOrderSendEmail'),
-
     (r'^item$', 'ItemList'),
     (r'^item/list$', 'ItemList'),
     (r'^item/new$', 'ItemNew'),
@@ -26,7 +33,6 @@ urlpatterns = patterns('room.views',
     (r'^order_sheet/edit/(\d+)/$', 'OrderSheetEdit'),
 
     (r'^site$', 'SiteList'),
-    (r'^site/jump$', 'SiteJump'),
     (r'^site/list/$', 'SiteList'),
     (r'^site/list/(\d+)/$', 'SiteView'),
     (r'^site/list/(\w+)/$', 'SiteListByNumber'),
@@ -42,8 +48,6 @@ urlpatterns = patterns('room.views',
     (r'^captain/home/(\d+)/$', 'CaptainHome'),
 
     (r'^captain_home$', 'CaptainHome'),
-    (r'^staff_home$', 'StaffHome'),
-    (r'^scoreboard$', 'Scoreboard'),
 
     (r'^staff$', 'StaffList'),
     (r'^staff/list$', 'StaffList'),
@@ -71,7 +75,7 @@ urlpatterns = patterns('room.views',
     (r'^inkinddonation/new/(\d+)/$', 'InKindDonationNew'),
     (r'^inkinddonation/edit/(\d+)/$', 'InKindDonationEdit'),
     (r'^inkinddonation/view/(\d+)/$', 'InKindDonationView'),
-)
+    )
 
 urlpatterns += patterns(
     'room.order',
@@ -89,4 +93,4 @@ urlpatterns += patterns(
     (r'^order/fulfill/(\d+)/(\d+)/$', 'OrderFulfill'),
     (r'^order/fulfillconfirm/(\d+)/$', 'OrderFulfillConfirm'),
     (r'^order/fulfillconfirm/(\d+)/(\d+)/$', 'OrderFulfillConfirm'),
-)
+    )

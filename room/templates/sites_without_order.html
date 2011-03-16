@@ -28,7 +28,7 @@ sites have no {{ order_sheet.name }} order.
 
 <form 
    method="POST" 
-   action="{% url room.views.SitesWithoutOrderSendEmail order_sheet.key.id %}">
+   action="{% url room.staff.SitesWithoutOrderSendEmail order_sheet.key.id %}">
 <div class="left">
 Select one or more captains
 <br>

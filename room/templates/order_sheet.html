@@ -6,7 +6,7 @@
 <h2>{{ what_you_are_doing }}</h2>
 <p>
 {% if user.staff %}
-<a href="{% url room.views.StaffHome %}">Click here to go back to Staff Home</a> without saving changes.
+<a href="{% url room.staff.StaffHome %}">Click here to go back to Staff Home</a> without saving changes.
 </p>
 {% endif %}
 {% endblock %}
