@@ -31,7 +31,21 @@
       <p>
       <b>Recent Captain Logins</b>
       <table>
-	{% for welcomee in last_welcomes %}
+	<thead>
+	  <tr>
+	    <th>
+	      Last login
+	      </th>
+	    <th>
+	      Captain
+	    </th>
+	    <th>
+	      Total Orders
+	    </th>
+	  </tr>
+	  </thead>
+	<tbody>
+	{% for welcomee, num_orders in captain_activity %}
 	<tr>	  
 	  <td>
 	    {{ welcomee.last_welcome|timesince }} ago
@@ -39,14 +53,31 @@
 	  <td>
 	    {{ welcomee.name }}
 	  </td>
+	  <td>
+	    {{ num_orders }}
+	  </td>
 	</tr>
 	{% endfor %}
+	</tbody>
       </table>
-      </p>
-      <p>
+      <hr>
       <b>Recent Staff Logins</b>
       <table>
-	{% for welcomee in last_staff_welcomes %}
+	<thead>
+	  <tr>
+	    <th>
+	      Last login
+	      </th>
+	    <th>
+	      Staff
+	    </th>
+	    <th>
+	      Total Orders
+	    </th>
+	  </tr>
+	  </thead>
+	<tbody>
+	{% for welcomee, num_orders in staff_activity %}
 	<tr>	  
 	  <td>
 	    {{ welcomee.last_welcome|timesince }} ago
@@ -54,8 +85,12 @@
 	  <td>
 	    {{ welcomee.name }}
 	  </td>
+	  <td>
+	    {{ num_orders }}
+	  </td>
 	</tr>
 	{% endfor %}
+	</tbody>
       </table>
     </td>
     <td class="layout">
