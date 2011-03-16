@@ -10,15 +10,15 @@ urlpatterns = patterns(
     (r'^site/without_order/$', 'SitesWithoutOrder'),
     (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),
     (r'^send_email/(\d+)/$$', 'SitesWithoutOrderSendEmail'),
-
+    (r'^fix_city', 'FixCity'),
+    (r'^fix_last_editor', 'FixLastEditor'),
+    (r'^add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
     )
 
 urlpatterns += patterns(
     'room.views',
     (r'^help', 'Help'),
     (r'^standard_kit', 'StandardKit'),
-    (r'^fix_city', 'FixCity'),
-    (r'^add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
                        
     (r'^item$', 'ItemList'),
     (r'^item/list$', 'ItemList'),
