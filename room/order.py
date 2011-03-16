@@ -394,7 +394,7 @@ def OrderLogistics(request, order_id):
       return common.Respond(request, 'order_logistics', template_dict)
   
     retrieval.put()
-    if od is None:
+    if ot is None:
       models.OrderRetrieval(retrieval=retrieval, order=order).put()
     # These cases should never happen.
     if od is not None:
