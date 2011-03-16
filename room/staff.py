@@ -230,7 +230,7 @@ def FixCity(request):
 
 def FixLastEditor(request):
   for s in models.Order.all():
-    if not s.last_editor:
+    if not s.last_editor:  # doesn't work if auto_current_user=True
       s.last_editor = s.modified_by
       s.put()
       logging.info('fixed last_editor for order #%d', s.key().id())
