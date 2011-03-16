@@ -20,7 +20,7 @@ $(function() {
 {%block about_this_page %}
 <h1>Hello RTP Staff!</h1>
 <p>
-  This is the Staff Page.  From here you can view or edit anything in the system.  Also, check out the <a href="{% url room.views.Scoreboard %}">Scoreboard</a>.
+  This is the Staff Page.  From here you can view or edit anything in the system.  Also, check out the <a href="{% url room.staff.Scoreboard %}">Scoreboard</a>.
 </p>
 <p>
   To create or change orders: <a href="{% url room.views.SiteList %}">View the list of Sites</a>, and choose the site from there.
@@ -37,7 +37,7 @@ $(function() {
 	<a href="{% url room.views.SiteListByNumber test_site_number %}">
 	{{ test_site_number }}
 	</a>
-	<form action="{% url room.views.SiteJump %}" method="GET">
+	<form action="{% url room.staff.SiteJump %}" method="GET">
 	  Site Number: 
 	  <input type="text" name="number" size="10">
 	  <input type="submit" name="site_jump" value="Jump to Site">
@@ -82,7 +82,7 @@ $(function() {
       <h2>Email Captains</h2>
       <form class="order_type" 
 	    method="GET" 
-	    action="{% url room.views.SitesWithoutOrder %}">
+	    action="{% url room.staff.SitesWithoutOrder %}">
 	To email captains of sites that have not placed a specific type of 
 	order, select the order type
 	<br>

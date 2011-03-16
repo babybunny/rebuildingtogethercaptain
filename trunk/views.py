@@ -7,11 +7,11 @@ from google.appengine.api import users
 import django
 from django import http
 from django import shortcuts
-from room import views
+from room import staff
 
 def Welcome(request):
   user = users.GetCurrentUser()
-  home = views.FindHome(user, '/')
+  home = staff.FindHome(user, '/')
   if home != '/':
     return http.HttpResponseRedirect(home)
 
