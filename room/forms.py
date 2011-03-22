@@ -66,8 +66,17 @@ class SiteForm(djangoforms.ModelForm):
 
 class NewSiteForm(djangoforms.ModelForm):
     number = forms.CharField(
-        max_length=100,
+        max_length=10,
         help_text = '"10001DAL" reads: 2010, #001, Daly City')
+    street_number = forms.CharField(
+        max_length=100,
+        help_text = models.NewSite.street_number.help_text)
+    street = forms.CharField(
+        max_length=100,
+        help_text = models.NewSite.street.help_text)
+    city_state_zip = forms.CharField(
+        max_length=100,
+        help_text = models.NewSite.city_state_zip.help_text)
     class Meta:
          model = models.NewSite
 

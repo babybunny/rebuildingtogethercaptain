@@ -2,6 +2,21 @@
 {% block breadcrumb %}
   | Add or Change an Item
 {% endblock %}
+{%block about_this_page %}
+<h2>Editing an Item</h2>
+<p>
+  The ordering of items on an order sheet is controlled by the item's 
+  <b>Name</b> and <b>Order form section</b> fields.   The default order is
+  alphabetical, but for more control you can add a numeric 
+  prefix to each which will be used for ordering but will not be displayed to 
+  users.  For example <i>10 Zebra Stripes</i> will come 
+  before <i>20 Aardvark Scales</i>.  
+  The number should be a positive whole number 
+  (no fractions or decimals) and it's a good idea to use a sequence like 
+  10 20 30 instead of 1 2 3 in case you want to add a new section between 
+  existing ones in the future.
+</p>
+{% endblock %}
 {%block body%}
 
 <h2>List Items</h2>

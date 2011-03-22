@@ -78,9 +78,13 @@ class NewSite(BaseModel):
     rrp_level = db.StringProperty()
     jurisdiction = db.StringProperty()
     sponsor = db.StringProperty()
-    street_number = db.StringProperty()  # Street number like 960, see street below.
+    street_number = db.StringProperty()
+    street_number.verbose_name = "Street Address"
+    street_number.help_text = "Full street address like 960 Main Street, Apt 4"
     street = db.StringProperty()  # Not full street address, for privacy.
-    city_state_zip = db.StringProperty()  # like Menlo Park CA 94025
+    street.help_text = "Simplified street name, for privacy, like Main Street."
+    city_state_zip = db.StringProperty()  
+    city_state_zip.help_text = "City State Zip, like Menlo Park CA 94025"
     city = db.StringProperty()
     budget = db.IntegerProperty()
     announcement_subject = db.StringProperty(default='Nothing Needs Attention')
@@ -252,6 +256,8 @@ class Item(BaseModel):
     bar_code_number.unique = True    
     name = db.StringProperty(required=True)
     name.unique = True
+    appears_on_order_form = db.ReferenceProperty(OrderSheet)
+    order_form_section = db.StringProperty()
     description = db.StringProperty()
     # 'Each' 'Box' 'Pair' etc
     measure = db.StringProperty(
@@ -261,8 +267,6 @@ class Item(BaseModel):
                  '', 'Other'))
     # Dollars.
     unit_cost = db.FloatProperty()
-    appears_on_order_form = db.ReferenceProperty(OrderSheet)
-    order_form_section = db.StringProperty()
     must_be_returned = db.StringProperty(choices=['Yes', 'No'], default='No')
     picture = db.BlobProperty()
     thumbnail = db.BlobProperty()
