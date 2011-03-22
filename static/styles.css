@@ -158,6 +158,8 @@ td.hr {
 td.about_this_page {
   width: 80%; 		  
   text-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 td.dollar {
   text-align: right;

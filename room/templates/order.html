@@ -8,7 +8,14 @@
 {%block about_this_page %}
 <h2>{{ what_you_are_doing }}</h2>
 <p>
+If you don't need to update quantities 
+then you go to the next step 
+by clicking the
+<strong>{{ submit_button_text }}</strong> 
+button.
+</p>
 {% if user.captain %}
+<p>
 <a href="{% url room.views.CaptainHome %}">Click here to go back to your Captain's Page</a> without saving changes.
 </p>
 {% endif %}
