@@ -37,8 +37,8 @@ span.attr {
   white-space: nowrap;
 }
 div.panel {
-  padding-top: 3px;
-  margin: 10px 0px 3px 0px;
+  padding-top: 0;
+  margin-bottom: 10px;
   border: 1px solid #999;
 }
 div.panel h3,h2 {
@@ -49,7 +49,9 @@ div.panel h3,h2 {
 div.panel table.tablesorter {
   margin-top: 5px;
 }
-
+div.padded {
+  padding: 5px;
+}
 div.left {
   width: 400px;
   float: left;
@@ -189,7 +191,6 @@ table.scoreboard th {
   margin: 0;
 }
 table.budget {
-  border: 1px solid #999;
   border-collapse: collapse;
 }
 table.budget td {
@@ -199,7 +200,8 @@ table.budget span.budget-item-note {
   font-size: smaller;
   font-style: italic;
 }
-table.budget a {
+table.budget a
+{
   font-size: 11px;
   margin: 2px; padding: 0;
 }
