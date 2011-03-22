@@ -210,6 +210,12 @@
 		... more details
 	      </a>
 	      {% endif %}
+	      {% if order_item.SupportsName %}
+	      -
+	      <span class="jeditable-order-item-name" 
+		    id="{{ order_item.key.id }}"
+		    >{{ order_item.name }}</span>
+	      {% endif %}
 	    </td>
 	    <td class="dollar">
 	      {{ order_item.item.unit_cost|floatformat:2 }}

@@ -456,6 +456,9 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
       return common.Respond(request, 'order', template_dict)
 
 def OrderPreview(request, site_id=None):
+  user, _, _ = common.GetUser(request)
+  if user is None:
+    return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
   order_sheets = models.OrderSheet.all().order('name')
   order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
   for os in order_sheets:
@@ -467,3 +470,15 @@ def OrderPreview(request, site_id=None):
   t = {'order_sheets': order_sheets,
        'site': site}
   return common.Respond(request, 'order_preview', t)
+
+def OrderItemName(request):
+  user, _, _ = common.GetUser(request)
+  if user is None:
+    return http.HttpResponse(status=400)
+  order_item_id = int(request.POST['id'])
+  order_item = models.OrderItem.get_by_id(order_item_id)
+  if order_item is None:
+    return http.HttpResponse(status=400)
+  order_item.name = request.POST['value']
+  order_item.put()
+  return http.HttpResponse(order_item.name)
