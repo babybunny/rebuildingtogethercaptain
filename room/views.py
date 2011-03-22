@@ -293,6 +293,23 @@ def SiteNew(request):
   return SiteEdit(request, None)
 
 
+def SiteAnnouncement(request, site_id):
+  """Updates a site's announcement fields."""
+  user, captain, staff = common.GetUser(request)
+  if not staff:
+    return http.HttpResponse(status=400)
+  if not request.POST:
+    return http.HttpResponse(status=400)
+  site = models.NewSite.get_by_id(int(site_id))
+  if not site:
+    return http.HttpResponse(status=400)
+  field = request.POST['id']
+  value = request.POST['value']
+  setattr(site, field, value)
+  site.put()
+  return http.HttpResponse(value, status=200)
+
+
 def SiteList(request):
   """Request / show all Sites.
 

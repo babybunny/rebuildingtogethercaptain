@@ -39,6 +39,7 @@ urlpatterns += patterns(
     (r'^site/export$', 'SiteExport'),
     (r'^site/new$', 'SiteNew'),
     (r'^site/edit/(\d+)/$', 'SiteEdit'),
+    (r'^site/announcement/(\d+)/$', 'SiteAnnouncement'),
 
     (r'^captain$', 'CaptainList'),
     (r'^captain/list$', 'CaptainList'),
