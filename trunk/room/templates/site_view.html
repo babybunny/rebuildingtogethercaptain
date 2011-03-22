@@ -63,11 +63,9 @@
 	   id="announcement_subject" 
 	   name="{{ site.key.id }}">{{ site.announcement_subject }}</div>
       <div class="panel">
-	<div class="padded">
-	<span class="jeditable-text"
-	      id="announcement_body"
-	      name="{{ site.key.id }}">{{ site.announcement_body }}</span>	
-	</div>
+	<div class="padded jeditable-text"
+	     id="announcement_body"
+	     name="{{ site.key.id }}">{{ site.announcement_body }}</div>
       </div>
       {% if site_list_detail %}
       <p>{{ site.StreetAddress }}
