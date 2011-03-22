@@ -213,6 +213,7 @@ class OrderSheet(BaseModel):
     name.unique = True
     visibility = db.StringProperty(choices=('Everyone', 'Staff Only'), 
                                    default='Everyone')
+    supports_extra_name_on_order = db.BooleanProperty(default=False)
     code =  db.StringProperty()    
     code.unique = True
     code.verbose_name = 'Three-letter code like LUM for Lumber'
@@ -271,7 +272,8 @@ class Item(BaseModel):
     last_editor = db.UserProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty(auto_now=True)
-    
+    supports_extra_name_on_order = db.BooleanProperty(default=False)
+
     def __unicode__(self):
         return self.description
 
@@ -357,6 +359,11 @@ class OrderItem(BaseModel):
     order = db.ReferenceProperty(Order)
     supplier = db.ReferenceProperty(Supplier)
     quantity = db.IntegerProperty(default=0)
+    name = db.StringProperty(default="")
+
+    def SupportsName(self):
+        return (self.item.supports_extra_name_on_order 
+                or self.order.order_sheet.supports_extra_name_on_order)
 
     def VisibleQuantity(self):
         if self.quantity:
