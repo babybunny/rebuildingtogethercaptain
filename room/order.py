@@ -180,10 +180,10 @@ def _OrderPut(request, user, order):
   order_items = list(models.OrderItem.all().filter('order = ', order))
   _SortOrderItemsWithSections(order_items)  
   if order.state == 'new':
-    what = 'Starting a new order.'
+    what = 'Enter quantities for items.'
     submit_button_text = 'Submit this order'
   else:
-    what = 'Changing an existing order.'
+    what = 'Update quantities if necessary.'
     submit_button_text = 'Submit changes'
   if order.order_sheet.HasLogistics():
     submit_button_text += ' and proceed to delivery options'
@@ -458,6 +458,11 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
 def OrderPreview(request, site_id=None):
   order_sheets = models.OrderSheet.all().order('name')
   order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
+  for os in order_sheets:
+    order_items = [models.OrderItem(item=i) for i in os.item_set]
+    _SortOrderItemsWithSections(order_items)
+    os.sorted_items = order_items[:]
+
   site = models.NewSite.get_by_id(int(site_id))
   t = {'order_sheets': order_sheets,
        'site': site}
