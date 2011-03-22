@@ -83,6 +83,10 @@ class NewSite(BaseModel):
     city_state_zip = db.StringProperty()  # like Menlo Park CA 94025
     city = db.StringProperty()
     budget = db.IntegerProperty()
+    announcement_subject = db.StringProperty(default='Nothing Needs Attention')
+    announcement_body = db.TextProperty(
+        default="Pat yourself on the back - no items need attention.\n"
+	"You have a clean bill of health.")
 
     class ActiveItems(object):
         """Access user-input records with state and modified fields."""
@@ -122,7 +126,7 @@ class NewSite(BaseModel):
         return '%s, %s' % (self.street_number, self.city_state_zip)
 
     def NeedsAttention(self):
-        return False
+        return self.announcement_subject is not None
     
     def OrderTotal(self):
         """Only works if self has been saved."""    

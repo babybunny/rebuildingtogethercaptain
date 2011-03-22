@@ -59,29 +59,16 @@
       {% endif %}
     </td>
     <td>
-      {% if site.NeedsAttention %}
-      <span class="big">
-	Needs Attention
-      </span>
+      <div class="big jeditable" 
+	   id="announcement_subject" 
+	   name="{{ site.key.id }}">{{ site.announcement_subject }}</div>
       <div class="panel">
-	<p>
-	  We need to set up Porta Potty and Debris Box orders soon because we 
-	  get a discount from the vendor for ordering early. 
-	</p>
-	<p>T-Shirt orders also need to be entered soon because the shirts take
-	  some time to print.
-	</p>
-	
+	<div class="padded">
+	<span class="jeditable-text"
+	      id="announcement_body"
+	      name="{{ site.key.id }}">{{ site.announcement_body }}</span>	
+	</div>
       </div>
-      {% else %}
-      <span class="big">
-	Nothing Needs Attention
-      </span>
-      <p>
-	Pat yourself on the back - no items need attention.  
-	You have a clean bill of health.
-      </p>
-      {% endif %}
       {% if site_list_detail %}
       <p>{{ site.StreetAddress }}
       <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress }}&ie=UTF8&z=14" target="_blank"> 
@@ -104,6 +91,7 @@
       <span class="big">
 	{{ site.BudgetStatement }} 
       </span>
+      <div class="panel">
       <table class="budget">
 	<tbody>
 	  <tr>
@@ -244,6 +232,7 @@
 	  </tr>
 	</tbody>
       </table>
+      </div>
       {% if site.Orders.Count %}
       <a name="order_panel"></a>
       <div class="panel">
@@ -272,6 +261,7 @@
 	      {% endfor %}
 	      {% for od in order.orderretrieval_set %}
 	      {{ od.retrieval.dropoff_date }} (Drop-off)
+	      <br/>
 	      {{ od.retrieval.retrieval_date }} (Retrieval)
 	      {% endfor %}
 	    </td>
