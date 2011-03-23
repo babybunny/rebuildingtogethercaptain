@@ -24,6 +24,8 @@ EMAIL_SENDER_READABLE = 'Rebuilding Together ROOMS Support'
 # CC'd on all emails as a logging mechanism.
 EMAIL_LOG = 'rebuildingtogethercaptain@googlegroups.com'
 
+# Placeholder Captain record which represents RTP Staff.
+STAFF_CAPTAIN_EMAIL = 'rebuildingtogether.rooms@gmail.com'
 
 def NotifyAdminViaMail(subject, template, template_dict):
   base_uri = GetBaseUri()
@@ -97,6 +99,11 @@ def GetUser(request, user=None):
   staff = models.Staff.all().filter('email = ', user.email()).get()  
   user.staff = staff
   return user, captain, staff
+
+
+def GetStaffCaptain():
+  """Returns a Captain record which represents the RTP Staff."""
+  return models.Captain.all().filter('email = ', STAFF_CAPTAIN_EMAIL).get()
 
 
 def Respond(request, template_name, params=None):
