@@ -193,8 +193,8 @@ class SiteExpenseForm(djangoforms.ModelForm):
                 captains = [(sc.captain.key(), sc.captain.name) 
                             for sc in site.sitecaptain_set]
                 captains.sort()
-                if len(captains) > 1:
-                    captains.insert(0, ('', '----------'))
+                staff_captain = common.GetStaffCaptain()
+                captains.append((staff_captain.key(), staff_captain.name))
                 self.fields['captain'] = djangoforms.ModelChoiceField(
                     models.SiteCaptain,
                     choices=captains)
