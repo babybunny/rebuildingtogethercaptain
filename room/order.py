@@ -128,6 +128,11 @@ def _OrderExportInternal(writable, post_vars):
                      'created_by',
                      'modified',
                      'last_editor',
+                     'logistics start',
+                     'logistics end',
+                     'logistics instructions',
+                     'site.street_address',
+                     'site.city_state_zip',
                      ])
     writer.writerow([o.key().id(),
                      o.site.number,
@@ -139,6 +144,11 @@ def _OrderExportInternal(writable, post_vars):
                      o.created_by,
                      o.modified,
                      o.last_editor,
+                     o.LogisticsStart(),
+                     o.LogisticsEnd(),
+                     o.LogisticsInstructions(),
+                     o.site.street_number,
+                     o.site.city_state_zip,
                      ])
     order_items = list(oi for oi in o.orderitem_set if oi.quantity)
     if order_items:
