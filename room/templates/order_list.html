@@ -4,7 +4,7 @@
 <script type="text/javascript">
 $(function() {
   $("#order_list").tablesorter({
-    sortList: [[5,0]],
+    sortList: [[6,0]],
     headers: { 0: { sorter: false }}});
   $("#select_all").change(
     function() {
@@ -51,7 +51,10 @@ delete an order, just talk to Luke if this comes up.
 	Form
       </th>
       <th>
-	Created
+	$ Grand Total
+      </th>
+      <th>
+	Last Modified
       </th>
       <th>
 	Logistics start
@@ -60,7 +63,7 @@ delete an order, just talk to Luke if this comes up.
 	Logistics end
       </th>
       <th>
-	$ Grand Total
+	Logistics instructions
       </th>
     </tr>
   </thead>
@@ -99,7 +102,10 @@ delete an order, just talk to Luke if this comes up.
 	{{ order.order_sheet.name|escape }}
       </td>
       <td>
-	{{ order.created|date:"Y/m/d" }}
+	{{ order.GrandTotal }}
+      </td>
+      <td>
+	{{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
       </td>
       <td>
 	{{ order.LogisticsStart }}
@@ -108,7 +114,7 @@ delete an order, just talk to Luke if this comes up.
 	{{ order.LogisticsEnd }}
       </td>
       <td>
-	{{ order.GrandTotal }}
+	{{ order.LogisticsInstructions }}
       </td>
     </tr>
     {%endfor%}
