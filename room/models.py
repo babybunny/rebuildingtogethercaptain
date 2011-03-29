@@ -356,6 +356,20 @@ class Order(BaseModel):
             logging.info('Updated subtotal for order %d to %0.2f', 
                          self.key().id(), sub_total)
 
+    def LogisticsStart(self):
+        for od in self.orderdelivery_set:
+            return "%s (Delivery)" % od.delivery.delivery_date
+        for od in self.orderpickup_set:
+            return "%s (Pickup)" % od.pickup.pickup_date
+        for od in self.orderretrieval_set:
+            return "%s (Drop-off)" % od.retrieval.dropoff_date
+        return None
+
+    def LogisticsEnd(self):
+        for od in self.orderretrieval_set:
+            return "%s (Retrieval)" % od.retrieval.retrieval_date
+        return None
+
 
 class OrderItem(BaseModel):
     """The Items that are in a given Order."""
