@@ -370,6 +370,31 @@ class Order(BaseModel):
             return "%s (Retrieval)" % od.retrieval.retrieval_date
         return None
 
+    def LogisticsInstructions(self):
+        for od in self.orderdelivery_set:
+            return "%s%s %s%s %s" % (
+                od.delivery.contact and 'Contact ' or '',
+                od.delivery.contact or '',
+                od.delivery.contact_phone and 'at ' or '',
+                od.delivery.contact_phone or '',
+                od.delivery.notes or '')
+
+        for od in self.orderpickup_set:
+            return "%s%s %s%s %s" % (
+                od.pickup.contact and 'Contact ' or '',
+                od.pickup.contact or '',
+                od.pickup.contact_phone and 'at ' or '',
+                od.pickup.contact_phone or '',
+                od.pickup.notes or '')
+
+        for od in self.orderretrieval_set:
+            return "%s%s %s%s %s" % (
+                od.retrieval.contact and 'Contact ' or '',
+                od.retrieval.contact or '',
+                od.retrieval.contact_phone and 'at ' or '',
+                od.retrieval.contact_phone or '',
+                od.retrieval.notes or '')
+        return ''
 
 class OrderItem(BaseModel):
     """The Items that are in a given Order."""
