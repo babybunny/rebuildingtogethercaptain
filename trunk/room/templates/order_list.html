@@ -2,10 +2,16 @@
 {% block script %}
 {% include "tablesorter_script.html" %}
 <script type="text/javascript">
-$(document).ready(function(){
+$(function() {
   $("#order_list").tablesorter({
-    sortList: [[3,0]],
+    sortList: [[5,0]],
     headers: { 0: { sorter: false }}});
+  $("#select_all").change(
+    function() {
+      var newval = $("#select_all").attr('checked');
+      $(".order_export_checkbox").attr('checked', newval);
+    }
+  );
 });
 </script>
 {%endblock%}
@@ -26,21 +32,17 @@ delete an order, just talk to Luke if this comes up.
 {%block body%}
 <form method="POST" action="{% url room.order.OrderExport %}">
   To export as CSV, select some orders by checking their boxes and then 
-  click "Export".
+  click 
+	<input type="submit" name="export" value="Export">
   <br>
 <table class="list tablesorter" id="order_list">
   <thead>
     <tr>
       <th>
-	<input type="submit" name="export" value="Export">
+	<input type="checkbox" id="select_all">
       </th>
       <th>
 	Order Status
-      </th>
-      <th>Order Id #
-	{% if user.staff %}
-	<br>(click to edit)
-	{% endif %}
       </th>
       <th>
 	Site
@@ -75,18 +77,17 @@ delete an order, just talk to Luke if this comes up.
 	- 
 	{% if order_sheet %}
 	<a href="{% url room.order.OrderFulfill order.key.id order_sheet.key.id %}">
-	  Click to fulfill
+	  Fulfill
 	</a>
 	{% else %}
 	<a href="{% url room.order.OrderFulfill order.key.id %}">
-	  Click to fulfill
+	  Fulfill
 	</a>	
 	{% endif %}
 	{% endifequal %}
-      </td>
-      <td>
+	-
 	<a href="{% url room.order.OrderEdit order.key.id %}">
-	  {{ order.key.id }}
+	  Edit
 	</a>
       </td>
       <td>
