@@ -52,6 +52,12 @@ delete an order, just talk to Luke if this comes up.
 	Created
       </th>
       <th>
+	Logistics start
+      </th>
+      <th>
+	Logistics end
+      </th>
+      <th>
 	$ Grand Total
       </th>
     </tr>
@@ -93,6 +99,12 @@ delete an order, just talk to Luke if this comes up.
       </td>
       <td>
 	{{ order.created|date:"Y/m/d" }}
+      </td>
+      <td>
+	{{ order.LogisticsStart }}
+      </td>
+      <td>
+	{{ order.LogisticsEnd }}
       </td>
       <td>
 	{{ order.GrandTotal }}
