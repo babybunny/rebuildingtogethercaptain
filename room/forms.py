@@ -45,13 +45,14 @@ def SortedSiteChoiceField():
 class CaptainForm(djangoforms.ModelForm):
     class Meta:
         model = models.Captain
-        exclude = ['modified', 'last_editor']
+        exclude = ['modified', 'last_editor', 'last_welcome', 'search_prefixes']
 
 
 class CaptainContactForm(djangoforms.ModelForm):
     class Meta:
          model = models.Captain
-         exclude = ['name', 'email', 'modified', 'last_editor', 'last_welcome']
+         exclude = ['name', 'email', 'modified', 'last_editor', 'last_welcome',
+                    'search_prefixes']
 
 
 class SiteForm(djangoforms.ModelForm):
@@ -79,6 +80,7 @@ class NewSiteForm(djangoforms.ModelForm):
         help_text = models.NewSite.city_state_zip.help_text)
     class Meta:
          model = models.NewSite
+         exclude = ['search_prefixes']
 
 
 class CaptainSiteForm(djangoforms.ModelForm):
@@ -87,7 +89,7 @@ class CaptainSiteForm(djangoforms.ModelForm):
     class Meta:
          model = models.Site
          exclude = ['number', 'name', 'street', 'applicant', 'sponsors', 
-                    'postal_address']
+                    'postal_address', 'search_prefixes']
 
 
 class SiteCaptainSiteForm(djangoforms.ModelForm):

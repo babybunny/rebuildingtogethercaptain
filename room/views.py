@@ -7,6 +7,7 @@ import csv
 import datetime
 import logging
 import os
+import simplejson
 from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -293,6 +294,11 @@ def SiteNew(request):
   return SiteEdit(request, None)
 
 
+def SitePut(request, site_id):
+  models.NewSite.get_by_id(int(site_id)).put()
+  return http.HttpResponse('OK')
+
+
 def SiteAnnouncement(request, site_id):
   """Updates a site's announcement fields."""
   user, captain, staff = common.GetUser(request)
@@ -358,7 +364,7 @@ def SiteExport(request):
 def CaptainList(request):
   """Request / show all Captains.
 
-  Was   return _EntryList(request, models.Captain, 'captain_list')
+  Was return _EntryList(request, models.Captain, 'captain_list')
   but we need special handling for sitecaptains.
   """
   user, captain, staff = common.GetUser(request)
@@ -450,6 +456,23 @@ def CaptainEdit(request, captain_id=None):
 def CaptainNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return CaptainEdit(request, None)
+
+def CaptainAutocomplete(request):
+  """Return JSON to autocomplete a captain ID based on a prefix."""
+  prefix = request.GET['term']
+  captains = models.Captain.all()
+  captains.filter('search_prefixes = ', prefix)
+  matches = {}
+  for c in captains:
+    label = "%s <%s>" % (c.name, c.email)
+    matches[label] = c.key().id()
+  response = http.HttpResponse(mimetype='application/json')  
+  response.write(simplejson.dumps(matches))
+  return response
+
+def CaptainPut(request, captain_id):
+  models.Captain.get_by_id(int(captain_id)).put()
+  return http.HttpResponse('OK')
 
 def _PersonEdit(request, id, person_cls, form_cls, template, readable):
   user, _, _ = common.GetUser(request)

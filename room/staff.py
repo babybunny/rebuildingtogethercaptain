@@ -7,6 +7,7 @@ import os
 from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
+from google.appengine.api import taskqueue
 from google.appengine.ext.db import djangoforms
 from google.appengine.ext.webapp import template
 
@@ -265,3 +266,13 @@ def AddStandardKitOrder(request, prefix):
 
   return http.HttpResponse(
     urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+
+def RecomputeSearchPrefixes(request):
+  for s in models.NewSite.all():
+    taskqueue.add(url=urlresolvers.reverse(views.SitePut,
+                                           args=[s.key().id()]))
+  for c in models.Captain.all():
+    taskqueue.add(url=urlresolvers.reverse(views.CaptainPut,
+                                           args=[c.key().id()]))
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
