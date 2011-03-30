@@ -41,6 +41,13 @@
       {% for sitecaptain in site.sitecaptain_set %}
       <p> 
 	<strong>{{ sitecaptain.captain.name }}</strong>
+	{% if user.staff %}
+	(
+	<a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id %}">
+	  edit
+	</a>
+	)
+	{% endif %}
 	<br>{{ sitecaptain.type }} Captain
 	{% if site_list_detail %}
 	<br>
