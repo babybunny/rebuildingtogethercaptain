@@ -459,7 +459,7 @@ def CaptainNew(request):
 
 def CaptainAutocomplete(request):
   """Return JSON to autocomplete a captain ID based on a prefix."""
-  prefix = request.GET['term']
+  prefix = str(request.GET['term']).lower()
   captains = models.Captain.all()
   captains.filter('search_prefixes = ', prefix)
   matches = {}
