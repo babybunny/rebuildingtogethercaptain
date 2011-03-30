@@ -2,11 +2,48 @@
 {%block breadcrumb%}
 {%endblock%}
 {%block script%}
+<link 
+   type="text/css" 
+   href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" 
+   rel="Stylesheet" />
 <script 
    type="text/javascript" 
    src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
 </script>
+<script 
+   type="text/javascript" 
+   src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+</script>
 <script type="text/javascript">
+
+function autocompleteCaptain(request, callback) {
+  $.getJSON('{% url room.views.CaptainAutocomplete %}', {term: request.term},
+    function (data) {
+      $('#captain_term').data('data', data);
+      var autocomplete_data = [];
+      for (value in data) {
+        autocomplete_data.push(value);
+      } 
+      callback(autocomplete_data);
+    }
+  );
+}
+
+function sendToCaptainEdit() {
+  var values = $('#captain_term').data('data');
+  var autocomplete_value = $('#captain_term').val();
+  var id = values[autocomplete_value];
+  if (id == undefined) {
+    $('#captain_error').html('<i>Sorry, can\'t find that Captain.</i>');
+    return;
+  }
+  var loc = window.location;
+  var new_loc = loc.protocol + '//' + loc.host + 
+                '{% url room.views.CaptainEdit 999 %}';
+  new_loc = new_loc.replace('999', id);
+  window.location = new_loc;
+}
+
 $(function() {
   $(".order_type").submit(function(e) {
     e.preventDefault();
@@ -14,6 +51,13 @@ $(function() {
     location = loc;
     return false;
   });
+
+  $('#captain_term').autocomplete({
+    minLength: 1,
+    delay: 500,
+    source: autocompleteCaptain
+  });
+  $('#captain_search').click(sendToCaptainEdit);
 });
 </script>
 {%endblock%}
@@ -48,14 +92,21 @@ $(function() {
 	<br>
 	<a href="{% url room.views.SiteNew %}">Add a new Site</a>.
       </div>
-
+      
       <div class="panel">
-      <h2>Captains</h2>
+	<h2>Captains</h2>
+	<span id="captain_error">Start typing a Captain's name to search</span>
+	<br>
+	<input type="text" id="captain_term" size="25">
+	<input type="submit" id="captain_search" value="Search">
+	</form>
+	<p>
 	<a href="{% url room.views.CaptainList %}">View a list</a> 
 	of all Captains.
 	<br>
 	<a href="{% url room.views.CaptainNew %}">Add a new Captain</a>
 	.
+	</p>
       </div>
 
       <div class="panel">
