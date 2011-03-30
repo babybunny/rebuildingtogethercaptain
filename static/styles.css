@@ -38,16 +38,20 @@ span.attr {
 }
 div.panel {
   padding-top: 0;
+  padding-left: 5px;
+  padding-right: 5px;
   margin-bottom: 10px;
   border: 1px solid #999;
 }
 div.panel h3,h2 {
   margin-top: 0;
   margin-bottom: 5px;
-  padding-left: 5px;
 }
 div.panel table.tablesorter {
   margin-top: 5px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 5px;
 }
 div.padded {
   padding: 5px;
