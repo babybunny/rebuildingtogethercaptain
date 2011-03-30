@@ -10,10 +10,10 @@ urlpatterns = patterns(
     (r'^site/without_order/$', 'SitesWithoutOrder'),
     (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),
     (r'^send_email/(\d+)/$$', 'SitesWithoutOrderSendEmail'),
-    (r'^fix_city', 'FixCity'),
-    (r'^fix_last_editor', 'FixLastEditor'),
-    (r'^add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
-    (r'^search_prefix', 'RecomputeSearchPrefixes'),
+    (r'^admin/fix_city', 'FixCity'),
+    (r'^admin/fix_last_editor', 'FixLastEditor'),
+    (r'^admin/add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
+    (r'^admin/search_prefix', 'RecomputeSearchPrefixes'),
     )
 
 urlpatterns += patterns(
@@ -40,7 +40,7 @@ urlpatterns += patterns(
     (r'^site/export$', 'SiteExport'),
     (r'^site/new$', 'SiteNew'),
     (r'^site/edit/(\d+)/$', 'SiteEdit'),
-    (r'^site/put/(\d+)/$', 'SitePut'),
+    (r'^admin/site/put/(\d+)/$', 'SitePut'),
     (r'^site/announcement/(\d+)/$', 'SiteAnnouncement'),
 
     (r'^captain$', 'CaptainList'),
@@ -49,7 +49,7 @@ urlpatterns += patterns(
     (r'^captain/export$', 'CaptainExport'),
     (r'^captain/new$', 'CaptainNew'),
     (r'^captain/edit/(\d+)/$', 'CaptainEdit'),
-    (r'^captain/put/(\d+)/$', 'CaptainPut'),
+    (r'^admin/captain/put/(\d+)/$', 'CaptainPut'),
     (r'^captain/home/(\d+)/$', 'CaptainHome'),
     (r'^captain_home$', 'CaptainHome'),
 

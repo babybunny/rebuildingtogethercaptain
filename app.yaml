@@ -19,6 +19,10 @@ handlers:
   script: main.py
   login: required
 
+- url: /room/admin/.*
+  script: main.py
+  login: admin
+
 - url: /.*
   script: main.py
 
