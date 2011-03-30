@@ -33,6 +33,19 @@ class Captain(BaseModel):
     last_welcome = db.DateTimeProperty()
     modified = db.DateTimeProperty(auto_now=True)
     last_editor = db.UserProperty(auto_current_user=True)
+    search_prefixes = db.StringListProperty()
+
+    def put(self, *a, **k):
+        prefixes = set()
+        for i in xrange(1, 7):
+            if self.name:
+                for part in self.name.split():                
+                    prefixes.add(part[:i])
+            if self.email:
+                prefixes.add(self.email[:i])
+        self.search_prefixes = [p.lower() for p in prefixes]
+        logging.info('prefixes for %s: %s', self.name, self.search_prefixes)
+        super(BaseModel, self).put(*a, **k)
 
     def __unicode__(self):
         return self.name
@@ -91,6 +104,7 @@ class NewSite(BaseModel):
     announcement_body = db.TextProperty(
         default="Pat yourself on the back - no items need attention.\n"
 	"You have a clean bill of health.")
+    search_prefixes = db.StringListProperty()
 
     class ActiveItems(object):
         """Access user-input records with state and modified fields."""
@@ -121,6 +135,22 @@ class NewSite(BaseModel):
     @property 
     def InKindDonations(self):
         return self.ActiveItems(self.inkinddonation_set)
+
+    def put(self, *a, **k):
+        prefixes = set()
+        for i in xrange(1, 7):
+            for f in self.name, self.applicant, self.street:
+                if not f:
+                    continue
+                for part in f.split():         
+                    prefixes.add(part[:i])
+            if self.number:
+                prefixes.add(self.number[:i])
+                prefixes.add(self.number[2:2+i])
+                prefixes.add(self.number[5:5+i])
+        self.search_prefixes = [p.lower() for p in prefixes]
+        logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
+        super(BaseModel, self).put(*a, **k)
 
     def __unicode__(self):
         """Only works if self has been saved."""
