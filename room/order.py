@@ -160,6 +160,7 @@ def _OrderExportInternal(writable, post_vars):
                        'item.measure',
                        'quantity', 
                        'supplier',
+                       'name',
                        ])
     else:
       writer.writerow(['', 'No Items in this Order!!!'])
@@ -171,6 +172,7 @@ def _OrderExportInternal(writable, post_vars):
                        oi.item.measure,
                        oi.quantity,
                        oi.supplier,
+                       oi.name,
                        ])
     writer.writerow([''])
 
