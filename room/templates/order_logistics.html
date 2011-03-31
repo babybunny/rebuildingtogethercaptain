@@ -29,14 +29,15 @@ $( "#tabs" ).tabs();
 <p>Please set up the logistics for your order here.  Includes delivery, pickup, or rental options as appropriate.
 </p>
 
+<p>Existing logistics dates and Captains for Site #{{ order.site.number }}
+are listed for your reference.
+</p>
+
 {% if existing_dates %}
-<table>
+<table class="list">
+<tbody>
 <tr>
 <td>
-Existing logistics dates: 
-<br>
-(for your reference)
-</td><td>
 <table class="hint">
 <thead>
 <tr>
@@ -50,13 +51,36 @@ Existing logistics dates:
 <tr>
 <td>{{ ed.0 }}</td>
 <td>{{ ed.1 }}</td>
-<td>{{ ed.2 }} (#{{ ed.3 }})
+<td>{{ ed.2 }} ({{ ed.3 }})
 </td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
-</td></tr>
+</td>
+<td>
+<table class="hint">
+<thead>
+<tr>
+<th>Captain</th>
+<th>Primary</th>
+<th>Secondary</th>
+</tr>
+</thead>
+<tbody>
+{% for sc in captains %}
+<tr>
+<td>{{ sc.name }}</td>
+<td>{{ sc.phone1 }}</td>
+<td>{{ sc.phone2 }}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
 </table>
 {% endif %}
 {%endblock%}
