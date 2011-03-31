@@ -343,6 +343,8 @@ def OrderLogistics(request, order_id):
 
   existing_dates.sort()
 
+  captains = [sc.captain for sc in order.site.sitecaptain_set]
+  captains.sort(key=lambda c: c.name)
   proceed_to_fulfill = "STAFF ONLY: proceed directly to fulfill"
   complete = {}
   complete['delivery'] = 'Choose these delivery options'
@@ -350,6 +352,7 @@ def OrderLogistics(request, order_id):
   complete['retrieval'] = 'Choose these drop-off/retrieval options'
   template_dict = {'forms': form_objects,
                    'order': order,
+                   'captains': captains,
                    'complete': complete,
                    'existing_dates': existing_dates,
                    'current': current,
