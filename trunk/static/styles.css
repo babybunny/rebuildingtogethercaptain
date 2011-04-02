@@ -33,6 +33,10 @@ body {
   border: 5px solid red;
   border-collapse: collapse;
 }
+.page-break-before {
+  page-break-before: always
+}
+
 span.attr {
   white-space: nowrap;
 }

@@ -3,14 +3,24 @@
  | List all Orders
 {% endblock %}
 {%block about_this_page %}
-<h2>{{ action_verb }} Order ID {{ order.key.id }} for Site {{ order.site.number }}</h2>
+<h2>{{ action_verb }} {{ num_orders}} Order(s)
+  {% if order_sheet %}
+  for {{ order_sheet.name }}
+  {% endif %}
+</h2>
 
 {% if confirm_url %}
-<a href="{{ confirm_url }}" onclick="javascript:window.print()">
-  Click here to print and confirm fulfillment has started 
+<form action="{{ confirm_url }}" method="POST" 
+      onsubmit="javascript:window.print()">
+<input type="submit" 
+       value="Click here to print and confirm fulfillment has started"/>
   (no more captain changes).
-</a>
-<br>
+{% for order_dict in orders %}
+<input type="hidden"
+       name="{{ order_export_checkbox_prefix }}{{ order_dict.order.key.id }}" 
+       value="checked">
+{% endfor %}
+</form>
 - or -
 {% endif %}
 {% if back_to_list_url %}
@@ -23,14 +33,18 @@
   Orders.
 </a>
 <br>
-- or -
 {% endif %}
 <br>
-<a href="{% url room.views.SiteView order.site.key.id %}">
-  Click here to go back to site {{ order.site.number }}
-</a>
 
 {%endblock%}
 {%block body%}
+{% for order_dict in orders %}
+{% with order_dict.order as order %}
+{% with order_dict.order_items as order_items %}
+<br class="page-break-before">
 {% include "order_layout.html" %}
+<br>
+{% endwith %}
+{% endwith %}
+{% endfor %}
 {%endblock%}
