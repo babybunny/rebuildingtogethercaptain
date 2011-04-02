@@ -109,13 +109,17 @@ def OrderExport(request):
   _OrderExportInternal(response, request.POST)
   return response
 
-def _OrderExportInternal(writable, post_vars):
-  """Write orders as CSV to a file-like object."""   
-  orders = []
+def _PostedOrders(post_vars):
+  """Extract order IDs from post_vars."""
+  order_ids = []
   for var in post_vars:
     if var.startswith(ORDER_EXPORT_CHECKBOX_PREFIX):
-      order_id = int(var[len(ORDER_EXPORT_CHECKBOX_PREFIX):])
-      orders.append(models.Order.get_by_id(order_id))
+      order_ids.append(int(var[len(ORDER_EXPORT_CHECKBOX_PREFIX):]))
+  return models.Order.get_by_id(order_ids)
+  
+def _OrderExportInternal(writable, post_vars):
+  """Write orders as CSV to a file-like object."""   
+  orders = _PostedOrders(post_vars)
   writer = csv.writer(writable)
   for o in orders:
     writer.writerow(['Order ID',
@@ -150,7 +154,9 @@ def _OrderExportInternal(writable, post_vars):
                      o.site.street_number,
                      o.site.city_state_zip,
                      ])
-    order_items = list(oi for oi in o.orderitem_set if oi.quantity)
+    order_items = models.OrderItem.all()
+    order_items.filter('order = ', o).filter('quantity != ', 0)
+    order_items = list(order_items)
     if order_items:
       order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
       writer.writerow(['', 
