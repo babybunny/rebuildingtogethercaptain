@@ -31,9 +31,13 @@ delete an order, just talk to Luke if this comes up.
 {%endblock%}
 {%block body%}
 <form method="POST" action="{% url room.order.OrderExport %}">
-  To export as CSV, select some orders by checking their boxes and then 
-  click 
-	<input type="submit" name="export" value="Export">
+  To act on many orders at once, check their boxes and then click 
+  <input type="submit" name="submit" value="{{ mass_action.export_csv }}">
+  or
+  <input type="submit" name="submit" value="{{ mass_action.fulfill_many }}">
+  {% if order_sheet %}
+  <input type="hidden" name="order_sheet_id" value="{{ order_sheet.key.id }}">
+  {% endif %}
   <br>
 <table class="list tablesorter" id="order_list">
   <thead>
