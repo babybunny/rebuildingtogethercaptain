@@ -16,10 +16,20 @@
 </script>
 <script type="text/javascript">
 
-function autocompleteCaptain(request, callback) {
-  $.getJSON('{% url room.views.CaptainAutocomplete %}', {term: request.term},
+function autocomplete(request, callback, url, input_selector, error_selector) {
+  $.getJSON(url, {term: request.term},
     function (data) {
-      $('#captain_term').data('data', data);
+      var len = Object.keys(data).length;
+      if (len == 0) {
+        $(error_selector).html(
+          '<i>Sorry, can&#39;t find anything starting with ' + 
+          request.term + '</i>');
+      } else {
+        $(error_selector).html(
+          '<i>Found ' + len + ' results for <strong>' + 
+          request.term + '</strong></i>');
+      }
+      $(input_selector).data('data', data);
       var autocomplete_data = [];
       for (value in data) {
         autocomplete_data.push(value);
@@ -29,17 +39,52 @@ function autocompleteCaptain(request, callback) {
   );
 }
 
+function autocompleteCaptain(request, callback) {
+  return autocomplete(request, callback, 
+                      '{% url room.views.CaptainAutocomplete %}',
+                      '#captain_term', 
+                      '#captain_error');
+}
+
+function autocompleteSite(request, callback) {
+  return autocomplete(request, callback, 
+                      '{% url room.views.SiteAutocomplete %}',
+                      '#site_term',
+                      '#site_error');
+}
+
 function sendToCaptainEdit() {
   var values = $('#captain_term').data('data');
   var autocomplete_value = $('#captain_term').val();
   var id = values[autocomplete_value];
   if (id == undefined) {
-    $('#captain_error').html('<i>Sorry, can\'t find that Captain.</i>');
     return;
   }
+  $('#captain_error').html('<i>Loading Captain, ' + 
+    autocomplete_value +
+    ', please wait a second...</i>');
+  $('#captain_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host + 
                 '{% url room.views.CaptainEdit 999 %}';
+  new_loc = new_loc.replace('999', id);
+  window.location = new_loc;
+}
+
+function sendToSiteView() {
+  var values = $('#site_term').data('data');
+  var autocomplete_value = $('#site_term').val();
+  var id = values[autocomplete_value];
+  if (id == undefined) {
+    return;
+  }
+  $('#site_error').html('<i>Loading Site, ' + 
+    autocomplete_value +
+    ', please wait a second...</i>');
+  $('#site_term').hide();
+  var loc = window.location;
+  var new_loc = loc.protocol + '//' + loc.host + 
+                '{% url room.views.SiteView 999 %}';
   new_loc = new_loc.replace('999', id);
   window.location = new_loc;
 }
@@ -55,9 +100,15 @@ $(function() {
   $('#captain_term').autocomplete({
     minLength: 1,
     delay: 500,
-    source: autocompleteCaptain
+    source: autocompleteCaptain,
+    close: sendToCaptainEdit,
   });
-  $('#captain_search').click(sendToCaptainEdit);
+  $('#site_term').autocomplete({
+    minLength: 1,
+    delay: 500,
+    source: autocompleteSite,
+    close: sendToSiteView,
+  });
 });
 </script>
 {%endblock%}
@@ -77,15 +128,11 @@ $(function() {
     <td class="layout">
       <div class="panel">
       <h2>Sites</h2>
-      <p>Enter a site number like 
-	<a href="{% url room.views.SiteListByNumber test_site_number %}">
-	{{ test_site_number }}
-	</a>
-	<form action="{% url room.staff.SiteJump %}" method="GET">
-	  Site Number: 
-	  <input type="text" name="number" size="10">
-	  <input type="submit" name="site_jump" value="Jump to Site">
-	</form>
+	<span id="site_error">
+	  Start typing a site number, name, city, etc.
+	</span>
+	<br>
+	<input type="text" id="site_term" size="25">
       </p>
 	<a href="{% url room.views.SiteList %}">View a list</a> 
 	of all Sites.
@@ -95,11 +142,9 @@ $(function() {
       
       <div class="panel">
 	<h2>Captains</h2>
-	<span id="captain_error">Start typing a Captain's name to search</span>
+	<span id="captain_error">Start typing a Captain's name or email</span>
 	<br>
 	<input type="text" id="captain_term" size="25">
-	<input type="submit" id="captain_search" value="Search">
-	</form>
 	<p>
 	<a href="{% url room.views.CaptainList %}">View a list</a> 
 	of all Captains.
