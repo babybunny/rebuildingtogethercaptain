@@ -37,12 +37,16 @@ class Captain(BaseModel):
 
     def put(self, *a, **k):
         prefixes = set()
-        for i in xrange(1, 7):
-            if self.name:
-                for part in self.name.split():                
+        if self.name:
+            prefixes.add(self.name)
+            for part in self.name.split():                
+                prefixes.add(part)
+                for i in xrange(1, 7):                    
                     prefixes.add(part[:i])
             if self.email:
-                prefixes.add(self.email[:i])
+                prefixes.add(self.email)
+                for i in xrange(1, 7):                    
+                    prefixes.add(self.email[:i])
         self.search_prefixes = [p.lower() for p in prefixes]
         logging.info('prefixes for %s: %s', self.name, self.search_prefixes)
         super(BaseModel, self).put(*a, **k)
@@ -50,6 +54,9 @@ class Captain(BaseModel):
     def __unicode__(self):
         return self.name
 
+    def Label(self):
+        return "%s <%s>" % (self.name, self.email)
+        
 
 class Site(BaseModel):
     """A work site."""
@@ -138,19 +145,26 @@ class NewSite(BaseModel):
 
     def put(self, *a, **k):
         prefixes = set()
-        for i in xrange(1, 7):
-            for f in self.name, self.applicant, self.street:
-                if not f:
-                    continue
-                for part in f.split():         
+        for f in self.name, self.applicant, self.street:
+            if not f:
+                continue
+            prefixes.add(f)
+            for part in f.split():      
+                prefixes.add(part)
+                for i in xrange(1, 7):                    
                     prefixes.add(part[:i])
-            if self.number:
-                prefixes.add(self.number[:i])
-                prefixes.add(self.number[2:2+i])
-                prefixes.add(self.number[5:5+i])
+                
+        if self.number:
+            prefixes.add(self.number)
+            prefixes.add(self.number[:i])
+            prefixes.add(self.number[2:2+i])
+            prefixes.add(self.number[5:5+i])
         self.search_prefixes = [p.lower() for p in prefixes]
         logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
         super(BaseModel, self).put(*a, **k)
+
+    def Label(self):
+        return "%s %s" % (self.number, self.name)
 
     def __unicode__(self):
         """Only works if self has been saved."""

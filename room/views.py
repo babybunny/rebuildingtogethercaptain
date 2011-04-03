@@ -71,6 +71,19 @@ def _TryToSaveForm(save_form):
   return not errors
 
 
+def _Autocomplete(request, model_class):
+  prefix = str(request.GET['term']).lower()
+  items = model_class.all()
+  items.filter('search_prefixes = ', prefix)
+  matches = {}
+  for c in items:
+    label = c.Label()
+    matches[label] = c.key().id()
+  response = http.HttpResponse(mimetype='application/json')  
+  response.write(simplejson.dumps(matches))
+  return response
+
+
 def Help(request):
   return common.Respond(request, 'help')  
 
@@ -299,6 +312,11 @@ def SitePut(request, site_id):
   return http.HttpResponse('OK')
 
 
+def SiteAutocomplete(request):
+  """Return JSON to autocomplete a Site ID based on a prefix."""
+  return _Autocomplete(request, models.NewSite)
+
+
 def SiteAnnouncement(request, site_id):
   """Updates a site's announcement fields."""
   user, captain, staff = common.GetUser(request)
@@ -459,16 +477,7 @@ def CaptainNew(request):
 
 def CaptainAutocomplete(request):
   """Return JSON to autocomplete a captain ID based on a prefix."""
-  prefix = str(request.GET['term']).lower()
-  captains = models.Captain.all()
-  captains.filter('search_prefixes = ', prefix)
-  matches = {}
-  for c in captains:
-    label = "%s <%s>" % (c.name, c.email)
-    matches[label] = c.key().id()
-  response = http.HttpResponse(mimetype='application/json')  
-  response.write(simplejson.dumps(matches))
-  return response
+  return _Autocomplete(request, models.Captain)
 
 def CaptainPut(request, captain_id):
   models.Captain.get_by_id(int(captain_id)).put()

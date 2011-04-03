@@ -37,6 +37,7 @@ urlpatterns += patterns(
     (r'^site/list/$', 'SiteList'),
     (r'^site/list/(\d+)/$', 'SiteView'),
     (r'^site/list/(\w+)/$', 'SiteListByNumber'),
+    (r'^site/autocomplete/$', 'SiteAutocomplete'),
     (r'^site/export$', 'SiteExport'),
     (r'^site/new$', 'SiteNew'),
     (r'^site/edit/(\d+)/$', 'SiteEdit'),
