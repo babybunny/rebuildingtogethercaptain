@@ -14,8 +14,7 @@ $(function() {
   {% for order_item in order_items %}
   $(".jeditable-order-item-name").editable(
      "{% url room.order.OrderItemName %}", {
-         cancel    : 'Cancel',
-         submit    : 'OK',
+         onblur    : 'submit',
          indicator : '<img src="/static/ajax-loader.gif">',
          tooltip   : 'Click to edit...',
          placeholder   : '<i>Click to add a name to this item.</i>',
