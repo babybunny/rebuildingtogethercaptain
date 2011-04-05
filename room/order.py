@@ -504,14 +504,26 @@ def OrderPreview(request, site_id=None):
   user, _, _ = common.GetUser(request)
   if user is None:
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
+  site = models.NewSite.get_by_id(int(site_id))
+  existing_orders = {}
+  query = site.order_set
+  query.filter('state != ', 'new')
+  for order in query:
+    if order.order_sheet.code not in existing_orders:
+      existing_orders[order.order_sheet.code] = []
+    existing_orders[order.order_sheet.code].append(order)
+
   order_sheets = models.OrderSheet.all().order('name')
   order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
   for os in order_sheets:
     order_items = [models.OrderItem(item=i) for i in os.item_set]
     _SortOrderItemsWithSections(order_items)
     os.sorted_items = order_items[:]
-
-  site = models.NewSite.get_by_id(int(site_id))
+    os.num_existing_orders = 0
+    if os.code in existing_orders:
+      os.existing_orders = existing_orders[os.code]
+      os.num_existing_orders = len(existing_orders[os.code])
+    
   t = {'order_sheets': order_sheets,
        'site': site}
   return common.Respond(request, 'order_preview', t)
