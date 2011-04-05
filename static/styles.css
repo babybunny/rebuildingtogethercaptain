@@ -1,6 +1,6 @@
 @media print {
 .page-break-before {
-  page-break-before: always
+  page-break-before: always;
 }
 }
 
