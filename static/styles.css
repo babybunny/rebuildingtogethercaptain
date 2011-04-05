@@ -1,3 +1,9 @@
+@media print {
+.page-break-before {
+  page-break-before: always
+}
+}
+
 body {
   width: 950px;
   margin-right: 10px;
@@ -33,10 +39,9 @@ body {
   border: 5px solid red;
   border-collapse: collapse;
 }
-.page-break-before {
-  page-break-before: always
+span.jeditable-order-item-name {
+  display: inline-block;
 }
-
 span.attr {
   white-space: nowrap;
 }
