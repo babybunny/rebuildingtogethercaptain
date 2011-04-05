@@ -73,6 +73,28 @@ text-align: left;
 <div>
   {% for sheet in order_sheets %}
   <div class="description" id="preview-{{ sheet.code }}">   
+    {% if sheet.num_existing_orders %}
+    <div class="alert">
+      There are {{ sheet.num_existing_orders }} existing {{ sheet.name }}
+      orders for site {{ site.number }}.  You may want to edit one of these.  
+      Clicking the button on the left will create a new order.
+      {% for order in sheet.existing_orders %}
+      <br>
+      changed {{ order.modified|date:"d M" }} 
+      by {{ order.last_editor }} 
+      - 
+      {% if order.LogisticsStart %}
+      {{ order.LogisticsStart }} 
+      - 
+      {% endif %}
+      ${{ order.Total|floatformat:2 }}
+      <a href="{% url room.order.OrderEdit order.key.id %}" target="_blank">
+	edit
+      </a>
+      {% endfor %}
+    </div>
+    <br>
+    {% endif %}
     {% if sheet.sorted_items %}
     <strong>
       Here are the items you can order from the {{ sheet.name }} form:
