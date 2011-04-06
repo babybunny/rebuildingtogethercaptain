@@ -276,6 +276,8 @@ def _OrderPut(request, user, order):
       if quantity != order_item.quantity:
         order_item.quantity = quantity
         order_item.put()
+      if order_item.IsEmpty() and order_item.is_saved():
+        order_item.delete()
 
   order.UpdateSubTotal()
 
@@ -462,8 +464,17 @@ def _OrderEditInternal(request, user, order_id):
   logging.info('OrderEdit(%s) POST(%s)', order_id, request.POST)
   order = models.Order.get_by_id(int(order_id))
   if order is None:
-    logging.warning('order is none')
-    return http.HttpResponseRedirect(urlresolvers.reverse(views.CaptainHome)), None
+    logging.warning('no order found with id %s', order_id)
+    url = urlresolvers.reverse(views.CaptainHome)
+    return http.HttpResponseRedirect(url), None
+
+  items = list(oi.item for oi in order.orderitem_set)
+  for item in order.order_sheet.item_set:
+    if item in items: 
+      continue
+    order_item = models.OrderItem(order=order, item=item)
+    order_item.put()
+
   return _OrderPut(request, user, order)
 
 
@@ -479,9 +490,7 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
   order = models.Order(site=site, order_sheet=order_sheet, state='new')
   order.put()
 
-  items = db.GqlQuery('SELECT * FROM Item WHERE appears_on_order_form = :1',
-                      order.order_sheet)
-  for item in items:
+  for item in order.order_sheet.item_set:
     order_item = models.OrderItem(order=order, item=item)
     order_item.put()
   redirect, template_dict = _OrderPut(request, user, order)
