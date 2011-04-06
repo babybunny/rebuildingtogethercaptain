@@ -449,6 +449,9 @@ class OrderItem(BaseModel):
     quantity = db.IntegerProperty(default=0)
     name = db.StringProperty(default="")
 
+    def IsEmpty(self):
+        return not self.quantity and not self.name
+
     def SupportsName(self):
         return (self.item.supports_extra_name_on_order 
                 or self.order.order_sheet.supports_extra_name_on_order)
