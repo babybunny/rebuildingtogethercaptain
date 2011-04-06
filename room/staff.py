@@ -276,3 +276,9 @@ def RecomputeSearchPrefixes(request):
                                            args=[c.key().id()]))
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+def DeleteEmptyOrderItems(request):
+  for o in models.Order.all().filter('state !=' ,'new'):
+    for oi in o.orderitem_set:
+      if oi.IsEmpty():
+        oi.delete()
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
