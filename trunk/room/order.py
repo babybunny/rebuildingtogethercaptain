@@ -143,69 +143,59 @@ def _PostedOrders(post_vars):
 def _OrderExportInternal(writable, post_vars):
   """Write orders as CSV to a file-like object."""   
   order_ids = _PostedOrders(post_vars)
-  orders = models.Order.get_by_id(order_ids)
+  orders = list(models.Order.get_by_id(order_ids))
+  orders.sort(key=lambda o: o.site.number)
   writer = csv.writer(writable)
-  for o in orders:
-    writer.writerow(['Order ID',
-                     'site.number',
-                     'order_sheet.name',
-                     'sub_total',
-                     'notes',
-                     'state',
-                     'created',
-                     'created_by',
-                     'modified',
-                     'last_editor',
-                     'logistics start',
-                     'logistics end',
-                     'logistics instructions',
-                     'site.street_address',
-                     'site.city_state_zip',
-                     ])
-    writer.writerow([o.key().id(),
-                     o.site.number,
-                     o.order_sheet.name,
-                     o.sub_total,
-                     o.notes,
-                     o.state,
-                     o.created,
-                     o.created_by,
-                     o.modified,
-                     o.last_editor,
-                     o.LogisticsStart(),
-                     o.LogisticsEnd(),
-                     o.LogisticsInstructions(),
-                     o.site.street_number,
-                     o.site.city_state_zip,
-                     ])
+  writer.writerow(['Site Number',
+                   'Order ID',
+                   'Order modified',                     
+                   'Street Address',
+                   'City State Zip',
+                   'Type',
+                   'Item',
+                   'Quantity',
+                   'Measure',
+                   'Subtotal ($)',
+                   'LogisticsStart',
+                   'LogisticsEnd',
+                   'LogisticsInstructions',
+                   'Optional Item Note',
+                   ])
+  order_items_by_order = {}
+  for i in range(0, len(orders), 30):  # 30 is the magic filter limit
+    batch_orders = orders[i:i+30]
+    logging.info('loading batch of %d orders starting with %d', 
+                 len(batch_orders), i)
     order_items = models.OrderItem.all()
-    order_items.filter('order = ', o).filter('quantity != ', 0)
-    order_items = list(order_items)
-    if order_items:
-      order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
-      writer.writerow(['', 
-                       'item.order_form_section',
-                       'item.name', 
-                       'item.unit_cost',
-                       'item.measure',
-                       'quantity', 
-                       'supplier',
-                       'name',
-                       ])
-    else:
-      writer.writerow(['', 'No Items in this Order!!!'])
+    order_items.filter('order IN ', batch_orders).filter('quantity > ', 0)
     for oi in order_items:
-      writer.writerow(['', 
-                       oi.item.order_form_section,
-                       oi.item.name,
-                       oi.item.unit_cost,
-                       oi.item.measure,
-                       oi.quantity,
-                       oi.supplier,
-                       oi.name,
-                       ])
-    writer.writerow([''])
-
+      order_id = oi.order.key().id()
+      if order_id not in order_items_by_order:
+        order_items_by_order[order_id] = []
+      order_items_by_order[order_id].append(oi)
+  
+  for o in orders:
+    order_id = o.key().id()
+    if order_id in order_items_by_order:
+      order_items = order_items_by_order[order_id]
+      order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
+    for oi in order_items:
+      row = [o.site.number,
+             o.key().id(),
+             o.modified.date().isoformat(),
+             o.site.street_number,
+             o.site.city_state_zip,
+             oi.item.VisibleOrderFormSection(),
+             oi.item.VisibleName(),
+             oi.VisibleQuantity(),
+             oi.item.measure,
+             oi.VisibleCost(),
+             o.LogisticsStart(),
+             o.LogisticsEnd(),
+             o.LogisticsInstructions().encode('ascii', 'ignore'),
+             oi.name,
+             ]
+      writer.writerow(row)
 
 def _SortOrderItemsWithSections(order_items):
   order_items.sort(
