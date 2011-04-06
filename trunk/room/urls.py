@@ -14,6 +14,7 @@ urlpatterns = patterns(
     (r'^admin/fix_last_editor', 'FixLastEditor'),
     (r'^admin/add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
     (r'^admin/search_prefix', 'RecomputeSearchPrefixes'),
+    (r'^admin/delete_empty_order_items', 'DeleteEmptyOrderItems'),
     )
 
 urlpatterns += patterns(
