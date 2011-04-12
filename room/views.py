@@ -241,15 +241,9 @@ def SiteEdit(request, site_id=None):
   sitecaptain_form_submit = 'Add a Captain'
   sitecaptain_delete_form_submit = 'Delete'
   delete_sitecaptain = 'delete_sitecaptain'
-  orders = None
-  if site:
-    orders = list(site.order_set)
-    orders.sort(key=lambda x: x.order_sheet.name)
-
   template_dict = {'site': site, 
                    'staff': staff,
                    'captain': captain,
-                   'orders': orders,
                    'form': form,
                    'form_submit': form_submit,
                    'sitecaptain_form': sitecaptain_form,
