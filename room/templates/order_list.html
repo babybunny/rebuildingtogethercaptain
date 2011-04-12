@@ -92,6 +92,12 @@ delete an order, just talk to Luke if this comes up.
 	</a>	
 	{% endif %}
 	{% endifequal %}
+	{% ifnotequal order.state 'Deleted' %}
+	-
+	<a href="{% url room.order.OrderDelete order.key.id order_sheet.key.id %}">
+	  Delete
+	</a>
+	{% endifnotequal %}
 	-
 	<a href="{% url room.order.OrderEdit order.key.id %}">
 	  Edit

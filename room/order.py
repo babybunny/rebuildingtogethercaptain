@@ -55,12 +55,67 @@ def OrderView(request, order_id):
        }
   return common.Respond(request, 'order_fulfill', d)
   
-def OrderFulfill(request, order_id, order_sheet_id=None):
-  """Start the fulfillment process for an order."""
-  d = _OrderFulfillInternal([order_id], order_sheet_id)
+def OrderDeleteConfirm(request, order_sheet_id=None):
+  order_ids = _PostedOrders(request.POST)
+  return _OrderConfirmInternal(order_ids, order_sheet_id, 
+                               state='Deleted')
+
+# TODO: combine two methods below once tests are OK.
+def OrderFulfillConfirm(request, order_sheet_id=None):
+  order_ids = _PostedOrders(request.POST)
+  return _OrderFulfillConfirmInternal(order_ids, order_sheet_id)
+
+def _OrderFulfillConfirmInternal(order_ids, order_sheet_id):
+  return _OrderConfirmInternal(order_ids, order_sheet_id, 
+                               state='Being Filled')
+
+def _OrderConfirmInternal(order_ids, order_sheet_id, state):
+  orders = models.Order.get_by_id(order_ids)
+  for order in orders:
+    order.state = state
+    order.put()
+  args = []
+  if order_sheet_id is None:
+    return http.HttpResponseRedirect(urlresolvers.reverse(OrderList))
+  else:
+    next_id = int(order_sheet_id)
+    next_object = models.OrderSheet.get_by_id(next_id)
+    if next_object is not None:
+      return http.HttpResponseRedirect(urlresolvers.reverse(
+          OrderList, args=[next_id]))
+      
+    next_object = models.NewSite.get_by_id(next_id)
+    if next_object is not None:
+      return http.HttpResponseRedirect(urlresolvers.reverse(
+              views.SiteView, args=[next_id]))
+  
+FULFULL_OR_DELETE_OPTIONS = {
+  'fulfill': {
+    'action_verb': 'Fulfill',
+    'confirm_method': OrderFulfillConfirm,
+    'submit_value': 'Click here to print and confirm fulfillment has started',
+    'should_print': True,
+    },
+  'delete':  {
+    'action_verb': 'Delete',
+    'confirm_method': OrderDeleteConfirm,
+    'submit_value': 'Click here to confirm deletion',
+    'should_print': False,
+    },
+}
+
+def OrderDelete(request, order_id, order_sheet_id=None):
+  """Prompt user to delete the order."""
+  d = _OrderFulfillInternal([order_id], order_sheet_id, mode='delete')
   return common.Respond(request, 'order_fulfill', d)
 
-def _OrderFulfillInternal(order_ids, order_sheet_id):
+def OrderFulfill(request, order_id, order_sheet_id=None):
+  """Start the fulfillment process for an order."""
+  d = _OrderFulfillInternal([order_id], order_sheet_id, mode='fulfill')
+  return common.Respond(request, 'order_fulfill', d)
+
+def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
+  options = FULFULL_OR_DELETE_OPTIONS[mode]
   orders = []
   for order_id in order_ids:
     order = models.Order.get_by_id(int(order_id))
@@ -79,44 +134,23 @@ def _OrderFulfillInternal(order_ids, order_sheet_id):
     list_args.append(int(order_sheet_id))
     confirm_args.append(int(order_sheet_id))
   list_url = urlresolvers.reverse(OrderList, args=list_args)
-  confirm_url = urlresolvers.reverse(OrderFulfillConfirm, args=confirm_args)
+  confirm_url = urlresolvers.reverse(options['confirm_method'], 
+                                     args=confirm_args)
   orders.sort(key=lambda o: o['order'].site.number)
   return {'orders': orders,
           'order_sheet': order_sheet,
           'order_items': order_items,
           'back_to_list_url': list_url,
           'confirm_url': confirm_url,
-          'action_verb': 'Fulfill',
+          'action_verb': options['action_verb'],
+          'submit_value': options['submit_value'],
+          'should_print': options['should_print'],
           'show_logistics_details': True,
           'num_orders': len(orders),
           'order_export_checkbox_prefix': 
           ORDER_EXPORT_CHECKBOX_PREFIX,
           }
 
-def OrderFulfillConfirm(request, order_sheet_id=None):
-  order_ids = _PostedOrders(request.POST)
-  return _OrderFulfillConfirmInternal(order_ids, order_sheet_id)
-
-def _OrderFulfillConfirmInternal(order_ids, order_sheet_id):
-  orders = models.Order.get_by_id(order_ids)
-  for order in orders:
-    order.state = 'Being Filled'
-    order.put()
-  args = []
-  if order_sheet_id is None:
-    return http.HttpResponseRedirect(urlresolvers.reverse(OrderList))
-  else:
-    next_id = int(order_sheet_id)
-    next_object = models.OrderSheet.get_by_id(next_id)
-    if next_object is not None:
-      return http.HttpResponseRedirect(urlresolvers.reverse(
-          OrderList, args=[next_id]))
-      
-    next_object = models.NewSite.get_by_id(next_id)
-    if next_object is not None:
-      return http.HttpResponseRedirect(urlresolvers.reverse(
-              views.SiteView, args=[next_id]))
-  
 def OrderExport(request):
   """Export orders as CSV."""
   user, _, _ = common.GetUser(request)
@@ -505,8 +539,7 @@ def OrderPreview(request, site_id=None):
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
   site = models.NewSite.get_by_id(int(site_id))
   existing_orders = {}
-  query = site.order_set
-  query.filter('state != ', 'new')
+  query = site.Orders.Items()
   for order in query:
     if order.order_sheet.code not in existing_orders:
       existing_orders[order.order_sheet.code] = []

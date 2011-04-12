@@ -95,6 +95,8 @@ urlpatterns += patterns(
     (r'^order/edit/(\d+)/$', 'OrderEdit'),
     (r'^order/logistics/(\d+)/$', 'OrderLogistics'),
     (r'^order/view/(\d+)/$', 'OrderView'),
+    (r'^order/delete/(\d+)/(\d+)/$', 'OrderDelete'),
+    (r'^order/deleteconfirm/(\d+)/$', 'OrderDeleteConfirm'),
     (r'^order/fulfill/(\d+)/$', 'OrderFulfill'),
     (r'^order/fulfill/(\d+)/(\d+)/$', 'OrderFulfill'),
     (r'^order/fulfillconfirm/$', 'OrderFulfillConfirm'),

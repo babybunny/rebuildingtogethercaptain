@@ -117,7 +117,8 @@ class NewSite(BaseModel):
         """Access user-input records with state and modified fields."""
         def __init__(self, query):
             """query: a bound backreference like self.order_set"""
-            self._query = query.filter('state != ', 'new')
+            self._query = query.filter(
+                'state != ', 'new').filter('state !=', 'Deleted')
                         
         def Count(self):
             return self._query.count()
@@ -179,7 +180,7 @@ class NewSite(BaseModel):
     
     def OrderTotal(self):
         """Only works if self has been saved."""    
-        cost = sum(order.GrandTotal() for order in self.order_set)
+        cost = sum(order.GrandTotal() for order in self.Orders.Items())
         return cost
 
     def CheckRequestTotal(self):
