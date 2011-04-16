@@ -94,9 +94,15 @@ delete an order, just talk to Luke if this comes up.
 	{% endifequal %}
 	{% ifnotequal order.state 'Deleted' %}
 	-
+	{% if order_sheet %}
 	<a href="{% url room.order.OrderDelete order.key.id order_sheet.key.id %}">
-	  Delete
+	    Delete
 	</a>
+	{% else %}
+	<a href="{% url room.order.OrderDelete order.key.id %}">
+	    Delete
+	</a>
+	{% endif %}
 	{% endifnotequal %}
 	-
 	<a href="{% url room.order.OrderEdit order.key.id %}">
