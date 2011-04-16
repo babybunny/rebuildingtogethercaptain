@@ -163,7 +163,7 @@ def OrderExport(request):
   elif request.POST['submit'] == FULFILL_MULTIPLE:
     order_ids = _PostedOrders(request.POST)
     order_sheet_id = request.POST.get('order_sheet_id')
-    d = _OrderFulfillInternal(order_ids, order_sheet_id)
+    d = _OrderFulfillInternal(order_ids, order_sheet_id, mode='fulfill')
     return common.Respond(request, 'order_fulfill', d)
       
 def _PostedOrders(post_vars):
