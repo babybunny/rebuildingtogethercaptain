@@ -48,8 +48,8 @@ def OrderView(request, order_id):
   q = models.OrderItem.all().filter('order = ', order).filter('quantity != ', 0)
   order_items = list(q)
   _SortOrderItemsWithSections(order_items)
-  d = {'order': order,
-       'order_items': order_items,
+  d = {'orders': [{'order': order,
+                  'order_items': order_items}],
        'action_verb': 'Review',
        'show_logistics_details': True,
        }
