@@ -74,15 +74,21 @@ def SiteJump(request):
     
 
 def Scoreboard(request):
-  welcomes = models.Captain.all().filter(
+  logging.info('scoreboard start')
+  last_welcomes = models.Captain.all().filter(
     'last_welcome != ', None).order('-last_welcome').fetch(20)
-  staff_welcomes = models.Staff.all().filter(
+  last_staff_welcomes = models.Staff.all().filter(
     'last_welcome != ', None).order('-last_welcome').fetch(10)
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
     'last_welcome != ', None).count()
+  pct_captains_active = num_captains_active * 100.0 / num_captains
   num_captains_with_tshirt = models.Captain.all().filter(
     'tshirt_size != ', None).count()
+  sites = [s for s in models.NewSite.all() if 'ZZZ' not in s.number]
+  num_sites = len(sites)
+  total_site_budget = sum(s.budget for s in sites if s.budget)
+  logging.info('got top level data')
 
   def GetUserActivity(user_cls):
       user_activity = []
@@ -91,15 +97,13 @@ def Scoreboard(request):
       for c in welcomes:
           u = users.User(c.email)
           equery = models.Order.all().filter('state IN ', 
-                                             ('Received', 'submitted'))
-          equery.filter('last_editor =', u)
+                                             ('Received', 'submitted', 
+                                              'Being Filled'))
+          equery.filter('created_by =', u)
           orders = filter(lambda i: 'ZZZ' not in i.site.number, list(equery))
-          user_activity.append((c, len(orders)))
+          recent_orders = filter(lambda o: o.created > c.last_welcome, orders)
+          user_activity.append((c, len(orders), len(recent_orders)))
       return user_activity
-
-  sites = [s for s in models.NewSite.all() if 'ZZZ' not in s.number]
-  num_sites = len(sites)
-  total_site_budget = sum(s.budget for s in sites if s.budget)
 
   activity = []
   activity_rows = [
@@ -113,6 +117,10 @@ def Scoreboard(request):
      urlresolvers.reverse(views.InKindDonationList)),
     ]
 
+  captain_activity = GetUserActivity(models.Captain)
+  staff_activity = GetUserActivity(models.Staff)
+  logging.info('got captain and staff activity')
+
   order_sheets = models.OrderSheet.all().order('name')
   order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
   for os in order_sheets:
@@ -121,36 +129,33 @@ def Scoreboard(request):
        models.Order.all().filter('order_sheet =', os),
        urlresolvers.reverse(order.OrderList, args=[os.key().id()])))
     
+  logging.info('got order activity')
+
+  now = datetime.datetime.now()
+  one = datetime.timedelta(days=1)
 
   for name, query, link in activity_rows:
     items = filter(lambda i: 'ZZZ' not in i.site.number, query)
-    started = len(items)
     total = sum(i.Total() for i in items)
     sites = len(set(i.site.number for i in items))
     editors = len(set(i.last_editor for i in items))
-    submitted_orders = [i for i in items 
-                        if i.state in ('Received', 'submitted')]
-    submitted = len(submitted_orders)
-    now = datetime.datetime.now()
-    one = datetime.timedelta(days=1)
-    recent = len([s for s in submitted_orders if now - s.modified < one])
-    abandoned = len([i for i in items if i.state == 'new'])
+    totals_by_state = {}
+    for i in items: 
+        totals_by_state[i.state] = totals_by_state.get(i.state, 0) + 1
+    received_orders = [i for i in items 
+                       if i.state in ('Received', 'submitted')]
+    recent = len([s for s in received_orders if now - s.modified < one])
     activity.append(
       (name, link, 
-       submitted, recent, total, sites, editors, started, abandoned))
+       totals_by_state.get('Received', 0) + totals_by_state.get('submitted', 0),
+       recent, 
+       total, sites, editors, 
+       totals_by_state.get('Deleted', 0) + totals_by_state.get('new', 0), 
+       totals_by_state.get('new', 0), 
+       totals_by_state.get('Being Filled', 0)))
 
-  d = {'last_welcomes': welcomes,
-       'last_staff_welcomes': staff_welcomes,
-       'activity': activity,
-       'captain_activity': GetUserActivity(models.Captain),
-       'staff_activity': GetUserActivity(models.Staff),
-       'num_sites': num_sites,
-       'num_captains': num_captains,
-       'num_captains_active': num_captains_active,
-       'pct_captains_active': num_captains_active * 100.0 / num_captains,
-       'num_captains_with_tshirt': num_captains_with_tshirt,
-       'total_site_budget': total_site_budget,
-       }
+  logging.info('responding')
+  d = locals()
   return common.Respond(request, 'scoreboard', d)
 
 

@@ -40,12 +40,14 @@
 	      Captain
 	    </th>
 	    <th>
-	      Total Orders
+	      Orders Created
+	      <br>Last session
+	      <br>(All time)
 	    </th>
 	  </tr>
 	  </thead>
 	<tbody>
-	{% for welcomee, num_orders in captain_activity %}
+	{% for welcomee, num_orders, recent_orders in captain_activity %}
 	<tr>	  
 	  <td>
 	    {{ welcomee.last_welcome|timesince }} ago
@@ -54,7 +56,7 @@
 	    {{ welcomee.name }}
 	  </td>
 	  <td>
-	    {{ num_orders }}
+	    {{ recent_orders }} ({{ num_orders }})
 	  </td>
 	</tr>
 	{% endfor %}
@@ -72,12 +74,14 @@
 	      Staff
 	    </th>
 	    <th>
-	      Total Orders
+	      Orders Created
+	      <br>Last session
+	      <br>(All time)
 	    </th>
 	  </tr>
 	  </thead>
 	<tbody>
-	{% for welcomee, num_orders in staff_activity %}
+	{% for welcomee, num_orders, recent_orders in staff_activity %}
 	<tr>	  
 	  <td>
 	    {{ welcomee.last_welcome|timesince }} ago
@@ -86,7 +90,7 @@
 	    {{ welcomee.name }}
 	  </td>
 	  <td>
-	    {{ num_orders }}
+	    {{ recent_orders }} ({{ num_orders }})
 	  </td>
 	</tr>
 	{% endfor %}
@@ -101,10 +105,13 @@
 	      Category
 	    </th>
 	    <th>
-	      Submitted all time
+	      Status is
+	      "Received"
+	      (last 24 hours)
 	    </th>
 	    <th>
-	      Submitted 24 hours
+	      Status is
+	      "Being Filled"
 	    </th>
 	    <th>
 	      Total ($)
@@ -116,10 +123,7 @@
 	      Unique Users
 	    </th>
 	    <th>
-	      Orders Started
-	    </th>
-	    <th>
-	      Orders Abandoned
+	      Deleted (Abandoned)
 	    </th>
 	  </tr>
 	  </thead>
@@ -132,10 +136,11 @@
 	      </a>
 	    </td>
 	    <td>
-	      {{ k.2 }}
+	      {{ k.2 }} 
+	      ({{ k.3 }})
 	    </td>
 	    <td>
-	      {{ k.3 }}
+	      {{ k.9 }}
 	    </td>
 	    <td>
 	      {{ k.4|floatformat:2|intcomma }}
@@ -147,10 +152,7 @@
 	      {{ k.6 }}
 	    </td>
 	    <td>
-	      {{ k.7 }}
-	    </td>
-	    <td>
-	      {{ k.8 }}
+	      {{k.7 }} ({{ k.8 }})
 	    </td>
 	  </tr>
 	  {% endfor %}
