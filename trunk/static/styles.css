@@ -80,6 +80,14 @@ div.footer {
   clear: both;
   margin-top: 10px;
 }
+table.recent-login td.orders-last {
+  min-width: 50px;
+  text-align: right;
+}
+table.recent-login td.orders-all {
+  min-width: 50px;
+  text-align: left;
+}
 table.layout {
   width: 950px;
   padding: 5px;
@@ -200,7 +208,8 @@ table.scoreboard td {
 table.scoreboard td.name {
   text-align: left;
 }
-table.scoreboard th {
+table.scoreboard th,
+table.recent-login th {
   border-bottom: 2px solid black;
   padding: 0px 5px 0px 5px; 
   margin: 0;
