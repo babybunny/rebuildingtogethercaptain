@@ -30,7 +30,7 @@
     <td class="layout">
       <p>
       <b>Recent Captain Logins</b>
-      <table>
+      <table class="recent-login">
 	<thead>
 	  <tr>
 	    <th>
@@ -39,7 +39,7 @@
 	    <th>
 	      Captain
 	    </th>
-	    <th>
+	    <th colspan="2">
 	      Orders Created
 	      <br>Last session
 	      <br>(All time)
@@ -55,8 +55,11 @@
 	  <td>
 	    {{ welcomee.name }}
 	  </td>
-	  <td>
-	    {{ recent_orders }} ({{ num_orders }})
+	  <td class="orders-last">
+	    {{ recent_orders }}
+	  </td>
+	  <td class="orders-all">
+	    ({{ num_orders }})
 	  </td>
 	</tr>
 	{% endfor %}
@@ -64,7 +67,7 @@
       </table>
       <hr>
       <b>Recent Staff Logins</b>
-      <table>
+      <table class="recent-login">
 	<thead>
 	  <tr>
 	    <th>
@@ -73,7 +76,7 @@
 	    <th>
 	      Staff
 	    </th>
-	    <th>
+	    <th colspan="2">
 	      Orders Created
 	      <br>Last session
 	      <br>(All time)
@@ -89,8 +92,11 @@
 	  <td>
 	    {{ welcomee.name }}
 	  </td>
-	  <td>
-	    {{ recent_orders }} ({{ num_orders }})
+	  <td class="orders-last">
+	    {{ recent_orders }}
+	  </td>
+	  <td class="orders-all">
+	    ({{ num_orders }})
 	  </td>
 	</tr>
 	{% endfor %}
@@ -98,6 +104,11 @@
       </table>
     </td>
     <td class="layout">
+      <p>
+	<b>
+	  Status for Orders, Check Requests, Vendr Receipts, In-kind Donations
+	</b>
+      </p>
       <table class="scoreboard">
 	<thead>
 	  <tr>
@@ -105,12 +116,12 @@
 	      Category
 	    </th>
 	    <th>
-	      Status is
+	      Status
 	      "Received"
 	      (last 24 hours)
 	    </th>
 	    <th>
-	      Status is
+	      Status
 	      "Being Filled"
 	    </th>
 	    <th>
