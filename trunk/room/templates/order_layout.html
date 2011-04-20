@@ -10,12 +10,6 @@
 	  <tr>
 	    <td colspan=20>
 	      <span class="attr">
-		<b>
-		  Order ID # 
-		  {{ order.key.id }}
-		</b>
-	      </span>
-	      <span class="attr">
 		{% if form and user.staff %}
 		{{ form.site }}
 		{% else %}
@@ -27,10 +21,17 @@
 		</b>
 		{% endif %}
 	      </span>
-	      <span  class="attr">
-		Status: {{ order.state }}
+	      <span class="attr">
+		<b>
+		  {{ order.site.street_number }} 
+		</b>
 	      </span>
-	      <br>
+	      <span class="attr">
+		<b>
+		  {{ order.site.city_state_zip }}
+		</b>
+	      </span>
+	      <br/>
 	      {% ifnotequal order.state "new" %}
 	      <span  class="attr">
 		    Submitted
@@ -50,7 +51,7 @@
 	      {% ifnotequal order.created order.modified %}
 	      <span  class="attr">
 		    Last Modified
-		    {{ order.modified|timesince }} ago
+		    {{ order.modified|date:"d M" }}
 		    {% if modified_by_user.captain %}
 		    {% ifnotequal created_by_user modified_by_user %}
 		    by {{ modified_by_user.captain.name }}
@@ -66,6 +67,13 @@
 	      </span>
 	      {% endifnotequal %}
 	      {% endifnotequal %}
+	      <span class="attr">
+		Order ID # 
+		{{ order.key.id }}
+	      </span>
+	      <span  class="attr">
+		Status: {{ order.state }}
+	      </span>
 	      <br>
 	      {% if form %}
 	      <input name="submit" type="submit" 
