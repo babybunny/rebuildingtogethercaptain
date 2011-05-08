@@ -21,6 +21,7 @@ $(function(){
       <th>Site</th>
       <th>Captain</th>
       <th>Payable To</th>
+      <th>Payment Date</th>
       <th>Amount</th>
       <th>Address</th>
       <th>Category</th>
@@ -43,7 +44,9 @@ $(function(){
       </td><td>
 	{{ entity.name|escape }}
       </td><td>
-	{{ entity.amount|escape }}
+	{{ entity.payment_date|escape }}
+      </td><td>
+	{{ entity.Total|escape }}
       </td><td>
 	{{ entity.address|escape }}
       </td><td>
