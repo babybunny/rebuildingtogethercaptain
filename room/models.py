@@ -550,6 +550,8 @@ class CheckRequest(BaseModel):
     labor_amount.verbose_name = 'Labor Amount ($)'
     materials_amount = db.FloatProperty(default=0.0)
     materials_amount.verbose_name = 'Materials Amount ($)'
+    food_amount = db.FloatProperty(default=0.0)
+    food_amount.verbose_name = 'Food Amount ($)'
     description = db.TextProperty()
     name = db.StringProperty()
     name.verbose_name = 'Payable To'
@@ -568,7 +570,7 @@ class CheckRequest(BaseModel):
     modified = db.DateTimeProperty(auto_now=True)
 
     def Total(self):
-        return self.labor_amount + self.materials_amount
+        return self.labor_amount + self.materials_amount + self.food_amount
     
 
 class VendorReceipt(BaseModel):
