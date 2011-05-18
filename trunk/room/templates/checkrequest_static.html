@@ -33,7 +33,7 @@
     Labor Amount
   </td>
   <td>
-    {{ entity.labor_amount|escape }}
+    ${{ entity.labor_amount|floatformat:2 }}
   </td>
 </tr>
 <tr>
@@ -41,7 +41,7 @@
     Materials Amount
   </td>
   <td>
-    {{ entity.materials_amount|escape }}
+    ${{ entity.materials_amount|floatformat:2 }}
   </td>
 </tr>
 <tr>
@@ -49,7 +49,15 @@
     Food Amount
   </td>
   <td>
-    {{ entity.food_amount|escape }}
+    ${{ entity.food_amount|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Total
+  </td>
+  <td>
+    ${{ entity.Total|floatformat:2 }}
   </td>
 </tr>
 <tr>
