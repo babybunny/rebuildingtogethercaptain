@@ -6,6 +6,7 @@
 
 import datetime
 import logging
+import math
 from appengine_django.models import BaseModel
 from google.appengine.ext import db
 
@@ -378,7 +379,8 @@ class Order(BaseModel):
     def GrandTotal(self):
         if self.sub_total is None:
             return 0.
-        return self.sub_total * (1. + SALES_TAX_RATE)
+        t = self.sub_total * (1. + SALES_TAX_RATE)
+        return math.ceil(t * 100.) / 100.
 
     def Total(self):
         return self.GrandTotal()

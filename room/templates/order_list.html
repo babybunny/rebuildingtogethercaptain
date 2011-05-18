@@ -78,10 +78,9 @@ delete an order, just talk to Luke if this comes up.
 	<input type="checkbox" class="order_export_checkbox"
 	       name="{{ order_export_checkbox_prefix }}{{ order.key.id }}">
       </td>
-      <td>
-	{{ order.state }}
+      <td>	
+	<span class="actions">
 	{% ifequal order.state 'Received' %}
-	- 
 	{% if order_sheet %}
 	<a href="{% url room.order.OrderFulfill order.key.id order_sheet.key.id %}">
 	  Fulfill
@@ -108,6 +107,8 @@ delete an order, just talk to Luke if this comes up.
 	<a href="{% url room.order.OrderEdit order.key.id %}">
 	  Edit
 	</a>
+	</span>
+	{{ order.state }}	
       </td>
       <td>
 	<a href="{% url room.views.SiteView order.site.key.id %}">
@@ -117,8 +118,8 @@ delete an order, just talk to Luke if this comes up.
       <td>
 	{{ order.order_sheet.name|escape }}
       </td>
-      <td>
-	{{ order.GrandTotal }}
+      <td class="dollar">
+	{{ order.GrandTotal|floatformat:2 }}
       </td>
       <td>
 	{{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
