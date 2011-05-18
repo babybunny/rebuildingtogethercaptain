@@ -16,10 +16,20 @@
 </script>
 <script type="text/javascript">
 
+function numKeys(o) {
+  var n = 0;
+  for (var k in o) {
+    if (o.hasOwnProperty(k)) {
+      n++;
+    }
+  }  
+  return n;
+}
+
 function autocomplete(request, callback, url, input_selector, error_selector) {
   $.getJSON(url, {term: request.term},
     function (data) {
-      var len = Object.keys(data).length;
+      var len = numKeys(data);
       if (len == 0) {
         $(error_selector).html(
           '<i>Sorry, can&#39;t find anything starting with ' + 
@@ -34,6 +44,7 @@ function autocomplete(request, callback, url, input_selector, error_selector) {
       for (value in data) {
         autocomplete_data.push(value);
       } 
+      autocomplete_data.sort();
       callback(autocomplete_data);
     }
   );
