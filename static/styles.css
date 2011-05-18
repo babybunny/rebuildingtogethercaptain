@@ -80,6 +80,10 @@ div.footer {
   clear: both;
   margin-top: 10px;
 }
+span.actions {
+  float: right;
+  margin-left: 10px;
+}
 table.recent-login td.orders-last {
   min-width: 50px;
   text-align: right;
