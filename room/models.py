@@ -612,6 +612,7 @@ class InKindDonation(BaseModel):
     materials_amount = db.FloatProperty(default=0.0)
     materials_amount.verbose_name = 'Materials Value ($)'
     description = db.TextProperty()
+    budget = db.StringProperty(choices=('Normal', 'Roofing'), default='Normal')
     state = db.StringProperty(choices=('new','submitted'), default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)

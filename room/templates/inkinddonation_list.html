@@ -26,6 +26,7 @@ $(function(){
       <th>Labor Amount</th>
       <th>Materials Amount</th>
       <th>Donor Info</th>
+      <th>Budget</th>
       <th>Description</th>
     </tr>
   </thead>
@@ -52,6 +53,8 @@ $(function(){
 	{{ entity.materials_amount|escape }}
       </td><td>
 	{{ entity.donor_info|escape }}
+      </td><td>
+	{{ entity.budget|escape }}
       </td><td>
 	{{ entity.description|escape }}
     </td></tr>
