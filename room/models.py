@@ -357,6 +357,8 @@ class Order(BaseModel):
     grand_total = db.FloatProperty()  # Deprecated.  Use GrandTotal()
     notes = db.TextProperty()    
     state = db.StringProperty()
+    actual_total = db.FloatProperty()  
+    reconciliation_notes = db.TextProperty(default='')    
     created = db.DateTimeProperty(auto_now_add=True)
     created_by = db.UserProperty(auto_current_user_add=True)
     modified = db.DateTimeProperty(auto_now=True)

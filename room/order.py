@@ -18,13 +18,13 @@ FULFILL_MULTIPLE = 'Fulfill Multiple Orders'
 SALES_TAX_RATE = 0.0925
 
 
-def OrderList(request, order_sheet_id=None, state=None):
+def OrderList(request, order_sheet_id=None):
   """Request / -- show all orders."""
   user, _, _ = common.GetUser(request)
-  d = _OrderListInternal(order_sheet_id, state)
+  d = _OrderListInternal(order_sheet_id)
   return common.Respond(request, 'order_list', d)
 
-def _OrderListInternal(order_sheet_id, state):
+def _OrderListInternal(order_sheet_id):
   q = models.Order.all().filter('state != ', 'new')
   order_sheet = None
   if order_sheet_id:
@@ -40,7 +40,55 @@ def _OrderListInternal(order_sheet_id, state):
           'order_export_checkbox_prefix': 
           ORDER_EXPORT_CHECKBOX_PREFIX,
           'mass_action': mass_action,
+          'num_being_filled': len([o for o in orders 
+                                   if o.state == 'Being Filled'])
           }
+
+def OrderReconcile(request, order_sheet_id=None):
+  """Reconcile filled orders."""
+  user, _, _ = common.GetUser(request)
+  d = _OrderReconcileInternal(order_sheet_id)
+  return common.Respond(request, 'order_reconcile', d)
+
+def _OrderReconcileInternal(order_sheet_id):
+  q = models.Order.all().filter('state IN ', ['Being Filled', 'Reconciled'])
+  order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
+  if order_sheet is not None:
+    q.filter('order_sheet = ', order_sheet)
+  orders = list(q)
+
+  return {'orders': orders,
+          'order_sheet': order_sheet,
+          }
+
+def ChangeOrder(request, order_id, input_sanitizer):
+  """Changes an order field based on POST data from jeditable."""
+  user, captain, staff = common.GetUser(request)
+  if not staff:
+    return http.HttpResponse(status=400)
+  if not request.POST:
+    return http.HttpResponse(status=400)
+  order = models.Order.get_by_id(int(order_id))
+  if not order:
+    return http.HttpResponse(status=400)
+  field = request.POST['id']
+  value = input_sanitizer(request.POST['value'])
+  logging.info("  setattr(order, %s, %r)", field, value)
+  setattr(order, field, value)
+  order.put()
+  return http.HttpResponse(value, status=200)
+
+def ActualTotal(request, order_id):
+  """Updates an order's actual_total field."""
+  return ChangeOrder(request, order_id, input_sanitizer=lambda v: float(v))
+
+def ReconciliationNotes(request, order_id):
+  """Updates an order's reconciliation_notes field."""
+  return ChangeOrder(request, order_id, input_sanitizer=lambda v: v)
+
+def State(request, order_id):
+  """Updates an order's state field."""
+  return ChangeOrder(request, order_id, input_sanitizer=lambda v: v)
 
 
 def OrderView(request, order_id):
