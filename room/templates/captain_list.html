@@ -50,7 +50,7 @@ $(function(){
       <td>
 	<span name="{{captain.name|escape}}"></span>
 	<a name="{{ captain.key.id }}">
-	{{captain.name|escape}}
+	{{ captain.name|escape }}
 	</a>
       </td>
       <td>
@@ -75,7 +75,9 @@ $(function(){
       </td>
       <td>
 	{% for sitecaptain in captain.sitecaptains %}
-	<a href="{% url room.views.SiteView sitecaptain.site.key.id %}">	
+	<a 
+	   sortorder="{{ sitecaptain.site.number }}"
+	   href="{% url room.views.SiteView sitecaptain.site.key.id %}">	
 	  {{ sitecaptain.site.number }}
 	</a>
 	<br>

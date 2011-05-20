@@ -84,6 +84,7 @@ and use the normal Place Order links.
 	       name="{{ order_export_checkbox_prefix }}{{ order.key.id }}">
       </td>
       <td>	
+	<span class="sortorder">{{ order.state }}</span>
 	<span class="actions">
 	{% ifequal order.state 'Received' %}
 	{% if order_sheet %}
@@ -116,6 +117,7 @@ and use the normal Place Order links.
 	{{ order.state }}	
       </td>
       <td>
+	<span class="sortorder">{{ order.site.number }}</span>
 	<a href="{% url room.views.SiteView order.site.key.id %}">
 	{{ order.site.number|escape }}
 	</a>

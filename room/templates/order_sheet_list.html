@@ -11,26 +11,35 @@ $(function(){
 {% block breadcrumb %}
   | List Order Forms
 {% endblock %}
-{%block body%}
+{%block about_this_page %}
 <h2>All Order Forms</h2>
-
-<table>
+<a href="{%url room.views.OrderSheetNew %}">
+  Click here
+</a>
+to add a new Order Form.
+</form>
+{% endblock %}
+{%block body%}
+<table class="tablesorter">
   <thead>
     <tr>
       <th>
-	Code
+	Code (click to edit)
       </th>
       <th>
 	Name
       </th>
       <th>
+	Visible
+      </th>
+      <th>
 	Delivery
       </th>
       <th>
-	Returns
+	Pickup
       </th>
       <th>
-	Special Instructions
+	Retrieval
       </th>
       <th>
 	Number of Items
@@ -38,27 +47,37 @@ $(function(){
       <th>
 	Default Supplier
       </th>
+      <th>
+	Special Instructions
+      </th>
+      <th>
+	Logistics Instructions
+      </th>
     </tr>
   </thead>
   <tbody>
     {%for order_sheet in order_sheets%}
     <tr>
       <td>
+	<span class="sortorder">{{ order_sheet.code }}</span>
 	<a href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">
-	  {{order_sheet.code|escape}} (edit)
+	  {{order_sheet.code|escape}}
 	</a>
       </td>
       <td>
 	{{ order_sheet.name|escape }}
       </td>
       <td>
+	{{ order_sheet.visibility|escape }}
+      </td>
+      <td>
 	{{ order_sheet.delivery_options|escape }}
       </td>
       <td>
-	{{ order_sheet.durable|escape }}
+	{{ order_sheet.pickup_options|escape }}
       </td>
       <td>
-	{{ order_sheet.instructions|escape }}
+	{{ order_sheet.retrieval_options|escape }}
       </td>
       <td>
 	{{ order_sheet.item_set.count }}
@@ -66,13 +85,15 @@ $(function(){
       <td>
 	{{ order_sheet.default_supplier }}
       </td>
+      <td>
+	{{ order_sheet.instructions|linebreaksbr|escape }}
+      </td>
+      <td>
+	{{ order_sheet.logistics_instructions|linebreaksbr|escape }}
+      </td>
     </tr>
     {%endfor%}
   </tbody>
 </table>
-
-<form action="{%url room.views.OrderSheetNew %}">
-  <input type=submit value="Add a new Order Form">
-</form>
 
 {%endblock%}

@@ -44,6 +44,9 @@ body {
 .editable {
   border: 2px solid #FBFFAB;
 }
+.sortorder {
+  display: None;
+}
 span.jeditable-order-item-name {
   display: inline-block;
 }
@@ -66,6 +69,9 @@ div.panel table.tablesorter {
   margin-left: 0;
   margin-right: 0;
   margin-bottom: 5px;
+}
+table.tablesorter th.header {
+  padding-right: 20px;  /* leaves room for tablesorter arrows */
 }
 div.padded {
   padding: 5px;
