@@ -97,7 +97,8 @@ editable columns</span> and change the status to "Reconciled".
     {%for order in orders%}
     <tr>
       <td>	
-	<span class="actions" sortorder="{{ order.site.number }}">
+	<span class="sortorder">{{ order.site.number }}</span>
+	<span class="actions">
 	<a target="_blank" 
 	   href="{% url room.order.OrderView order.key.id %}">
 	  Review
@@ -117,23 +118,23 @@ editable columns</span> and change the status to "Reconciled".
 	{{ order.GrandTotal|floatformat:2 }}
       </td>
       <td class="editable">
+	<span class="sortorder">{{ order.actual_total }}</span>
 	<div class="jeditable-amount" 
 	     id="actual_total" 
-	     sortorder="{{ order.actual_total }}"
 	     name="{{ order.key.id }}"
 	     >{{ order.actual_total|floatformat:2 }}</div>
       </td>
       <td class="editable">
+	<span class="sortorder">{{ order.reconciliation_notes }}</span>
 	<div class="jeditable-notes" 
 	     id="reconciliation_notes"
-	     sortorder="{{ order.reconciliation_notes }}"
 	     name="{{ order.key.id }}"
 	     >{{ order.reconciliation_notes }}</div>
       </td>
       <td class="editable">
+	<span class="sortorder">{{ order.state }}</span>
 	<div class="jeditable-state" 
 	     id="state"
-	     sortorder="{{ order.state }}"
 	     name="{{ order.key.id }}">{{ order.state }}</div>
       </td>
     </tr>

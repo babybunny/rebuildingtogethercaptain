@@ -45,6 +45,7 @@ $(function() {
     {% for site in entries %}
     <tr>
       <td>
+	<span class="sortorder">{{ site.number }}</span>
 	<a href="{% url room.views.SiteView site.key.id %}">
 	  {{site.number|escape}}
 	</a>

@@ -23,16 +23,21 @@ $(function(){
   </thead>
   <tbody>
     {% for person in entries %}
-    <tr><td>
+    <tr>
+      <td>
+	<span class="sortorder">{{ person.name }}</span>
 	<a name="{{ person.key.id }}"
 	   href="{%url room.views.StaffEdit person.key.id%}">
 	  {{person.name|escape}}
 	</a>
-      </td><td>
+      </td>
+      <td>
 	{{ person.email|escape }}
-      </td><td>
+      </td>
+      <td>
 	{{ person.notes|escape }}
-    </td></tr>
+    </td>
+    </tr>
     {% endfor %}
   </tbody>
 </table>
