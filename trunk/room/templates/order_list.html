@@ -26,8 +26,7 @@ $(function() {
 </h2>
 <p>To make an order, go to the site 
  (from <a href="{% url room.staff.StaffHome %}">Staff Home</a>)
-and use the normal Create New Order links.  There is currently no way to 
-delete an order, just talk to Luke if this comes up.
+and use the normal Place Order links.  
 {%endblock%}
 {%block body%}
 <form method="POST" action="{% url room.order.OrderExport %}">
@@ -37,6 +36,12 @@ delete an order, just talk to Luke if this comes up.
   <input type="submit" name="submit" value="{{ mass_action.fulfill_many }}">
   {% if order_sheet %}
   <input type="hidden" name="order_sheet_id" value="{{ order_sheet.key.id }}">
+  {% endif %}
+  {% if order_sheet %}
+  <br>Or <a href="{% url room.order.OrderReconcile order_sheet.key.id %}">
+    reconcile {{ num_being_filled }} orders 
+    </a>
+  in "Being Filled" status.
   {% endif %}
   <br>
 <table class="list tablesorter" id="order_list">
@@ -55,7 +60,7 @@ delete an order, just talk to Luke if this comes up.
 	Form
       </th>
       <th>
-	$ Grand Total
+	$ Estimated Total
       </th>
       <th>
 	Last Modified
