@@ -74,11 +74,6 @@ def SiteJump(request):
     
 
 def Scoreboard(request):
-  logging.info('scoreboard start')
-  last_welcomes = models.Captain.all().filter(
-    'last_welcome != ', None).order('-last_welcome').fetch(20)
-  last_staff_welcomes = models.Staff.all().filter(
-    'last_welcome != ', None).order('-last_welcome').fetch(10)
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
     'last_welcome != ', None).count()
@@ -88,23 +83,34 @@ def Scoreboard(request):
   sites = [s for s in models.NewSite.all() if 'ZZZ' not in s.number]
   num_sites = len(sites)
   total_site_budget = sum(s.budget for s in sites if s.budget)
-  logging.info('got top level data')
+  return common.Respond(request, 'scoreboard', locals())
 
-  def GetUserActivity(user_cls):
-      user_activity = []
-      welcomes = user_cls.all().filter(
-          'last_welcome != ', None).order('-last_welcome').fetch(20)
-      for c in welcomes:
-          u = users.User(c.email)
-          equery = models.Order.all().filter('state IN ', 
-                                             ('Received', 'submitted', 
-                                              'Being Filled'))
-          equery.filter('created_by =', u)
-          orders = filter(lambda i: 'ZZZ' not in i.site.number, list(equery))
-          recent_orders = filter(lambda o: o.created > c.last_welcome, orders)
-          user_activity.append((c, len(orders), len(recent_orders)))
-      return user_activity
+def _ScoreboardUsers(user_cls):
+  user_activity = []
+  welcomes = user_cls.all().filter(
+    'last_welcome != ', None).order('-last_welcome').fetch(20)
+  for c in welcomes:
+    u = users.User(c.email)
+    equery = models.Order.all().filter('state IN ', 
+                                       ('Received', 'submitted', 
+                                        'Being Filled'))
+    equery.filter('created_by =', u)
+    orders = filter(lambda i: 'ZZZ' not in i.site.number, list(equery))
+    recent_orders = filter(lambda o: o.created > c.last_welcome, orders)
+    user_activity.append((c, len(orders), len(recent_orders)))
+  return user_activity
 
+def ScoreboardCaptains(request):
+  return common.Respond(request, 'scoreboard_users', 
+                        {'user_activity': _ScoreboardUsers(models.Captain),
+                         'name': 'Captain'})
+
+def ScoreboardStaff(request):
+  return common.Respond(request, 'scoreboard_users', 
+                        {'user_activity': _ScoreboardUsers(models.Staff),
+                         'name': 'Staff'})
+
+def ScoreboardOrders(request):
   activity = []
   activity_rows = [
     ('All Orders', models.Order.all(), 
@@ -116,21 +122,14 @@ def Scoreboard(request):
     ('In-kind Donations', models.InKindDonation.all(),
      urlresolvers.reverse(views.InKindDonationList)),
     ]
-
-  captain_activity = GetUserActivity(models.Captain)
-  staff_activity = GetUserActivity(models.Staff)
-  logging.info('got captain and staff activity')
-
   order_sheets = models.OrderSheet.all().order('name')
   order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
   for os in order_sheets:
       activity_rows.append(
-      ('Form: %s' % os.name, 
+      ('Form: %s' % os.name[0:20], 
        models.Order.all().filter('order_sheet =', os),
        urlresolvers.reverse(order.OrderList, args=[os.key().id()])))
     
-  logging.info('got order activity')
-
   now = datetime.datetime.now()
   one = datetime.timedelta(days=1)
 
@@ -145,6 +144,7 @@ def Scoreboard(request):
     received_orders = [i for i in items 
                        if i.state in ('Received', 'submitted')]
     recent = len([s for s in received_orders if now - s.modified < one])
+    logging.info('got activity row: %s', name)
     activity.append(
       (name, link, 
        totals_by_state.get('Received', 0) + totals_by_state.get('submitted', 0),
@@ -152,11 +152,11 @@ def Scoreboard(request):
        total, sites, editors, 
        totals_by_state.get('Deleted', 0) + totals_by_state.get('new', 0), 
        totals_by_state.get('new', 0), 
-       totals_by_state.get('Being Filled', 0)))
+       totals_by_state.get('Being Filled', 0),
+       totals_by_state.get('Reconciled', 0)))
 
-  logging.info('responding')
   d = locals()
-  return common.Respond(request, 'scoreboard', d)
+  return common.Respond(request, 'scoreboard_orders', d)
 
 
 def SitesWithoutOrder(request, order_sheet_id):

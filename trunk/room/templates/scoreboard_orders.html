@@ -1,0 +1,83 @@
+{% load humanize %}
+<p>
+  <b>
+    Status for Orders, Check Requests, Vendor Receipts, In-kind Donations
+  </b>
+</p>
+<table class="scoreboard">
+  <thead>
+    <tr>
+      <th>
+	Category
+      </th>
+      <th>
+	Status
+	<br/>
+	"Received"
+	<br/>
+	(last 24 hours)
+      </th>
+      <th>
+	Status
+	<br/>
+	"Being Filled"
+      </th>
+      <th>
+	Status
+	<br/>
+	"Resolved"
+      </th>
+      <th>
+	Total ($)
+      </th>
+      <th>
+	Unique 
+	<br/>
+	Sites 
+      </th>
+      <th>
+	Unique 
+	<br/>
+	Users
+      </th>
+      <th>
+	Deleted
+	<br/>
+	(Abandoned)
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for k in activity %}
+    <tr>
+      <td class="name">
+	<a href="{{ k.1 }}">
+	  {{ k.0 }}
+	</a>
+      </td>
+      <td>
+	{{ k.2 }} 
+	({{ k.3 }})
+      </td>
+      <td>
+	{{ k.9 }}
+      </td>
+      <td>
+	{{ k.10 }}
+      </td>
+      <td>
+	{{ k.4|floatformat:2|intcomma }}
+      </td>
+      <td>
+	{{ k.5 }}
+      </td>
+      <td>
+	{{ k.6 }}
+      </td>
+      <td>
+	{{k.7 }} ({{ k.8 }})
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
