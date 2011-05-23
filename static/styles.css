@@ -300,3 +300,8 @@ table.order_form_header span {
 #login_button:hover {
   background-color: #ddd;
 }
+/* override jQuery theme defaults */
+body .ui-widget {
+  font-family: inherit;
+  font-size: inherit;
+}
