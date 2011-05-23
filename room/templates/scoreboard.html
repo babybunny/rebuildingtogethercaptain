@@ -2,19 +2,29 @@
 {% load humanize %}
 {%block breadcrumb%}
 {%endblock%}
+{% block script %}
+<link 
+   type="text/css" 
+   href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css" 
+   rel="Stylesheet" />
+<script 
+   type="text/javascript" 
+   src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+</script>
+<script 
+   type="text/javascript" 
+   src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+</script>
+<script type="text/javascript">
+$(function() {
+  $('#tabs').tabs({cache: true});
+});
+</script>
+{%endblock%}
 {%block about_this_page %}
 <h1>Scoreboard</h1>
 
 <h3>Summary of activity (excluding ZZZ test sites)</h3>
-<p>
-  <span class=attr>
-    Captains using system: <b>{{ num_captains_active }}</b>
-    of {{ num_captains }} total ({{ pct_captains_active|floatformat:1 }}%), 
-    with 
-    <b>{{ num_captains_with_tshirt }}</b> 
-    updating their T-shirt size.
-  </span>
-</p>
 <p>
   <span class=attr>
     Number of Sites in the system: <b>{{ num_sites }}</b>,
@@ -25,151 +35,30 @@
 {% endblock %}
 {%block body%}
 
-<table class="layout">
-  <tr>
-    <td class="layout">
-      <p>
-      <b>Recent Captain Logins</b>
-      <table class="recent-login">
-	<thead>
-	  <tr>
-	    <th>
-	      Last login
-	      </th>
-	    <th>
-	      Captain
-	    </th>
-	    <th colspan="2">
-	      Orders Created
-	      <br>Last session
-	      <br>(All time)
-	    </th>
-	  </tr>
-	  </thead>
-	<tbody>
-	{% for welcomee, num_orders, recent_orders in captain_activity %}
-	<tr>	  
-	  <td>
-	    {{ welcomee.last_welcome|timesince }} ago
-	  </td>
-	  <td>
-	    {{ welcomee.name }}
-	  </td>
-	  <td class="orders-last">
-	    {{ recent_orders }}
-	  </td>
-	  <td class="orders-all">
-	    ({{ num_orders }})
-	  </td>
-	</tr>
-	{% endfor %}
-	</tbody>
-      </table>
-      <hr>
-      <b>Recent Staff Logins</b>
-      <table class="recent-login">
-	<thead>
-	  <tr>
-	    <th>
-	      Last login
-	      </th>
-	    <th>
-	      Staff
-	    </th>
-	    <th colspan="2">
-	      Orders Created
-	      <br>Last session
-	      <br>(All time)
-	    </th>
-	  </tr>
-	  </thead>
-	<tbody>
-	{% for welcomee, num_orders, recent_orders in staff_activity %}
-	<tr>	  
-	  <td>
-	    {{ welcomee.last_welcome|timesince }} ago
-	  </td>
-	  <td>
-	    {{ welcomee.name }}
-	  </td>
-	  <td class="orders-last">
-	    {{ recent_orders }}
-	  </td>
-	  <td class="orders-all">
-	    ({{ num_orders }})
-	  </td>
-	</tr>
-	{% endfor %}
-	</tbody>
-      </table>
-    </td>
-    <td class="layout">
-      <p>
-	<b>
-	  Status for Orders, Check Requests, Vendr Receipts, In-kind Donations
-	</b>
-      </p>
-      <table class="scoreboard">
-	<thead>
-	  <tr>
-	    <th>
-	      Category
-	    </th>
-	    <th>
-	      Status
-	      "Received"
-	      (last 24 hours)
-	    </th>
-	    <th>
-	      Status
-	      "Being Filled"
-	    </th>
-	    <th>
-	      Total ($)
-	    </th>
-	    <th>
-	      Unique Sites 
-	    </th>
-	    <th>
-	      Unique Users
-	    </th>
-	    <th>
-	      Deleted (Abandoned)
-	    </th>
-	  </tr>
-	  </thead>
-	<tbody>
-	  {% for k in activity %}
-	  <tr>
-	    <td class="name">
-	      <a href="{{ k.1 }}">
-	      {{ k.0 }}
-	      </a>
-	    </td>
-	    <td>
-	      {{ k.2 }} 
-	      ({{ k.3 }})
-	    </td>
-	    <td>
-	      {{ k.9 }}
-	    </td>
-	    <td>
-	      {{ k.4|floatformat:2|intcomma }}
-	    </td>
-	    <td>
-	      {{ k.5 }}
-	    </td>
-	    <td>
-	      {{ k.6 }}
-	    </td>
-	    <td>
-	      {{k.7 }} ({{ k.8 }})
-	    </td>
-	  </tr>
-	  {% endfor %}
-	</tbody>
-      </table>
-    </td>
-  </tr>
-</table>
+<div id="tabs">  
+  <ul>
+    <li><a href="#users">Users</a></li>
+    <li><a href="{% url room.staff.ScoreboardOrders %}">
+	<span>Orders and Expenses</span>
+    </a></li>
+    <li><a href="{% url room.staff.ScoreboardCaptains %}">
+	<span>Captain Activity</span>
+    </a></li>
+    <li><a href="{% url room.staff.ScoreboardStaff %}">
+	<span>Staff Activity</span>
+    </a></li>
+  </ul>
+  <div id="users">
+    <p>
+      <span class=attr>
+	Captains using system: <b>{{ num_captains_active }}</b>
+	of {{ num_captains }} total ({{ pct_captains_active|floatformat:1 }}%), 
+	with 
+	<b>{{ num_captains_with_tshirt }}</b> 
+	updating their T-shirt size.
+      </span>
+    </p>    
+  </div>
+</div>
+
 {%endblock%}
