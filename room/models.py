@@ -378,11 +378,17 @@ class Order(BaseModel):
             return ''
         return self.notes
 
-    def GrandTotal(self):
+    def EstimatedTotal(self):
         if self.sub_total is None:
             return 0.
         t = self.sub_total * (1. + SALES_TAX_RATE)
         return math.ceil(t * 100.) / 100.
+
+    def GrandTotal(self):
+        if self.actual_total is not None:
+            return self.actual_total
+        else:
+            return self.EstimatedTotal()
 
     def Total(self):
         return self.GrandTotal()

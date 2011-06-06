@@ -291,12 +291,24 @@
 	    <td>
 	    </td>
 	    <td colspan=4 class="form-summary subtotal">
-	      Grand Total
+	      Estimated Total
 	    </td>
 	    <td class="dollar subtotal">
-	      {{ order.GrandTotal|floatformat:2 }}
+	      {{ order.EstimatedTotal|floatformat:2 }}
 	    </td>
 	  </tr>	  
+	  {% if order.actual_total %}
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      Actual (reconciled) Total
+	    </td>
+	    <td class="dollar subtotal">
+	      {{ order.actual_total|floatformat:2 }}
+	    </td>
+	  </tr>	  	  
+	  {% endif %}
 	  {% endif %}
 	  {% else %}
 	  <tr>
