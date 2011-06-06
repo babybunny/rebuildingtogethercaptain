@@ -84,6 +84,8 @@ urlpatterns += patterns(
     (r'^inkinddonation/new/(\d+)/$', 'InKindDonationNew'),
     (r'^inkinddonation/edit/(\d+)/$', 'InKindDonationEdit'),
     (r'^inkinddonation/view/(\d+)/$', 'InKindDonationView'),
+
+    (r'^siteexpense/state/(\w+)/(\d+)/$', 'SiteExpenseState'),
     )
 
 urlpatterns += patterns(

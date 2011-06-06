@@ -575,7 +575,9 @@ class CheckRequest(BaseModel):
         choices=('Corporation', 'Partnership', 'Sole Proprietor', 
                  'Don\'t Know'))
     form_of_business.verbose_name = "Payee Business Type"
-    state = db.StringProperty(choices=('new','submitted'), default='new')
+    state = db.StringProperty(
+        choices=('new','submitted', 'fulfilled', 'deleted'), 
+        default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
 
@@ -592,7 +594,8 @@ class VendorReceipt(BaseModel):
     amount = db.FloatProperty()
     amount.verbose_name = 'Purchase Amount ($)'
     description = db.TextProperty()
-    state = db.StringProperty(choices=('new','submitted'), default='new')
+    state = db.StringProperty(choices=('new','submitted', 'reconciled'), 
+                              default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
 
@@ -621,7 +624,8 @@ class InKindDonation(BaseModel):
     materials_amount.verbose_name = 'Materials Value ($)'
     description = db.TextProperty()
     budget = db.StringProperty(choices=('Normal', 'Roofing'), default='Normal')
-    state = db.StringProperty(choices=('new','submitted'), default='new')
+    state = db.StringProperty(choices=('new','submitted', 'reconciled'), 
+                              default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
