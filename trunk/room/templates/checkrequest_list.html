@@ -1,10 +1,30 @@
 {%extends "base.html"%}
 {% block script %}
 {% include "tablesorter_script.html" %}
+<script
+   type="text/javascript" 
+   src="/static/jquery.jeditable.mini.js">
+</script>
 <script type="text/javascript">
 $(function(){
   $("table.tablesorter").tablesorter({
     });
+  {% for entity in entries %}
+  $('.jeditable-state[name="{{ entity.key.id }}"]').editable(
+     "{% url room.views.SiteExpenseState model_cls_name entity.key.id %}", {
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Click to edit...',
+         cssclass  : 'inherit',
+         type      : 'select',
+         data      : " {'new': 'new', 'submitted': 'submitted', 'fulfilled': 'fulfilled', 'deleted': 'deleted', 'selected': '{{ entity.state }}'}",
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  {% endfor %}
 });
 </script>
 {% endblock %}
@@ -19,6 +39,7 @@ $(function(){
     <tr>
       <th>Click to Edit</th>
       <th>Site</th>
+      <th>Status</th>
       <th>Captain</th>
       <th>Payable To</th>
       <th>Payment Date</th>
@@ -39,6 +60,11 @@ $(function(){
 	</a>
       </td><td>
 	{{ entity.site.number|escape }}
+      </td><td class="editable">
+	<span class="sortorder">{{ entity.state }}</span>
+	<div class="jeditable-state" 
+	     id="state"
+	     name="{{ entity.key.id }}">{{ entity.state }}</div>
       </td><td>
 	{{ entity.captain.name|escape }}
       </td><td>

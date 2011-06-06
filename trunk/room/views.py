@@ -31,7 +31,7 @@ MAP_HEIGHT = 200
 START_NEW_ORDER_SUBMIT = 'Start New Order'
 
 
-def _EntryList(request, model_cls, template, params=None):
+def _EntryList(request, model_cls, template, params=None, query=None):
   """Generic method to perform a list view.
 
   Template should iterate over a list called 'entries'.
@@ -41,11 +41,15 @@ def _EntryList(request, model_cls, template, params=None):
     request: the request object
     model_cls: the class of model, like models.Captain
     template: name of template file, like 'captain_list'
+    params: dict of more template parameters
+    query: db.Query object to use, if not model_cls.all()
     """
   user, captain, staff = common.GetUser(request)
-  entries = list(model_cls.all())
+  if query is None:
+    query = model_cls.all()
+  entries = list(query)
   entries.sort(key=lambda x: x.name)
-  d = {'entries': entries, 'user': user }
+  d = {'entries': entries, 'user': user, 'model_cls_name': model_cls.__name__ }
   if params:
     d.update(params)
   return common.Respond(request, template, d)
@@ -679,7 +683,9 @@ class SiteExpense:
   @classmethod
   def List(cls, request):
     """Show all."""
-    return _EntryList(request, cls.model, cls.template_base + '_list')
+    query = cls.model.all().filter('state !=', 'new')
+    return _EntryList(request, cls.model, cls.template_base + '_list',
+                      query=query)
   
   @classmethod
   def View(cls, request, id):
@@ -797,6 +803,29 @@ InKindDonationNew = InKindDonation.New
 InKindDonationEdit = InKindDonation.Edit
 InKindDonationList = InKindDonation.List
 InKindDonationView = InKindDonation.View
+
+
+SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
+    models.CheckRequest,
+    models.VendorReceipt,
+    models.InKindDonation,
+    ))
+
+def SiteExpenseState(request, item_cls, item_id):
+  """Updates a site expense's state field."""
+  user, captain, staff = common.GetUser(request)
+  if not staff:
+    return http.HttpResponse(status=400)
+  if not request.POST:
+    return http.HttpResponse(status=400)
+  cls = SITE_EXPENSE_TYPES[item_cls]
+  modl = cls.get_by_id(int(item_id))
+  if not modl:
+    return http.HttpResponse(status=400)
+  value = request.POST['value']
+  modl.state = value
+  modl.put()
+  return http.HttpResponse(value, status=200)
 
 
 def StandardKit(request):
