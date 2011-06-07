@@ -49,7 +49,9 @@ def _EntryList(request, model_cls, template, params=None, query=None):
     query = model_cls.all()
   entries = list(query)
   entries.sort(key=lambda x: x.name)
-  d = {'entries': entries, 'user': user, 'model_cls_name': model_cls.__name__ }
+  d = {'entries': entries, 'user': user, 
+       'cls': model_cls,
+       'model_cls_name': model_cls.__name__ }
   if params:
     d.update(params)
   return common.Respond(request, template, d)
