@@ -303,6 +303,11 @@
       {% if site.CheckRequests.Count %}
       <a name="checkrequests_panel"></a>
       <div class="panel">
+	<span class="actions">
+	  <a href="{% url room.views.CheckRequestList site.key.id %}">
+	    list all
+	    </a>
+	</span>
 	<h3>Check Requests</h3>
 	<table id="checkrequests" class="list tablesorter">
 	  {% for entity in site.CheckRequests.Items %}
