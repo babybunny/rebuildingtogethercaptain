@@ -44,10 +44,9 @@ $(function(){
       <th>Payable To</th>
       <th>Payment Date</th>
       <th>Amount</th>
-      <th>Address</th>
-      <th>Category</th>
-      <th>Business</th>
       <th>Description</th>
+      <th>Business</th>
+      <th>Address</th>
     </tr>
   </thead>
   <tbody>
@@ -74,14 +73,12 @@ $(function(){
       </td><td>
 	{{ entity.Total|escape }}
       </td><td>
-	{{ entity.address|escape }}
-      </td><td>
-	{{ entity.category|escape }}
+	{{ entity.description|escape }}
       </td><td>
 	{{ entity.form_of_business|escape }}
       </td><td>
-	{{ entity.description|escape }}
-    </td>
+	{{ entity.address|escape }}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
