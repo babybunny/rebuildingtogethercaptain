@@ -576,7 +576,7 @@ class CheckRequest(BaseModel):
                  'Don\'t Know'))
     form_of_business.verbose_name = "Payee Business Type"
     state = db.StringProperty(
-        choices=('new','submitted', 'fulfilled', 'deleted'), 
+        choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'), 
         default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
