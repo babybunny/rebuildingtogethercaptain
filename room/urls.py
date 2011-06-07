@@ -71,6 +71,7 @@ urlpatterns += patterns(
     (r'^inventory$', 'Inventory'),
 
     (r'^checkrequest/list/$', 'CheckRequestList'),
+    (r'^checkrequest/list/(\d+)/$', 'CheckRequestList'),
     (r'^checkrequest/new/(\d+)/$', 'CheckRequestNew'),
     (r'^checkrequest/edit/(\d+)/$', 'CheckRequestEdit'),
     (r'^checkrequest/view/(\d+)/$', 'CheckRequestView'),
