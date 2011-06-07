@@ -18,7 +18,13 @@ $(function(){
          tooltip   : 'Click to edit...',
          cssclass  : 'inherit',
          type      : 'select',
-         data      : " {'new': 'new', 'submitted': 'submitted', 'fulfilled': 'fulfilled', 'deleted': 'deleted', 'selected': '{{ entity.state }}'}",
+         data      : " { " + 
+         {% for state in cls.state.choices %}
+         {% ifnotequal state 'new' %}
+         " '{{ state }}': '{{state }}', " +
+         {% endifnotequal %}
+         {% endfor %}
+         "'selected': '{{ entity.state }}'}",
          }
   ).hover(
     function(){$(this).css('background-color', '#FBFFAB')},
@@ -33,7 +39,7 @@ $(function(){
 {% endblock %}
 {%block body%}
 <h2>All Check Requests</h2>
-
+{{ cls }}
 <table cellpadding=5 class="list tablesorter">
   <thead>
     <tr>
