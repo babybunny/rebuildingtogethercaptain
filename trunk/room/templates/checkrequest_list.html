@@ -38,8 +38,8 @@ $(function(){
   | List Check Requests
 {% endblock %}
 {%block body%}
-<h2>All Check Requests</h2>
-{{ cls }}
+<h2>{{ which_site}} Check Requests</h2>
+
 <table cellpadding=5 class="list tablesorter">
   <thead>
     <tr>
@@ -64,7 +64,9 @@ $(function(){
 	  {{entity.key.id|escape}}
 	</a>
       </td><td>
+	<a href="{% url room.views.SiteView entity.site.key.id %}">
 	{{ entity.site.number|escape }}
+	</a>
       </td><td class="editable">
 	<span class="sortorder">{{ entity.state }}</span>
 	<div class="jeditable-state" 
