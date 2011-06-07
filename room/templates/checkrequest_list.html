@@ -37,8 +37,11 @@ $(function(){
 {% block breadcrumb %}
   | List Check Requests
 {% endblock %}
-{%block body%}
+{%block about_this_page %}
 <h2>{{ which_site}} Check Requests</h2>
+{% endblock %}
+{%block body%}
+<p>Change status of a Check Request by clicking the value in the Status column.
 
 <table cellpadding=5 class="list tablesorter">
   <thead>
