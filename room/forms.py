@@ -225,7 +225,7 @@ class VendorReceiptForm(SiteExpenseForm):
     amount = forms.FloatField(required=True)
     class Meta:
         model = models.VendorReceipt
-        exclude = ['last_editor', 'modified', 'state']
+        exclude = ['last_editor', 'modified']
 
 
 class InKindDonationForm(SiteExpenseForm):
@@ -235,4 +235,4 @@ class InKindDonationForm(SiteExpenseForm):
     description = forms.CharField(required=True, widget=forms.Textarea)
     class Meta:
         model = models.InKindDonation
-        exclude = ['last_editor', 'modified', 'state']
+        exclude = ['last_editor', 'modified']
