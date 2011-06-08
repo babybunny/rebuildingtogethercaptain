@@ -329,8 +329,8 @@
 	      <td>
 		{{ entity.name|escape }}
 	      </td>
-	      <td>
-		{{ entity.Total}}
+	      <td class="dollar">
+		${{ entity.Total|floatformat:2 }}
 	      </td>
 	      <td>
 		<a name="{{ entity.key.id }}"
@@ -380,8 +380,8 @@
 	      <td>
 		{{ entity.vendor|escape }}
 	      </td>
-	      <td>
-		{{ entity.amount|escape }}
+	      <td class="dollar">
+		${{ entity.Total|floatformat:2 }}
 	      </td>
 	      <td>
 		<a name="{{ entity.key.id }}"
@@ -431,8 +431,8 @@
 	      <td>
 		{{ entity.donor|escape }}
 	      </td>
-	      <td>
-		{{ entity.Total|escape }}
+	      <td class="dollar">
+		${{ entity.Total|floatformat:2 }}
 	      </td>
 	      <td>
 		<a name="{{ entity.key.id }}"
