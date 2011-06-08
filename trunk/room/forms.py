@@ -215,7 +215,7 @@ class CheckRequestForm(SiteExpenseForm):
     description = forms.CharField(required=True, widget=forms.Textarea)
     class Meta:
         model = models.CheckRequest
-        exclude = ['last_editor', 'modified', 'state']
+        exclude = ['last_editor', 'modified']
 
 
 class VendorReceiptForm(SiteExpenseForm):
