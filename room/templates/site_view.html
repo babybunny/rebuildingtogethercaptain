@@ -330,7 +330,7 @@
 		{{ entity.name|escape }}
 	      </td>
 	      <td>
-		{{ entity.Total|escape }}
+		{{ entity.Total}}
 	      </td>
 	      <td>
 		<a name="{{ entity.key.id }}"
@@ -354,6 +354,11 @@
       {% if site.VendorReceipts.Count %}
       <a name="vendorreceipts_panel"></a>
       <div class="panel">
+	<span class="actions">
+	  <a href="{% url room.views.VendorReceiptList site.key.id %}">
+	    list all
+	    </a>
+	</span>
 	<h3>Vendor Receipts</h3>
 	<table id="vendorreceipts" class="list tablesorter">
 	  {% for entity in site.VendorReceipts.Items %}
@@ -400,6 +405,11 @@
       {% if site.InKindDonations.Count %}
       <a name="inkinddonations_panel"></a>
       <div class="panel">
+	<span class="actions">
+	  <a href="{% url room.views.InKindDonationList site.key.id %}">
+	    list all
+	    </a>
+	</span>
 	<h3>In-kind Donations</h3>
 	<table id="inkinddonations" class="list tablesorter">
 	  {% for entity in site.InKindDonations.Items %}

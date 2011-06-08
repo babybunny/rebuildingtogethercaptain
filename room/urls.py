@@ -77,11 +77,13 @@ urlpatterns += patterns(
     (r'^checkrequest/view/(\d+)/$', 'CheckRequestView'),
 
     (r'^vendorreceipt/list/$', 'VendorReceiptList'),
+    (r'^vendorreceipt/list/(\d+)/$', 'VendorReceiptList'),
     (r'^vendorreceipt/new/(\d+)/$', 'VendorReceiptNew'),
     (r'^vendorreceipt/edit/(\d+)/$', 'VendorReceiptEdit'),
     (r'^vendorreceipt/view/(\d+)/$', 'VendorReceiptView'),
 
     (r'^inkinddonation/list/$', 'InKindDonationList'),
+    (r'^inkinddonation/list/(\d+)/$', 'InKindDonationList'),
     (r'^inkinddonation/new/(\d+)/$', 'InKindDonationNew'),
     (r'^inkinddonation/edit/(\d+)/$', 'InKindDonationEdit'),
     (r'^inkinddonation/view/(\d+)/$', 'InKindDonationView'),
