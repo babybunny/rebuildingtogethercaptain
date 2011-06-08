@@ -85,10 +85,12 @@ $(function(){
 	{{ entity.donor|escape }}
       </td><td>
 	{{ entity.donor_phone|escape }}
-      </td><td>
-	{{ entity.labor_amount|escape }}
-      </td><td>
-	{{ entity.materials_amount|escape }}
+      </td>
+      <td class="dollar">
+	${{ entity.labor_amount|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	${{ entity.materials_amount|floatformat:2 }}
       </td><td>
 	{{ entity.donor_info|escape }}
       </td><td>

@@ -81,8 +81,9 @@ $(function(){
 	{{ entity.name|escape }}
       </td><td>
 	{{ entity.payment_date|escape }}
-      </td><td>
-	{{ entity.Total|escape }}
+      </td>
+      <td class="dollar">
+	${{ entity.Total|floatformat:2 }}
       </td><td>
 	{{ entity.description|escape }}
       </td><td>
