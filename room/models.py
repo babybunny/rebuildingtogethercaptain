@@ -594,8 +594,9 @@ class VendorReceipt(BaseModel):
     amount = db.FloatProperty()
     amount.verbose_name = 'Purchase Amount ($)'
     description = db.TextProperty()
-    state = db.StringProperty(choices=('new','submitted', 'reconciled'), 
-                              default='new')
+    state = db.StringProperty(
+        choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'), 
+        default='new')
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
 
