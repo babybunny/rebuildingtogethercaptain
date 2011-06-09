@@ -34,7 +34,6 @@ def _OrderListInternal(order_sheet_id):
   orders = list(q)
   mass_action = {'export_csv': EXPORT_CSV,
                  'fulfill_many': FULFILL_MULTIPLE}
-
   return {'orders': orders,
           'order_sheet': order_sheet,
           'order_export_checkbox_prefix': 
@@ -268,15 +267,15 @@ def _OrderExportInternal(writable, post_vars):
              o.modified.date().isoformat(),
              o.site.street_number,
              o.site.city_state_zip,
-             o.notes,
+             o.notes.encode('ascii', 'ignore'),
              oi.item.VisibleOrderFormSection(),
              oi.item.VisibleName(),
              oi.VisibleQuantity(),
              oi.item.measure,
              oi.VisibleCost(),
-             o.LogisticsStart(),
-             o.LogisticsEnd(),
-             o.LogisticsInstructions().encode('ascii', 'ignore'),
+             o.logistics_start,
+             o.logistics_end,
+             o.logistics_instructions.encode('ascii', 'ignore'),
              oi.name,
              ]
       writer.writerow(row)
@@ -525,6 +524,8 @@ def OrderLogistics(request, order_id):
       logging.info('deleting OrderPickup for order %s', order.key().id())
       op.delete()
 
+  order.UpdateLogistics()
+
   if request.POST.get('submit', '').endswith('(STAFF ONLY)'):
     return http.HttpResponseRedirect(urlresolvers.reverse(
         OrderFulfill, args=[str(order.key().id())]))
@@ -621,3 +622,8 @@ def OrderItemName(request):
   order_item.name = request.POST['value']
   order_item.put()
   return http.HttpResponse(order_item.name)
+
+def OrderUpdateLogistics(request, order_id):
+  models.Order.get_by_id(int(order_id)).UpdateLogistics()
+  return http.HttpResponse('OK')
+

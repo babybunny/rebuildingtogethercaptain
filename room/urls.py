@@ -17,6 +17,7 @@ urlpatterns = patterns(
     (r'^admin/fix_last_editor', 'FixLastEditor'),
     (r'^admin/add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
     (r'^admin/search_prefix', 'RecomputeSearchPrefixes'),
+    (r'^admin/order_logistics', 'RecomputeOrderLogistics'),
     (r'^admin/delete_empty_order_items', 'DeleteEmptyOrderItems'),
     )
 
@@ -116,4 +117,5 @@ urlpatterns += patterns(
     (r'^order/fulfillconfirm/$', 'OrderFulfillConfirm'),
     (r'^order/fulfillconfirm/(\d+)/$', 'OrderFulfillConfirm'),
     (r'^order_item/name/$', 'OrderItemName'),
+    (r'^admin/order/update_logistics/(\d+)/$', 'OrderUpdateLogistics'),
     )

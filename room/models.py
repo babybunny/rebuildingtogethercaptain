@@ -359,6 +359,9 @@ class Order(BaseModel):
     state = db.StringProperty()
     actual_total = db.FloatProperty()  
     reconciliation_notes = db.TextProperty(default='')    
+    logistics_start = db.StringProperty()
+    logistics_end = db.StringProperty()
+    logistics_instructions = db.TextProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     created_by = db.UserProperty(auto_current_user_add=True)
     modified = db.DateTimeProperty(auto_now=True)
@@ -451,6 +454,13 @@ class Order(BaseModel):
                 od.retrieval.contact_phone or '',
                 od.retrieval.notes or '')
         return ''
+
+    def UpdateLogistics(self):
+        self.logistics_start = self.LogisticsStart()
+        self.logistics_end = self.LogisticsEnd()
+        self.logistics_instructions = self.LogisticsInstructions()
+        self.put()
+
 
 class OrderItem(BaseModel):
     """The Items that are in a given Order."""

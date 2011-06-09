@@ -281,6 +281,13 @@ def RecomputeSearchPrefixes(request):
                                            args=[c.key().id()]))
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+def RecomputeOrderLogistics(request):
+  for c in models.Order.all():
+    taskqueue.add(url=urlresolvers.reverse(order.OrderUpdateLogistics,
+                                           args=[c.key().id()]))
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
+
 def DeleteEmptyOrderItems(request):
   for o in models.Order.all().filter('state !=' ,'new'):
     for oi in o.orderitem_set:
