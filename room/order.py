@@ -267,7 +267,7 @@ def _OrderExportInternal(writable, post_vars):
              o.modified.date().isoformat(),
              o.site.street_number,
              o.site.city_state_zip,
-             o.notes.encode('ascii', 'ignore'),
+             o.notes,
              oi.item.VisibleOrderFormSection(),
              oi.item.VisibleName(),
              oi.VisibleQuantity(),
@@ -275,9 +275,10 @@ def _OrderExportInternal(writable, post_vars):
              oi.VisibleCost(),
              o.logistics_start,
              o.logistics_end,
-             o.logistics_instructions.encode('ascii', 'ignore'),
+             o.logistics_instructions,
              oi.name,
              ]
+      row = [unicode(f).encode('ascii', 'ignore') for f in row]
       writer.writerow(row)
 
 def _SortOrderItemsWithSections(order_items):
