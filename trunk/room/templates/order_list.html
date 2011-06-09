@@ -77,7 +77,7 @@ and use the normal Place Order links.
     </tr>
   </thead>
   <tbody>    
-    {%for order in orders%}
+    {% for order in orders %}
     <tr>
       <td>
 	<input type="checkbox" class="order_export_checkbox"
@@ -132,16 +132,16 @@ and use the normal Place Order links.
 	{{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
       </td>
       <td>
-	{{ order.LogisticsStart }}
+	{{ order.logistics_start }}
       </td>
       <td>
-	{{ order.LogisticsEnd }}
+	{{ order.logistics_end }}
       </td>
       <td>
-	{{ order.LogisticsInstructions }}
+	{{ order.logistics_instructions }}
       </td>
     </tr>
-    {%endfor%}
+    {% endfor %}
   </tbody>
 </table>
 </form>
