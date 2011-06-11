@@ -354,6 +354,19 @@ def SiteList(request):
   return common.Respond(request, 'site_list', d)
 
 
+def SiteBudget(request, search_term=None):
+  """List all Sites with a "Budget" view."""
+  _, _, staff = common.GetUser(request)
+  if not staff:
+    return http.HttpResponse(status=400)  
+
+  query = models.NewSite.all()
+  if search_term is not None:
+    query.filter('search_prefixes = ', search_term.lower())
+
+  return _EntryList(request, models.NewSite, 'site_budget', query=query)
+
+
 # TODO: could be more complete
 def SiteExport(request):
   """Export all Sites as CSV."""
