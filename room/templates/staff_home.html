@@ -144,9 +144,11 @@ $(function() {
 	</span>
 	<br>
 	<input type="text" id="site_term" size="25">
-      </p>
-	<a href="{% url room.views.SiteList %}">View a list</a> 
-	of all Sites.
+	<p>
+	  List all Sites: 
+	  <a href="{% url room.views.SiteList %}">Captains</a> 
+	  |
+	  <a href="{% url room.views.SiteBudget %}">budget/expenses</a> 
 	<br>
 	<a href="{% url room.views.SiteNew %}">Add a new Site</a>.
       </div>

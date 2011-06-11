@@ -41,6 +41,9 @@ body {
   padding: 3px;
   background-color: #FAA;
 }
+.in-the-red {
+  background-color: #FAA;
+}
 .editable {
   border: 2px solid #FBFFAB;
 }

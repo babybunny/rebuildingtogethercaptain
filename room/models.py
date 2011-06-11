@@ -184,6 +184,12 @@ class NewSite(BaseModel):
         cost = sum(order.GrandTotal() for order in self.Orders.Items())
         return cost
 
+    @property 
+    def order_total(self):
+        if not hasattr(self, '_order_total'):
+            self._order_total = self.OrderTotal()
+        return self._order_total
+
     def CheckRequestTotal(self):
         """Only works if self has been saved."""    
         return sum(cr.Total() or 0 for cr in self.checkrequest_set)
@@ -196,12 +202,21 @@ class NewSite(BaseModel):
         """Only works if self has been saved."""    
         return sum(cr.Total() or 0 for cr in self.inkinddonation_set)
 
+    def Expenses(self):
+        return self.order_total + self.CheckRequestTotal() + self.VendorReceiptTotal()
+
     def BudgetRemaining(self):
-        return (self.budget
-                - self.OrderTotal() 
-                - self.CheckRequestTotal()
-                - self.VendorReceiptTotal()
-                )
+        return self.budget - self.Expenses()
+
+    @property 
+    def budget_remaining(self):
+        if not hasattr(self, '_budget_remaining'):
+            self._budget_remaining = self.BudgetRemaining()
+        return self._budget_remaining
+
+    @property
+    def in_the_red(self):
+        return self.budget_remaining < 0
 
     def BudgetStatement(self):
         if self.BudgetRemaining() > 0:
