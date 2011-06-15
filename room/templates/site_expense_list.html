@@ -1,0 +1,48 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script
+   type="text/javascript" 
+   src="/static/jquery.jeditable.mini.js">
+</script>
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+    });
+  {% for entity in entries %}
+  $('.jeditable-state[name="{{ entity.key.id }}"]').editable(
+     "{% url room.views.SiteExpenseState model_cls_name entity.key.id %}", {
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Click to edit...',
+         cssclass  : 'inherit',
+         type      : 'select',
+         data      : " { " + 
+         {% for state in cls.state.choices %}
+         {% ifnotequal state 'new' %}
+         " '{{ state }}': '{{state }}', " +
+         {% endifnotequal %}
+         {% endfor %}
+         "'selected': '{{ entity.state }}'}",
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  {% endfor %}
+});
+</script>
+{% endblock %}
+{% block breadcrumb %}
+  | List {{ expense_type }}s
+{% endblock %}
+{%block about_this_page %}
+<h2>{{ which_site}} {{ expense_type }}s</h2>
+{% endblock %}
+{%block body%}
+<p>Change status of a {{ expense_type }} by clicking the value in the Status column.
+
+{% include table_template %}
+
+{%endblock%}

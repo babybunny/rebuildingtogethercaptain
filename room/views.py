@@ -699,12 +699,14 @@ class SiteExpense:
   def List(cls, request, site_id=None):
     """Show all."""
     query = cls.model.all().filter('state !=', 'new')
-    params = {'which_site': 'All'}
+    params = {'which_site': 'All',
+              'expense_type': cls.readable,
+              'table_template': cls.template_base + '_table.html'}
     if site_id is not None:
       site = models.NewSite.get_by_id(int(site_id))
       query.filter('site = ', site)
       params['which_site'] = 'Site ' + site.number
-    return _EntryList(request, cls.model, cls.template_base + '_list',
+    return _EntryList(request, cls.model, 'site_expense_list',
                       params=params, query=query)
   
   @classmethod
