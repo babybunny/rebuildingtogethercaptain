@@ -10,7 +10,10 @@
 <a name="{{ site.number }}" href="{% url room.views.SiteEdit entries.0.key.id %}">
   Edit Site Info
 </a>
-
+|
+<a href="{% url room.views.SiteExpenses entries.0.key.id %}">
+  View all Site Expenses
+</a>
 {% if user.captain %}
 <p>
 If you just made an order, please confirm that it's correct and check your budget.  

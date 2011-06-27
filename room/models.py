@@ -129,6 +129,9 @@ class NewSite(BaseModel):
                                key=lambda o: o.modified, reverse=True):
                 yield item
 
+        def __iter__(self):
+            return self.Items()
+
     @property 
     def Orders(self):
         return self.ActiveItems(self.order_set)
