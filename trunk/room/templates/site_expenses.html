@@ -1,0 +1,83 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script
+   type="text/javascript" 
+   src="/static/jquery.jeditable.mini.js">
+</script>
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+    });
+  {% with site.checkrequest_set as entries %}
+  {% with "CheckRequest" as model_cls_name %}
+  {% for entity in entries %}
+  $('.jeditable-state[name="{{ entity.key.id }}"]').editable(
+     "{% url room.views.SiteExpenseState model_cls_name entity.key.id %}", {
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Click to edit...',
+         cssclass  : 'inherit',
+         type      : 'select',
+         data      : " { " + 
+         {% for state in cls.state.choices %}
+         {% ifnotequal state 'new' %}
+         " '{{ state }}': '{{state }}', " +
+         {% endifnotequal %}
+         {% endfor %}
+         "'selected': '{{ entity.state }}'}",
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  {% endfor %}
+  {% endwith %}
+  {% endwith %}
+});
+</script>
+{% endblock %}
+{% block breadcrumb %}
+  | View Site Expenses
+{% endblock %}
+{%block about_this_page %}
+<h2>Site #{{ site.number}} Expenses</h2>
+
+<p>
+  <a href="{% url room.views.SiteView site.key.id %}">
+    Go back to Site #{{ site.number }}.
+  </a>
+</p>
+{% endblock %}
+{%block body%}
+
+{% with site.Orders as orders %}
+{% if orders.Count %}
+<h3>Orders</h3>
+{% include "order_table.html" %}
+{% endif %}
+{% endwith %}
+
+{% with site.CheckRequests as entries %}
+{% if entries.Count %}
+<h3>Check Requests</h3>
+{% include "checkrequest_table.html" %}
+{% endif %}
+{% endwith %}
+
+{% with site.VendorReceipts as entries %}
+{% if entries.Count %}
+<h3>Vendor Receipts</h3>
+{% include "vendorreceipt_table.html" %}
+{% endif %}
+{% endwith %}
+
+{% with site.InKindDonations as entries %}
+{% if entries.Count %}
+<h3>In-Kind Donations</h3>
+{% include "inkinddonation_table.html" %}
+{% endif %}
+{% endwith %}
+
+{%endblock%}

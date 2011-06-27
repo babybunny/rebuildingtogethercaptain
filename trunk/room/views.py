@@ -218,6 +218,12 @@ def _SiteListInternal(request, site=None, new_order_form=None):
     d.update(params)
   return common.Respond(request, template, d)
 
+
+def SiteExpenses(request, site_id):
+  site = models.NewSite.get_by_id(int(site_id))
+  return common.Respond(request, 'site_expenses', {'site': site})
+
+
 def SiteEdit(request, site_id=None):
   """Create or edit a canned order."""
   user, captain, staff = common.GetUser(request)
