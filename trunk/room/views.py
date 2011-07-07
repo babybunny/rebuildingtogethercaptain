@@ -386,8 +386,8 @@ def SiteBudgetExport(request):
     _SiteBudgetExportInternal(response, request.POST)
     return response
       
-def _PostedSites(post_vars):
-  """Extract Site IDs from post_vars."""
+def PostedIds(post_vars):
+  """Extract IDs from post_vars."""
   site_ids = []
   for var in post_vars:
     if var.startswith(EXPORT_CHECKBOX_PREFIX):
@@ -396,7 +396,7 @@ def _PostedSites(post_vars):
   
 def _SiteBudgetExportInternal(writable, post_vars):
   """Write site budget rows as CSV to a file-like object."""   
-  site_ids = _PostedSites(post_vars)
+  site_ids = PostedIds(post_vars)
   sites = list(models.NewSite.get_by_id(site_ids))
   sites.sort(key=lambda o: o.number)
   writer = csv.writer(writable)
