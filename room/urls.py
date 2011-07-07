@@ -45,6 +45,7 @@ urlpatterns += patterns(
     (r'^site/expenses/(\d+)/$', 'SiteExpenses'),
     (r'^site/budget/$', 'SiteBudget'),
     (r'^site/budget/(\w+)/$', 'SiteBudget'),
+    (r'^site/budget_export/$', 'SiteBudgetExport'),
     (r'^site/autocomplete/$', 'SiteAutocomplete'),
     (r'^site/export$', 'SiteExport'),
     (r'^site/new$', 'SiteNew'),
