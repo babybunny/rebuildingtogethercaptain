@@ -4,8 +4,15 @@
 <script type="text/javascript">
 $(function() {
   $("table.tablesorter").tablesorter({
-    sortList: [[0,0]],
+    sortList: [[1, 0]],
+    headers: { 0: { sorter: false }}
   });
+  $("#select_all").change(
+    function() {
+      var newval = $("#select_all").attr('checked');
+      $(".export_checkbox").attr('checked', newval);
+    }
+  );
 });
 </script>
 {%endblock%}
@@ -14,24 +21,17 @@ $(function() {
 {% endblock %}
 {%block about_this_page %}
 <h2>All Sites - Budget View</h2>
-{% if user.staff %}
-<p>
-  <a href="{% url room.views.SiteExport %}">
-    Click here to export all Site data as CSV.
-  </a>
-</p>
-<p>
-  <a href="{% url room.views.SiteNew %}">
-    Click here to add a new Site.
-  </a>
-</p>
-{% endif %}
-
 {%endblock%}
 {%block body%}
+<form method="POST" action="{% url room.views.SiteBudgetExport %}">
+  To export many sites, check their boxes and then click 
+  <input type="submit" name="submit" value="{{ export_csv }}">
 <table class="list tablesorter" id="site_list">
   <thead>
     <tr>
+      <th>
+	<input type="checkbox" id="select_all">
+      </th>
       <th>Number 
       <br>
       (click to view)
@@ -50,6 +50,10 @@ $(function() {
   <tbody>
     {% for site in entries %}
     <tr>
+      <td>
+	<input type="checkbox" class="export_checkbox"
+	       name="{{ export_checkbox_prefix }}{{ site.key.id }}">
+      </td>
       <td>
 	<span class="sortorder">{{ site.number }}</span>
 	<a href="{% url room.views.SiteView site.key.id %}">
@@ -95,4 +99,5 @@ $(function() {
     {% endfor %}
   </tbody>
 </table>
+</form>
 {%endblock%}
