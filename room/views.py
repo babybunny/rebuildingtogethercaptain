@@ -29,6 +29,8 @@ THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH = 50, 50
 MAP_WIDTH = 300
 MAP_HEIGHT = 200
 START_NEW_ORDER_SUBMIT = 'Start New Order'
+EXPORT_CHECKBOX_PREFIX = 'export_'
+EXPORT_CSV = 'Export CSV'
 
 
 def _EntryList(request, model_cls, template, params=None, query=None):
@@ -370,8 +372,60 @@ def SiteBudget(request, search_term=None):
   if search_term is not None:
     query.filter('search_prefixes = ', search_term.lower())
 
-  return _EntryList(request, models.NewSite, 'site_budget', query=query)
+  return _EntryList(request, models.NewSite, 'site_budget', query=query, 
+                    params={'export_csv': EXPORT_CSV,
+                            'export_checkbox_prefix': EXPORT_CHECKBOX_PREFIX})
 
+def SiteBudgetExport(request):
+  """Export Site budget rows as CSV."""
+  user, _, _ = common.GetUser(request)
+  if request.POST['submit'] == EXPORT_CSV:
+    response = http.HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = (
+      'attachment; filename=%s_orders.csv' % user.email())
+    _SiteBudgetExportInternal(response, request.POST)
+    return response
+      
+def _PostedSites(post_vars):
+  """Extract Site IDs from post_vars."""
+  site_ids = []
+  for var in post_vars:
+    if var.startswith(EXPORT_CHECKBOX_PREFIX):
+      site_ids.append(int(var[len(EXPORT_CHECKBOX_PREFIX):]))
+  return site_ids
+  
+def _SiteBudgetExportInternal(writable, post_vars):
+  """Write site budget rows as CSV to a file-like object."""   
+  site_ids = _PostedSites(post_vars)
+  sites = list(models.NewSite.get_by_id(site_ids))
+  sites.sort(key=lambda o: o.number)
+  writer = csv.writer(writable)
+  # These should be similar to the columns in the site_budget.html template.
+  writer.writerow(['Site Number',
+                   'Name',
+                   'Sponsor',
+                   '$ Budget',
+                   '$ Balance',
+                   '$ Total Expenses',
+                   '$ Orders',
+                   '$ Check Requests',
+                   '$ Vendor Receipts',
+                   '$ In-Kind Donations',                   
+                   ])
+  for s in sites:
+    row = [s.number,
+           s.name,
+           s.sponsor,
+           s.budget,
+           s.BudgetRemaining(),
+           s.Expenses(),
+           s.order_total,
+           s.CheckRequestTotal(),
+           s.VendorReceiptTotal(),
+           s.InKindDonationTotal(),
+           ]
+    row = [unicode(f).encode('ascii', 'ignore') for f in row]
+    writer.writerow(row)
 
 # TODO: could be more complete
 def SiteExport(request):
