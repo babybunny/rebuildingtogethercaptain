@@ -12,8 +12,6 @@ import forms
 import models
 import views
 
-ORDER_EXPORT_CHECKBOX_PREFIX = 'order_export_'
-EXPORT_CSV = 'Export CSV'
 FULFILL_MULTIPLE = 'Fulfill Multiple Orders'
 SALES_TAX_RATE = 0.0925
 
@@ -32,12 +30,12 @@ def _OrderListInternal(order_sheet_id):
     if order_sheet is not None:
       q.filter('order_sheet = ', order_sheet)
   orders = list(q)
-  mass_action = {'export_csv': EXPORT_CSV,
+  mass_action = {'export_csv': views.EXPORT_CSV,
                  'fulfill_many': FULFILL_MULTIPLE}
   return {'orders': orders,
           'order_sheet': order_sheet,
-          'order_export_checkbox_prefix': 
-          ORDER_EXPORT_CHECKBOX_PREFIX,
+          'export_checkbox_prefix': 
+          views.EXPORT_CHECKBOX_PREFIX,
           'mass_action': mass_action,
           'num_being_filled': len([o for o in orders 
                                    if o.state == 'Being Filled'])
@@ -103,13 +101,13 @@ def OrderView(request, order_id):
   return common.Respond(request, 'order_fulfill', d)
   
 def OrderDeleteConfirm(request, order_sheet_id=None):
-  order_ids = _PostedOrders(request.POST)
+  order_ids = views.PostedIds(request.POST)
   return _OrderConfirmInternal(order_ids, order_sheet_id, 
                                state='Deleted')
 
 # TODO: combine two methods below once tests are OK.
 def OrderFulfillConfirm(request, order_sheet_id=None):
-  order_ids = _PostedOrders(request.POST)
+  order_ids = views.PostedIds(request.POST)
   return _OrderFulfillConfirmInternal(order_ids, order_sheet_id)
 
 def _OrderFulfillConfirmInternal(order_ids, order_sheet_id):
@@ -194,36 +192,28 @@ def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
           'should_print': options['should_print'],
           'show_logistics_details': True,
           'num_orders': len(orders),
-          'order_export_checkbox_prefix': 
-          ORDER_EXPORT_CHECKBOX_PREFIX,
+          'export_checkbox_prefix': 
+          views.EXPORT_CHECKBOX_PREFIX,
           }
 
 def OrderExport(request):
   """Export orders as CSV."""
   user, _, _ = common.GetUser(request)
-  if request.POST['submit'] == EXPORT_CSV:
+  if request.POST['submit'] == views.EXPORT_CSV:
     response = http.HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = (
       'attachment; filename=%s_orders.csv' % user.email())
     _OrderExportInternal(response, request.POST)
     return response
   elif request.POST['submit'] == FULFILL_MULTIPLE:
-    order_ids = _PostedOrders(request.POST)
+    order_ids = views.PostedIds(request.POST)
     order_sheet_id = request.POST.get('order_sheet_id')
     d = _OrderFulfillInternal(order_ids, order_sheet_id, mode='fulfill')
     return common.Respond(request, 'order_fulfill', d)
       
-def _PostedOrders(post_vars):
-  """Extract order IDs from post_vars."""
-  order_ids = []
-  for var in post_vars:
-    if var.startswith(ORDER_EXPORT_CHECKBOX_PREFIX):
-      order_ids.append(int(var[len(ORDER_EXPORT_CHECKBOX_PREFIX):]))
-  return order_ids
-  
 def _OrderExportInternal(writable, post_vars):
   """Write orders as CSV to a file-like object."""   
-  order_ids = _PostedOrders(post_vars)
+  order_ids = views.PostedIds(post_vars)
   orders = list(models.Order.get_by_id(order_ids))
   orders.sort(key=lambda o: o.site.number)
   writer = csv.writer(writable)
