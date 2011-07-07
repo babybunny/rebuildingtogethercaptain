@@ -382,7 +382,7 @@ def SiteBudgetExport(request):
   if request.POST['submit'] == EXPORT_CSV:
     response = http.HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = (
-      'attachment; filename=%s_orders.csv' % user.email())
+      'attachment; filename=%s_site_budget.csv' % user.email())
     _SiteBudgetExportInternal(response, request.POST)
     return response
       
