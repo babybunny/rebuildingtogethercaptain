@@ -830,7 +830,8 @@ class SiteExpense:
          'what': 'Fix errors below and try submitting again.'})
 
     entity.last_editor = user
-    entity.state = 'submitted'
+    if entity.state == 'new':
+      entity.state = 'submitted'
     entity.put()
     user = captain or staff
     if user: 
