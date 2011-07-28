@@ -119,7 +119,7 @@ class NewSite(BaseModel):
         def __init__(self, query):
             """query: a bound backreference like self.order_set"""
             self._query = query.filter(
-                'state != ', 'new').filter('state !=', 'Deleted')
+                'state != ', 'new').filter('state !=', 'deleted')
                         
         def Count(self):
             return self._query.count()
