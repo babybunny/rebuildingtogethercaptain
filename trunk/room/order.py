@@ -35,7 +35,7 @@ def _OrderListInternal(order_sheet_id):
   return {'orders': orders,
           'order_sheet': order_sheet,
           'export_checkbox_prefix': 
-          views.EXPORT_CHECKBOX_PREFIX,
+          views.POSTED_ID_PREFIX,
           'mass_action': mass_action,
           'num_being_filled': len([o for o in orders 
                                    if o.state == 'Being Filled'])
@@ -193,7 +193,7 @@ def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
           'show_logistics_details': True,
           'num_orders': len(orders),
           'export_checkbox_prefix': 
-          views.EXPORT_CHECKBOX_PREFIX,
+          views.POSTED_ID_PREFIX,          
           }
 
 def OrderExport(request):
