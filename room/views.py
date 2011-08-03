@@ -29,7 +29,7 @@ THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH = 50, 50
 MAP_WIDTH = 300
 MAP_HEIGHT = 200
 START_NEW_ORDER_SUBMIT = 'Start New Order'
-EXPORT_CHECKBOX_PREFIX = 'export_'
+POSTED_ID_PREFIX = 'export_'
 EXPORT_CSV = 'Export CSV'
 
 
@@ -374,7 +374,7 @@ def SiteBudget(request, search_term=None):
 
   return _EntryList(request, models.NewSite, 'site_budget', query=query, 
                     params={'export_csv': EXPORT_CSV,
-                            'export_checkbox_prefix': EXPORT_CHECKBOX_PREFIX})
+                            'export_checkbox_prefix': POSTED_ID_PREFIX})
 
 def SiteBudgetExport(request):
   """Export Site budget rows as CSV."""
@@ -390,8 +390,8 @@ def PostedIds(post_vars):
   """Extract IDs from post_vars."""
   site_ids = []
   for var in post_vars:
-    if var.startswith(EXPORT_CHECKBOX_PREFIX):
-      site_ids.append(int(var[len(EXPORT_CHECKBOX_PREFIX):]))
+    if var.startswith(POSTED_ID_PREFIX):
+      site_ids.append(int(var[len(POSTED_ID_PREFIX):]))
   return site_ids
   
 def _SiteBudgetExportInternal(writable, post_vars):
