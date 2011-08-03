@@ -73,6 +73,10 @@ div.panel table.tablesorter {
   margin-right: 0;
   margin-bottom: 5px;
 }
+div#cdbg-breakdown {
+  width: 200px;
+  position: absolute;
+}
 table.tablesorter th.header {
   padding-right: 20px;  /* leaves room for tablesorter arrows */
 }
