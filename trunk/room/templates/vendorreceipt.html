@@ -4,6 +4,15 @@
 <script type="text/javascript">
 $(function() {
   $("#id_purchase_date").datepicker();
+  var amount_pos = $('#id_amount').offset();
+  $('#cdbg-breakdown').css('top', amount_pos.top).css('left', 600);
+  $('#cdbg-breakdown').hide();
+  $('#id_amount').change(function() {
+    $('#cdbg-breakdown').show();
+  });
+  if ($('#id_amount').val()) {
+    $('#cdbg-breakdown').show();
+  }
 });
 $.datepicker.setDefaults({
    showOn: 'both',
@@ -19,13 +28,21 @@ $.datepicker.setDefaults({
 
 <h2>Submitting Vendor Receipt for Site {{ entity.site.number }}</h2>
 
-
+<div>
+  {% if user.staff and entity.site.cdbg %}
+<div id="cdbg-breakdown" class="panel">
+  <h3>CDBG categories</h3>
+  <div class="cdbg-category">
+    <span class="cdbg-label">Sundries: </span>
+    <span class="cdbg-value">  0.00</span>
+  </div>
+</div>
+  {% endif %}
 <form action="{% url room.views.VendorReceiptEdit edit_id %}" method="post">
-
 <table>  
 {{form}}
 <tr><td><input type="submit" value="Submit this Vendor Receipt"></td></tr>
 </table>
 </form>
-
+</div>
 {%endblock%}
