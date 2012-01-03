@@ -111,6 +111,9 @@ def GetUser(request, user=None):
   if user.staff:
     user.programs = PROGRAMS
     user.program_selected = staff.program_selected
+  else:
+    user.programs = []
+    user.program_selected = None
   return user, captain, staff
 
 
