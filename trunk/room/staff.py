@@ -52,6 +52,9 @@ def GoHome(request):
 
 
 def StaffHome(request):
+  user, _, staff = common.GetUser(request)
+  if not staff.program_selected:
+    return http.HttpResponseRedirect(urlresolvers.reverse(SelectProgram))
   order_sheets = list(models.OrderSheet.all())
   order_sheets.sort(key=lambda x: x.name)
   d = {'order_sheets': order_sheets,
