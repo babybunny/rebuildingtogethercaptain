@@ -11,7 +11,10 @@ from django.template import loader
 import models
 
 # National Rebuilding Day!
+# TODO: merge into PROGRAMS
 NRD = '04/30/2011'
+
+PROGRAMS = ['2011 NRD', '2012 NRD', 'Luke Test']
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
@@ -98,6 +101,9 @@ def GetUser(request, user=None):
   user.captain = captain
   staff = models.Staff.all().filter('email = ', user.email()).get()  
   user.staff = staff
+  if user.staff:
+    user.programs = PROGRAMS
+    user.program_selected = staff.program_selected
   return user, captain, staff
 
 

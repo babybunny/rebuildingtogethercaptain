@@ -10,6 +10,14 @@ body {
   font-family: Times;
   font-size: 16px;
 }
+.program {
+  font-weight: bold;
+  color: green;
+}
+.program a {
+  font-weight: normal;
+  font-size: smaller;  
+}
 .userinfo { 
   float: right;
   display: inline;

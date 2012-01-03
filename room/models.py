@@ -84,6 +84,7 @@ class NewSite(BaseModel):
     # "10001DAL" reads: 2010, #001, Daly City
     number = db.StringProperty(required=True)  
     number.unique = True
+    program = db.StringProperty()
     name = db.StringProperty()  # "Belle Haven"
     name.verbose_name = 'Recipient Name'
     # sites entered in 2010 do not have this field set explicitly
@@ -246,6 +247,7 @@ class Staff(BaseModel):
     email = db.EmailProperty()
     email.unique = True
     email.required = True
+    program_selected = db.StringProperty()
     user = db.UserProperty()
     last_welcome = db.DateTimeProperty()
     notes = db.TextProperty()
