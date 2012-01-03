@@ -9,6 +9,16 @@
   <body>
     <span class="breadcrumb">
       <b>ROOM System</b>
+      <span class="program">
+      {% if user.program_selected %}
+      {{ user.program_selected }}      
+      {% else %}
+      {{ user.programs.0 }}
+      {% endif %}
+      {% if user.programs %}
+      <a href="{% url room.staff.SelectProgram %}">change</a>
+      {% endif %}
+      </span>
       {% if user.staff %}
       | <a href="{% url room.staff.StaffHome %}">Staff Home</a>
       {% endif %}
