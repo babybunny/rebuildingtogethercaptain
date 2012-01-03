@@ -149,7 +149,33 @@ class NewSite(BaseModel):
     def InKindDonations(self):
         return self.ActiveItems(self.inkinddonation_set)
 
+    def ProgramFromNumber(self):
+        year = '20' + self.number[0:2]
+        mode = self.number[2]
+        program = None
+        if mode == '0':
+            program = year + ' NRD'
+        elif mode == '1':
+            program = year + ' NRD'
+        elif mode == '3':
+            program = year + ' Misc'
+        elif mode == '5':
+            program = year + ' Safe'
+        elif mode == '6':
+            program = year + ' Safe'
+        elif mode == '7':
+            program = year + ' Energy'
+        elif mode == '8':
+            program = year + ' Teambuild'
+        elif mode == '9':
+            program = year + ' Youth'
+        else:
+            logging.warn('no program for site number %s', self.number)
+        return program
+
     def put(self, *a, **k):
+        if not self.program:
+            self.program = self.ProgramFromNumber()
         prefixes = set()
         for f in self.name, self.applicant, self.street:
             if not f:
@@ -372,6 +398,7 @@ class Order(BaseModel):
     """A Captain can make an Order for a list of Items."""
     site = db.ReferenceProperty(NewSite, required=True)
     order_sheet = db.ReferenceProperty(OrderSheet, required=True)
+    program = db.StringProperty()
     sub_total = db.FloatProperty()
     sales_tax = db.FloatProperty()  # Deprecated
     grand_total = db.FloatProperty()  # Deprecated.  Use GrandTotal()
@@ -386,6 +413,10 @@ class Order(BaseModel):
     created_by = db.UserProperty(auto_current_user_add=True)
     modified = db.DateTimeProperty(auto_now=True)
     last_editor = db.UserProperty(auto_current_user=True)
+
+    def put(self, *a, **k):
+        self.program = self.site.program
+        super(BaseModel, self).put(*a, **k)        
 
     def __unicode__(self):
         return ' '.join((self.site.number, self.site.name, 

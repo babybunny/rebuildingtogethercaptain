@@ -209,6 +209,7 @@ def _SiteListInternal(request, site=None, new_order_form=None):
     d['site_list_detail'] = True
     d['start_new_order_submit'] = START_NEW_ORDER_SUBMIT
   else:
+    # TODO: can we remove this view?
     template = 'site_list_all'
     entries = list(models.NewSite.all())
     entries.sort(key=lambda x: x.number)
@@ -349,7 +350,10 @@ def SiteList(request):
   but we need special handling for sitecaptains.
   """
   user, captain, staff = common.GetUser(request)
-  entries = list(models.NewSite.all().order('number'))
+  query = models.NewSite.all().order('number')
+  if staff and staff.program_selected:
+    query.filter('program =', staff.program_selected)
+  entries = list(query)
   sitecaptains_by_site = {}
   for sc in models.SiteCaptain.all():
     sitecaptains_by_site.setdefault(sc.site.key().id(), []).append(sc)
@@ -369,6 +373,8 @@ def SiteBudget(request, search_term=None):
     return http.HttpResponse(status=400)  
 
   query = models.NewSite.all()
+  if staff and staff.program_selected:
+    query.filter('program =', staff.program_selected)
   if search_term is not None:
     query.filter('search_prefixes = ', search_term.lower())
 
@@ -431,7 +437,10 @@ def _SiteBudgetExportInternal(writable, post_vars):
 def SiteExport(request):
   """Export all Sites as CSV."""
   user, _, _ = common.GetUser(request)
-  sites = list(models.NewSite.all().order('number'))
+  query = models.NewSite.all().order('number')
+  if staff and staff.program_selected:
+    query.filter('program =', staff.program_selected)
+  sites = list(query)
   response = http.HttpResponse(mimetype='text/csv')
   response['Content-Disposition'] = 'attachment; filename=room_sites.csv'
   writer = csv.writer(response)
