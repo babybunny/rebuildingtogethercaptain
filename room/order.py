@@ -19,17 +19,19 @@ SALES_TAX_RATE = 0.0925
 def OrderList(request, order_sheet_id=None):
   """Request / -- show all orders."""
   user, _, _ = common.GetUser(request)
-  d = _OrderListInternal(order_sheet_id)
+  d = _OrderListInternal(order_sheet_id, user.program_selected)
   return common.Respond(request, 'order_list', d)
 
-def _OrderListInternal(order_sheet_id):
-  q = models.Order.all().filter('state != ', 'new')
+def _OrderListInternal(order_sheet_id, program=None):
+  query = models.Order.all().filter('state != ', 'new')
+  if program is not None:
+    query.filter('program =', program)
   order_sheet = None
   if order_sheet_id:
     order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
     if order_sheet is not None:
-      q.filter('order_sheet = ', order_sheet)
-  orders = list(q)
+      query.filter('order_sheet = ', order_sheet)
+  orders = list(query)
   mass_action = {'export_csv': views.EXPORT_CSV,
                  'fulfill_many': FULFILL_MULTIPLE}
   return {'orders': orders,
@@ -44,15 +46,17 @@ def _OrderListInternal(order_sheet_id):
 def OrderReconcile(request, order_sheet_id=None):
   """Reconcile filled orders."""
   user, _, _ = common.GetUser(request)
-  d = _OrderReconcileInternal(order_sheet_id)
+  d = _OrderReconcileInternal(order_sheet_id, user.program_selected)
   return common.Respond(request, 'order_reconcile', d)
 
-def _OrderReconcileInternal(order_sheet_id):
-  q = models.Order.all().filter('state IN ', ['Being Filled', 'Reconciled'])
+def _OrderReconcileInternal(order_sheet_id, program=None):
+  query = models.Order.all().filter('state IN ', ['Being Filled', 'Reconciled'])
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is not None:
-    q.filter('order_sheet = ', order_sheet)
-  orders = list(q)
+    query.filter('order_sheet = ', order_sheet)
+  if program is not None:
+    query.filter('program =', program)
+  orders = list(query)
 
   return {'orders': orders,
           'order_sheet': order_sheet,

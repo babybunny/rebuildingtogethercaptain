@@ -326,32 +326,13 @@ def FixProgramFromNumber(request):
     if not site.number:
       logging.error('site has no number: %s', site)
       continue
-    if site.program:
-      continue
-    year = '20' + site.number[0:2]
-    mode = site.number[2]
-    program = None
-    if mode == '0':
-      program = year + ' NRD'
-    elif mode == '1':
-      program = year + ' NRD'
-    elif mode == '3':
-      program = year + ' Misc'
-    elif mode == '5':
-      program = year + ' Safe'
-    elif mode == '6':
-      program = year + ' Safe'
-    elif mode == '7':
-      program = year + ' Energy'
-    elif mode == '8':
-      program = year + ' Teambuild'
-    elif mode == '9':
-      program = year + ' Youth'
-    else:
-      logging.warn('no fix for site number %s', site.number)
+    program = site.ProgramFromNumber()
     if program:
       logging.info('fixing program to %s for site %s', program, site.number)
       site.program = program
       site.put()
+    for order in site.order_set:
+      if order.program is None:
+        order.put()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
       
