@@ -60,6 +60,19 @@ def StaffHome(request):
   return common.Respond(request, 'staff_home', d)
 
 
+def SelectProgram(request, program=None):
+  user, _, staff = common.GetUser(request)
+  if program is None:
+    what_you_are_doing = "Select a Program to work on"
+    return common.Respond(request, 'select_program', locals())
+
+  if program not in common.PROGRAMS:
+    return http.HttpResponseError('program %s not in PROGRAMS' % program)
+  staff.program_selected = program
+  staff.put()
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
+
 def SiteJump(request):
   user, _, _ = common.GetUser(request)
   d = {'user': user}

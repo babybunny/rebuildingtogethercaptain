@@ -5,6 +5,8 @@ urlpatterns = patterns(
     (r'^/$', 'GoHome'),
     (r'^$', 'GoHome'),
     (r'^staff_home$', 'StaffHome'),
+    (r'^select_program$', 'SelectProgram'),
+    (r'^select_program/(.+)/$', 'SelectProgram'),
     (r'^scoreboard$', 'Scoreboard'),
     (r'^scoreboard/orders$', 'ScoreboardOrders'),
     (r'^scoreboard/captains$', 'ScoreboardCaptains'),

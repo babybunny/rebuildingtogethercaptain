@@ -1,0 +1,21 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | Select Program
+{% endblock %}
+{%block body%}
+
+<h2>{{ what_you_are_doing }}</h2>
+
+<ul>
+{% for program in user.programs %}
+<li>
+  Click to select 
+  <a href="{% url room.staff.SelectProgram program %}">
+    {{ program }}
+  </a>
+</li>
+{% endfor %}
+</ul>
+
+
+{%endblock%}
