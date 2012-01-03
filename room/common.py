@@ -14,7 +14,14 @@ import models
 # TODO: merge into PROGRAMS
 NRD = '04/30/2011'
 
-PROGRAMS = ['2011 NRD', '2012 NRD', 'Luke Test']
+PROGRAMS = [
+  '2012 NRD', 
+  '2011 NRD', 
+  '2011 Misc',
+  '2011 Safe',
+  '2011 Energy',
+  '2011 Teambuild',
+  '2011 Youth']
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'

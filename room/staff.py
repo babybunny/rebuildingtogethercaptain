@@ -89,6 +89,16 @@ def SiteJump(request):
       urlresolvers.reverse(views.SiteView, args=[site.key().id()]))
     
 
+def AllProgramsScoreboard(request):
+    site_programs = {}
+    for site in models.NewSite.all():
+      site_programs[site.program] = site_programs.get(site.program, 0) + 1
+    logging.info(site_programs)
+    programs = ((p, site_programs.get(p, 0)) for p in common.PROGRAMS)
+    missing_programs = set(site_programs) - set(common.PROGRAMS)
+    return common.Respond(request, 'all_programs_scoreboard', locals())
+
+
 def Scoreboard(request):
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
@@ -310,3 +320,38 @@ def DeleteEmptyOrderItems(request):
       if oi.IsEmpty():
         oi.delete()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
+def FixProgramFromNumber(request):
+  for site in models.NewSite.all():
+    if not site.number:
+      logging.error('site has no number: %s', site)
+      continue
+    if site.program:
+      continue
+    year = '20' + site.number[0:2]
+    mode = site.number[2]
+    program = None
+    if mode == '0':
+      program = year + ' NRD'
+    elif mode == '1':
+      program = year + ' NRD'
+    elif mode == '3':
+      program = year + ' Misc'
+    elif mode == '5':
+      program = year + ' Safe'
+    elif mode == '6':
+      program = year + ' Safe'
+    elif mode == '7':
+      program = year + ' Energy'
+    elif mode == '8':
+      program = year + ' Teambuild'
+    elif mode == '9':
+      program = year + ' Youth'
+    else:
+      logging.warn('no fix for site number %s', site.number)
+    if program:
+      logging.info('fixing program to %s for site %s', program, site.number)
+      site.program = program
+      site.put()
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+      

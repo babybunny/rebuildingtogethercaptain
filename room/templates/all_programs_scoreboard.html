@@ -1,0 +1,44 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | All Programs Scoreboard
+{% endblock %}
+{%block body%}
+<h2>Scoreboard for all Programs</h2>
+
+{% if missing_programs %}
+<p>
+  The following appear in sites but are missing from common.PROGRAMS: 
+  <ul>
+    {% for m in  missing_programs %}
+    <li>{{ m }}</li>
+    {% endfor %}
+  </ul>
+</p>
+{% endif %}
+
+<p>
+The following appear in common.PROGRAMS:
+
+<table>
+  <tr>
+    <th>
+      Program
+    </th>
+    <th>
+      # Sites
+    </th>
+  </tr>
+  {% for program, sites in programs %}
+  <tr>
+    <td>
+      {{ program }}
+    </td>
+    <td>
+      {{ sites }}
+    </td>
+  </tr>
+{% endfor %}
+</table>
+
+
+{%endblock%}

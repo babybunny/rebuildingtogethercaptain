@@ -126,10 +126,18 @@ $(function() {
 {%block about_this_page %}
 <h1>Hello RTP Staff!</h1>
 <p>
-  This is the Staff Page.  From here you can view or edit anything in the system.  Also, check out the <a href="{% url room.staff.Scoreboard %}">Scoreboard</a>.
+  This is the Staff Page.  From here you can view or edit anything in the system.  
 </p>
 <p>
-  To create or change orders: <a href="{% url room.views.SiteList %}">View the list of Sites</a>, and choose the site from there.
+  Also, check out the 
+  <a href="{% url room.staff.Scoreboard %}">
+    {{ user.staff.program_selected }} Scoreboard
+  </a> 
+  or the 
+  <a href="{% url room.staff.AllProgramsScoreboard %}">
+    All Programs Scoreboard
+  </a>.
+  
 </p>
 {% endblock %}
 {%block body%}
