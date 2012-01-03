@@ -7,6 +7,7 @@ urlpatterns = patterns(
     (r'^staff_home$', 'StaffHome'),
     (r'^select_program$', 'SelectProgram'),
     (r'^select_program/(.+)/$', 'SelectProgram'),
+    (r'^all_programs_scoreboard$', 'AllProgramsScoreboard'),
     (r'^scoreboard$', 'Scoreboard'),
     (r'^scoreboard/orders$', 'ScoreboardOrders'),
     (r'^scoreboard/captains$', 'ScoreboardCaptains'),
@@ -21,6 +22,7 @@ urlpatterns = patterns(
     (r'^admin/search_prefix', 'RecomputeSearchPrefixes'),
     (r'^admin/order_logistics', 'RecomputeOrderLogistics'),
     (r'^admin/delete_empty_order_items', 'DeleteEmptyOrderItems'),
+    (r'^admin/fix_program', 'FixProgramFromNumber'),
     )
 
 urlpatterns += patterns(
