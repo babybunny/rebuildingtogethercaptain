@@ -79,10 +79,14 @@ def _TryToSaveForm(save_form):
   return not errors
 
 
-def _Autocomplete(request, model_class):
+def _Autocomplete(request, model_class, program_filter=False):
   prefix = str(request.GET['term']).lower()
+  
   items = model_class.all()
   items.filter('search_prefixes = ', prefix)
+  if program_filter:
+    user, _, _ = common.GetUser(request)  
+    items.filter('program =', user.program_selected)
   matches = {}
   for c in items:
     label = c.Label()
@@ -323,7 +327,7 @@ def SitePut(request, site_id):
 
 def SiteAutocomplete(request):
   """Return JSON to autocomplete a Site ID based on a prefix."""
-  return _Autocomplete(request, models.NewSite)
+  return _Autocomplete(request, models.NewSite, program_filter=True)
 
 
 def SiteAnnouncement(request, site_id):
