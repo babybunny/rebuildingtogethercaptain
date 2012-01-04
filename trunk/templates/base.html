@@ -34,7 +34,12 @@
       {% else %}
       <b>{{user.nickname}} &lt;{{user.email}}&gt;</b>
       {% endifequal %}
-      {%if is_admin%} | <a href="/_ah/admin">Admin</a>{%endif%}
+      {%if show_admin_link%}
+      | <a href="/_ah/admin">Admin</a>
+      {%endif%}
+      {%if show_dashboard_link%}
+      | <a href="https://appengine.google.com/dashboard?&app_id=rebuildingtogethercaptain">Dashboard</a>
+      {%endif%}
       {%if sign_out%} | <a href="{{sign_out}}">Sign out</a>{%endif%}
       {% else %}
       {%if sign_in%}<a href="{{sign_in}}">Sign in</a>{%endif%}

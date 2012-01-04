@@ -150,8 +150,10 @@ def Respond(request, template_name, params=None):
   if user:
     params['user'] = user
     params['sign_out'] = users.CreateLogoutURL('/')
-    params['is_admin'] = (users.IsCurrentUserAdmin() and
-                          'Dev' in os.getenv('SERVER_SOFTWARE'))
+    params['show_admin_link'] = (users.IsCurrentUserAdmin() and
+                                 'Dev' in os.getenv('SERVER_SOFTWARE'))
+    params['show_dashboard_link'] = (users.IsCurrentUserAdmin() and
+                                     'Dev' not in os.getenv('SERVER_SOFTWARE'))
   else:
     params['sign_in'] = users.CreateLoginURL(request.path)
   params['help_contact'] = HELP_CONTACT
