@@ -100,18 +100,23 @@ def AllProgramsScoreboard(request):
 
 
 def Scoreboard(request):
+  user, _, _ = common.GetUser(request)  
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
     'last_welcome != ', None).count()
   pct_captains_active = num_captains_active * 100.0 / num_captains
   num_captains_with_tshirt = models.Captain.all().filter(
     'tshirt_size != ', None).count()
-  sites = [s for s in models.NewSite.all() if 'ZZZ' not in s.number]
+  
+  query = models.NewSite.all().order('number')
+  query.filter('program =', user.program_selected)
+  sites = list(query)
   num_sites = len(sites)
   total_site_budget = sum(s.budget for s in sites if s.budget)
   return common.Respond(request, 'scoreboard', locals())
 
 def _ScoreboardUsers(user_cls):
+  user, _, _ = common.GetUser(request)  
   user_activity = []
   welcomes = user_cls.all().filter(
     'last_welcome != ', None).order('-last_welcome').fetch(20)
@@ -120,8 +125,9 @@ def _ScoreboardUsers(user_cls):
     equery = models.Order.all().filter('state IN ', 
                                        ('Received', 'submitted', 
                                         'Being Filled'))
+    equery.filter('program =', user.program_selected)
     equery.filter('created_by =', u)
-    orders = filter(lambda i: 'ZZZ' not in i.site.number, list(equery))
+    orders = list(equery)
     recent_orders = filter(lambda o: o.created > c.last_welcome, orders)
     user_activity.append((c, len(orders), len(recent_orders)))
   return user_activity
@@ -137,9 +143,11 @@ def ScoreboardStaff(request):
                          'name': 'Staff'})
 
 def ScoreboardOrders(request):
+  user, _, _ = common.GetUser(request)  
   activity = []
   activity_rows = [
-    ('All Orders', models.Order.all(), 
+    ('All Orders', 
+     models.Order.all().filter('program =', user.program_selected),
      urlresolvers.reverse(order.OrderList)),
     ('Check Requests', models.CheckRequest.all(),
      urlresolvers.reverse(views.CheckRequestList)),
@@ -151,9 +159,10 @@ def ScoreboardOrders(request):
   order_sheets = models.OrderSheet.all().order('name')
   order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
   for os in order_sheets:
-      activity_rows.append(
-      ('Form: %s' % os.name[0:20], 
-       models.Order.all().filter('order_sheet =', os),
+    query = models.Order.all().filter('program =', user.program_selected)
+    query.filter('order_sheet =', os)
+    activity_rows.append(
+      ('Form: %s' % os.name[0:20], query,
        urlresolvers.reverse(order.OrderList, args=[os.key().id()])))
     
   now = datetime.datetime.now()
@@ -186,13 +195,18 @@ def ScoreboardOrders(request):
 
 
 def SitesWithoutOrder(request, order_sheet_id):
+  user, _, _ = common.GetUser(request)  
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
     return http.HttpResponseNotFound(
       'No order_sheet exists with that key (%r)' % order_sheet_id)
-  all_sites = list(models.NewSite.all())
+  query = models.NewSite.all()
+  query.filter('program =', user.program_selected)
+  all_sites = list(query)
+  
   orders = models.Order.all().filter('order_sheet =', order_sheet)
   orders.filter('state != ', 'new')
+  orders.filter('program =', user.program_selected)
   order_sites = [o.site for o in orders]
   sites_without_order = [s for s in all_sites if s not in order_sites]
   sites_without_order.sort(key=lambda s: s.number)
@@ -269,6 +283,7 @@ def FixLastEditor(request):
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 def AddStandardKitOrder(request, prefix):
+  user, _, _ = common.GetUser(request)    
   skos = models.OrderSheet.all().filter('code = ', 'SDK').get() 
   if not skos:
     logging.warn('can not find SDK order sheet')
@@ -279,7 +294,8 @@ def AddStandardKitOrder(request, prefix):
     logging.warn('can not find item for SDK order sheet')
     return http.HttpResponse(
       urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
-  for site in models.NewSite.all():
+
+  for site in models.NewSite.all().filter('program =', user.program_selected):
     if not site.number.startswith(prefix):
       logging.info('skipping site %r because wrong prefix %r', 
                    site.number, prefix)
