@@ -115,7 +115,7 @@ def Scoreboard(request):
   total_site_budget = sum(s.budget for s in sites if s.budget)
   return common.Respond(request, 'scoreboard', locals())
 
-def _ScoreboardUsers(user_cls):
+def _ScoreboardUsers(user_cls, request):
   user, _, _ = common.GetUser(request)  
   user_activity = []
   welcomes = user_cls.all().filter(
@@ -133,14 +133,16 @@ def _ScoreboardUsers(user_cls):
   return user_activity
 
 def ScoreboardCaptains(request):
-  return common.Respond(request, 'scoreboard_users', 
-                        {'user_activity': _ScoreboardUsers(models.Captain),
-                         'name': 'Captain'})
+  return common.Respond(
+    request, 'scoreboard_users', 
+    {'user_activity': _ScoreboardUsers(models.Captain, request),
+     'name': 'Captain'})
 
 def ScoreboardStaff(request):
-  return common.Respond(request, 'scoreboard_users', 
-                        {'user_activity': _ScoreboardUsers(models.Staff),
-                         'name': 'Staff'})
+  return common.Respond(
+    request, 'scoreboard_users', 
+    {'user_activity': _ScoreboardUsers(models.Staff, request),
+     'name': 'Staff'})
 
 def ScoreboardOrders(request):
   user, _, _ = common.GetUser(request)  
@@ -149,11 +151,14 @@ def ScoreboardOrders(request):
     ('All Orders', 
      models.Order.all().filter('program =', user.program_selected),
      urlresolvers.reverse(order.OrderList)),
-    ('Check Requests', models.CheckRequest.all(),
+    ('Check Requests', 
+     models.CheckRequest.all().filter('program =', user.program_selected),
      urlresolvers.reverse(views.CheckRequestList)),
-    ('Vendor Receipts', models.VendorReceipt.all(),
+    ('Vendor Receipts', 
+     models.VendorReceipt.all().filter('program =', user.program_selected),
      urlresolvers.reverse(views.VendorReceiptList)),
-    ('In-kind Donations', models.InKindDonation.all(),
+    ('In-kind Donations', 
+     models.InKindDonation.all().filter('program =', user.program_selected),
      urlresolvers.reverse(views.InKindDonationList)),
     ]
   order_sheets = models.OrderSheet.all().order('name')
@@ -347,8 +352,10 @@ def FixProgramFromNumber(request):
       logging.info('fixing program to %s for site %s', program, site.number)
       site.program = program
       site.put()
-    for order in site.order_set:
-      if order.program is None:
-        order.put()
+    for child in (site.order_set, site.checkrequest_set, 
+                  site.vendorreceipt_set, site.inkinddonation_set):
+      for obj in child:
+        if obj.program is None:
+          obj.put()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
       

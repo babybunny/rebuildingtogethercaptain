@@ -49,7 +49,7 @@ class Captain(BaseModel):
                 for i in xrange(1, 7):                    
                     prefixes.add(self.email[:i])
         self.search_prefixes = [p.lower() for p in prefixes]
-        logging.info('prefixes for %s: %s', self.name, self.search_prefixes)
+        logging.debug('prefixes for %s: %s', self.name, self.search_prefixes)
         super(BaseModel, self).put(*a, **k)
 
     def __unicode__(self):
@@ -618,6 +618,7 @@ class CheckRequest(BaseModel):
     """A Check Request is a request for reimbursement."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
+    program = db.StringProperty()
     payment_date = db.DateProperty()
     labor_amount = db.FloatProperty(default=0.0)
     labor_amount.verbose_name = 'Labor Amount ($)'
@@ -644,6 +645,10 @@ class CheckRequest(BaseModel):
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
 
+    def put(self, *a, **k):
+        self.program = self.site.program
+        super(BaseModel, self).put(*a, **k)        
+
     def Total(self):
         return self.labor_amount + self.materials_amount + self.food_amount
     
@@ -652,6 +657,7 @@ class VendorReceipt(BaseModel):
     """A Vendor Receipt is a report of a purchase outside of ROOMS."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
+    program = db.StringProperty()
     purchase_date = db.DateProperty()
     vendor = db.StringProperty()
     amount = db.FloatProperty()
@@ -667,6 +673,10 @@ class VendorReceipt(BaseModel):
     def name(self):
         return self.vendor
 
+    def put(self, *a, **k):
+        self.program = self.site.program
+        super(BaseModel, self).put(*a, **k)        
+
     def Total(self):
         return self.amount or 0
 
@@ -675,6 +685,7 @@ class InKindDonation(BaseModel):
     """An In-kind donation to a site."""
     site = db.ReferenceProperty(NewSite)
     captain = db.ReferenceProperty(Captain)
+    program = db.StringProperty()
     donation_date = db.DateProperty()
     donor = db.StringProperty()
     donor_phone = db.StringProperty()
@@ -697,6 +708,10 @@ class InKindDonation(BaseModel):
     @property 
     def name(self):
         return self.donor
+
+    def put(self, *a, **k):
+        self.program = self.site.program
+        super(BaseModel, self).put(*a, **k)        
 
     def Total(self):
         return self.labor_amount + self.materials_amount
