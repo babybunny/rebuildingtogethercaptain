@@ -355,6 +355,7 @@ def SiteList(request):
     query.filter('program =', staff.program_selected)
   entries = list(query)
   sitecaptains_by_site = {}
+  # TODO: this is fetching too many - we only need those for the current program
   for sc in models.SiteCaptain.all():
     sitecaptains_by_site.setdefault(sc.site.key().id(), []).append(sc)
   for s in entries:
