@@ -12,7 +12,17 @@ indexes:
 
 - kind: CheckRequest
   properties:
+  - name: program
+  - name: state
+
+- kind: CheckRequest
+  properties:
   - name: site
+  - name: state
+
+- kind: InKindDonation
+  properties:
+  - name: program
   - name: state
 
 - kind: InKindDonation
@@ -71,6 +81,11 @@ indexes:
   properties:
   - name: site
   - name: captain
+
+- kind: VendorReceipt
+  properties:
+  - name: program
+  - name: state
 
 - kind: VendorReceipt
   properties:
