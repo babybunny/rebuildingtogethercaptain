@@ -169,6 +169,8 @@ class NewSite(BaseModel):
             program = year + ' Teambuild'
         elif mode == '9':
             program = year + ' Youth'
+        elif mode == 'Z':
+            program = year + ' Test'
         else:
             logging.warn('no program for site number %s', self.number)
         return program
