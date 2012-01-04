@@ -776,6 +776,9 @@ class SiteExpense:
       site = models.NewSite.get_by_id(int(site_id))
       query.filter('site = ', site)
       params['which_site'] = 'Site ' + site.number
+    else:
+      user, _, _ = common.GetUser(request)  
+      query.filter('program =', user.program_selected)
     return _EntryList(request, cls.model, 'site_expense_list',
                       params=params, query=query)
   
