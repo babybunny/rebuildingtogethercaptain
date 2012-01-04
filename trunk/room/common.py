@@ -16,12 +16,20 @@ NRD = '04/30/2011'
 
 PROGRAMS = [
   '2012 NRD', 
+  '2012 Misc',
+  '2012 Safe',
+  '2012 Energy',
+  '2012 Teambuild',
+  '2012 Youth',
   '2011 NRD', 
   '2011 Misc',
   '2011 Safe',
   '2011 Energy',
   '2011 Teambuild',
-  '2011 Youth']
+  '2011 Youth',
+  '2011 Test',
+  '2010 NRD',
+  ]
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
