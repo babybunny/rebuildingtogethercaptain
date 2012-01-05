@@ -27,13 +27,15 @@ function numKeys(o) {
 }
 
 function autocomplete(request, callback, url, input_selector, error_selector) {
+  $(error_selector).html('<i>Searching {{ user.program_selected }} for <b>' 
+    + request.term + '</b></i>');
   $.getJSON(url, {term: request.term},
     function (data) {
       var len = numKeys(data);
       if (len == 0) {
         $(error_selector).html(
-          '<i>Sorry, can&#39;t find anything starting with ' + 
-          request.term + '</i>');
+          '<i>Sorry, no results in {{ user.program_selected }} for <b>' + 
+          request.term + '</b></i>');
       } else {
         $(error_selector).html(
           '<i>Found ' + len + ' results for <strong>' + 
