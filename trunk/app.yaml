@@ -23,9 +23,14 @@ handlers:
   script: main.py
   login: required
 
+- url: /_ah/warmup
+  script: main.py
+
 - url: /.*
   script: main.py
 
 builtins:
 - datastore_admin: on
 
+inbound_services:
+- warmup
