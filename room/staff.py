@@ -230,20 +230,20 @@ def DeleteEmptyOrderItems(request):
         oi.delete()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
-def FixProgramFromNumber(request):
-  for site in models.NewSite.all():
-    if not site.number:
-      logging.error('site has no number: %s', site)
-      continue
+def FixProgramFromNumber(request, site_number=None):
+  if site_number is None:
+    for site in models.NewSite.all():
+      taskqueue.add(url=urlresolvers.reverse(FixProgramFromNumber,
+                                             args=[site.number]))
+    return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+  site = models.NewSite.all().filter('number =', site_number).get()
+  if site and site.number:
     program = site.ProgramFromNumber()
-    if program:
-      logging.info('fixing program to %s for site %s', program, site.number)
+    if program and program != site.program:
+      logging.info('fixing program from %s to %s for site %s', 
+                   site.program, program, site.number)
       site.program = program
       site.put()
-    for child in (site.order_set, site.checkrequest_set, 
-                  site.vendorreceipt_set, site.inkinddonation_set):
-      for obj in child:
-        if obj.program is None:
-          obj.put()
-  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+      site.SaveTheChildren()
+  return http.HttpResponse('OK')
       

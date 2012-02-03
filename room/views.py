@@ -467,7 +467,8 @@ def SiteExport(request):
 
 def SiteListDebug(request):
   """Request / show all Sites in a debug mode."""
-  return _EntryList(request, models.NewSite, 'site_debug')
+  return _EntryList(request, models.NewSite, 'site_debug', 
+                    query=models.NewSite.all().order('number'))
 
 def CaptainList(request):
   """Request / show all Captains.
