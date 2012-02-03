@@ -175,9 +175,14 @@ class NewSite(BaseModel):
             logging.warn('no program for site number %s', self.number)
         return program
 
+    def SaveTheChildren(self):
+      for child in (self.order_set, self.checkrequest_set, 
+                    self.vendorreceipt_set, self.inkinddonation_set):
+        for obj in child:
+          obj.put()
+
     def put(self, *a, **k):
-        if not self.program:
-            self.program = self.ProgramFromNumber()
+        self.program = self.ProgramFromNumber()
         prefixes = set()
         for f in self.name, self.applicant, self.street:
             if not f:
@@ -197,6 +202,7 @@ class NewSite(BaseModel):
         self.search_prefixes = [p.lower() for p in prefixes]
         logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
         super(BaseModel, self).put(*a, **k)
+        self.SaveTheChildren()
 
     def Label(self):
         return "%s %s" % (self.number, self.name)

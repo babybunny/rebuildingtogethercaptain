@@ -17,7 +17,8 @@ urlpatterns = patterns(
     (r'^admin/search_prefix', 'RecomputeSearchPrefixes'),
     (r'^admin/order_logistics', 'RecomputeOrderLogistics'),
     (r'^admin/delete_empty_order_items', 'DeleteEmptyOrderItems'),
-    (r'^admin/fix_program', 'FixProgramFromNumber'),
+    (r'^admin/fix_program$', 'FixProgramFromNumber'),
+    (r'^admin/fix_program/(.+)/$', 'FixProgramFromNumber'),
     )
 
 urlpatterns += patterns(
