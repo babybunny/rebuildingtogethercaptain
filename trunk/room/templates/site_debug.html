@@ -1,0 +1,68 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function() {
+  $("table.tablesorter").tablesorter({
+  });
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Sites (debug)
+{% endblock %}
+{%block about_this_page %}
+<h2>All Sites (debug mode)</h2>
+{%endblock%}
+{%block body%}
+<table class="list tablesorter" id="site_list">
+  <thead>
+    <tr>
+      <th>Number 
+      <br>
+      (click to view)
+      </th>
+      <th>Program</th>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Orders</th>
+      <th>Check Requests</th>
+      <th>Vendor Receipts</th>
+      <th>Donations</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for site in entries %}
+    <tr>
+      <td>
+	<span class="sortorder">{{ site.number }}</span>
+	<a href="{% url room.views.SiteView site.key.id %}">
+	  {{site.number|escape}}
+	</a>
+      </td>
+      <td>
+	{{ site.program }}
+      </td>
+      <td>
+	{{ site.name }}
+      </td>
+      <td>
+	{{ site.StreetAddress }}
+      </td>
+      <td>
+	{{ site.order_set.count }}
+      </td>
+      <td>
+	{{ site.checkrequest_set.count }}
+      </td>
+      <td>
+	{{ site.vendorreceipt_set.count }}
+      </td>
+      <td>
+	{{ site.inkinddonation_set.count }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%endblock%}

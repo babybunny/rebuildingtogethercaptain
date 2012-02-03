@@ -465,6 +465,9 @@ def SiteExport(request):
                      ])
   return response
 
+def SiteListDebug(request):
+  """Request / show all Sites in a debug mode."""
+  return _EntryList(request, models.NewSite, 'site_debug')
 
 def CaptainList(request):
   """Request / show all Captains.
