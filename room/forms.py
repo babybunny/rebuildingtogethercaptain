@@ -80,7 +80,7 @@ class NewSiteForm(djangoforms.ModelForm):
         help_text = models.NewSite.city_state_zip.help_text)
     class Meta:
          model = models.NewSite
-         exclude = ['search_prefixes']
+         exclude = ['search_prefixes', 'program']
 
 
 class CaptainSiteForm(djangoforms.ModelForm):

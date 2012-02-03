@@ -10,6 +10,16 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Captain
+  properties:
+  - name: program
+  - name: name
+
+- kind: Captain
+  properties:
+  - name: programs
+  - name: name
+
 - kind: CheckRequest
   properties:
   - name: program

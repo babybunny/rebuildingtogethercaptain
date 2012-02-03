@@ -48,6 +48,7 @@ urlpatterns += patterns(
 
     (r'^site$', 'SiteList'),
     (r'^site/list/$', 'SiteList'),
+    (r'^site/debug/$', 'SiteListDebug'),
     (r'^site/list/(\d+)/$', 'SiteView'),
     (r'^site/list/(\w+)/$', 'SiteListByNumber'),
     (r'^site/expenses/(\d+)/$', 'SiteExpenses'),
