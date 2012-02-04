@@ -133,7 +133,7 @@ class OrderForm(djangoforms.ModelForm):
         exclude = ['last_editor', 'created', 'created_by', 
                    'modified', 'order_sheet', 
                    'sub_total', 'sales_tax', 'grand_total', 'state', 
-                   ]
+                   'program']
 
 
 class CaptainOrderForm(djangoforms.ModelForm):
@@ -145,7 +145,7 @@ class CaptainOrderForm(djangoforms.ModelForm):
         exclude = ['last_editor', 'created', 'created_by', 
                    'modified', 'order_sheet', 
                    'sub_total', 'sales_tax', 'grand_total', 'state', 
-                   'captain', 'site']
+                   'captain', 'site', 'program']
 
 
 class NewOrderForm(djangoforms.ModelForm):    
@@ -155,7 +155,7 @@ class NewOrderForm(djangoforms.ModelForm):
         models.OrderSheet, query=models.OrderSheet.all().order('name'))
     class Meta:
         model = models.Order
-        fields = ['site', 'order_sheet']
+        fields = ['site', 'order_sheet', 'program']
 
 
 class DeliveryForm(djangoforms.ModelForm):
@@ -215,7 +215,7 @@ class CheckRequestForm(SiteExpenseForm):
     description = forms.CharField(required=True, widget=forms.Textarea)
     class Meta:
         model = models.CheckRequest
-        exclude = ['last_editor', 'modified']
+        exclude = ['last_editor', 'modified', 'program']
 
 
 class VendorReceiptForm(SiteExpenseForm):
@@ -225,7 +225,7 @@ class VendorReceiptForm(SiteExpenseForm):
     amount = forms.FloatField(required=True)
     class Meta:
         model = models.VendorReceipt
-        exclude = ['last_editor', 'modified']
+        exclude = ['last_editor', 'modified', 'program']
 
 
 class InKindDonationForm(SiteExpenseForm):
@@ -235,4 +235,4 @@ class InKindDonationForm(SiteExpenseForm):
     description = forms.CharField(required=True, widget=forms.Textarea)
     class Meta:
         model = models.InKindDonation
-        exclude = ['last_editor', 'modified']
+        exclude = ['last_editor', 'modified', 'program']
