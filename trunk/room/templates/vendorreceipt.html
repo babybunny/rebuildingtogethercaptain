@@ -2,7 +2,39 @@
 {% block script %}
 {% include "datepicker_script.html" %}
 <script type="text/javascript">
+var lastData;
+function setUpSupplierForm() {
+  $('#add-supplier input[type="submit"]').click(
+    function() {
+      var params = {
+        name: $('#add-supplier input[name="name"]').val(),
+        address: $('#add-supplier input[name="address"]').val()
+      };
+      $.ajax({
+        type: 'POST',
+        url: '{% url room.views.SupplierNewSimple %}',
+        data: params,
+        dataType: 'json',
+        success: function(data) {
+          lastData = data;
+          if (data['errors']) {
+            $('#add-supplier-status').html(data['errors']);
+          } else {
+            $('#add-supplier-status').html('Vendor ' + data['name'] + ' added');
+            $('#vendorreceipt_form select[name="supplier"]').append(
+              '<option value="' + data['key'] + '" selected="selected">' + 
+              data['name'] + '</option>'
+            );
+          }
+ 
+        }
+        });
+      return false;
+    });
+};
+
 $(function() {
+  setUpSupplierForm();
   $("#id_purchase_date").datepicker();
   var amount_pos = $('#id_amount').offset();
   $('#cdbg-breakdown').css('top', amount_pos.top).css('left', 600);
@@ -14,11 +46,13 @@ $(function() {
     $('#cdbg-breakdown').show();
   }
 });
+
 $.datepicker.setDefaults({
    showOn: 'both',
    buttonImageOnly: true,
    buttonImage: '/static/calendar.gif',
    buttonText: 'Calendar' });
+
 </script>
 {%endblock%}
 {% block breadcrumb %}
@@ -30,19 +64,37 @@ $.datepicker.setDefaults({
 
 <div>
   {% if user.staff and entity.site.cdbg %}
-<div id="cdbg-breakdown" class="panel">
-  <h3>CDBG categories</h3>
-  <div class="cdbg-category">
-    <span class="cdbg-label">Sundries: </span>
-    <span class="cdbg-value">  0.00</span>
+  <div id="cdbg-breakdown" class="panel">
+    <h3>CDBG categories</h3>
+    <div class="cdbg-category">
+      <span class="cdbg-label">Sundries: </span>
+      <span class="cdbg-value">  0.00</span>
+    </div>
   </div>
-</div>
   {% endif %}
-<form action="{% url room.views.VendorReceiptEdit edit_id %}" method="post">
-<table>  
-{{form}}
-<tr><td><input type="submit" value="Submit this Vendor Receipt"></td></tr>
-</table>
-</form>
+  <div id="add-supplier" style="float: right; margin-top: 150px">
+    <p id="add-supplier-status">
+      Don't see your vendor in the list?
+      <br/>
+      Add a new Vendor here.
+    </p>
+    <table>
+      {{supplier_form}}
+      <tr>
+	<td></td>
+	<td><input type="submit" value="Add new Vendor"></td></tr>
+    </table>
+  </div>
+  <div style="width: 500px">
+    <form action="{% url room.views.VendorReceiptEdit edit_id %}" 
+	  id="vendorreceipt_form" method="post">
+      <table>  
+	{{form}}
+	<tr>
+	  <td></td>
+	  <td><input type="submit" value="Submit this Vendor Receipt"></td></tr>
+      </table>
+    </form>
+  </div>
 </div>
 {%endblock%}
