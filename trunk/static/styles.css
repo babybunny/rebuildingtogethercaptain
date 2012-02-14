@@ -64,6 +64,9 @@ span.jeditable-order-item-name {
 span.attr {
   white-space: nowrap;
 }
+a.edit {
+  white-space: nowrap;
+}
 div.panel {
   padding-top: 0;
   padding-left: 5px;
