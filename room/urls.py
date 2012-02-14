@@ -39,6 +39,7 @@ urlpatterns += patterns(
     (r'^item/list$', 'ItemList'),
     (r'^item/new$', 'ItemNew'),
     (r'^item/edit/(\d+)/$', 'ItemEdit'),
+    (r'^item/price/(\d+)/$', 'ItemPrice'),
     (r'^item/picture/(\d+)/$', 'ItemPicture'),
     (r'^item/thumbnail/(\d+)/$', 'ItemThumbnail'),
 
@@ -46,6 +47,7 @@ urlpatterns += patterns(
     (r'^order_sheet/list$', 'OrderSheetList'),
     (r'^order_sheet/new$', 'OrderSheetNew'),
     (r'^order_sheet/edit/(\d+)/$', 'OrderSheetEdit'),
+    (r'^order_sheet/item_list/(\d+)/$', 'OrderSheetItemList'),
 
     (r'^site$', 'SiteList'),
     (r'^site/list/$', 'SiteList'),
