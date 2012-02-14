@@ -92,6 +92,11 @@ indexes:
   - name: site
   - name: captain
 
+- kind: Supplier
+  properties:
+  - name: active
+  - name: name
+
 - kind: VendorReceipt
   properties:
   - name: program

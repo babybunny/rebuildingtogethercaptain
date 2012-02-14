@@ -295,15 +295,16 @@ class Supplier(BaseModel):
     """A supplier of Items."""
     # TODO: fax, contact name vs. supplier name, 
     name = db.StringProperty()
+    name.unique = True
+    name.required = True
     email = db.EmailProperty()
-    email.unique = True
-    email.required = True
-    user = db.UserProperty()
     address = db.PostalAddressProperty()
     phone1 = db.PhoneNumberProperty()
     phone2 = db.PhoneNumberProperty()
     notes = db.TextProperty()
     since = db.DateProperty(auto_now_add=True)
+    active = db.StringProperty(choices=('Active', 'Inactive'), 
+                               default='Active')
 
     def __unicode__(self):
         return self.name
@@ -666,6 +667,7 @@ class VendorReceipt(BaseModel):
     program = db.StringProperty()
     purchase_date = db.DateProperty()
     vendor = db.StringProperty()
+    supplier = db.ReferenceProperty(Supplier)
     amount = db.FloatProperty()
     amount.verbose_name = 'Purchase Amount ($)'
     description = db.TextProperty()
@@ -721,3 +723,21 @@ class InKindDonation(BaseModel):
 
     def Total(self):
         return self.labor_amount + self.materials_amount
+
+class Expense(BaseModel):
+    """A generic expense."""
+    payee = db.ReferenceProperty(Supplier)
+    action = db.StringProperty(choices=('on account', 'need reimbursement'))
+
+    site = db.ReferenceProperty(NewSite)
+    captain = db.ReferenceProperty(Captain)
+    program = db.StringProperty()
+    date = db.DateProperty()
+    amount = db.FloatProperty()
+    amount.verbose_name = 'Purchase Amount ($)'
+    description = db.TextProperty()
+    state = db.StringProperty(
+        choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'), 
+        default='new')
+    last_editor = db.UserProperty()
+    modified = db.DateTimeProperty(auto_now=True)

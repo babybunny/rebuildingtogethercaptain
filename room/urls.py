@@ -81,6 +81,7 @@ urlpatterns += patterns(
     (r'^supplier$', 'SupplierList'),
     (r'^supplier/list$', 'SupplierList'),
     (r'^supplier/new$', 'SupplierNew'),
+    (r'^supplier/new-simple$', 'SupplierNewSimple'),
     (r'^supplier/edit/(\d+)/$', 'SupplierEdit'),
 
     (r'^inventory$', 'Inventory'),
@@ -104,6 +105,8 @@ urlpatterns += patterns(
     (r'^inkinddonation/view/(\d+)/$', 'InKindDonationView'),
 
     (r'^siteexpense/state/(\w+)/(\d+)/$', 'SiteExpenseState'),
+    (r'^expense/new/(\d+)/$', 'ExpenseNew'),
+    (r'^expense/(\d+)/$', 'Expense'),
     )
 
 urlpatterns += patterns(
