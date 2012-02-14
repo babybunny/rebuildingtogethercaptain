@@ -597,7 +597,7 @@ def _PersonEdit(request, id, person_cls, form_cls, template, readable):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return common.Respond(request, 'person', 
+    return common.Respond(request, template, 
                           {'form': form, 
                            'person': person})
   person.put()
@@ -629,6 +629,19 @@ def SupplierNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return SupplierEdit(request, None)
 
+def SupplierNewSimple(request):
+  form = forms.SupplierFormSimple(data=request.POST)
+  errors = form.errors
+  if not errors:
+    try:
+      supplier = form.save(commit=False)
+    except ValueError, err:
+      errors['__all__'] = unicode(err)
+  if errors:
+    return http.HttpResponse(simplejson.dumps({'errors': errors}))
+  supplier.put()
+  return http.HttpResponse(simplejson.dumps({'key': str(supplier.key()),
+                                             'name': supplier.name}))
 
 def ItemList(request):
   """Request / -- show all items."""
@@ -828,10 +841,15 @@ class SiteExpense:
     user, captain, staff = common.GetUser(request)
     form = cls.form_cls(data=request.POST or None,  
                         instance=entity, staff=staff)
+    if cls == VendorReceipt:
+      supplier_form = forms.SupplierFormSimple()
+    else:
+      supplier_form = None
     if not request.POST:
       return common.Respond(
         request, cls.template_base, 
         {'form': form, 
+         'supplier_form': supplier_form,
          'entity': entity,
          'edit_id': edit_id,
          'what_you_are_doing': what})
@@ -846,6 +864,7 @@ class SiteExpense:
       return common.Respond(
         request, cls.template_base, 
         {'form': form, 
+         'supplier_form': supplier_form,
          'entity': entity,
          'edit_id': edit_id,
          'what': 'Fix errors below and try submitting again.'})
@@ -931,6 +950,31 @@ def SiteExpenseState(request, item_cls, item_id):
   modl.put()
   return http.HttpResponse(value, status=200)
 
+def ExpenseNew(request, site_id):
+  """Creates a new Expense."""
+  site = models.NewSite.get_by_id(int(site_id))
+  params = {}
+  if site is None:
+    params['error'] = 'Site ID %s not found!' % site_id
+  else:
+    expense = models.Expense(site=site)
+    params.update({'expense': expense})
+  return common.Respond(request, 'expense.html', params)
+
+def Expense(request, expense_id):
+  """Displays or saves an Expense."""
+  if request.META['REQUEST_METHOD'] == 'GET':
+    expense = models.Expense.get_by_id(int(expense_id))
+    params = {}
+    if expense is None:
+      params['error'] = 'Expense ID %s not found!' % expense_id
+    else:
+      params.update(
+        {'expense': expense})
+    return common.Respond(request, 'expense.html', params)
+  elif request.META['REQUEST_METHOD'] == 'POST':
+    logging.info(request.POST)
+  d
 
 def StandardKit(request):
   return common.Respond(request, 'standard_kit.html', {})

@@ -112,6 +112,10 @@ class SupplierForm(djangoforms.ModelForm):
          model = models.Supplier
          exclude = ['user']
 
+class SupplierFormSimple(djangoforms.ModelForm):
+    class Meta:
+         model = models.Supplier
+         fields = ['name', 'address', 'phone']
 
 class OrderSheetForm(djangoforms.ModelForm):
      class Meta:
@@ -220,12 +224,16 @@ class CheckRequestForm(SiteExpenseForm):
 
 class VendorReceiptForm(SiteExpenseForm):
     purchase_date = forms.DateField(required=True)
-    vendor = forms.ChoiceField(choices=[(v, v) for v in VENDOR_SELECTIONS],
-                               required=True)
+    
+    supplier = djangoforms.ModelChoiceField(
+        models.Supplier,
+        query=models.Supplier.all().order('name'),
+        label="Vendor",
+        help_text="or add a new vendor using the form on the right")
     amount = forms.FloatField(required=True)
     class Meta:
         model = models.VendorReceipt
-        exclude = ['last_editor', 'modified', 'program']
+        exclude = ['last_editor', 'modified', 'program', 'vendor']
 
 
 class InKindDonationForm(SiteExpenseForm):
@@ -236,3 +244,4 @@ class InKindDonationForm(SiteExpenseForm):
     class Meta:
         model = models.InKindDonation
         exclude = ['last_editor', 'modified', 'program']
+        

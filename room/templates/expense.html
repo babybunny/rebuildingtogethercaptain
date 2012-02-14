@@ -1,0 +1,43 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "datepicker_script.html" %}
+<script type="text/javascript" 
+	ng:autobind 
+	src="http://code.angularjs.org/0.9.16/angular-0.9.16.js"></script>
+<script type="text/javascript">
+function ExpenseCtrl() {
+  this.site = {{ expense.site.key.id }};
+  this.site_choices = {{ sites_json }};
+}
+
+$(function() {
+  $("#id_purchase_date").datepicker();
+  var amount_pos = $('#id_amount').offset();
+  $('#cdbg-breakdown').css('top', amount_pos.top).css('left', 600);
+  $('#cdbg-breakdown').hide();
+  $('#id_amount').change(function() {
+    $('#cdbg-breakdown').show();
+  });
+  if ($('#id_amount').val()) {
+    $('#cdbg-breakdown').show();
+  }
+});
+$.datepicker.setDefaults({
+   showOn: 'both',
+   buttonImageOnly: true,
+   buttonImage: '/static/calendar.gif',
+   buttonText: 'Calendar' });
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | Enter an Expense
+{% endblock %}
+{%block body%}
+
+<h2>Submitting an Expense for Site {{ expense.site.number }}</h2>
+
+<div ng:bind="ExpenseCtrl">
+  <label for="site">Site:</label><span name="site"></span>
+
+</div>
+{%endblock%}
