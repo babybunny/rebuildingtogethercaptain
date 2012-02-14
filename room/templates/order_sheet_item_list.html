@@ -1,0 +1,75 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script
+   type="text/javascript" 
+   src="/static/jquery.jeditable.mini.js">
+</script>
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+      sortList: [[1, 0], [2, 0]]
+    });
+  {% for entity in entries %}
+  $('.jeditable-state[name="{{ entity.key.id }}"]').editable(
+     "{% url room.views.ItemPrice entity.key.id %}", {
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Click to edit...',
+         cssclass  : 'inherit',
+         type      : 'text',
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  {% endfor %}
+});
+</script>
+{% endblock %}
+{% block breadcrumb %}
+  | Items on Order Sheet
+{% endblock %}
+{%block about_this_page %}
+<h2>Items on {{ order_sheet.name }} Order Sheet</h2>
+{% endblock %}
+{%block body%}
+<p>Change price of an item by clicking the value.
+
+<table cellpadding=5 class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Click to Edit</th>
+      <th>Section</th>
+      <th>Name</th>
+      <th>Measure</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entity in entries %}
+    <tr>
+      <td>
+	<a name="{{ entity.key.id }}"
+	   href="{%url room.views.ItemEdit entity.key.id%}">
+	  {{entity.key.id|escape}}
+	</a>
+      </td><td>
+	{{ entity.order_form_section|escape }}
+      </td><td>
+	{{ entity.name|escape }}
+      </td><td>
+	{{ entity.measure|escape }}
+      </td><td class="dollar editable">
+	<span class="sortorder">{{ entity.unit_cost }}</span>
+	<div class="jeditable-state" 
+	       id="unit_cost"
+	       name="{{ entity.key.id }}">{{ entity.unit_cost|floatformat:2 }}</div>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{%endblock%}

@@ -24,7 +24,7 @@ to add a new Order Form.
   <thead>
     <tr>
       <th>
-	Code (click to edit)
+	Code
       </th>
       <th>
 	Name
@@ -59,10 +59,18 @@ to add a new Order Form.
     {%for order_sheet in order_sheets%}
     <tr>
       <td>
-	<span class="sortorder">{{ order_sheet.code }}</span>
-	<a href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">
-	  {{order_sheet.code|escape}}
-	</a>
+	<strong>{{order_sheet.code|escape}}</strong>
+	<p>
+	  <a class="edit" 
+	     href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">
+	    edit sheet
+	  </a>
+	  <br/>
+	  <a class="edit" 
+	     href="{%url room.views.OrderSheetItemList order_sheet.key.id%}">
+	    edit items
+	  </a>
+	</p>
       </td>
       <td>
 	{{ order_sheet.name|escape }}

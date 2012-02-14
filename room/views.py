@@ -647,6 +647,12 @@ def ItemList(request):
   """Request / -- show all items."""
   return _EntryList(request, models.Item, 'item_list')
 
+def OrderSheetItemList(request, id):
+  """Request / -- show all items in an Order Sheet."""
+  sheet = models.OrderSheet.get_by_id(int(id))
+  return _EntryList(request, models.Item, 'order_sheet_item_list', 
+                    query=sheet.item_set, params={'order_sheet': sheet})
+
 def ItemEdit(request, item_id=None):
   """Create or edit a item.  GET shows a blank form, POST processes it."""
   user, _, _ = common.GetUser(request)
@@ -697,23 +703,51 @@ def ItemEdit(request, item_id=None):
   if not item_id:
     invitem = models.InventoryItem(item=item)
     invitem.put()
-  
-  if original_unit_cost != item.unit_cost:
-    logging.info('unit_cost changed from %0.2f to %0.2f, updating orders', 
-                 original_unit_cost, item.unit_cost)
-    order_items = models.OrderItem.all().filter('item =', item)
-    order_items.filter('quantity !=', 0)
-    for order_item in order_items:
-      order = order_item.order
-      if order is None:
-        logging.info('skipping non-existent order')
-        continue
-      logging.info('updating sub_total for order %d with %d items', 
-                   order_item.order.key().id(), order_item.quantity)
-      order_item.order.UpdateSubTotal()
-      
+
+  _UpdateItemCost(original_unit_cost, item)
+
   return http.HttpResponseRedirect(urlresolvers.reverse(ItemList))
 
+
+def ItemPrice(request, item_id):
+  """Updates a Item's price field."""
+  return _SetField(models.Item, float, request, item_id)
+
+# TODO: use for SiteAnnouncement()
+def _SetField(model_cls, cast, request, id):
+  user, captain, staff = common.GetUser(request)
+  if not staff:
+    return http.HttpResponse(status=400)
+  if not request.POST:
+    return http.HttpResponse(status=400)
+  obj = model_cls.get_by_id(int(id))
+  if not obj:
+    return http.HttpResponse(status=400)
+  field = request.POST['id']
+  if not field:
+    return http.HttpResponse(status=400)
+  value = cast(request.POST['value'])
+  setattr(obj, field, value)
+  obj.put()
+  return http.HttpResponse(value, status=200)
+
+
+def _UpdateItemCost(original_unit_cost, item):
+  if original_unit_cost == item.unit_cost:
+    return
+  logging.info('unit_cost changed from %0.2f to %0.2f, updating orders', 
+               original_unit_cost, item.unit_cost)
+  order_items = models.OrderItem.all().filter('item =', item)
+  order_items.filter('quantity !=', 0)
+  for order_item in order_items:
+    order = order_item.order
+    if order is None:
+      logging.info('skipping non-existent order')
+      continue
+    logging.info('updating sub_total for order %d with %d items', 
+                 order_item.order.key().id(), order_item.quantity)
+    order_item.order.UpdateSubTotal()
+      
 
 def ItemNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
