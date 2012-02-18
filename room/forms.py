@@ -216,7 +216,12 @@ class SiteExpenseForm(djangoforms.ModelForm):
 class CheckRequestForm(SiteExpenseForm):
     payment_date = forms.DateField(required=True)
     name = forms.CharField(required=True, label='Payable To')
-    description = forms.CharField(required=True, widget=forms.Textarea)
+    description = forms.CharField(
+        required=True, widget=forms.Textarea,
+        label=('Description '
+            '(Please include place of purchase and list of items purchased '
+            'and submit corresponding receipt.)')
+        )
     class Meta:
         model = models.CheckRequest
         exclude = ['last_editor', 'modified', 'program']
