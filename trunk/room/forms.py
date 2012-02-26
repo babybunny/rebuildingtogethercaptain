@@ -42,6 +42,11 @@ def SortedSiteChoiceField():
         models.NewSite.all().order('number'))
 
 
+class ProgramForm(djangoforms.ModelForm):
+    class Meta:
+        model = models.Program
+
+
 class CaptainForm(djangoforms.ModelForm):
     class Meta:
         model = models.Captain
