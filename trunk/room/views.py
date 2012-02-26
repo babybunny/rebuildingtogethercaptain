@@ -51,7 +51,7 @@ def _EntryList(request, model_cls, template, params=None, query=None):
     query = model_cls.all()
   entries = list(query)
   entries.sort(key=lambda x: x.name)
-  d = {'entries': entries, 'user': user, 
+  d = {'entries': entries, 'num_entries': len(entries), 'user': user, 
        'cls': model_cls,
        'model_cls_name': model_cls.__name__ }
   if params:
@@ -366,7 +366,7 @@ def SiteList(request):
     k = s.key().id()
     if k in sitecaptains_by_site:
       s.sitecaptains = sitecaptains_by_site[k]
-  d = {'entries': entries, 'user': user, 
+  d = {'entries': entries, 'num_entries': len(entries), 'user': user, 
        'sitecaptains_by_site': sitecaptains_by_site }
   return common.Respond(request, 'site_list', d)
 
