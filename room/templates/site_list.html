@@ -12,7 +12,7 @@ $(function() {
   | List Sites
 {% endblock %}
 {%block about_this_page %}
-<h2>All Sites</h2>
+<h2>{{ num_entries }} Sites for {{ user.program_selected }}</h2>
 {% if user.staff %}
 <p>
   <a href="{% url room.views.SiteExport %}">
