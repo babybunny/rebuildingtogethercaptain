@@ -57,9 +57,12 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
     """Change input_csv to actual input file - the default is test data."""
     reader = csv.DictReader(open(input_csv))
     for s in reader:
+      def clean_s(k):
+          return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').encode('ascii', 'replace')
+
       key = s['key']
-      name = "%s %s" % (s["PartyIFindividual::First Name"],
-                        s["PartyIFindividual::Last Name"])
+      name = "%s %s" % (clean_s("PartyIFindividual::First Name"),
+                        clean_s("PartyIFindividual::Last Name"))
       email = s["Email"]
       captain = None
       if key:
@@ -78,11 +81,11 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
       # Over-write these values, assume volunteer database is more up to date.
       captain.name = name
       captain.email = email
-      captain.phone_mobile = s["Phones Mobile::number"]
-      captain.phone_work = s["Phones Work::number"]
-      captain.phone_home = s["Phones Home::number"]
-      captain.phone_fax = s["Phones Fax::number"]
-      captain.phone_other = s["Phones Other::number"]
+      captain.phone_mobile = clean_s("Phones Mobile::number")
+      captain.phone_work = clean_s("Phones Work::number")
+      captain.phone_home = clean_s("Phones Home::number")
+      captain.phone_fax = clean_s("Phones Fax::number")
+      captain.phone_other = clean_s("Phones Other::number")
       captain.put()
 
       number = s["Vol Log::Project num"]
