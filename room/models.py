@@ -12,6 +12,7 @@ from google.appengine.ext import db
 
 SALES_TAX_RATE = 0.0925
 
+
 class Captain(BaseModel):
     """A work captain."""    
     name = db.StringProperty(required=True)  # "Joe User"
@@ -19,10 +20,15 @@ class Captain(BaseModel):
     # I was getting errors about users that didn't exist when loading sample 
     # data.
     email = db.EmailProperty()  # "joe@user.com"
-    phone1 = db.PhoneNumberProperty()  # In UI as "preferred phone"
-    phone1.verbose_name = 'Preferred Phone'
-    phone2 = db.PhoneNumberProperty()  # "backup phone"
-    phone2.verbose_name = 'Backup Phone'
+    phone1 = db.PhoneNumberProperty()  
+    phone1.verbose_name = 'Preferred Phone (deprecated)'
+    phone2 = db.PhoneNumberProperty()  
+    phone2.verbose_name = 'Backup Phone (deprecated)'
+    phone_mobile = db.StringProperty()
+    phone_work = db.StringProperty()
+    phone_home = db.StringProperty()
+    phone_fax = db.StringProperty()
+    phone_other = db.StringProperty()
     tshirt_size = db.StringProperty(choices=(
             'Small',
             'Medium',
@@ -94,6 +100,7 @@ class NewSite(BaseModel):
     applicant_home_phone = db.StringProperty()
     applicant_work_phone = db.StringProperty()
     applicant_mobile_phone = db.StringProperty()
+    applicant_email = db.StringProperty()
     rating = db.StringProperty()
     roof = db.StringProperty()
     rrp_test = db.StringProperty()
