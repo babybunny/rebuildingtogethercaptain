@@ -699,6 +699,8 @@ class VendorReceipt(BaseModel):
 
     @property 
     def name(self):
+        if self.supplier:
+            return self.supplier.name
         return self.vendor
 
     def put(self, *a, **k):
