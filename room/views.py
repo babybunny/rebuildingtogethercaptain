@@ -110,6 +110,8 @@ def CaptainHome(request, captain_id=None):
   sites = []
   for sitecaptain in captain.sitecaptain_set:
     site = sitecaptain.site
+    if site.program != '2012 NRD':
+      continue
     site.new_order_form = forms.NewOrderForm(initial=dict(site=site.key()))
     sites.append(site)
   AnnotateSitesWithEditability(sites, captain, staff)
