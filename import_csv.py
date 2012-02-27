@@ -108,3 +108,17 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
               sitecaptain.type = c
               break
       sitecaptain.put()
+
+ANNOUNCEMENT_BODY = """Please remember that your Home Depot card will be held until we receive your scope of work form.  
+Thank you for serving as a captain this year!  Please use this space to include notes/correspondence with staff.
+Contact RTP staff for assistance:
+Cari, 650-366-6597 x224, cari@rebuildingtogetherpeninsula.org
+Adam, 650-366-6597 x223, adam@rebuildingtogetherpeninsula.org
+"""  
+ANNOUNCEMENT_SUBJECT = """Scope of work is due March 2 for CDBG sites; all forms due March 30."""
+
+def set_announcement():
+  for s in models.NewSite.all().filter('program =', PROGRAM):
+      s.announcement_subject = ANNOUNCEMENT_SUBJECT
+      s.announcement_body = ANNOUNCEMENT_BODY
+      s.put()
