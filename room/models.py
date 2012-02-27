@@ -232,7 +232,8 @@ class NewSite(BaseModel):
         return 'Site #%s | %s' % (self.number, self.name)
 
     def StreetAddress(self):
-        return '%s, %s' % (self.street_number, self.city_state_zip)
+        return '%s, %s' % (' '.join(self.street_number.split()), 
+                           ' '.join(self.city_state_zip.split()))
 
     def NeedsAttention(self):
         return self.announcement_subject is not None
