@@ -23,7 +23,8 @@ class Program(BaseModel):
     year = db.IntegerProperty()
     name = db.StringProperty()
     site_number_prefix = db.StringProperty()
-    status = db.StringProperty(choices=('Active', 'Inactive'))
+    status = db.StringProperty(choices=('Active', 'Inactive'), 
+                               default='Inactive')
 
 
 class Captain(BaseModel):

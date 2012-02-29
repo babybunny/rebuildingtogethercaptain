@@ -74,6 +74,17 @@ def SelectProgram(request, program=None):
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 
+def PostProgram(request, program_id=None):
+  """Updates a Program field.  Not used yet."""
+  if program_id is None:
+    p = models.Program(year=int(request.POST['year']), 
+                       name=request.POST['name'],
+                       site_number_prefix=request.POST['site_number_prefix'])
+    p.put()
+    return http.HttpResponse(p.key().id(), status=200)
+  return views._SetField(models.Program, string, request, program_id)
+
+
 def SiteJump(request):
   user, _, _ = common.GetUser(request)
   d = {'user': user}
