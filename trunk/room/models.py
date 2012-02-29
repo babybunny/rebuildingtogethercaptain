@@ -154,6 +154,10 @@ class NewSite(BaseModel):
             return self.Items()
 
     @property
+    def IsCDBG(self):
+        return 'CDBG' in self.jurisdiction
+
+    @property
     def ContactPerson(self):
         if self.applicant:
             return self.applicant

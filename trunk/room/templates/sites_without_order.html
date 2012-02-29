@@ -4,8 +4,13 @@
    type="text/javascript" 
    src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
 </script>
+{% include "tablesorter_script.html" %}
 <script type="text/javascript">
 $(function() {
+  $("table.tablesorter").tablesorter({
+    sortList: [[1, 1], [2, 0], [3, 0]],
+    headers: { 0: { sorter: false }}
+  });
   $("#select_all").change(
     function() {
       var newval = $("#select_all").attr('checked');
@@ -32,23 +37,48 @@ sites have no {{ order_sheet.name }} order.
 <div class="left">
 Select one or more captains
 <br>
-<input type="checkbox" id="select_all">
-<label for="select_all">
-Select/Deselect All
-</label>
-{% for site in sites %}
-{% for sc in site.sitecaptain_set %}
-<br>
-<input type="checkbox" class="captain"
-       id="{{sc.captain.key.id}}" 
-       name="site_captain" 
-       value="{{ site.key.id }} {{sc.captain.key.id}}" >
-<label for="{{sc.captain.key.id}}">
-{{ site.number }} 
-{{ sc.captain.name }} ({{ sc.type }})
-</label>
-{% endfor %}
-{% endfor %}
+<table class="tablesorter">
+  <thead>
+    <tr>
+      <th>
+        <input type="checkbox" id="select_all">
+      </th>
+      <th>
+        CDBG?
+      </th>
+      <th>
+        Site
+      </th>
+      <th>
+        Captain
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for site in sites %}
+    {% for sc in site.sitecaptain_set %}
+    <tr>
+      <td>
+        <input type="checkbox" class="captain"
+               id="{{sc.captain.key.id}}" 
+               name="site_captain" 
+               value="{{ site.key.id }} {{sc.captain.key.id}}" >
+        <label for="{{sc.captain.key.id}}">
+      </td>
+      <td>
+        {% if site.IsCDBG %}CDBG{% endif %}
+      </td>
+      <td>
+        {{ site.number }} 
+      </td>
+      <td>
+        {{ sc.captain.name }} ({{ sc.type }})
+      </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
 </div>
 <div class="right">
 From: 
