@@ -10,9 +10,10 @@ from django.core import urlresolvers
 from django.template import loader
 import models
 
-# National Rebuilding Day!
+# Current value of National Rebuilding Day!
+# Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
-NRD = '04/30/2011'
+NRD = '04/28/2012'
 
 PROGRAMS = [
   '2012 NRD', 
