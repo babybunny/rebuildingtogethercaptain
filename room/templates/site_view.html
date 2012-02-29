@@ -8,12 +8,17 @@
 	        {{ site.name }}
         </span>
         <br>Site #{{ site.number }}
-        <br>{{ site.StreetAddress }}
-        {% if site.applicant %}
+        <br>
+        {{ site.street_number }}
+        <br/>
+        {{ site.city_state_zip }}
         {% ifnotequal site.applicant site.name %}
         <p>
           <i>Applicant's main contact</i>
-          <br><strong>{{ site.applicant }}</strong>
+          <br>
+          <strong>
+            {{ site.ContactPerson }}
+          </strong>
           {% endifnotequal %}
           {% if site.applicant_home_phone %}
           <br>{{ site.applicant_home_phone }} <i>home</i> 
@@ -24,6 +29,10 @@
           {% if site.applicant_mobile_phone %}
           <br>{{ site.applicant_mobile_phone }} <i>mobile</i> 
           {% endif %}
+          {% if site.applicant_email %}
+          <br><a href="mailto:{{ site.applicant_email }}">
+            {{ site.applicant_email }}
+          </a>
           {% endif %}
         </p>
         
@@ -34,17 +43,30 @@
         {% endif %}
 
         {% if site.jurisdiction %}
-        <p><i>Jurisdiction and RRP Info:</i>
+        <p><i>Jurisdiction:</i>
           <br><strong>{{ site.jurisdiction }}</strong>
-          <br><strong>
-            RRP test? {{ site.rrp_test }} 
+        </p>
+        {% endif %}
+        
+        {% ifequal site.rrp_test "Yes" %}
+        <p><i>RRP Info:</i>
+          <br/>
+          <span class="tiny">
+          <a href="http://www.epa.gov/lead/pubs/renovation.htm">
+            US EPA Renovation, Repair and Painting (RRP)
+          </a> requires training and testing for sites with lead-based paint.
+          </span>
+          <br/>
+          <strong>
+            RRP test required? {{ site.rrp_test }} 
             {% if site.rrp_level %}
+            <br/>
             RRP level is {{ site.rrp_level }}
             {% endif %}
           </strong>
         </p>
-        {% endif %}
-        
+        {% endifequal %}
+
         {% if not site.sitecaptain_set %}
         <p>
 	        No captains assigned yet!
@@ -67,25 +89,25 @@
 	          {{ sitecaptain.captain.email }}
 	        </a>
 	        {% if sitecaptain.captain.phone1 %}
-	        <br>primary: {{ sitecaptain.captain.phone1 }}
+	        <br>{{ sitecaptain.captain.phone1 }} <i>primary</i>
 	        {% endif %}
 	        {% if sitecaptain.captain.phone2 %}
-	        <br>secondary: {{ sitecaptain.captain.phone2 }}
+	        <br>{{ sitecaptain.captain.phone2 }} <i>secondary</i>
 	        {% endif %}
 	        {% if sitecaptain.captain.phone_mobile %}
-	        <br>mobile: {{ sitecaptain.captain.phone_mobile }}
+	        <br>{{ sitecaptain.captain.phone_mobile }} <i>mobile</i>
 	        {% endif %}
 	        {% if sitecaptain.captain.phone_home %}
-	        <br>home: {{ sitecaptain.captain.phone_home }}
+	        <br>{{ sitecaptain.captain.phone_home }} <i>home</i>
 	        {% endif %}
 	        {% if sitecaptain.captain.phone_work %}
-	        <br>work: {{ sitecaptain.captain.phone_work }}
+	        <br>{{ sitecaptain.captain.phone_work }} <i>work</i>
 	        {% endif %}
 	        {% if sitecaptain.captain.phone_fax %}
-	        <br>fax: {{ sitecaptain.captain.phone_fax }}
+	        <br>{{ sitecaptain.captain.phone_fax }} <i>fax</i>
 	        {% endif %}
 	        {% if sitecaptain.captain.phone_other %}
-	        <br>other: {{ sitecaptain.captain.phone_other }}
+	        <br>{{ sitecaptain.captain.phone_other }} <i>other</i>
 	        {% endif %}
 	        {% endif %}
         </p>

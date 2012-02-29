@@ -153,6 +153,12 @@ class NewSite(BaseModel):
         def __iter__(self):
             return self.Items()
 
+    @property
+    def ContactPerson(self):
+        if self.applicant:
+            return self.applicant
+        return self.name
+
     @property 
     def Orders(self):
         return self.ActiveItems(self.order_set)
