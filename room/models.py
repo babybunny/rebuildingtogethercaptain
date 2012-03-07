@@ -341,6 +341,9 @@ class Supplier(BaseModel):
     def __unicode__(self):
         return self.name
 
+    def __str__(self):
+        return self.name
+
 
 class OrderSheet(BaseModel):
     """Set of items commonly ordered together.
@@ -447,6 +450,8 @@ class Order(BaseModel):
     state = db.StringProperty()
     actual_total = db.FloatProperty()  
     reconciliation_notes = db.TextProperty(default='')    
+    invoice_date = db.DateTimeProperty()
+    vendor = db.ReferenceProperty(Supplier)
     logistics_start = db.StringProperty()
     logistics_end = db.StringProperty()
     logistics_instructions = db.TextProperty()
