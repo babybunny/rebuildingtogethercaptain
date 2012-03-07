@@ -1,9 +1,21 @@
 {%extends "base.html"%}
 {% block script %}
+<link 
+   type="text/css" 
+   href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/le-frog/jquery-ui.css" 
+   rel="Stylesheet" />
 {% include "tablesorter_script.html" %}
 <script
    type="text/javascript" 
    src="/static/jquery.jeditable.mini.js">
+</script>
+<script 
+   type="text/javascript" 
+   src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+</script>
+<script
+   type="text/javascript" 
+   src="/static/jquery.jeditable.datepicker.js">
 </script>
 <script type="text/javascript">
 $(function() {
@@ -35,6 +47,19 @@ $(function() {
     function(){$(this).css('background-color', '#FBFFAB')},
     function(){$(this).css('background-color', 'inherit')}
   );
+  $('.jeditable-invoice[name="{{ order.key.id }}"]').editable(
+     "{% url room.order.InvoiceDate order.key.id %}", {
+         type      : 'datepicker',
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Click to edit...',
+         cssclass  : 'inherit',
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
   $('.jeditable-state[name="{{ order.key.id }}"]').editable(
      "{% url room.order.State order.key.id %}", {
          cancel    : 'Cancel',
@@ -44,6 +69,21 @@ $(function() {
          cssclass  : 'inherit',
          type      : 'select',
          data      : " {'Being Filled': 'Being Filled', 'Reconciled': 'Reconciled', 'selected': '{{ order.state }}'}",
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  $('.jeditable-vendor[name="{{ order.key.id }}"]').editable(
+     "{% url room.order.Vendor order.key.id %}", {
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Click to edit...',
+         cssclass  : 'inherit',
+         type      : 'select',
+         data      : " { {% for supplier in suppliers %}'{{ supplier.key.id }}': '{{ supplier.name }}', {% endfor %} " +
+         " 'selected': '{{ order.vendor }}'}",
          }
   ).hover(
     function(){$(this).css('background-color', '#FBFFAB')},
@@ -89,6 +129,12 @@ editable columns</span> and change the status to "Reconciled".
 	Reconciliation comment
       </th>
       <th>
+	Invoice Date
+      </th>
+      <th>
+	Vendor
+      </th>
+      <th>
 	Status
       </th>
     </tr>
@@ -97,45 +143,58 @@ editable columns</span> and change the status to "Reconciled".
     {%for order in orders%}
     <tr>
       <td>	
-	<span class="sortorder">{{ order.site.number }}</span>
-	<span class="actions">
-	<a target="_blank" 
-	   href="{% url room.order.OrderView order.key.id %}">
-	  Review
-	</a>
-	</span>
-	Site # 
-	<a target="_blank"
-	   href="{% url room.views.SiteView order.site.key.id %}">
-	{{ order.site.number|escape }}
-	</a>
-	Order ID # {{ order.key.id }}
+	      <span class="sortorder">{{ order.site.number }}</span>
+	      <span class="actions">
+	        <a target="_blank" 
+	           href="{% url room.order.OrderView order.key.id %}">
+	          Review
+	        </a>
+	      </span>
+	      Site # 
+	      <a target="_blank"
+	         href="{% url room.views.SiteView order.site.key.id %}">
+	        {{ order.site.number|escape }}
+	      </a>
+	      Order ID # {{ order.key.id }}
       </td>
       <td>
-	{{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
+	      {{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
       </td>
       <td class="dollar">
-	{{ order.GrandTotal|floatformat:2 }}
+	      {{ order.GrandTotal|floatformat:2 }}
       </td>
       <td class="editable">
-	<span class="sortorder">{{ order.actual_total }}</span>
-	<div class="jeditable-amount" 
-	     id="actual_total" 
-	     name="{{ order.key.id }}"
-	     >{{ order.actual_total|floatformat:2 }}</div>
+	      <span class="sortorder">{{ order.actual_total }}</span>
+	      <div class="jeditable-amount" 
+	           id="actual_total" 
+	           name="{{ order.key.id }}"
+	           >{{ order.actual_total|floatformat:2 }}</div>
       </td>
       <td class="editable">
-	<span class="sortorder">{{ order.reconciliation_notes }}</span>
-	<div class="jeditable-notes" 
-	     id="reconciliation_notes"
-	     name="{{ order.key.id }}"
-	     >{{ order.reconciliation_notes }}</div>
+	      <span class="sortorder">{{ order.reconciliation_notes }}</span>
+	      <div class="jeditable-notes" 
+	           id="reconciliation_notes"
+	           name="{{ order.key.id }}"
+	           >{{ order.reconciliation_notes }}</div>
       </td>
       <td class="editable">
-	<span class="sortorder">{{ order.state }}</span>
-	<div class="jeditable-state" 
-	     id="state"
-	     name="{{ order.key.id }}">{{ order.state }}</div>
+	      <span class="sortorder">{{ order.invoice_date }}</span>
+	      <div class="jeditable-invoice" 
+	           id="invoice_date"
+	           name="{{ order.key.id }}"
+	           >{{ order.invoice_date|date:"m/d/Y" }}</div>
+      </td>
+      <td class="editable">
+	      <span class="sortorder">{{ order.vendor }}</span>
+	      <div class="jeditable-vendor" 
+	           id="vendor"
+	           name="{{ order.key.id }}">{{ order.vendor }}</div>
+      </td>
+      <td class="editable">
+	      <span class="sortorder">{{ order.state }}</span>
+	      <div class="jeditable-state" 
+	           id="state"
+	           name="{{ order.key.id }}">{{ order.state }}</div>
       </td>
     </tr>
     {%endfor%}
