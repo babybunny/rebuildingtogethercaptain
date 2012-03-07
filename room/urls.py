@@ -121,6 +121,8 @@ urlpatterns += patterns(
     (r'^order/reconcile/(\d+)$', 'OrderReconcile'),
     (r'^order/actual_total/(\d+)$', 'ActualTotal'),
     (r'^order/reconciliation_notes/(\d+)$', 'ReconciliationNotes'),
+    (r'^order/vendor/(\d+)$', 'Vendor'),
+    (r'^order/invoice_date/(\d+)$', 'InvoiceDate'),
     (r'^order/state/(\d+)$', 'State'),
     (r'^order/export$', 'OrderExport'),
     (r'^order/new/(\d+)/$', 'OrderNew'),

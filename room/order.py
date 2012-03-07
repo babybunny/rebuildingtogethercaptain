@@ -1,6 +1,7 @@
 """Views and methods related to handling orders."""
 
 import csv
+import datetime
 import logging
 
 from django.core import urlresolvers 
@@ -57,12 +58,14 @@ def _OrderReconcileInternal(order_sheet_id, program=None):
   if program is not None:
     query.filter('program =', program)
   orders = list(query)
+  suppliers = list(models.Supplier.all())
 
   return {'orders': orders,
           'order_sheet': order_sheet,
+          'suppliers': suppliers,
           }
 
-def ChangeOrder(request, order_id, input_sanitizer):
+def ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
   """Changes an order field based on POST data from jeditable."""
   user, captain, staff = common.GetUser(request)
   if not staff:
@@ -77,6 +80,8 @@ def ChangeOrder(request, order_id, input_sanitizer):
   logging.info("  setattr(order, %s, %r)", field, value)
   setattr(order, field, value)
   order.put()
+  if output_filter is not None:
+    value = output_filter(value)
   return http.HttpResponse(value, status=200)
 
 def ActualTotal(request, order_id):
@@ -87,10 +92,29 @@ def ReconciliationNotes(request, order_id):
   """Updates an order's reconciliation_notes field."""
   return ChangeOrder(request, order_id, input_sanitizer=lambda v: v)
 
+def InvoiceDate(request, order_id):
+  """Updates an order's invoice_date field.  value like 03/20/2012"""
+  def _ParseDatePickerFormat(v):
+    return datetime.datetime.strptime(v, '%m/%d/%Y')
+
+  def _FormatDate(dt):
+    """Formats a datetime as Django template filter |date:"m/d/Y" """
+    return dt.strftime("%m/%d/%Y")
+
+  return ChangeOrder(request, order_id, 
+                     input_sanitizer=_ParseDatePickerFormat,
+                     output_filter=_FormatDate)
+
 def State(request, order_id):
   """Updates an order's state field."""
   return ChangeOrder(request, order_id, input_sanitizer=lambda v: v)
 
+def Vendor(request, order_id):
+  """Updates an order's state field."""
+  def _GetSupplier(supplier_id):
+    return models.Supplier.get_by_id(int(supplier_id))
+
+  return ChangeOrder(request, order_id, input_sanitizer=_GetSupplier)
 
 def OrderView(request, order_id):
   order = models.Order.get_by_id(int(order_id))
