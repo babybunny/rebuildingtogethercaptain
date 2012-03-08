@@ -113,9 +113,9 @@ def GetBaseUri():
 def GetUser(request, user=None):
   if user is None:
     user = users.GetCurrentUser()
-  captain = models.Captain.all().filter('email = ', user.email()).get()
+  captain = models.Captain.all().filter('email = ', user.email().lower()).get()
   user.captain = captain
-  staff = models.Staff.all().filter('email = ', user.email()).get()  
+  staff = models.Staff.all().filter('email = ', user.email().lower()).get()  
   user.staff = staff
   if user.staff:
     user.programs = PROGRAMS
