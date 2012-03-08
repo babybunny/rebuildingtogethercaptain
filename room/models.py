@@ -57,6 +57,7 @@ class Captain(BaseModel):
     search_prefixes = db.StringListProperty()
 
     def put(self, *a, **k):
+        self.email = self.email.lower()
         prefixes = set()
         if self.name:
             prefixes.add(self.name)
@@ -69,7 +70,6 @@ class Captain(BaseModel):
                 for i in xrange(1, 7):                    
                     prefixes.add(self.email[:i])
         self.search_prefixes = [p.lower() for p in prefixes]
-        logging.debug('prefixes for %s: %s', self.name, self.search_prefixes)
         super(BaseModel, self).put(*a, **k)
 
     def __unicode__(self):
@@ -322,6 +322,10 @@ class Staff(BaseModel):
     def __unicode__(self):
         return self.name
 
+    def put(self, *a, **k):
+        self.email = self.email.lower()
+        super(BaseModel, self).put(*a, **k)
+        
 
 class Supplier(BaseModel):
     """A supplier of Items."""
