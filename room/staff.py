@@ -26,13 +26,14 @@ TEST_SITE_NUMBER = '11999ZZZ'
 def FindHome(user, default='/'):
   """Return path of user's home page, or a default page."""
   if user and user.email():
-    staff = models.Staff.all().filter('email = ', user.email()).get()
+    email = user.email().lower()
+    staff = models.Staff.all().filter('email = ', email).get()
     if staff:
       staff.last_welcome = datetime.datetime.now()
       staff.put()
       return urlresolvers.reverse(StaffHome)
     
-    captain = models.Captain.all().filter('email = ', user.email()).get()
+    captain = models.Captain.all().filter('email = ', email).get()
     if captain:
       captain.last_welcome = datetime.datetime.now()
       captain.put()
