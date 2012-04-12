@@ -181,6 +181,17 @@ class NewSite(BaseModel):
     def InKindDonations(self):
         return self.ActiveItems(self.inkinddonation_set)
 
+    @property
+    def ScopeOfWork(self):
+        if self.scope_of_work:
+            return self.scope_of_work
+        for o in self.order_set:
+            if o.order_sheet.name == 'Scope of Work':
+                sow = o.notes
+        self.scope_of_work = sow
+        self.put()
+        return sow
+
     def ProgramFromNumber(self):
         year = '20' + self.number[0:2]
         mode = self.number[2]

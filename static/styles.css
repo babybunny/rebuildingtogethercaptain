@@ -67,6 +67,9 @@ span.attr {
 a.edit {
   white-space: nowrap;
 }
+div.notes {
+  white-space: pre;
+}
 div.panel {
   padding-top: 0;
   padding-left: 5px;
