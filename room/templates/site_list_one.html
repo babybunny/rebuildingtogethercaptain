@@ -17,6 +17,10 @@
 <a href="{% url room.views.SiteExpenses entries.0.key.id %}">
   View all Site Expenses
 </a>
+|
+<a href="{% url room.views.SiteSummary entries.0.key.id %}">
+  Reporting Summary
+</a>
 {% if user.captain %}
 <p>
 If you just made an order, please confirm that it's correct and check your budget.  
