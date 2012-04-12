@@ -120,6 +120,7 @@ class NewSite(BaseModel):
     rrp_test = db.StringProperty()
     rrp_level = db.StringProperty()
     jurisdiction = db.StringProperty()
+    scope_of_work = db.TextProperty()
     sponsor = db.StringProperty()
     street_number = db.StringProperty()
     street_number.verbose_name = "Street Address"
@@ -502,14 +503,15 @@ class Order(BaseModel):
             return 0.
         return self.sub_total * SALES_TAX_RATE
 
+    # TODO: seems incorrect to update fulfilled orders.
     def UpdateSubTotal(self):
         """Recomputes sub_total by summing the cost of items and adding tax."""
         sub_total = 0.
         order_items = OrderItem.all().filter('order = ', self)
-        order_items.filter('quantity !=', 0)
         for oi in order_items:
-            if oi.item.unit_cost is not None and oi.quantity is not None:
-                sub_total += oi.quantity * oi.item.unit_cost 
+            quantity = oi.FloatQuantity()
+            if oi.item.unit_cost is not None and quantity:
+                sub_total += quantity * oi.item.unit_cost 
         if self.sub_total != sub_total:
             self.sub_total = sub_total
             self.put()
@@ -569,24 +571,42 @@ class OrderItem(BaseModel):
     order = db.ReferenceProperty(Order)
     supplier = db.ReferenceProperty(Supplier)
     quantity = db.IntegerProperty(default=0)
+    quantity_float = db.FloatProperty(default=0.0)
     name = db.StringProperty(default="")
 
+    def FloatQuantity(self):
+        """Returns quantity as a float."""
+        if self.quantity:
+            return float(self.quantity)
+        elif self.quantity_float:
+            return self.quantity_float
+        else:
+            return 0.0
+            
     def IsEmpty(self):
-        return not self.quantity and not self.name
+        quantity = self.FloatQuantity()
+        return not quantity and not self.name
 
     def SupportsName(self):
         return (self.item.supports_extra_name_on_order 
                 or self.order.order_sheet.supports_extra_name_on_order)
 
     def VisibleQuantity(self):
-        if self.quantity:
-            return self.quantity
+        quantity = self.FloatQuantity()
+        if quantity:
+            if quantity % 1 == 0:
+                return str(int(quantity))
+            else:
+                return str(quantity)
         else:
             return ''
 
     def VisibleCost(self):
-        if self.quantity and self.item.unit_cost:
-            return '%.2f' % (self.quantity * self.item.unit_cost)
+        quantity = self.FloatQuantity()
+        if quantity and not self.item.unit_cost:
+            return '0'
+        if quantity and self.item.unit_cost:
+            return '%.2f' % (quantity * self.item.unit_cost)
         else:
             return ''
 
@@ -656,6 +676,7 @@ class InventoryItem(BaseModel):
     """The Items that are in the inventory."""
     item = db.ReferenceProperty(Item)
     quantity = db.IntegerProperty(default=0)
+    quantity_float = db.FloatProperty(default=0.0)
     location = db.StringProperty()
     available_on = db.DateProperty()
     last_editor = db.UserProperty()
