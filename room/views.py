@@ -233,6 +233,9 @@ def SiteExpenses(request, site_id):
   site = models.NewSite.get_by_id(int(site_id))
   return common.Respond(request, 'site_expenses', {'site': site})
 
+def SiteSummary(request, site_id):
+  site = models.NewSite.get_by_id(int(site_id))
+  return common.Respond(request, 'site_summary', {'site': site})
 
 def SiteEdit(request, site_id=None):
   """Create or edit a canned order."""
@@ -716,6 +719,12 @@ def ItemPrice(request, item_id):
   """Updates a Item's price field."""
   return _SetField(models.Item, float, request, item_id)
 
+
+def SiteScopeOfWork(request, site_id):
+  """Updates a Site's scope_of_work field."""
+  return _SetField(models.NewSite, None, request, site_id)
+
+
 # TODO: use for SiteAnnouncement()
 def _SetField(model_cls, cast, request, id):
   user, captain, staff = common.GetUser(request)
@@ -729,26 +738,27 @@ def _SetField(model_cls, cast, request, id):
   field = request.POST['id']
   if not field:
     return http.HttpResponse(status=400)
-  value = cast(request.POST['value'])
+  value = request.POST['value']
+  if cast is not None:
+    value = cast(value)
   setattr(obj, field, value)
   obj.put()
   return http.HttpResponse(value, status=200)
 
 
 def _UpdateItemCost(original_unit_cost, item):
+  """Updates subtotals for all orders containing the item."""
   if original_unit_cost == item.unit_cost:
     return
   logging.info('unit_cost changed from %0.2f to %0.2f, updating orders', 
                original_unit_cost, item.unit_cost)
-  order_items = models.OrderItem.all().filter('item =', item)
-  order_items.filter('quantity !=', 0)
+  q = models.OrderItem.all().filter('item =', item)
+  order_items = [oi for oi in q if oi.FloatQuantity()]
   for order_item in order_items:
     order = order_item.order
     if order is None:
       logging.info('skipping non-existent order')
       continue
-    logging.info('updating sub_total for order %d with %d items', 
-                 order_item.order.key().id(), order_item.quantity)
     order_item.order.UpdateSubTotal()
       
 
@@ -803,11 +813,11 @@ def Inventory(request):
       _, inventory_item_key = arg.split('_', 1)
       inventory_item = models.InventoryItem.get(inventory_item_key)
       quantity = request.POST[arg]
-      if quantity.isdigit():
-        quantity = int(quantity)
-      else:
-        quantity = 0
-      inventory_item.quantity = quantity
+      try:
+        quantity = float(quantity)
+      except ValueError:
+        quantity = 0.0
+      inventory_item.quantity_float = quantity
       inventory_item.put()
 
 
