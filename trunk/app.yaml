@@ -32,6 +32,7 @@ handlers:
 builtins:
 - datastore_admin: on
 - remote_api: on
+- deferred: on
 
 inbound_services:
 - warmup
