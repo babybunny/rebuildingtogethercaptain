@@ -47,9 +47,9 @@ Total Expenses:
 </p>
 <h3>Final Scope of Work</h3>
 <div class="panel">
-	<div class="padded jeditable-text"
+	<div class="padded notes jeditable-text"
 	     id="scope_of_work"
-	     name="scope_of_work">{{ site.scope_of_work }}</div>
+	     name="scope_of_work">{{ site.ScopeOfWork }}</div>
 </div>
 
 {% with site.Orders as entries %}
@@ -71,6 +71,7 @@ Total Expenses:
   </thead>
   <tbody>    
     {% for order in entries %}
+    {% ifnotequal order.GrandTotal 0 %}
     <tr>
       <td>	
         {% if order.supplier %}
@@ -90,6 +91,7 @@ Total Expenses:
 	      {{ order.GrandTotal|floatformat:2 }}
       </td>
     </tr>
+    {% endifnotequal %}
     {% endfor %}
   </tbody>
 </table>
@@ -115,6 +117,7 @@ Total Expenses:
   </thead>
   <tbody>    
     {% for cr in entries %}
+    {% ifnotequal cr.Total 0 %}
     <tr>
       <td>	
 	      {{ cr.name }}	
@@ -126,6 +129,7 @@ Total Expenses:
 	      {{ cr.Total|floatformat:2 }}
       </td>
     </tr>
+    {% endifnotequal %}
     {% endfor %}
   </tbody>
 </table>
@@ -151,6 +155,7 @@ Total Expenses:
   </thead>
   <tbody>    
     {% for vr in entries %}
+    {% ifnotequal vr.Total 0 %}
     <tr>
       <td>	
 	      {{ vr.supplier.name }}	
@@ -162,6 +167,7 @@ Total Expenses:
 	      {{ vr.Total|floatformat:2 }}
       </td>
     </tr>
+    {% endifnotequal %}
     {% endfor %}
   </tbody>
 </table>
