@@ -185,6 +185,7 @@ class NewSite(BaseModel):
     def ScopeOfWork(self):
         if self.scope_of_work:
             return self.scope_of_work
+        sow = ''
         for o in self.order_set:
             if o.order_sheet.name == 'Scope of Work':
                 sow = o.notes
