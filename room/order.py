@@ -118,8 +118,8 @@ def Vendor(request, order_id):
 
 def OrderView(request, order_id):
   order = models.Order.get_by_id(int(order_id))
-  q = models.OrderItem.all().filter('order = ', order).filter('quantity != ', 0)
-  order_items = list(q)
+  q = models.OrderItem.all().filter('order = ', order)
+  order_items = [oi for oi in q if oi.FloatQuantity()]
   _SortOrderItemsWithSections(order_items)
   d = {'orders': [{'order': order,
                   'order_items': order_items}],
@@ -193,8 +193,7 @@ def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
   for order_id in order_ids:
     order = models.Order.get_by_id(int(order_id))
     q = models.OrderItem.all().filter('order = ', order)
-    q.filter('quantity != ', 0)
-    order_items = list(q)
+    order_items = [oi for oi in q if oi.FloatQuantity()]
     _SortOrderItemsWithSections(order_items)
     orders.append({'order': order,
                    'order_items': order_items})
@@ -266,8 +265,9 @@ def _OrderExportInternal(writable, post_vars):
     batch_orders = orders[i:i+30]
     logging.info('loading batch of %d orders starting with %d', 
                  len(batch_orders), i)
-    order_items = models.OrderItem.all()
-    order_items.filter('order IN ', batch_orders).filter('quantity > ', 0)
+    q = models.OrderItem.all()
+    q.filter('order IN ', batch_orders)
+    order_items = [oi for oi in q if oi.FloatQuantity()]
     for oi in order_items:
       order_id = oi.order.key().id()
       if order_id not in order_items_by_order:
@@ -370,16 +370,14 @@ def _OrderPut(request, user, order):
     if arg.startswith('item_'):
       _, order_item_key = arg.split('_', 1)
       quantity = request.POST[arg]
-      if quantity.isdigit():
-        quantity = int(quantity)
-      else:
-        quantity = 0
+      try:
+        quantity = float(quantity)
+      except ValueError:
+        quantity = 0.0
       order_item = models.OrderItem.get(order_item_key)
-      if quantity != order_item.quantity:
-        order_item.quantity = quantity
+      if quantity != order_item.quantity_float:
+        order_item.quantity_float = quantity
         order_item.put()
-      if order_item.IsEmpty() and order_item.is_saved():
-        order_item.delete()
 
   order.UpdateSubTotal()
 
@@ -646,3 +644,15 @@ def OrderUpdateLogistics(request, order_id):
   models.Order.get_by_id(int(order_id)).UpdateLogistics()
   return http.HttpResponse('OK')
 
+def RecomputeOrderItems(o):
+  for oi in o.orderitem_set:
+    if not oi.quantity_float and not oi.quantity:
+      oi.delete()
+      continue
+    if oi.quantity_float:
+      continue        
+    if oi.quantity is not None:
+      oi.quantity_float = float(oi.quantity)
+      oi.put()
+  o.UpdateSubTotal()
+    

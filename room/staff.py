@@ -6,6 +6,7 @@ from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.api import taskqueue
+from google.appengine.ext import deferred
 from google.appengine.ext.db import djangoforms
 from google.appengine.ext.webapp import template
 
@@ -210,7 +211,7 @@ def AddStandardKitOrder(request, prefix):
       continue
     sko = models.Order(site=site, order_sheet=skos, state='Received')
     sko.put()
-    oi = models.OrderItem(order=sko, item=i, quantity=1)
+    oi = models.OrderItem(order=sko, item=i, quantity_float=1)
     oi.put()
     logging.info('created SDK order for site %r', site.number)
     sko.UpdateSubTotal()
@@ -234,6 +235,10 @@ def RecomputeOrderLogistics(request):
                                            args=[c.key().id()]))
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+def RecomputeOrders(request):
+  for o in models.Order.all():
+    deferred.defer(order.RecomputeOrderItems, o)
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 def DeleteEmptyOrderItems(request):
   for o in models.Order.all().filter('state !=' ,'new'):

@@ -20,6 +20,7 @@ urlpatterns = patterns(
     (r'^admin/delete_empty_order_items', 'DeleteEmptyOrderItems'),
     (r'^admin/fix_program$', 'FixProgramFromNumber'),
     (r'^admin/fix_program/(.+)/$', 'FixProgramFromNumber'),
+    (r'^admin/recompute_orders$', 'RecomputeOrders'),
     )
 
 urlpatterns += patterns(
@@ -56,6 +57,7 @@ urlpatterns += patterns(
     (r'^site/list/(\d+)/$', 'SiteView'),
     (r'^site/list/(\w+)/$', 'SiteListByNumber'),
     (r'^site/expenses/(\d+)/$', 'SiteExpenses'),
+    (r'^site/summary/(\d+)/$', 'SiteSummary'),
     (r'^site/budget/$', 'SiteBudget'),
     (r'^site/budget/(\w+)/$', 'SiteBudget'),
     (r'^site/budget_export/$', 'SiteBudgetExport'),
@@ -65,6 +67,7 @@ urlpatterns += patterns(
     (r'^site/edit/(\d+)/$', 'SiteEdit'),
     (r'^admin/site/put/(\d+)/$', 'SitePut'),
     (r'^site/announcement/(\d+)/$', 'SiteAnnouncement'),
+    (r'^site/scope_of_work/(\d+)/$', 'SiteScopeOfWork'),
 
     (r'^captain$', 'CaptainList'),
     (r'^captain/list$', 'CaptainList'),
