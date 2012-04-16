@@ -7,8 +7,6 @@
 </script>
 <script type="text/javascript">
 $(function(){
-  $("table.tablesorter").tablesorter({
-    });
   $("#scope_of_work").editable(
      "{% url room.views.SiteScopeOfWork site.key.id %}", {
          cancel    : 'Cancel',
@@ -31,7 +29,7 @@ $(function(){
 {%block about_this_page %}
 <h2>
   <a href="{% url room.views.SiteView site.key.id %}">
-    Site #{{ site.number}} </a>
+    Site #{{ site.number}}</a>
   Reporting Summary</h2>
 
 {{ site.name }}
@@ -42,7 +40,7 @@ $(function(){
 <p/>
 Total Expenses: 
 <strong>
-  {{ site.Expenses }}
+  $ {{ site.Expenses }}
 </strong>
 </p>
 <h3>Final Scope of Work</h3>
@@ -55,7 +53,7 @@ Total Expenses:
 {% with site.Orders as entries %}
 {% if entries.Count %}
 <h3>Orders</h3>
-<table class="list tablesorter" id="order_list">
+<table class="list printable" id="order_list">
   <thead>
     <tr>
       <th>
@@ -74,21 +72,21 @@ Total Expenses:
     {% ifnotequal order.GrandTotal 0 %}
     <tr>
       <td>	
-        {% if order.supplier %}
-	      {{ order.supplier.name }}	
+        {% if order.vendor %}
+	      {{ order.vendor.name }}	
         {% else %}
         <i>Vendor is added when order is reconciled.</i>
         {% endif %}
       </td>
       <td>
-        {% if order.supplier %}
-	      {{ order.invoice_date }}	
+        {% if order.invoice_date %}
+	      {{ order.invoice_date|date:"d M Y" }}	
         {% else %}
         <i>Invoice Date is added when order is reconciled.</i>
         {% endif %}
       </td>
       <td class="dollar">
-	      {{ order.GrandTotal|floatformat:2 }}
+	      $ {{ order.GrandTotal|floatformat:2 }}
       </td>
     </tr>
     {% endifnotequal %}
@@ -101,7 +99,7 @@ Total Expenses:
 {% with site.CheckRequests as entries %}
 {% if entries.Count %}
 <h3>Check Requests</h3>
-<table class="list tablesorter" id="order_list">
+<table class="list printable" id="order_list">
   <thead>
     <tr>
       <th>
@@ -123,10 +121,10 @@ Total Expenses:
 	      {{ cr.name }}	
       </td>
       <td>
-	      {{ cr.payment_date }}
+	      {{ cr.payment_date|date:"d M Y" }}
       </td>
       <td class="dollar">
-	      {{ cr.Total|floatformat:2 }}
+	      $ {{ cr.Total|floatformat:2 }}
       </td>
     </tr>
     {% endifnotequal %}
@@ -139,7 +137,7 @@ Total Expenses:
 {% with site.VendorReceipts as entries %}
 {% if entries.Count %}
 <h3>Vendor Receipts</h3>
-<table class="list tablesorter" id="order_list">
+<table class="list printable" id="order_list">
   <thead>
     <tr>
       <th>
@@ -161,10 +159,10 @@ Total Expenses:
 	      {{ vr.supplier.name }}	
       </td>
       <td>
-	      {{ vr.purchase_date }}
+	      {{ vr.purchase_date|date:"d M Y" }}
       </td>
       <td class="dollar">
-	      {{ vr.Total|floatformat:2 }}
+	      $ {{ vr.Total|floatformat:2 }}
       </td>
     </tr>
     {% endifnotequal %}
