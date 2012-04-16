@@ -160,6 +160,14 @@ table.list td.notes {
   white-space: normal;
   min-width: 200px;
 }
+table.printable {
+  width: 100%;
+  border: 1px solid black;
+  border-spacing: 5px;
+}
+table.printable td {
+  border-top: 1px solid black;
+}
 table.site tbody { 
   margin-right: 10px;
 }
