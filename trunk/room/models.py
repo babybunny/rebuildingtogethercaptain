@@ -264,7 +264,7 @@ class NewSite(BaseModel):
     
     def OrderTotal(self):
         """Only works if self has been saved."""    
-        cost = sum(order.GrandTotal() for order in self.Orders.Items())
+        cost = sum(order.GrandTotal() for order in self.Orders)
         return cost
 
     @property 
@@ -275,18 +275,20 @@ class NewSite(BaseModel):
 
     def CheckRequestTotal(self):
         """Only works if self has been saved."""    
-        return sum(cr.Total() or 0 for cr in self.checkrequest_set)
+        return sum(cr.Total() or 0 for cr in self.CheckRequests)
 
     def VendorReceiptTotal(self):
         """Only works if self has been saved."""    
-        return sum(cr.amount or 0 for cr in self.vendorreceipt_set)
+        return sum(cr.amount or 0 for cr in self.VendorReceipts)
 
     def InKindDonationTotal(self):
         """Only works if self has been saved."""    
-        return sum(cr.Total() or 0 for cr in self.inkinddonation_set)
+        return sum(cr.Total() or 0 for cr in self.InKindDonations)
 
     def Expenses(self):
-        return self.order_total + self.CheckRequestTotal() + self.VendorReceiptTotal()
+        return (self.order_total + 
+                self.CheckRequestTotal() + 
+                self.VendorReceiptTotal())
 
     def BudgetRemaining(self):
         return self.budget - self.Expenses()
