@@ -504,6 +504,8 @@ class Order(BaseModel):
         return math.ceil(t * 100.) / 100.
 
     def GrandTotal(self):
+        if self.state == 'Deleted':
+            return 0.
         if self.actual_total is not None:
             return self.actual_total
         else:
@@ -513,6 +515,8 @@ class Order(BaseModel):
         return self.GrandTotal()
     
     def SalesTax(self):
+        if self.state == 'Deleted':
+            return 0.
         if self.sub_total is None:
             return 0.
         return self.sub_total * SALES_TAX_RATE
