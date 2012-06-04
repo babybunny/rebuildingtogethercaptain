@@ -24,6 +24,7 @@
 	  {{entity.key.id|escape}}
 	</a>
       </td><td>
+	<span class="sortorder">{{ entity.site.number }}</span>
 	<a href="{% url room.views.SiteView entity.site.key.id %}">
 	{{ entity.site.number|escape }}
 	</a>
