@@ -7,6 +7,9 @@
 </script>
 <script type="text/javascript">
 $(function(){
+  $("table.tablesorter").tablesorter({
+    sortList: [[0, 0], [1, 1]]
+    });
   $("#scope_of_work").editable(
      "{% url room.views.SiteScopeOfWork site.key.id %}", {
          cancel    : 'Cancel',
@@ -53,7 +56,7 @@ Total Expenses:
 {% with site.Orders as entries %}
 {% if entries.Count %}
 <h3>Orders</h3>
-<table class="list printable" id="order_list">
+<table class="list printable tablesorter" id="order_list">
   <thead>
     <tr>
       <th>
@@ -99,7 +102,7 @@ Total Expenses:
 {% with site.CheckRequests as entries %}
 {% if entries.Count %}
 <h3>Check Requests</h3>
-<table class="list printable" id="order_list">
+<table class="list printable tablesorter" id="order_list">
   <thead>
     <tr>
       <th>
@@ -137,7 +140,7 @@ Total Expenses:
 {% with site.VendorReceipts as entries %}
 {% if entries.Count %}
 <h3>Vendor Receipts</h3>
-<table class="list printable" id="order_list">
+<table class="list printable tablesorter" id="order_list">
   <thead>
     <tr>
       <th>
