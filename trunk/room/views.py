@@ -238,7 +238,7 @@ def SiteSummary(request, site_id):
   return common.Respond(request, 'site_summary', {'site': site})
 
 def SiteEdit(request, site_id=None):
-  """Create or edit a canned order."""
+  """Create or edit a Site."""
   user, captain, staff = common.GetUser(request)
   site = None
   if site_id:
@@ -279,6 +279,11 @@ def SiteEdit(request, site_id=None):
   if request.POST:
     if request.POST['submit'] == form_submit:
       form = form_class(data=request.POST, instance=site)
+      if site is None:
+        existing_site = models.NewSite.all().filter('number =', form.data['number']).get()
+        if existing_site:
+          return common.Respond(request, 'site_exists', {'site': existing_site})
+        
       template_dict['form'] = form
       if _TryToSaveForm(form):
         if staff:
