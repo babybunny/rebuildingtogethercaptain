@@ -23,6 +23,11 @@ and added to urls.py (based on gaeunit/urlsauto.py)
 # Install tablesorter and south-street date picker from jquery.  
 Again, I forget the details.
 
+# Install appengine rest server
+http://code.google.com/p/appengine-rest-server/wiki/GettingStarted
+by copying to /rest
+and following instructions in README.txt
+
 
 # Running unit tests
 Start up the dev appserver.  Hit this URL to run all tests:
