@@ -19,6 +19,13 @@ handlers:
   script: main.py
   login: admin
 
+- url: /room/rest/.*
+  script: room/rest_main.py
+  login: required
+
+- url: /room/partials
+  static_dir: room/partials
+
 - url: /room/.*
   script: main.py
   login: required
