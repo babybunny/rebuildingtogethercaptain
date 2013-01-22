@@ -12,21 +12,6 @@ from google.appengine.ext import db
 
 SALES_TAX_RATE = 0.0925
 
-
-class Program(BaseModel):
-    """Identifies a program like "National Rebuilding Day".
-
-    Programs with status 'Active' will be visible to Captains.
-
-    Keys are shorthand like "2012 NRD".
-    """
-    year = db.IntegerProperty()
-    name = db.StringProperty()
-    site_number_prefix = db.StringProperty()
-    status = db.StringProperty(choices=('Active', 'Inactive'), 
-                               default='Inactive')
-
-
 class Captain(BaseModel):
     """A work captain."""    
     name = db.StringProperty(required=True)  # "Joe User"

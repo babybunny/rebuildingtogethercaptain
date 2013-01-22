@@ -1,0 +1,15 @@
+  Programs from the datastore
+  <div>
+    <p>
+      Currently selected: {{selected_program}}
+    </p>
+    <ul>
+      <li ng-repeat="program in program_query.list.Program">
+        {{program.year}} {{program.name}} {{program.site_number_prefix}} {{program.status}}
+        <span ng-hide="IsSelectedProgram(program)">
+        <a href="select_program/{{program.year}} {{program.name}}">select</a>
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>
