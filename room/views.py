@@ -111,7 +111,7 @@ def CaptainHome(request, captain_id=None):
   for sitecaptain in captain.sitecaptain_set:
     site = sitecaptain.site
     # TODO: parameterize me!
-    if site.program != '2012 NRD':
+    if site.program != '2013 NRD':
       continue
     site.new_order_form = forms.NewOrderForm(initial=dict(site=site.key()))
     sites.append(site)
