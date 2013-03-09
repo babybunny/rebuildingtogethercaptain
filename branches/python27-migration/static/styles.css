@@ -1,0 +1,336 @@
+@media print {
+.page-break-before {
+  page-break-before: always;
+}
+}
+
+body {
+  width: 950px;
+  margin-right: 10px;
+  font-family: Times;
+  font-size: 16px;
+}
+.program {
+  font-weight: bold;
+  color: green;
+}
+.program a {
+  font-weight: normal;
+  font-size: smaller;  
+}
+.userinfo { 
+  float: right;
+  display: inline;
+}
+.breadcrumb { 
+  display: inline;
+}
+.tiny { 
+  font-size: 8pt;
+}
+.listpic { 
+  text-align: right;
+}
+.big {
+  font-size: 30px;
+}
+.errorlist {
+  color: red;
+  text-align: left;
+}
+.hidden {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.alert {
+  border: 2px solid red;
+  border-collapse: collapse;
+  padding: 3px;
+  background-color: #FAA;
+}
+.in-the-red {
+  background-color: #FAA;
+}
+.editable {
+  border: 2px solid #FBFFAB;
+}
+.sortorder {
+  display: None;
+}
+span.jeditable-order-item-name {
+  display: inline-block;
+}
+span.attr {
+  white-space: nowrap;
+}
+a.edit {
+  white-space: nowrap;
+}
+div.notes {
+  white-space: pre;
+}
+div.panel {
+  padding-top: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #999;
+}
+div.panel h3,h2 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+div.panel table.tablesorter {
+  margin-top: 5px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 5px;
+}
+div#cdbg-breakdown {
+  width: 200px;
+  position: absolute;
+}
+table.tablesorter th.header {
+  padding-right: 20px;  /* leaves room for tablesorter arrows */
+}
+div.padded {
+  padding: 5px;
+}
+div.left {
+  width: 400px;
+  float: left;
+}
+div.right {
+  width: 500px;
+  float: right;
+}
+div.footer {
+  font-size: smaller;
+  clear: both;
+  margin-top: 10px;
+}
+span.actions {
+  float: right;
+  margin-left: 10px;
+}
+table.recent-login td.orders-last {
+  min-width: 50px;
+  text-align: right;
+}
+table.recent-login td.orders-all {
+  min-width: 50px;
+  text-align: left;
+}
+table.layout {
+  width: 950px;
+  padding: 5px;
+  border-spacing: 20px;
+}
+table.layout td.layout {
+  vertical-align: top;
+  padding: 5px;
+}
+table.layout td.layout table td {
+  white-space: nowrap;
+}
+table.layout th.layout {
+  border: 0px;
+  vertical-align: bottom;
+  font-size: 200%;
+}
+table.hint {
+  padding: 5px;
+  margin: 5px;
+  border: 1px solid #999;
+}
+table.hint td {
+  text-align: right;
+  padding-left: 25px;
+}
+table.list {
+  padding: 0;
+  margin: 0;
+}
+table.list td,
+table.list th {
+  white-space: nowrap;
+}
+table.list td.notes {
+  white-space: normal;
+  min-width: 200px;
+}
+table.printable {
+  width: 100%;
+  border: 1px solid black;
+  border-spacing: 5px;
+}
+table.printable td {
+  border-top: 1px solid black;
+}
+table.site tbody { 
+  margin-right: 10px;
+}
+table.site td { 
+  padding: 5px 15px 5px 0px; 
+  margin: 0px; 
+  vertical-align: top;
+}
+td.vertical-separator {
+  border-left: 1px solid #999;		      
+}
+table.tightform td { 
+  padding: 0; 
+  margin: 0; 
+  vertical-align: top;
+}
+table.order_form_header td, 
+table.order_item_list td,
+table.order_item_list td { 
+  padding-left: 10px; 
+  padding-top: 2px;
+  vertical-align: top;
+}
+table.order_item_list th { 
+  font-family: sans-serif;
+  text-align: left;		      
+  padding-left: 0px; 
+}
+table.order_item_list td.form-summary { 
+  text-align: right;
+}
+table.order_item_list td.subtotal { 
+  border-top: 1px solid #999;		      
+}
+table.order_item_list td.quantity { 
+  text-align: right;
+  padding-left: 0px; 
+  padding-top: 0px;
+}
+input {
+  font-family: Times;
+  font-size: 16px;
+}
+table.order_item_list td.quantity input { 
+  padding: 0; margin:0;		      
+}
+td.hr, td.hr-invis {
+  border-bottom: 1px solid #333;
+  padding: 3px;
+  margin: 0;
+}
+td.hr {
+  border-top: 1px solid #333;
+}
+td.about_this_page {
+  width: 80%; 		  
+  text-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+td.dollar {
+  text-align: right;
+}
+td.measure {
+  text-align: right;
+  white-space: nowrap;
+}
+table.scoreboard {
+  border-collapse: collapse;
+  border-spacing: 0px 0px;
+}
+table.scoreboard td {
+  text-align: right;
+  white-space: nowrap;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  padding: 0px 5px 0px 5px; 
+  margin: 0;
+}
+table.scoreboard td.name {
+  text-align: left;
+}
+table.scoreboard th,
+table.recent-login th {
+  border-bottom: 2px solid black;
+  padding: 0px 5px 0px 5px; 
+  margin: 0;
+}
+table.budget {
+  border-collapse: collapse;
+}
+table.budget td {
+  padding-left: 5px;
+}
+table.budget span.budget-item-note {
+  font-size: smaller;
+  font-style: italic;
+}
+table.budget a
+{
+  font-size: 11px;
+  margin: 2px; padding: 0;
+}
+table.budget td.action {
+  white-space: nowrap;
+  padding-right: 8px;
+  padding-left: 0px;
+}
+table.budget td.action .ui-button {
+  width: 100%;
+}
+table.budget td.value {
+  white-space: nowrap;
+  text-align: right;
+}  
+table.budget tr.inkinddonation td {
+  border-top: 1px solid #999;
+  border-collapse: collapse;
+  border-left: 0; border-right: 0;
+}
+table.budget td.budget {
+  text-align: right;
+  white-space: nowrap;
+  width: 60%;
+}
+td.lineitem {
+  font-weight: bold;
+}
+table.order_form_header td.order_form_section_header,
+td.order_form_section_header {
+  font-size: larger;
+  border-top: 1px solid #999;
+  padding-top: 5px;
+  padding-left: 0px;
+}
+
+table.order_form_header span {
+  padding-right: 30px;			
+}
+#login_div {
+  float: right;
+  min-width: 300px;
+  height: 250px;
+  border: 1px solid #666;
+  padding: 15px;
+  margin: 20px;  
+}
+#login_button {
+  background-color: #eee;
+  color: #333;
+  font: 30px Arial,sans-serif;
+  padding: 5px;
+  text-decoration: none;
+  border-top: 3px solid #CCCCCC;
+  border-right: 3px solid #333333;
+  border-bottom: 3px solid #333333;
+  border-left: 3px solid #CCCCCC;
+}
+#login_button:hover {
+  background-color: #ddd;
+}
+/* override jQuery theme defaults */
+body .ui-widget {
+  font-family: inherit;
+  font-size: inherit;
+}

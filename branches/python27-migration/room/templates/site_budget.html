@@ -1,0 +1,103 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function() {
+  $("table.tablesorter").tablesorter({
+    sortList: [[1, 0]],
+    headers: { 0: { sorter: false }}
+  });
+  $("#select_all").change(
+    function() {
+      var newval = $("#select_all").attr('checked');
+      $(".export_checkbox").attr('checked', newval);
+    }
+  );
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Sites
+{% endblock %}
+{%block about_this_page %}
+<h2>All Sites - Budget View</h2>
+{%endblock%}
+{%block body%}
+<form method="POST" action="{% url room.views.SiteBudgetExport %}">
+  To export many sites, check their boxes and then click 
+  <input type="submit" name="submit" value="{{ export_csv }}">
+<table class="list tablesorter" id="site_list">
+  <thead>
+    <tr>
+      <th>
+	<input type="checkbox" id="select_all">
+      </th>
+      <th>Number 
+      <br>
+      (click to view)
+      </th>
+      <th>Name</th>
+      <th>Sponsor</th>
+      <th>$ Budget</th>
+      <th>$ Balance</th>
+      <th>$ Total Expenses</th>
+      <th>$ Orders</th>
+      <th>$ Check Requests</th>
+      <th>$ Vendor Receipts</th>
+      <th>$ In-Kind Donations</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for site in entries %}
+    <tr>
+      <td>
+	<input type="checkbox" class="export_checkbox"
+	       name="{{ export_checkbox_prefix }}{{ site.key.id }}">
+      </td>
+      <td>
+	<span class="sortorder">{{ site.number }}</span>
+	<a href="{% url room.views.SiteView site.key.id %}">
+	  {{site.number|escape}}
+	</a>
+      </td>
+      <td>
+	{{ site.name|truncatewords:5 }}
+      </td>
+      <td>
+	{{ site.sponsor|truncatewords:5 }}	 
+      </td>
+      <td class="dollar">
+	{{ site.budget|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	<span
+	{% if site.in_the_red %}
+	class="in-the-red dollar"
+	{% else %}
+	class="dollar" 
+	{% endif %}
+	>
+	{{ site.BudgetRemaining|floatformat:2 }}
+	</span>
+      </td>
+      <td class="dollar">
+	{{ site.Expenses|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	{{ site.order_total|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	{{ site.CheckRequestTotal|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	{{ site.VendorReceiptTotal|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	{{ site.InKindDonationTotal|floatformat:2 }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</form>
+{%endblock%}

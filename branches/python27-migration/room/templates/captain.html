@@ -1,0 +1,35 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | Change a Captain
+{% endblock %}
+{%block body%}
+
+<h2>{{ what_you_are_doing }}</h2>
+{% if captain.key.id %}
+<form action="{% url room.views.CaptainEdit captain.key.id %}" method="post">
+{% else %}
+<form action="{% url room.views.CaptainNew %}" method="post">
+{% endif %}
+
+<div class="right">
+{% for sitecaptain in captain.sitecaptain_set %}
+<p>
+{{ sitecaptain.type }} Captain
+<br>
+<a href="{% url room.views.SiteListByNumber sitecaptain.site.number %}">
+Site #{{ sitecaptain.site.number }}
+</a>
+</p>
+{% endfor %}
+</div>
+
+<div>
+<table>
+{{form}}
+<tr>
+<td></td>
+<td><input type="submit" value="Save changes to this Captain"></td></tr>
+</table>
+</div>
+</form>
+{%endblock%}

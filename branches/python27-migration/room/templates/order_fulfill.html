@@ -1,0 +1,53 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+ | List all Orders
+{% endblock %}
+{%block about_this_page %}
+<h2>{{ action_verb }} {{ num_orders}} Order(s)
+  {% if order_sheet %}
+  for {{ order_sheet.name }}
+  {% endif %}
+</h2>
+
+{% if confirm_url %}
+<form action="{{ confirm_url }}" method="POST" 
+      {% if should_print %}
+      onsubmit="javascript:window.print()"
+      {% endif %}
+      >
+  <input type="submit" 
+	 value="{{ submit_value }} "/>
+  (no more captain changes).
+  {% for order_dict in orders %}
+  <input type="hidden"
+	 name="{{ export_checkbox_prefix }}{{ order_dict.order.key.id }}" 
+	 value="checked">
+  {% endfor %}
+</form>
+- or -
+{% endif %}
+{% if back_to_list_url %}
+<br>
+<a href="{{ back_to_list_url }}">
+  Click here to go back to the list of 
+  {% if order_sheet %}
+  {{ order_sheet.name }}
+  {% endif %}
+  Orders.
+</a>
+<br>
+{% endif %}
+<br>
+
+{%endblock%}
+{%block body%}
+{% for order_dict in orders %}
+{% with order_dict.order as order %}
+{% with order_dict.order_items as order_items %}
+<h1 class="page-break-before">&nbsp;</h1>
+{% include "order_layout.html" %}
+<br>
+{% endwith %}
+{% endwith %}
+{% endfor %}
+{%endblock%}

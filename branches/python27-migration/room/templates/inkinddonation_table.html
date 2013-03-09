@@ -1,0 +1,60 @@
+<table cellpadding=5 class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Click to Edit</th>
+      <th>Site</th>
+      <th>Status</th>
+      <th>Captain</th>
+      <th>Donation Date</th>
+      <th>Donor</th>
+      <th>Donor Phone</th>
+      <th>Labor Amount</th>
+      <th>Materials Amount</th>
+      <th>Donor Info</th>
+      <th>Budget</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entity in entries %}
+    <tr>
+      <td>
+	<a name="{{ entity.key.id }}"
+	   href="{%url room.views.InKindDonationEdit entity.key.id%}">
+	  {{entity.key.id|escape}}
+	</a>
+      </td><td>
+	<span class="sortorder">{{ entity.site.number }}</span>
+	<a href="{% url room.views.SiteView entity.site.key.id %}">
+	{{ entity.site.number|escape }}
+	</a>
+      </td><td class="editable">
+	<span class="sortorder">{{ entity.state }}</span>
+	<div class="jeditable-state" 
+	     id="state"
+	     name="{{ entity.key.id }}">{{ entity.state }}</div>
+      </td><td>
+	{{ entity.captain.name|escape }}
+      </td><td>
+	{{ entity.donation_date|escape }}
+      </td><td>
+	{{ entity.donor|escape }}
+      </td><td>
+	{{ entity.donor_phone|escape }}
+      </td>
+      <td class="dollar">
+	${{ entity.labor_amount|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	${{ entity.materials_amount|floatformat:2 }}
+      </td><td>
+	{{ entity.donor_info|escape }}
+      </td><td>
+	{{ entity.budget|escape }}
+      </td><td>
+	{{ entity.description|escape }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

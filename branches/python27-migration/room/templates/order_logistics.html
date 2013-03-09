@@ -1,0 +1,194 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "datepicker_script.html" %}
+<script type="text/javascript">
+$(function() {
+  $("#id_delivery_date").datepicker();
+  $("#id_pickup_date").datepicker();
+  $("#id_return_date").datepicker();
+  $("#id_dropoff_date").datepicker();
+  $("#id_retrieval_date").datepicker();
+});
+$.datepicker.setDefaults({
+   showOn: 'both',
+   buttonImageOnly: true,
+   buttonImage: '/static/calendar.gif',
+   buttonText: 'Calendar' });
+
+$(function() {
+$( "#tabs" ).tabs();
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+ | Order Logistics
+{% endblock %}
+{%block about_this_page %}
+<h2>Logistics: {{ order.order_sheet.name }} Order for Site {{ order.site.number }}
+</h2>
+<p>Please set up the logistics for your order here.  Includes delivery, pickup, or rental options as appropriate.
+</p>
+
+<p>Existing logistics dates and Captains for Site #{{ order.site.number }}
+are listed for your reference.
+</p>
+
+{% if existing_dates %}
+<table class="list">
+<tbody>
+<tr>
+<td>
+<table class="hint">
+<thead>
+<tr>
+<th>Date</th>
+<th>Type</th>
+<th>Order</th>
+</tr>
+</thead>
+<tbody>
+{% for ed in existing_dates %}
+<tr>
+<td>{{ ed.0 }}</td>
+<td>{{ ed.1 }}</td>
+<td>{{ ed.2 }} ({{ ed.3 }})
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</td>
+<td>
+<table class="hint">
+<thead>
+<tr>
+<th>Captain</th>
+<th>Primary</th>
+<th>Secondary</th>
+</tr>
+</thead>
+<tbody>
+{% for sc in captains %}
+<tr>
+<td>{{ sc.name }}</td>
+<td>{{ sc.phone1 }}</td>
+<td>{{ sc.phone2 }}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+{% endif %}
+{%endblock%}
+{%block body%}
+
+{% if order.order_sheet.logistics_instructions %}
+<p>{{ order.order_sheet.logistics_instructions }}
+</p>
+{% endif %}
+
+<div id="tabs">
+  <ul>
+    {% ifequal order.order_sheet.delivery_options "Yes" %}
+    <li><a href="#tabs-1">Delivery</a></li>
+    {% endifequal %}
+    {% ifequal order.order_sheet.pickup_options "Yes" %}
+    <li><a href="#tabs-2">Pick-up at RTP</a></li>
+    {% endifequal %}
+    {% ifequal order.order_sheet.retrieval_options "Yes" %}
+    <li><a href="#tabs-3">Drop-off / Retrieval</a></li>
+    {% endifequal %}
+    </ul>
+  {% ifequal order.order_sheet.delivery_options "Yes" %}
+  <div id="tabs-1">
+    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+	  method="post">
+    <table>
+      {{ forms.delivery }}
+      <tr>
+	<td>
+	  {% if current.pickup %}
+	  Submitting these delivery options will override your previous 
+	  pickup choice.
+	  {% endif %}
+	</td>
+	<td>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.delivery }} and complete order">
+	  {% if user.staff %}
+	  <br>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.delivery }} and proceed directly to fulfill (STAFF ONLY)">
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+  {% endifequal %}
+  {% ifequal order.order_sheet.pickup_options "Yes" %}
+  <div id="tabs-2">
+    Items will be picked up at RTP warehouse by someone on your team.
+    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+	  method="post">
+    <table>
+      {{ forms.pickup }}
+      <tr>
+	<td>
+	  {% if current.delivery %}
+	  Submitting these pickup options will override your previous 
+	  delivery choice.
+	  {% endif %}
+	</td>
+	<td>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.pickup }} and complete order">
+	  {% if user.staff %}
+	  <br>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.pickup }} and proceed directly to fulfill (STAFF ONLY)">
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+  {% endifequal %}
+  {% ifequal order.order_sheet.retrieval_options "Yes" %}
+  <div id="tabs-3">
+    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+	  method="post">
+    <table>
+      {{ forms.retrieval }}
+      <tr>
+	<td>
+	  {% if current.pickup or current.delivery %}
+	  Submitting these delivery options will override your previous 
+	  delivery or pickup choice.  You should never see this.
+	  {% endif %}
+	</td>
+	<td>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.retrieval }} and complete order">
+	  {% if user.staff %}
+	  <br>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.retrieval }} and proceed directly to fulfill (STAFF ONLY)">
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+  {% endifequal %}
+</div>
+
+<hr>
+<p>
+
+
+{%endblock%}

@@ -1,0 +1,324 @@
+  <table>
+    <tr>
+      <td class="layout">
+	<table class="order_form_header">
+	  <tr>
+	    <td colspan=20 class="order_form_section_header">
+	      {{ order.order_sheet.name }} Order Form
+	    </td>
+	  </tr>
+	  <tr>
+	    <td colspan=20>
+	      <span class="attr">
+		{% if form and user.staff %}
+		{{ form.site }}
+		{% else %}
+		<b>
+		  Site # 
+		  <a href="{% url room.views.SiteView order.site.key.id %}">
+		    {{ order.site.number }}
+		  </a>
+		</b>
+		{% endif %}
+	      </span>
+	      <span class="attr">
+		<b>
+		  {{ order.site.street_number }} 
+		</b>
+	      </span>
+	      <span class="attr">
+		<b>
+		  {{ order.site.city_state_zip }}
+		</b>
+	      </span>
+	      <br/>
+	      {% ifnotequal order.state "new" %}
+	      <span  class="attr">
+		    Submitted
+		    {{ order.created|date:"d M" }} 
+		    {% if created_by_user.captain %}
+		    by 
+		    {{ created_by_user.captain.name }}
+		    ({{ created_by_user.captain.sitecaptain_set.get.type }} 
+		    Captain)
+		    {% endif %}
+		    {% if created_by_user.staff %}
+		    by 
+		    {{ created_by_user.staff.name }}
+		    (Staff)
+		    {% endif %}
+	      </span>
+	      {% ifnotequal order.created order.modified %}
+	      <span  class="attr">
+		    Last Modified
+		    {{ order.modified|date:"d M" }}
+		    {% if modified_by_user.captain %}
+		    {% ifnotequal created_by_user modified_by_user %}
+		    by {{ modified_by_user.captain.name }}
+		    ({{ modified_by_user.captain.sitecaptain_set.get.type }} 
+		    Captain)
+		    {% endifnotequal %}
+		    {% endif %}
+		    {% if created_by_user.staff %}
+		    by 
+		    {{ created_by_user.staff.name }}
+		    (Staff)
+		    {% endif %}
+	      </span>
+	      {% endifnotequal %}
+	      {% endifnotequal %}
+	      <span class="attr">
+		Order ID # 
+		{{ order.key.id }}
+	      </span>
+	      <span  class="attr">
+		Status: {{ order.state }}
+	      </span>
+	      <br>
+	      {% if form %}
+	      <input name="submit" type="submit" 
+		       value="{{ submit_button_text }}">
+	      {% endif %}
+	    </td>
+	  </tr>
+	  {% if order.order_sheet.instructions and show_instructions %}	  
+	  <tr>
+	    <td class="order_form_section_header">
+	      Instructions to Captains
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	      {{ order.order_sheet.instructions|linebreaks }}
+	    </td>
+	  </tr>
+	  {% endif %}
+	  {% if show_logistics_details and order.order_sheet.HasLogistics %}
+	  <tr>
+	    <td class="order_form_section_header">
+	      Logistics Details
+	    </td>
+	  </tr>
+	  <tr>
+	    {% for d in order.orderdelivery_set %}
+	    <td>
+	      <strong>Delivery</strong>
+	      <br>Delivery on {{ d.delivery.delivery_date }} 
+	      {% if d.delivery.contact %}
+	      <br>Contact: {{ d.delivery.contact }}
+	      {% endif %}
+	      {% if d.delivery.contact_phone %}
+	      ({{ d.delivery.contact_phone }})
+	      {% endif %}
+	      {% if d.delivery.notes %}
+	      <br>{{ d.delivery.notes|linebreaksbr }}
+	      {% endif %}
+	    </td>
+	    {% endfor %}
+	    {% for d in order.orderpickup_set %}
+	    <td>
+	      <strong>Pickup</strong>
+	      <br>Pickup on {{ d.pickup.pickup_date }} 
+	      {% if d.pickup.return_date %} 
+	      <br>Return durable items on {{ d.pickup.return_date }} 
+	      {% endif %}
+	      {% if d.pickup.contact %}
+	      <br>Contact: {{ d.pickup.contact }}
+	      {% endif %}
+	      {% if d.pickup.contact_phone %}
+	      ({{ d.pickup.contact_phone }})
+	      {% endif %}
+	      {% if d.pickup.notes %}
+	      <br>{{ d.pickup.notes|linebreaksbr }}
+	      {% endif %}
+	    </td>
+	    {% endfor %}
+	    {% for d in order.orderretrieval_set %}
+	    <td>
+	      <strong>Retrieval</strong>
+	      <br>Drop off on {{ d.retrieval.dropoff_date }} 
+	      {% if d.retrieval.retrieval_date %} 
+	      <br>Retrieval on {{ d.retrieval.retrieval_date }} 
+	      {% endif %}
+	      {% if d.retrieval.contact %}
+	      <br>Contact: {{ d.retrieval.contact }}
+	      {% endif %}
+	      {% if d.retrieval.contact_phone %}
+	      ({{ d.retrieval.contact_phone }})
+	      {% endif %}
+	      {% if d.retrieval.notes %}
+	      <br>{{ d.retrieval.notes|linebreaksbr }}
+	      {% endif %}
+	    </td>
+	    {% endfor %}
+	  </tr>
+	  {% endif %}
+	  {% if form or order.notes %} 
+	  <tr>
+	    <td class="order_form_section_header">
+	      Captains' Notes
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>
+	      {% if form %}
+	      {{ notes_field }}
+	      {% else %}
+	      {{ order.notes }}
+	      {% endif %}
+	    </td>
+	  </tr>
+	  {% endif %}
+	</table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+	<table class="order_item_list">
+	  {% if order_items %}
+	  <tr>
+	    <th>
+	    </th>
+	    <th>
+	      Items
+	    </th>
+	    <th>
+	      Unit Cost ($)
+	    </th>
+	    <th>
+	    </th>
+	    <th>
+	      Quantity
+	    </th>
+	    <th>
+	      Total ($)
+	    </th>
+	  </tr>
+	  {% for order_item in order_items %}
+	  {% if order_item.first_in_section %}
+	  <tr>
+	    <td class="order_form_section_header" colspan=20>
+	      <b>{{ order_item.item.VisibleOrderFormSection }}</b>
+	    </td>
+	  </tr>
+	  {% endif %}
+	  <tr>
+	    <td class=listpic>
+	      {% if order_item.item.thumbnail %}
+	      <img src="{% url views.ItemThumbnail order_item.item.key.id %}">
+	      {% endif %}
+	    </td>
+	    <td>
+	      <b>{{ order_item.item.VisibleName }}</b>
+	      {% if order_item.item.description %} - {% endif %}
+	      {{ order_item.item.description }}
+	      {% if order_item.item.url %} - 
+	      <a target="empty" 
+		 href="{{ order_item.item.url }}">
+		... more details
+	      </a>
+	      {% endif %}
+	      {% if order_item.SupportsName %}
+	      -
+	      <span class="jeditable-order-item-name" 
+		    id="{{ order_item.key.id }}"
+		    >{{ order_item.name }}</span>
+	      {% endif %}
+	    </td>
+	    <td class="dollar">
+	      {{ order_item.item.unit_cost|floatformat:2 }}
+	    </td>
+	    <td class="measure">
+	      {{ order_item.item.measure }} x
+	    </td>
+	    <td class="quantity">
+	      {% if form %}
+	      <input type="text" name="item_{{ order_item.key }}" 
+		     value="{{ order_item.VisibleQuantity }}" size=5
+		     onChange="updateCost(this.value, 
+			       {{ order_item.item.unit_cost }}, 
+			       'total_{{ order_item.key }}');">
+	      =
+	      {% else %}
+	      {{ order_item.VisibleQuantity }}
+	      {% endif %}
+	    </td>
+	    <td class="dollar">
+	      <span id="total_{{ order_item.key }}" name="item_total">
+		{{ order_item.VisibleCost }}
+	      </span>
+	    </td>
+	  </tr>
+	  {%endfor%}
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      Subtotal 
+	      {% if form %}
+	      (does not include {{sales_tax_pct|floatformat:2 }}% sales tax)
+	      {% endif %}
+	    </td>
+	    <td class="dollar subtotal">
+	      <span id="sub_total">
+		{{ order.sub_total|floatformat:2 }}
+	      </span>
+	    </td>
+	  </tr>	  
+	  {% if form %}	  
+	  <tr>
+	    <td>
+	    </td>
+	    <td>
+	    </td>
+	    <td colspan=5 class="form-summary">
+	      <input name="submit" type="submit" 
+		     value="{{ submit_button_text }}">
+	    </td>
+	  </tr>
+	  {% else %}
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      {{sales_tax_pct|floatformat:2 }}% Sales Tax
+	    </td>
+	    <td class="dollar subtotal">
+	      {{ order.SalesTax|floatformat:2 }}
+	    </td>
+	  </tr>	  
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      Estimated Total
+	    </td>
+	    <td class="dollar subtotal">
+	      {{ order.EstimatedTotal|floatformat:2 }}
+	    </td>
+	  </tr>	  
+	  {% if order.actual_total %}
+	  <tr>
+	    <td>
+	    </td>
+	    <td colspan=4 class="form-summary subtotal">
+	      Actual (reconciled) Total
+	    </td>
+	    <td class="dollar subtotal">
+	      {{ order.actual_total|floatformat:2 }}
+	    </td>
+	  </tr>	  	  
+	  {% endif %}
+	  {% endif %}
+	  {% else %}
+	  <tr>
+	    <td>
+	      There are no items associated with this order sheet.  
+	      We're probably still entering the data about the items.
+	    </td>
+	  </tr>
+	  {% endif %}
+	</table>
+      </td>
+    </tr>
+  </table>

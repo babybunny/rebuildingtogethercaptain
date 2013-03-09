@@ -1,0 +1,25 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | List Sites
+{% endblock %}
+{%block about_this_page %}
+<h2>List of all Sites</h2> 
+{% if user.staff %} 
+<form action="{% url room.views.SiteNew %}"> 
+  <input type=submit value="Add a new Site"> 
+</form> 
+{% endif %} 
+{% endblock %}
+{% block body %}
+
+ 
+<p> 
+{% include "site_view.html" %}
+ 
+{% if user.staff %} 
+<form action="{% url room.views.SiteNew %}"> 
+  <input type=submit value="Add a new Site"> 
+</form> 
+{% endif %} 
+
+{%endblock%}

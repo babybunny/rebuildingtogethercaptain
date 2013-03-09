@@ -1,0 +1,83 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function() {
+  $("table.tablesorter").tablesorter({
+  });
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Sites
+{% endblock %}
+{%block about_this_page %}
+<h2>{{ num_entries }} Sites for {{ user.program_selected }}</h2>
+{% if user.staff %}
+<p>
+  <a href="{% url room.views.SiteExport %}">
+    Click here to export all Site data as CSV.
+  </a>
+</p>
+<p>
+  <a href="{% url room.views.SiteNew %}">
+    Click here to add a new Site.
+  </a>
+</p>
+{% endif %}
+
+{%endblock%}
+{%block body%}
+<table class="list tablesorter" id="site_list">
+  <thead>
+    <tr>
+      <th>Number 
+      <br>
+      (click to view)
+      </th>
+      <th>Name</th>
+      <th>Captains</th>
+      <th>Type</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for site in entries %}
+    <tr>
+      <td>
+	<span class="sortorder">{{ site.number }}</span>
+	<a href="{% url room.views.SiteView site.key.id %}">
+	  {{site.number|escape}}
+	</a>
+      </td>
+      <td>
+	{{ site.name }}
+	<br>
+	{{ site.StreetAddress }}
+	<br>
+	Sponsor: {{ site.sponsor }}	 
+      </td>
+      <td>
+	{% for sitecaptain in site.sitecaptain_set %}
+	{{ sitecaptain.captain.name }}
+	<br>
+	{% endfor %}
+      </td>
+      <td>
+	{% for sitecaptain in site.sitecaptains %}
+	{{ sitecaptain.type }}
+	<br>
+	{% endfor %}
+      </td>
+      <td>
+	Orders: ${{ site.OrderTotal }}
+	<br>{{ site.BudgetStatement }}
+	{% if site.NeedsAttention %}
+	<br>Needs Attention
+	{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%endblock%}

@@ -1,0 +1,12 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | Oops!  Site already exists!
+{% endblock %}
+{%block body%}
+
+<h2>A Site with that number already exists!</h2>
+<a href="{% url room.views.SiteView site.key.id %}">
+  Click here to go to Site {{ site.number }}.
+</a>
+
+{%endblock%}

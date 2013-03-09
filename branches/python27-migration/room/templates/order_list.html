@@ -1,0 +1,51 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function() {
+  $("#order_list").tablesorter({
+    sortList: [[6,0]],
+    headers: { 0: { sorter: false }}});
+  $("#select_all").change(
+    function() {
+      var newval = $("#select_all").attr('checked');
+      $(".export_checkbox").attr('checked', newval);
+    }
+  );
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+ | List all Orders
+{% endblock %}
+{%block about_this_page %}
+<h2>All Orders
+{% if order_sheet %}
+({{ order_sheet.name}})
+{% endif %}
+</h2>
+<p>To make an order, go to the site 
+ (from <a href="{% url room.staff.StaffHome %}">Staff Home</a>)
+and use the normal Place Order links.  
+{%endblock%}
+{%block body%}
+<form method="POST" action="{% url room.order.OrderExport %}">
+  To act on many orders at once, check their boxes and then click 
+  <input type="submit" name="submit" value="{{ mass_action.export_csv }}">
+  or
+  <input type="submit" name="submit" value="{{ mass_action.fulfill_many }}">
+  {% if order_sheet %}
+  <input type="hidden" name="order_sheet_id" value="{{ order_sheet.key.id }}">
+  {% endif %}
+  {% if order_sheet %}
+  <br>Or <a href="{% url room.order.OrderReconcile order_sheet.key.id %}">
+    reconcile {{ num_being_filled }} orders 
+    </a>
+  in "Being Filled" status.
+  {% endif %}
+  <br>
+  {% with 1 as in_form %}
+  {% include "order_table.html" %}
+  {% endwith %}
+</form>
+{%endblock%}

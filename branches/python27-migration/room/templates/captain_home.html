@@ -1,0 +1,81 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "site_view_script.html" %}
+{%endblock%}
+{% block breadcrumb %}
+{% if user.staff %}
+| {{ captain.name }}'s home page
+{% endif %}
+{% endblock %}
+{%block about_this_page %}
+<h1>Ahoy Captain!</h1>
+<p>This is your personalized Captain's Page.  Here you can make orders for your site(s) and <a href="#personal_info">update personal info</a> including preferred phone numbers and T-shirt size.
+{% endblock %}
+{%block body%}
+
+<h2>Sites</h2>
+{% if entries %}
+<p>You're a Captain for the following site(s):
+{% for site in entries %}
+  <a href="#site_{{ site.number }}">
+    {{ site.name }} (#{{ site.number }})
+  </a>
+{% if not forloop.last %}
+,
+{% endif %}
+{% endfor %}
+
+<br>Contact 
+<a href="mailto:{{ help_contact }}">{{ help_contact }}</a> 
+if this is incorrect.
+</p>
+{% include "site_view.html" %}
+{% else %}
+There are no sites assigned to you.  Contact 
+<a href="mailto:{{ help_contact }}">{{ help_contact }}</a> 
+to have your Sites set up, by
+sending the Site number (if available), site name, and your role
+(Construction, Team, or Volunteer captain).
+{% endif %}
+
+<a name="personal_info"></a>
+<br/>
+<h2>Personal Info</h2>
+<p>Only RTP staff can change Name and Email because they must match up with the 
+volunteer database and login account.  Contact {{ help_contact }} for assistance.   You can change your phone numbers and add special instructions below, remember to click <strong>"{{ captain_contact_submit }}"</strong> to save them.
+<form action="{% url room.views.CaptainEdit captain.key.id %}" method="post">
+  <table>
+    {% if captain.modified %}
+    <tr>
+      <td colspan=100>
+	Last modified: {{ captain.modified|timesince }} ago,
+	by {{ captain.modified_by }}
+      </td>
+    </tr>
+    {% endif %}
+    <tr>
+      <th>
+	Name: 
+      </th>
+      <td>
+	{{ captain.name }}
+      </td>
+    </tr>
+    <tr>
+      <th>
+	Email: 
+      </th>
+      <td>
+	{{ captain.email }}
+      </td>
+    </tr>
+    {{ captain_form }}
+    <tr>
+      <td colspan=100>
+	<input type="submit" name="submit" value="{{ captain_contact_submit }}">
+      </td>
+    </tr>
+  </table>
+</form>
+
+{%endblock%}

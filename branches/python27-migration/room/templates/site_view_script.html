@@ -1,0 +1,57 @@
+{% include "tablesorter_script.html" %}
+<link
+   type="text/css" 
+   href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" 
+   rel="Stylesheet" />
+<script
+   type="text/javascript" 
+   src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+</script>
+<script
+   type="text/javascript" 
+   src="/static/jquery.jeditable.mini.js">
+</script>
+<script type="text/javascript">
+var tables = [
+  "#orders",
+  "#checkrequests",
+  "#vendorreceipts",
+  "#inkinddonations"
+  ];
+$(function() {
+  {% if user.staff %}
+  {% for site in entries %}
+  $('.jeditable[name="{{ site.key.id }}"]').editable(
+     "{% url room.views.SiteAnnouncement site.key.id %}", {
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Staff, Click to edit...',
+         cssclass  : 'inherit',
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  $('.jeditable-text[name="{{ site.key.id }}"]').editable(
+     "{% url room.views.SiteAnnouncement site.key.id %}", {
+         type      : 'textarea',
+         cancel    : 'Cancel',
+         submit    : 'OK',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Staff, Click to edit...',
+         }
+  ).css('white-space', 'pre-wrap').hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  {% endfor %}
+  {% endif %}
+  $("table.budget a").button();
+  for (t in tables) {
+    $(tables[t]).tablesorter({ 
+      sortList: [[1,0]]
+    });
+  }
+});
+</script>

@@ -1,0 +1,228 @@
+priority is 1 (high) to 4 (low)
+x=done
+d=blocked on some dependency 
+
+---- captains bbq
+
+bugs 3/16
+ x1 fix $total on order form
+ x1 line breaks in special instructions
+  1 safety glasses in weird section on painting supplies form
+
+bugs 3/14
+ x1 some of the ordination numbers are still visible in listed items.
+ x1 please change globally for “Delivery”:  Delivery Date (Mo-Fr only)
+ x1 can the Delivery Location text box be expansible to accommodate and show more text?  When printed out, the location needs to be visible to our delivery volunteer.
+ x1 ROOMS would not allow me to make and save a Rental form that includes quantities.
+
+captains
+ x2 t-shirt size (between sites and notes)
+  2 automate the t-shirt thing
+
+order sheets
+ x1 Cleaning Supplies
+      add a few things per Al
+ x1 Appliances.  needs notes "items will be delivered" and delivery options.
+      Date of Delivery/Service  (M-F) _________
+      On-site Contact: ___________
+      Contact Phone #: ___________
+      Exact on-site location ________
+      (aka delivery/service options)
+ x1 Lumber
+      (aka delivery/service options)
+ x1 Landscape
+      (aka delivery/service options)
+  1 Misc services (sewer, debris box)
+      (aka delivery/service options)
+ x1 Flooring
+      due date _______
+      (by arrangement)
+ x1 Rental Equip
+ x1 Paint
+ x1 Painting supplies
+  2 Donated items
+
+
+orders
+ x1 get stranded in "new" state
+ x1 standard kits need to be hard-coded, there can be 0, 1 or 2 per site.  
+      site attribute will be best.
+ x1 delete standard kit
+
+----- earlier
+
+header
+ x1 help
+ x1 print captain or staff account
+ x1 Welcome RTP Captain/Staff
+  
+sites
+ x1 cap'n x site table to associate any number of captains with a site
+ x1 site data entry
+ x1 captain data entry, dump from existing database
+ x1 add a new site (order set missing)
+ x1 applicant -> applicant contact, name -> recipient name
+ x3 -difficulty (TBR)
+  
+captain
+ x1 preference of phone numbers, "preferred" vs "backup" and notes. 
+ x1 drop address, they have it in vol DB
+ d1 "if you need to change your email addr, contact ..."
+ x2 captain can change their own phone and notes info
+ x1 on site edit > captain home
+
+classes of users, inside/outside user
+ x1 inside does everything, including inventory
+ x1 captain can edit orders, 
+ x1 captain can edit site notes
+ x1 captain can edit personal info
+  4 vendors may want to input prices.  if we can compute their donation.
+
+
+bugs
+ x1 new_order_form on multiple sites in CaptainHome
+ x2 flow for new order form errors
+ x1 new_order_form for staff
+ x1 jump to site
+ x2 Site_Capt_FILE fails to import certain captains
+ x1 site/edit broken
+ x2 add notes is broken
+ x2 standard kits are one item on the standard kit sheet.
+ x1 orders can get stuck in "new" state
+ x1 can't upload_data with OrderItem: WARNING loaders.py:156 No order found for handle 10100ZZZ+++CLN+++03/11/2010 02:07:47 
+ x2 notes gets value 'None' in Order
+
+
+services
+  3 like items, but have start date, end date, etc.  see "Misc" form
+  3 versus consumables and durables
+
+
+order form
+ x1 form code 
+
+order
+ x1 unique key is "order number" which is site number + form code + state
+  1 add durable flag to Item
+  1 move return date to items which are durable
+  1 pickup day (intended) really matters, return day not so much, 
+  3 return good for rental tools, portapotties
+  3 optional delivery or pick up for items on the order
+  4 delete line items (not needed)
+  2 life cycle: made, filling in progress, done filling and ready for pickup, picked up
+  4 no returns, just adjustments in inventory
+
+
+filling orders
+  2 at some point, pending orders will be harvested and sent to suppliers
+  2 suppliers want a spreadsheet order to fill
+  2 dump as CSV for ACE, bruce bauer
+ x1 add supplier and supplier SKU (or other code) to items
+  
+
+topics and techniques
+  3 linked as docs from current captains corner site, bidirectional
+  3 safety info
+  3 green building
+  3 how to paint properly
+  3 use existing site for this?
+
+
+ramp up with early adopters
+  2 import from existing spreadsheets (in _CC folder)
+
+
+barcode reader
+  3 get UPCs from vendors?
+  3 wired keyboard wedge seems OK
+
+
+locations
+  4 only one warehouse
+  4 map of warehouse
+  4 label locations in warehouse
+  4 donated items tend to be hard to find, nonstandard locations
+
+
+tshirts
+  2 ordering 5000 per year
+  2 get em sorted, in bags with paperwork.  volunteer kits.
+
+
+site report 
+  2 looks like:
+  site a 
+    order 1 (paint)     $order cost
+    order 2 (cleaning) 
+                        $site total
+
+
+cost
+  4 from vendors we have a fixed quoted price, can we get them to enter this
+  4 can we pull in from suppliers like Home Depot website
+  4 historical costs and reconciliation
+
+
+units of service, like portapotty, debris box, power wash
+  2 when ordered, delivered, picked up
+  2 deliveries: lumber, landscaping
+
+
+items
+  3 80/20 rule for lumber and other highly varied items
+  3 "other" category of item, not on order form, not in inventory view
+  3 "standard" label for item, push captains to order these.  these are the
+        items already on the form
+  3 "late order" form with last-minute stuff 
+        (special handling, from a few suppliers)
+  3 "where am I going?"  printout for items in warehouse.  tape w/ site number. 
+  3 first come first serve "free rental" items.  ladders have ladder number.
+
+
+stocking
+  4 "buffer stock" for pre-ordering
+
+
+
+users
+  4 if users will ever change email, must store user_id str not just email.
+
+
+inventory
+  3 filter by form, sort alpha
+ x2 master list, alpha
+  3 expose location field
+
+
+pickup
+  2 pull all orders in filled state
+  2 report: list of all stuff to pick, printable
+  2 duplicate copy
+  
+
+CSV files
+  3 headers?
+  3 make them more robust
+
+custom items
+  3 floor coverings and paint need sq feet and color, several custom fields
+  
+
+f/b from captains meeting feb 17
+  capn corner how to log in - all eyes on
+  lily is nice, cari saves the day
+  start 7:01
+  like the fun tone
+  everyone seems to get it
+  a few heads turned to the signup sheet
+  "afraid of the internet" got a good laugh
+  preferred suppliers - yes, but they like the forms so go through the system
+  free sewer cleanout, free screens
+  check website for in-kind donations, even small stuff like hardware, light switches
+  from brian (contractor), people are doing "de-construction" to get tax credits etc. very green, how to manage.  
+    they come across stuff like windows that they don't know what to do with.  
+    use freecycle, it's a yahoo group, they handle all kinds of stuff.
+    whole house building supply of EPA.  limited warehouse storage, steals cycles to handle it esp. when it's tossed eventually.
+    problem is one of quickly *placing* the items so they're not stored.
+  appliances.  age, energy star.
+

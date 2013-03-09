@@ -1,0 +1,104 @@
+<table class="list tablesorter" id="order_list">
+  <thead>
+    <tr>
+      {% if in_form %}
+      <th>
+	<input type="checkbox" id="select_all">
+      </th>
+      {% endif %}
+      <th>
+	Order Status
+      </th>
+      <th>
+	Site
+      </th>
+      <th>
+	Form
+      </th>
+      <th>
+	$ Total
+      </th>
+      <th>
+	Last Modified
+      </th>
+      <th>
+	Logistics start
+      </th>
+      <th>
+	Logistics end
+      </th>
+      <th>
+	Logistics instructions
+      </th>
+    </tr>
+  </thead>
+  <tbody>    
+    {% for order in orders %}
+    <tr>
+      {% if in_form %}
+      <td>
+	<input type="checkbox" class="export_checkbox"
+	       name="{{ export_checkbox_prefix }}{{ order.key.id }}">
+      </td>
+      {% endif %}
+      <td>	
+	<span class="sortorder">{{ order.state }}</span>
+	<span class="actions">
+	{% ifequal order.state 'Received' %}
+	{% if order_sheet %}
+	<a href="{% url room.order.OrderFulfill order.key.id order_sheet.key.id %}">
+	  Fulfill
+	</a>
+	{% else %}
+	<a href="{% url room.order.OrderFulfill order.key.id %}">
+	  Fulfill
+	</a>	
+	{% endif %}
+	{% endifequal %}
+	{% ifnotequal order.state 'Deleted' %}
+	-
+	{% if order_sheet %}
+	<a href="{% url room.order.OrderDelete order.key.id order_sheet.key.id %}">
+	    Delete
+	</a>
+	{% else %}
+	<a href="{% url room.order.OrderDelete order.key.id %}">
+	    Delete
+	</a>
+	{% endif %}
+	{% endifnotequal %}
+	-
+	<a href="{% url room.order.OrderEdit order.key.id %}">
+	  Edit
+	</a>
+	</span>
+	{{ order.state }}	
+      </td>
+      <td>
+	<span class="sortorder">{{ order.site.number }}</span>
+	<a href="{% url room.views.SiteView order.site.key.id %}">
+	{{ order.site.number|escape }}
+	</a>
+      </td>
+      <td>
+	{{ order.order_sheet.name|escape }}
+      </td>
+      <td class="dollar">
+	{{ order.GrandTotal|floatformat:2 }}
+      </td>
+      <td>
+	{{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
+      </td>
+      <td>
+	{{ order.logistics_start }}
+      </td>
+      <td>
+	{{ order.logistics_end }}
+      </td>
+      <td>
+	{{ order.logistics_instructions }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

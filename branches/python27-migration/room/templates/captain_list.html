@@ -1,0 +1,109 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+      headers: { 1: { sorter: false} }
+    });
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Captains
+{% endblock %}
+{%block about_this_page %}
+<h2>All Captains</h2>
+{% if user.staff %}
+<p>
+  <a href="{% url room.views.CaptainExport %}">
+    Click here to export all Captain data as CSV.
+  </a>
+</p>
+<p>
+  <a href="{% url room.views.CaptainNew %}">
+    Click here to add a new Captain.
+  </a>
+</p>
+{% endif %}
+
+{%endblock%}
+{%block body%}
+<table class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th></th>
+      <th>Email</th>
+      <th>Preferred Phone</th>
+      <th>Backup Phone</th>
+      <th>Sites</th>
+      <th>Type</th>
+      <th>T-Shirt</th>
+      <th>Last Welcome</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for captain in entries %}
+    <tr>
+      <td>
+	<span name="{{captain.name|escape}}"></span>
+	<a name="{{ captain.key.id }}">
+	{{ captain.name|escape }}
+	</a>
+      </td>
+      <td>
+	{% if user.staff %}
+	<a href="{% url room.views.CaptainEdit captain.key.id %}">
+	edit
+	</a>
+	- 
+	<a href="{% url room.views.CaptainHome captain.key.id %}">
+	home
+	</a>
+	{% endif %}
+      </td>
+      <td>
+	{{ captain.email|escape }}
+      </td>
+      <td>
+	{{ captain.phone1|escape }}
+      </td>
+      <td>
+	{{ captain.phone2|escape }}
+      </td>
+      <td>
+	{% for sitecaptain in captain.sitecaptains %}
+	<a 
+	   sortorder="{{ sitecaptain.site.number }}"
+	   href="{% url room.views.SiteView sitecaptain.site.key.id %}">	
+	  {{ sitecaptain.site.number }}
+	</a>
+	<br>
+	{% endfor %}
+      </td>
+      <td>
+	{% for sitecaptain in captain.sitecaptains %}
+	{{ sitecaptain.type }}
+	<br>
+	{% endfor %}
+      </td>
+      <td>
+	{{ captain.tshirt_size }}
+      </td>
+      <td>
+	{% if captain.last_welcome %}
+	{{ captain.last_welcome|timesince }} ago
+	{% endif %}	
+      </td>
+      <td class="notes">
+	{% if captain.notes %}
+	{{ captain.notes|linebreaksbr }}
+	{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%endblock%}

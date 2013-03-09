@@ -1,0 +1,87 @@
+<h2>
+  Vendor Receipt # {{ entity.key.id}} 
+  for Site {{ entity.site.number }}
+</h2>
+<hr>
+<table cellpadding=5><tr>
+<tr>
+  <td>Click to Edit</td>
+  <td>
+    <a name="{{ entity.key.id }}"
+       href="{%url room.views.VendorReceiptEdit entity.key.id%}">
+      {{entity.key.id|escape}}
+    </a>
+  </td>
+</tr>
+<tr><td>Site</td>
+  <td>
+    <a href="{% url room.views.SiteView entity.site.key.id %}">
+      {{ entity.site.number|escape }}
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>
+    State
+  </td>
+  <td>
+    {{ entity.state }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Captain
+  </td>
+  <td>
+    {{ entity.captain.name|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Purchase Date
+  </td>
+  <td>
+    {{ entity.purchase_date }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Vendor
+  </td>
+  <td>
+    {{ entity.name|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Amount
+  </td>
+  <td>
+    ${{ entity.amount|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Description
+  </td>
+  <td>
+    {{ entity.description|escape|linebreaksbr }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Last Modified
+  </td>
+  <td>
+    {{ entity.modified }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Modified By
+  </td>
+  <td>
+    {{ entity.last_editor|escape }}
+  </td>
+</tr>
+</table>

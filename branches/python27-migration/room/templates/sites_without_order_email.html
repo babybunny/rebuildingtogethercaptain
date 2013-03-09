@@ -1,0 +1,20 @@
+{%extends "email.html"%}
+{%block body%}
+{% if is_dev %}
+<h3>DEVELOPMENT SERVER</h3>
+Originally To: {{ to }}
+<hr>
+{% endif %}
+Site #{{ site.number }}
+<br>
+Captain's email: 
+{% for e in to %}
+ {{ e }}
+{% endfor %}
+<p>
+{{ body|linebreaksbr }}
+</p>
+{% if is_dev %}
+<h3>DEVELOPMENT SERVER</h3>
+{% endif %}
+{%endblock%}

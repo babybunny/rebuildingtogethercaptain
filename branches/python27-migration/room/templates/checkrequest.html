@@ -1,0 +1,77 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "datepicker_script.html" %}
+<script type="text/javascript">
+$(function() {
+  $("#id_payment_date").datepicker();
+});
+$.datepicker.setDefaults({
+   showOn: 'both',
+   buttonImageOnly: true,
+   buttonImage: '/static/calendar.gif',
+   buttonText: 'Calendar' });
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | Make a Check Request
+{% endblock %}
+{%block body%}
+
+<h2>Adding Check Request for Site {{ entity.site.number }}</h2>
+
+<h3>Note!  The check request cannot be processed without submitting the receipt(s).  Receipts can be submitted in person or by mail, fax, or email.  Please specify your name and the site number when submitting receipts.</h3>
+
+<p>Fill as completely as possible.  - if the form is incomplete then we'll follow up if necessary to process the check.
+</p>
+<p>The request for Payee Business Type only matters if it's to reimburse directly to someone for labor (so it doesn't matter if we are reimbursing an individual who paid someone for their labor). 
+</p>
+
+<table cellpadding=5>
+<tr>
+<td>
+<p>
+In person:
+<b>
+<br>841 Kaynyne Street
+<br>Redwood City, CA 94063
+</b>
+</td>
+<td>
+<p>
+Mailing Address: 
+<b>
+<br>Rebuilding Together Peninsula
+<br>P.O. Box 4031
+<br>Menlo Park, CA 94026-4031
+</b>
+</td>
+<td>
+<p>Fax:  (650) 366-9053   
+<br>Phone: (650) 366-6597
+</td>
+<td>
+<p>Email: 
+<br>
+<a href="mailto:info@RebuildingTogetherPeninsula.org">
+info@RebuildingTogetherPeninsula.org
+</a>
+</td>
+</tr>
+</table>
+
+<hr>
+<form action="{% url room.views.CheckRequestEdit edit_id %}" method="post">
+
+<table>  
+{{form}}
+<tr>
+  <td>
+  </td>
+  <td>
+    <input type="submit" value="Save changes to this Check Request">
+  </td>
+</tr>
+</table>
+</form>
+
+{%endblock%}

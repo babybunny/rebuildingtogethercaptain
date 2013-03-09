@@ -1,0 +1,73 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#item_list").tablesorter({
+    sortList: [[2, 0], [3, 0], [4, 0]],
+    headers: { 0: { sorter: false },
+               1: { sorter: false },
+               5: { sorter: 'digit'},
+             },
+    });
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Items
+{% endblock %}
+{%block about_this_page %}
+<h2>All Items</h2>
+{%endblock%}
+{%block body%}
+<table class="list tablesorter" id="item_list">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>ID</th>
+      <th>On Form</th>
+      <th>Section (includes sorting prefix number)</th>
+      <th>Name (includes sorting prefix number)</th>
+      <th>Unit Cost ($)</th>
+      <th>Measure</th>
+      <th>supplier</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in entries %}
+    <tr>
+      <td>
+	{% if item.thumbnail %}
+	<a href="{% url room.views.ItemEdit item.key.id %}">
+	  <img src="{% url room.views.ItemThumbnail item.key.id %}">
+	</a>
+	{% endif %}
+      </td><td>
+	<a href="{%url room.views.ItemEdit item.key.id%}">
+	  (edit)
+	</a>
+	{{ item.key.id }}
+      </td><td>
+	{{ item.appears_on_order_form.name|escape }}
+      </td><td>
+	{% if item.order_form_section %}
+	{{ item.order_form_section|escape }}
+	{% endif %}
+      </td><td>
+	  {{item.name|escape}}
+      </td>
+      <td>{{ item.unit_cost|floatformat:2 }}</td>
+      <td>{{ item.measure|escape }}</td>
+      <td>
+	{% if item.supplier %}
+	{{ item.supplier|escape }}
+	{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<form action="{%url room.views.ItemNew%}"><input type=submit value="Add a new item"></form>
+
+{%endblock%}

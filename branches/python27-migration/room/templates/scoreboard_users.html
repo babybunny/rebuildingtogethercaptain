@@ -1,0 +1,36 @@
+<b>Recent {{ name }} Logins</b>
+<table class="recent-login">
+  <thead>
+    <tr>
+      <th>
+	Last login
+      </th>
+      <th>
+	Captain
+      </th>
+      <th colspan="2">
+	Orders Created
+	<br>Last session
+	<br>(All time)
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for welcomee, num_orders, recent_orders in user_activity %}
+    <tr>	  
+      <td>
+	{{ welcomee.last_welcome|timesince }} ago
+      </td>
+      <td>
+	{{ welcomee.name }}
+      </td>
+      <td class="orders-last">
+	{{ recent_orders }}
+      </td>
+      <td class="orders-all">
+	({{ num_orders }})
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

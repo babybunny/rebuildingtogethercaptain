@@ -1,0 +1,107 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+  });
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Order Forms
+{% endblock %}
+{%block about_this_page %}
+<h2>All Order Forms</h2>
+<a href="{%url room.views.OrderSheetNew %}">
+  Click here
+</a>
+to add a new Order Form.
+</form>
+{% endblock %}
+{%block body%}
+<table class="tablesorter">
+  <thead>
+    <tr>
+      <th>
+	Code
+      </th>
+      <th>
+	Name
+      </th>
+      <th>
+	Visible
+      </th>
+      <th>
+	Delivery
+      </th>
+      <th>
+	Pickup
+      </th>
+      <th>
+	Retrieval
+      </th>
+      <th>
+	Number of Items
+      </th>
+      <th>
+	Default Supplier
+      </th>
+      <th>
+	Special Instructions
+      </th>
+      <th>
+	Logistics Instructions
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for order_sheet in order_sheets%}
+    <tr>
+      <td>
+	<strong>{{order_sheet.code|escape}}</strong>
+	<p>
+	  <a class="edit" 
+	     href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">
+	    edit sheet
+	  </a>
+	  <br/>
+	  <a class="edit" 
+	     href="{%url room.views.OrderSheetItemList order_sheet.key.id%}">
+	    edit items
+	  </a>
+	</p>
+      </td>
+      <td>
+	{{ order_sheet.name|escape }}
+      </td>
+      <td>
+	{{ order_sheet.visibility|escape }}
+      </td>
+      <td>
+	{{ order_sheet.delivery_options|escape }}
+      </td>
+      <td>
+	{{ order_sheet.pickup_options|escape }}
+      </td>
+      <td>
+	{{ order_sheet.retrieval_options|escape }}
+      </td>
+      <td>
+	{{ order_sheet.item_set.count }}
+      </td>
+      <td>
+	{{ order_sheet.default_supplier }}
+      </td>
+      <td>
+	{{ order_sheet.instructions|linebreaksbr|escape }}
+      </td>
+      <td>
+	{{ order_sheet.logistics_instructions|linebreaksbr|escape }}
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+
+{%endblock%}

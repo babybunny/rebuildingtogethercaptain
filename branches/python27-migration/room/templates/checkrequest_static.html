@@ -1,0 +1,127 @@
+<h2>
+  Check Request # {{ entity.key.id}} 
+  for Site {{ entity.site.number }}
+</h2>
+<hr>
+<table cellpadding=5><tr>
+<tr>
+  <td>Click to Edit</td>
+  <td>
+    <a name="{{ entity.key.id }}"
+       href="{%url room.views.CheckRequestEdit entity.key.id%}">
+      {{entity.key.id|escape}}
+    </a>
+  </td>
+</tr>
+<tr><td>Site</td>
+  <td>
+    <a href="{% url room.views.SiteView entity.site.key.id %}">
+      {{ entity.site.number|escape }}
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>
+    State
+  </td>
+  <td>
+    {{ entity.state }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Captain
+  </td>
+  <td>
+    {{ entity.captain.name|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Labor Amount
+  </td>
+  <td>
+    ${{ entity.labor_amount|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Materials Amount
+  </td>
+  <td>
+    ${{ entity.materials_amount|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Food Amount
+  </td>
+  <td>
+    ${{ entity.food_amount|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Total
+  </td>
+  <td>
+    ${{ entity.Total|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Payment Date
+  </td>
+  <td>
+    {{ entity.payment_date|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Payable To
+  </td>
+  <td>
+    {{ entity.name|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Address
+  </td>
+  <td>
+    {{ entity.address|escape|linebreaksbr }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Business
+  </td>
+  <td>
+    {{ entity.form_of_business|escape }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Description
+  </td>
+  <td>
+    {{ entity.description|escape|linebreaksbr }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Last Modified
+  </td>
+  <td>
+    {{ entity.modified }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Modified By
+  </td>
+  <td>
+    {{ entity.last_editor|escape }}
+  </td>
+</tr>
+</table>

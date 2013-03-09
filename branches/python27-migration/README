@@ -1,0 +1,36 @@
+# ROOMs app for Rebuilding Together Peninsula
+
+# Copyright 2010 Luke Stone
+
+# This is an online ordering system for construction captains for the 
+# annual Rebuilding Day. 
+
+# Set up
+
+# Install appengine_django, I forget the details. 
+
+# Install gaeunit for Django 
+From http://code.google.com/p/gaeunit/, I used gaeunit-2.0a_for_django.zip
+See svn revision 13.
+
+Modified gaeunit.py to say
+_LOCAL_DJANGO_TEST_DIR = 'test'
+
+and added to urls.py (based on gaeunit/urlsauto.py)
+    (r'^test', include('gaeunit.urls')),
+
+
+# Install tablesorter and south-street date picker from jquery.  
+Again, I forget the details.
+
+# Install appengine rest server
+http://code.google.com/p/appengine-rest-server/wiki/GettingStarted
+by copying to /rest
+and following instructions in README.txt
+
+
+# Running unit tests
+Start up the dev appserver.  Hit this URL to run all tests:
+http://localhost:8081/test
+To run just one module from the test/ dir:
+http://localhost:8081/test?name=test_order

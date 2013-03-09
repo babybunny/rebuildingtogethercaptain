@@ -1,0 +1,34 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "site_view_script.html" %}
+{%endblock%}
+{% block breadcrumb %}
+  | View a Site
+{% endblock %}
+{%block about_this_page %}
+<h2>Here's site # {{ entries.0.number }}</h2>
+<p>
+  <i>{{ entries.0.program }}</i>
+</p>
+<a name="{{ site.number }}" href="{% url room.views.SiteEdit entries.0.key.id %}">
+  Edit Site Info
+</a>
+|
+<a href="{% url room.views.SiteExpenses entries.0.key.id %}">
+  View all Site Expenses
+</a>
+|
+<a href="{% url room.views.SiteSummary entries.0.key.id %}">
+  Reporting Summary
+</a>
+{% if user.captain %}
+<p>
+If you just made an order, please confirm that it's correct and check your budget.  
+<br><a href="{% url room.views.CaptainHome %}">Click here to go back to your Captain's Page</a>.
+</p>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+{% include "site_view.html" %}
+ {%endblock%}
