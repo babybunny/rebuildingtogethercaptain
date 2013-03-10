@@ -43,7 +43,7 @@ sending the Site number (if available), site name, and your role
 <h2>Personal Info</h2>
 <p>Only RTP staff can change Name and Email because they must match up with the 
 volunteer database and login account.  Contact {{ help_contact }} for assistance.   You can change your phone numbers and add special instructions below, remember to click <strong>"{{ captain_contact_submit }}"</strong> to save them.
-<form action="{% url room.views.CaptainEdit captain.key.id %}" method="post">
+<form action="{% url room.views.CaptainEdit captain.key.id_or_name %}" method="post">
   <table>
     {% if captain.modified %}
     <tr>

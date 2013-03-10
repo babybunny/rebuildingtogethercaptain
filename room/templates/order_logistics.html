@@ -105,7 +105,7 @@ are listed for your reference.
     </ul>
   {% ifequal order.order_sheet.delivery_options "Yes" %}
   <div id="tabs-1">
-    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+    <form action="{% url room.order.OrderLogistics order.key.id_or_name %}" 
 	  method="post">
     <table>
       {{ forms.delivery }}
@@ -133,7 +133,7 @@ are listed for your reference.
   {% ifequal order.order_sheet.pickup_options "Yes" %}
   <div id="tabs-2">
     Items will be picked up at RTP warehouse by someone on your team.
-    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+    <form action="{% url room.order.OrderLogistics order.key.id_or_name %}" 
 	  method="post">
     <table>
       {{ forms.pickup }}
@@ -160,7 +160,7 @@ are listed for your reference.
   {% endifequal %}
   {% ifequal order.order_sheet.retrieval_options "Yes" %}
   <div id="tabs-3">
-    <form action="{% url room.order.OrderLogistics order.key.id %}" 
+    <form action="{% url room.order.OrderLogistics order.key.id_or_name %}" 
 	  method="post">
     <table>
       {{ forms.retrieval }}

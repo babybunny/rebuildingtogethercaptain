@@ -11,7 +11,7 @@ $(function(){
     sortList: [[0, 0], [1, 1]]
     });
   $("#scope_of_work").editable(
-     "{% url room.views.SiteScopeOfWork site.key.id %}", {
+     "{% url room.views.SiteScopeOfWork site.key.id_or_name %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -31,7 +31,7 @@ $(function(){
 {% endblock %}
 {%block about_this_page %}
 <h2>
-  <a href="{% url room.views.SiteView site.key.id %}">
+  <a href="{% url room.views.SiteView site.key.id_or_name %}">
     Site #{{ site.number}}</a>
   Reporting Summary</h2>
 

@@ -46,7 +46,7 @@ $(function() {
     <tr>
       <td>
 	<span class="sortorder">{{ site.number }}</span>
-	<a href="{% url room.views.SiteView site.key.id %}">
+	<a href="{% url room.views.SiteView site.key.id_or_name %}">
 	  {{site.number|escape}}
 	</a>
       </td>

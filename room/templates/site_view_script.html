@@ -21,8 +21,8 @@ var tables = [
 $(function() {
   {% if user.staff %}
   {% for site in entries %}
-  $('.jeditable[name="{{ site.key.id }}"]').editable(
-     "{% url room.views.SiteAnnouncement site.key.id %}", {
+  $('.jeditable[name="{{ site.key.id_or_name }}"]').editable(
+     "{% url room.views.SiteAnnouncement site.key.id_or_name %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -33,8 +33,8 @@ $(function() {
     function(){$(this).css('background-color', '#FBFFAB')},
     function(){$(this).css('background-color', 'inherit')}
   );
-  $('.jeditable-text[name="{{ site.key.id }}"]').editable(
-     "{% url room.views.SiteAnnouncement site.key.id %}", {
+  $('.jeditable-text[name="{{ site.key.id_or_name }}"]').editable(
+     "{% url room.views.SiteAnnouncement site.key.id_or_name %}", {
          type      : 'textarea',
          cancel    : 'Cancel',
          submit    : 'OK',

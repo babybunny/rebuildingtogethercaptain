@@ -49,17 +49,17 @@ $(function(){
     <tr>
       <td>
 	<span name="{{captain.name|escape}}"></span>
-	<a name="{{ captain.key.id }}">
+	<a name="{{ captain.key.id_or_name }}">
 	{{ captain.name|escape }}
 	</a>
       </td>
       <td>
 	{% if user.staff %}
-	<a href="{% url room.views.CaptainEdit captain.key.id %}">
+	<a href="{% url room.views.CaptainEdit captain.key.id_or_name %}">
 	edit
 	</a>
 	- 
-	<a href="{% url room.views.CaptainHome captain.key.id %}">
+	<a href="{% url room.views.CaptainHome captain.key.id_or_name %}">
 	home
 	</a>
 	{% endif %}
@@ -77,7 +77,7 @@ $(function(){
 	{% for sitecaptain in captain.sitecaptains %}
 	<a 
 	   sortorder="{{ sitecaptain.site.number }}"
-	   href="{% url room.views.SiteView sitecaptain.site.key.id %}">	
+	   href="{% url room.views.SiteView sitecaptain.site.key.id_or_name %}">	
 	  {{ sitecaptain.site.number }}
 	</a>
 	<br>

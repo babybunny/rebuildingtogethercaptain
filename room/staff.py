@@ -85,12 +85,14 @@ def SiteJump(request):
       urlresolvers.reverse(StaffHome))
   else:
     return http.HttpResponseRedirect(
-      urlresolvers.reverse(views.SiteView, args=[site.key().id()]))
+      urlresolvers.reverse(views.SiteView, args=[site.key().id_or_name()]))
     
 
 def SitesWithoutOrder(request, order_sheet_id):
   user, _, _ = common.GetUser(request)  
-  order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
+  order_sheet = models.OrderSheet.get_by_key_name(order_sheet_id)
+  if order_sheet is None:
+    order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
     return http.HttpResponseNotFound(
       'No order_sheet exists with that key (%r)' % order_sheet_id)
@@ -119,7 +121,9 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
   subject = request.POST['subject']
   body = request.POST['body']
   logging.info(request.POST)
-  order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
+  order_sheet = models.OrderSheet.get_by_key_name(order_sheet_id)
+  if order_sheet is None:
+    order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
     return http.HttpResponseNotFound(
       'No order_sheet exists with that key (%r)' % order_sheet_id)
@@ -131,13 +135,17 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
       captains_by_site[site_id] = []
     captains_by_site[site_id].append(captain_id)
   for site_id in captains_by_site:
-    site = models.NewSite.get_by_id(int(site_id))
+    site = models.NewSite.get_by_key_name(site_id)
+    if site is None:
+      site = models.NewSite.get_by_id(int(site_id))
     if not site:
       logging.warn('no site found for ID %s, skipping email', site_id)
       continue
     captains = []
     for captain_id in captains_by_site[site_id]:
-      captain = models.Captain.get_by_id(int(captain_id))
+      captain = models.Captain.get_by_key_name(captain_id)
+      if captain is None:
+        captain = models.Captain.get_by_id(int(captain_id))
       if not captain:
         logging.warn('no captain found for ID %s, skipping email', captain_id)
         continue
@@ -173,7 +181,7 @@ def FixLastEditor(request):
     if not s.last_editor:  # doesn't work if auto_current_user=True
       s.last_editor = s.modified_by
       s.put()
-      logging.info('fixed last_editor for order #%d', s.key().id())
+      logging.info('fixed last_editor for order #%d', s.key().id_or_name())
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 def AddStandardKitOrder(request, prefix):
@@ -211,16 +219,16 @@ def AddStandardKitOrder(request, prefix):
 def RecomputeSearchPrefixes(request):
   for s in models.NewSite.all():
     taskqueue.add(url=urlresolvers.reverse(views.SitePut,
-                                           args=[s.key().id()]))
+                                           args=[s.key().id_or_name()]))
   for c in models.Captain.all():
     taskqueue.add(url=urlresolvers.reverse(views.CaptainPut,
-                                           args=[c.key().id()]))
+                                           args=[c.key().id_or_name()]))
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 def RecomputeOrderLogistics(request):
   for c in models.Order.all():
     taskqueue.add(url=urlresolvers.reverse(order.OrderUpdateLogistics,
-                                           args=[c.key().id()]))
+                                           args=[c.key().id_or_name()]))
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 def RecomputeOrders(request):

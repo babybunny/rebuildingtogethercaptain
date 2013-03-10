@@ -89,7 +89,7 @@ def _Autocomplete(request, model_class, program_filter=False):
   matches = {}
   for c in items:
     label = c.Label()
-    matches[label] = c.key().id()
+    matches[label] = c.key().id_or_name()
   response = http.HttpResponse(mimetype='application/json')  
   response.write(json.dumps(matches))
   return response
@@ -104,7 +104,9 @@ def CaptainHome(request, captain_id=None):
   if user is None:
     return http.HttpResponseRedirect('/')
   if captain_id is not None:
-    captain = models.Captain.get_by_id(int(captain_id))
+    captain = models.Captain.get_by_key_name(captain_id)
+    if captain is None:
+      captain = models.Captain.get_by_id(int(captain_id))
   order_sheets = models.OrderSheet.all().order('name')
   sites = []
   for sitecaptain in captain.sitecaptain_set:
@@ -196,7 +198,9 @@ def SiteListByNumber(request, site_number):
 def SiteView(request, site_id=None, new_order_form=None):
   site = None
   if site_id is not None:
-    site = models.NewSite.get_by_id(int(site_id))
+    site = models.NewSite.get_by_key_name(site_id)
+    if site is None:
+      site = models.NewSite.get_by_id(int(site_id))
   return _SiteListInternal(request, site, new_order_form)
 
 
@@ -229,11 +233,15 @@ def _SiteListInternal(request, site=None, new_order_form=None):
 
 
 def SiteExpenses(request, site_id):
-  site = models.NewSite.get_by_id(int(site_id))
+  site = models.NewSite.get_by_key_name(site_id)
+  if site is None:
+    site = models.NewSite.get_by_id(int(site_id))
   return common.Respond(request, 'site_expenses', {'site': site})
 
 def SiteSummary(request, site_id):
-  site = models.NewSite.get_by_id(int(site_id))
+  site = models.NewSite.get_by_key_name(site_id)
+  if site is None:
+    site = models.NewSite.get_by_id(int(site_id))
   return common.Respond(request, 'site_summary', {'site': site})
 
 def SiteEdit(request, site_id=None):
@@ -241,7 +249,9 @@ def SiteEdit(request, site_id=None):
   user, captain, staff = common.GetUser(request)
   site = None
   if site_id:
-    site = models.NewSite.get_by_id(int(site_id))
+    site = models.NewSite.get_by_key_name(site_id)
+    if site is None:
+      site = models.NewSite.get_by_id(int(site_id))
     if site is None:
       return http.HttpResponseNotFound(
         'No site exists with that key (%r)' % site_id)
@@ -287,13 +297,15 @@ def SiteEdit(request, site_id=None):
       if _TryToSaveForm(form):
         if staff:
           return http.HttpResponseRedirect(
-            urlresolvers.reverse(SiteView, args=[form.instance.key().id()]))
+            urlresolvers.reverse(SiteView, args=[form.instance.key().id_or_name()]))
         else:
           return http.HttpResponseRedirect(
             urlresolvers.reverse(CaptainHome))
     if delete_sitecaptain in request.POST:
       for id in request.POST.getlist(delete_sitecaptain):
-        sc = models.SiteCaptain.get_by_id(int(id))
+        sc = models.SiteCaptain.get_by_key_name(id)
+        if sc is None:
+          sc = models.SiteCaptain.get_by_id(int(id))
         if sc is not None:
           sc.delete()
       return http.HttpResponseRedirect(urlresolvers.reverse(SiteEdit, 
@@ -331,7 +343,10 @@ def SiteNew(request):
 
 
 def SitePut(request, site_id):
-  models.NewSite.get_by_id(int(site_id)).put()
+  site = models.NewSite.get_by_key_name(site_id)
+  if site is None:
+    site = models.NewSite.get_by_id(int(site_id))
+  site.put()
   return http.HttpResponse('OK')
 
 
@@ -347,7 +362,9 @@ def SiteAnnouncement(request, site_id):
     return http.HttpResponse(status=400)
   if not request.POST:
     return http.HttpResponse(status=400)
-  site = models.NewSite.get_by_id(int(site_id))
+  site = models.NewSite.get_by_key_name(site_id)
+  if site is None:
+    site = models.NewSite.get_by_id(int(site_id))
   if not site:
     return http.HttpResponse(status=400)
   field = request.POST['id']
@@ -371,9 +388,9 @@ def SiteList(request):
   sitecaptains_by_site = {}
   # TODO: this is fetching too many - we only need those for the current program
   for sc in models.SiteCaptain.all():
-    sitecaptains_by_site.setdefault(sc.site.key().id(), []).append(sc)
+    sitecaptains_by_site.setdefault(sc.site.key().id_or_name(), []).append(sc)
   for s in entries:
-    k = s.key().id()
+    k = s.key().id_or_name()
     if k in sitecaptains_by_site:
       s.sitecaptains = sitecaptains_by_site[k]
   d = {'entries': entries, 'num_entries': len(entries), 'user': user, 
@@ -412,13 +429,15 @@ def PostedIds(post_vars):
   site_ids = []
   for var in post_vars:
     if var.startswith(POSTED_ID_PREFIX):
-      site_ids.append(int(var[len(POSTED_ID_PREFIX):]))
+      site_ids.append(var[len(POSTED_ID_PREFIX):])
   return site_ids
   
 def _SiteBudgetExportInternal(writable, post_vars):
   """Write site budget rows as CSV to a file-like object."""   
   site_ids = PostedIds(post_vars)
-  sites = list(models.NewSite.get_by_id(site_ids))
+  sites = list(models.NewSite.get_by_key_name(site_ids))
+  if not sites:
+    sites = list(models.NewSite.get_by_id([int(x) for x in site_ids]))
   sites.sort(key=lambda o: o.number)
   writer = csv.writer(writable)
   # These should be similar to the columns in the site_budget.html template.
@@ -490,9 +509,9 @@ def CaptainList(request):
   entries = list(models.Captain.all().order('name'))
   sitecaptains_by_captain = {}
   for sc in models.SiteCaptain.all():
-    sitecaptains_by_captain.setdefault(sc.captain.key().id(), []).append(sc)
+    sitecaptains_by_captain.setdefault(sc.captain.key().id_or_name(), []).append(sc)
   for c in entries:
-    k = c.key().id()
+    k = c.key().id_or_name()
     if k in sitecaptains_by_captain:
       c.sitecaptains = sitecaptains_by_captain[k]
   d = {'entries': entries, 'user': user, 
@@ -521,7 +540,7 @@ def CaptainExport(request):
     sc = list(c.sitecaptain_set)
     sites = '+'.join(set(s.site.number for s in sc))
     type = '+'.join(set(s.type for s in sc))
-    writer.writerow([c.key().id(),
+    writer.writerow([c.key().id_or_name(),
                      c.name,
                      c.email,
                      c.phone1,
@@ -540,7 +559,9 @@ def CaptainEdit(request, captain_id=None):
   user, user_captain, staff = common.GetUser(request)
   captain = None
   if captain_id:
-    captain = models.Captain.get_by_id(int(captain_id))
+    captain = models.Captain.get_by_key_name(captain_id)
+    if captain is None:
+      captain = models.Captain.get_by_id(int(captain_id))
     if captain is None:
       return http.HttpResponseNotFound(
         'No captain exists with that key (%r)' % captain_id)
@@ -581,14 +602,19 @@ def CaptainAutocomplete(request):
   return _Autocomplete(request, models.Captain)
 
 def CaptainPut(request, captain_id):
-  models.Captain.get_by_id(int(captain_id)).put()
+  captain = models.Captain.get_by_key_name(captain_id)
+  if captain is None:
+    captain = models.Captain.get_by_id(int(captain_id))
+  captain.put()
   return http.HttpResponse('OK')
 
 def _PersonEdit(request, id, person_cls, form_cls, template, readable):
   user, _, _ = common.GetUser(request)
   person = None
   if id:
-    person = person_cls.get_by_id(int(id))
+    person = person_cls.get_by_key_name(id)
+    if person is None:
+      person = person_cls.get_by_id(int(id))
     if person is None:
       return http.HttpResponseNotFound(
         'No %s exists with that key (%r)' % (readable, id))
@@ -659,7 +685,9 @@ def ItemList(request):
 
 def OrderSheetItemList(request, id):
   """Request / -- show all items in an Order Sheet."""
-  sheet = models.OrderSheet.get_by_id(int(id))
+  sheet = models.OrderSheet.get_by_key_name(id)
+  if sheet is None:
+    sheet = models.OrderSheet.get_by_id(int(id))
   return _EntryList(request, models.Item, 'order_sheet_item_list', 
                     query=sheet.item_set, params={'order_sheet': sheet})
 
@@ -736,7 +764,9 @@ def _SetField(model_cls, cast, request, id):
     return http.HttpResponse(status=400)
   if not request.POST:
     return http.HttpResponse(status=400)
-  obj = model_cls.get_by_id(int(id))
+  obj = model_cls.get_by_key_name(id)
+  if obj is None:
+    obj = model_cls.get_by_id(int(id))
   if not obj:
     return http.HttpResponse(status=400)
   field = request.POST['id']
@@ -845,7 +875,9 @@ class SiteExpense:
               'expense_type': cls.readable,
               'table_template': cls.template_base + '_table.html'}
     if site_id is not None:
-      site = models.NewSite.get_by_id(int(site_id))
+      site = models.NewSite.get_by_key_name(site_id)
+      if site is None:
+        site = models.NewSite.get_by_id(int(site_id))
       query.filter('site = ', site)
       params['which_site'] = 'Site ' + site.number
     else:
@@ -857,7 +889,9 @@ class SiteExpense:
   @classmethod
   def View(cls, request, id):
     """Printable static view of an expense."""
-    entity = cls.model.get_by_id(int(id))
+    entity = cls.model.get_by_key_name(id)
+    if entity is None:
+      entity = cls.model.get_by_id(int(id))
     return common.Respond(request, cls.template_base + '_view', 
                           {'entity': entity})
 
@@ -866,23 +900,26 @@ class SiteExpense:
   def New(cls, request, site_id):
     """Create an entity.  GET shows a blank form, POST processes it."""
     user, user_captain, staff = common.GetUser(request)
-    site = models.NewSite.get_by_id(int(site_id))
+    site = models.NewSite.get_by_key_name(site_id)
+    if site is None:
+      site = models.NewSite.get_by_id(int(site_id))
     if user_captain:
       instance = cls.model(site=site, captain=user_captain)
     else:
       instance = cls.model(site=site)
     instance.put()
-    return cls.Edit(request, instance.key().id())
+    return cls.Edit(request, instance.key().id_or_name())
   
   @classmethod
   def Edit(cls, request, id):
     """Create or edit an entity."""
-    id = int(id)
-    entity = cls.model.get_by_id(id)
+    entity = cls.model.get_by_key_name(id)
+    if entity is None:
+      entity = cls.model.get_by_id(int(id))
     if entity is None:
       return http.HttpResponseNotFound(
         'No %s exists with that key (%r)' % (cls.readable, id))
-    edit_id = entity.key().id()
+    edit_id = entity.key().id_or_name()
 
     if entity.state == 'new':      
       what = 'Adding new %s' % cls.readable
@@ -928,14 +965,14 @@ class SiteExpense:
     if user: 
       subj = '%s #%s for Site #%s Updated by %s' % (
         cls.readable,
-        entity.key().id(), 
+        entity.key().id_or_name(), 
         entity.site.number,
         user.name)
       common.NotifyAdminViaMail(subj, 
                                 template=cls.template_base + '_email.html', 
                                 template_dict={'entity': entity})
     return http.HttpResponseRedirect(urlresolvers.reverse(
-        SiteView, args=[entity.site.key().id()]))
+        SiteView, args=[entity.site.key().id_or_name()]))
 
 
 class CheckRequest(SiteExpense):
@@ -993,7 +1030,9 @@ def SiteExpenseState(request, item_cls, item_id):
   if not request.POST:
     return http.HttpResponse(status=400)
   cls = SITE_EXPENSE_TYPES[item_cls]
-  modl = cls.get_by_id(int(item_id))
+  modl = cls.get_by_key_name(item_id)
+  if modl is None:
+    modl = cls.get_by_id(int(item_id))
   if not modl:
     return http.HttpResponse(status=400)
   value = request.POST['value']
@@ -1003,7 +1042,9 @@ def SiteExpenseState(request, item_cls, item_id):
 
 def ExpenseNew(request, site_id):
   """Creates a new Expense."""
-  site = models.NewSite.get_by_id(int(site_id))
+  site = models.NewSite.get_by_key_name(site_id)
+  if site is None:
+    site = models.NewSite.get_by_id(int(site_id))
   params = {}
   if site is None:
     params['error'] = 'Site ID %s not found!' % site_id
@@ -1015,7 +1056,9 @@ def ExpenseNew(request, site_id):
 def Expense(request, expense_id):
   """Displays or saves an Expense."""
   if request.META['REQUEST_METHOD'] == 'GET':
-    expense = models.Expense.get_by_id(int(expense_id))
+    expense = models.Expense.get_by_key_name(expense_id)
+    if expense is None:
+      expense = models.Expense.get_by_id(int(expense_id))
     params = {}
     if expense is None:
       params['error'] = 'Expense ID %s not found!' % expense_id

@@ -15,7 +15,7 @@
 		{% else %}
 		<b>
 		  Site # 
-		  <a href="{% url room.views.SiteView order.site.key.id %}">
+		  <a href="{% url room.views.SiteView order.site.key.id_or_name %}">
 		    {{ order.site.number }}
 		  </a>
 		</b>
@@ -69,7 +69,7 @@
 	      {% endifnotequal %}
 	      <span class="attr">
 		Order ID # 
-		{{ order.key.id }}
+		{{ order.key.id_or_name }}
 	      </span>
 	      <span  class="attr">
 		Status: {{ order.state }}
@@ -205,7 +205,7 @@
 	  <tr>
 	    <td class=listpic>
 	      {% if order_item.item.thumbnail %}
-	      <img src="{% url views.ItemThumbnail order_item.item.key.id %}">
+	      <img src="{% url views.ItemThumbnail order_item.item.key.id_or_name %}">
 	      {% endif %}
 	    </td>
 	    <td>
@@ -221,7 +221,7 @@
 	      {% if order_item.SupportsName %}
 	      -
 	      <span class="jeditable-order-item-name" 
-		    id="{{ order_item.key.id }}"
+		    id="{{ order_item.key.id_or_name }}"
 		    >{{ order_item.name }}</span>
 	      {% endif %}
 	    </td>

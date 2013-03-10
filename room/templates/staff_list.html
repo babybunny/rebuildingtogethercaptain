@@ -26,8 +26,8 @@ $(function(){
     <tr>
       <td>
 	<span class="sortorder">{{ person.name }}</span>
-	<a name="{{ person.key.id }}"
-	   href="{%url room.views.StaffEdit person.key.id%}">
+	<a name="{{ person.key.id_or_name }}"
+	   href="{%url room.views.StaffEdit person.key.id_or_name%}">
 	  {{person.name|escape}}
 	</a>
       </td>

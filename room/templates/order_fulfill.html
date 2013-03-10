@@ -20,7 +20,7 @@
   (no more captain changes).
   {% for order_dict in orders %}
   <input type="hidden"
-	 name="{{ export_checkbox_prefix }}{{ order_dict.order.key.id }}" 
+	 name="{{ export_checkbox_prefix }}{{ order_dict.order.key.id_or_name }}" 
 	 value="checked">
   {% endfor %}
 </form>
