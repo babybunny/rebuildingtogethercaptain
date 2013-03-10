@@ -27,8 +27,8 @@ import logging
 
 # Use Django 1.0 instead of the default.
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from google.appengine.dist import use_library
-use_library('django', '1.0')
+# from google.appengine.dist import use_library
+# use_library('django', '1.0')
 
 from appengine_django import InstallAppengineHelperForDjango
 from appengine_django import have_django_zip

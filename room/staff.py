@@ -7,7 +7,6 @@ from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.api import taskqueue
 from google.appengine.ext import deferred
-from google.appengine.ext.db import djangoforms
 from google.appengine.ext.webapp import template
 
 import django
