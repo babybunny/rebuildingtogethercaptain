@@ -7,7 +7,7 @@
 <h2>{{ what_you_are_doing }}</h2>
 {% if site %}
 <p>
-  <a href="{% url room.views.SiteView site.key.id %}">
+  <a href="{% url room.views.SiteView site.key.id_or_name %}">
     Click here to view site # {{ site.number }} and orders.
   </a>
 </p>
@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td class="layout">
-      <form action="{% if site.key.id %}{% url room.views.SiteEdit site.key.id %}{% else %}{% url room.views.SiteNew %}{% endif %}" method="post">
+      <form action="{% if site.key.id_or_name %}{% url room.views.SiteEdit site.key.id_or_name %}{% else %}{% url room.views.SiteNew %}{% endif %}" method="post">
 	<table>
 	  {{form}}
 	  <tr>
@@ -51,7 +51,7 @@
 	  <td colspan=2>
 	    {% for sitecaptain in site.sitecaptain_set %}
 	    <li>
-	      <a href="{% url room.views.CaptainList %}#{{ sitecaptain.captain.key.id }}">
+	      <a href="{% url room.views.CaptainList %}#{{ sitecaptain.captain.key.id_or_name }}">
 		{{ sitecaptain.captain.name }}
 	      </a>
 	      ({{ sitecaptain.type }} )
@@ -109,8 +109,8 @@
 		{% for sitecaptain in site.sitecaptain_set %}
 		<li>
 		  <input type="checkbox" name="{{ delete_sitecaptain }}" 
-			 value="{{ sitecaptain.key.id }}">
-		  <a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id %}">
+			 value="{{ sitecaptain.key.id_or_name }}">
+		  <a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id_or_name %}">
 		    {{ sitecaptain.captain.name }}
 		  </a>
 		  ({{ sitecaptain.type }} )

@@ -33,7 +33,7 @@ sites have no {{ order_sheet.name }} order.
 
 <form 
    method="POST" 
-   action="{% url room.staff.SitesWithoutOrderSendEmail order_sheet.key.id %}">
+   action="{% url room.staff.SitesWithoutOrderSendEmail order_sheet.key.id_or_name %}">
 <div class="left">
 Select one or more captains
 <br>
@@ -60,10 +60,10 @@ Select one or more captains
     <tr>
       <td>
         <input type="checkbox" class="captain"
-               id="{{sc.captain.key.id}}" 
+               id="{{sc.captain.key.id_or_name}}" 
                name="site_captain" 
-               value="{{ site.key.id }} {{sc.captain.key.id}}" >
-        <label for="{{sc.captain.key.id}}">
+               value="{{ site.key.id_or_name }} {{sc.captain.key.id_or_name}}" >
+        <label for="{{sc.captain.key.id_or_name}}">
       </td>
       <td>
         {% if site.IsCDBG %}CDBG{% endif %}

@@ -14,8 +14,8 @@
 
 <p>In order to change which items appear on the order form, it must be done by visiting the <a href="{%url room.views.ItemList%}">list of items</a> and changing each one's "Appears on Order Form".
 
-{% if order_sheet.key.id %}
-<form action="{% url room.views.OrderSheetEdit order_sheet.key.id %}" method="post">
+{% if order_sheet.key.id_or_name %}
+<form action="{% url room.views.OrderSheetEdit order_sheet.key.id_or_name %}" method="post">
 {% else %}
 <form action="{% url room.views.OrderSheetNew %}" method="post">
   {% endif %}

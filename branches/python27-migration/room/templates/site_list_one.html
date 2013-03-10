@@ -10,15 +10,15 @@
 <p>
   <i>{{ entries.0.program }}</i>
 </p>
-<a name="{{ site.number }}" href="{% url room.views.SiteEdit entries.0.key.id %}">
+<a name="{{ site.number }}" href="{% url room.views.SiteEdit entries.0.key.id_or_name %}">
   Edit Site Info
 </a>
 |
-<a href="{% url room.views.SiteExpenses entries.0.key.id %}">
+<a href="{% url room.views.SiteExpenses entries.0.key.id_or_name %}">
   View all Site Expenses
 </a>
 |
-<a href="{% url room.views.SiteSummary entries.0.key.id %}">
+<a href="{% url room.views.SiteSummary entries.0.key.id_or_name %}">
   Reporting Summary
 </a>
 {% if user.captain %}

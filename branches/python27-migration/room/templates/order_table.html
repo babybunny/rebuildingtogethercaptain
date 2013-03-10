@@ -38,7 +38,7 @@
       {% if in_form %}
       <td>
 	<input type="checkbox" class="export_checkbox"
-	       name="{{ export_checkbox_prefix }}{{ order.key.id }}">
+	       name="{{ export_checkbox_prefix }}{{ order.key.id_or_name }}">
       </td>
       {% endif %}
       <td>	
@@ -46,11 +46,11 @@
 	<span class="actions">
 	{% ifequal order.state 'Received' %}
 	{% if order_sheet %}
-	<a href="{% url room.order.OrderFulfill order.key.id order_sheet.key.id %}">
+	<a href="{% url room.order.OrderFulfill order.key.id_or_name order_sheet.key.id_or_name %}">
 	  Fulfill
 	</a>
 	{% else %}
-	<a href="{% url room.order.OrderFulfill order.key.id %}">
+	<a href="{% url room.order.OrderFulfill order.key.id_or_name %}">
 	  Fulfill
 	</a>	
 	{% endif %}
@@ -58,17 +58,17 @@
 	{% ifnotequal order.state 'Deleted' %}
 	-
 	{% if order_sheet %}
-	<a href="{% url room.order.OrderDelete order.key.id order_sheet.key.id %}">
+	<a href="{% url room.order.OrderDelete order.key.id_or_name order_sheet.key.id_or_name %}">
 	    Delete
 	</a>
 	{% else %}
-	<a href="{% url room.order.OrderDelete order.key.id %}">
+	<a href="{% url room.order.OrderDelete order.key.id_or_name %}">
 	    Delete
 	</a>
 	{% endif %}
 	{% endifnotequal %}
 	-
-	<a href="{% url room.order.OrderEdit order.key.id %}">
+	<a href="{% url room.order.OrderEdit order.key.id_or_name %}">
 	  Edit
 	</a>
 	</span>
@@ -76,7 +76,7 @@
       </td>
       <td>
 	<span class="sortorder">{{ order.site.number }}</span>
-	<a href="{% url room.views.SiteView order.site.key.id %}">
+	<a href="{% url room.views.SiteView order.site.key.id_or_name %}">
 	{{ order.site.number|escape }}
 	</a>
       </td>

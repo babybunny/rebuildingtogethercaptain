@@ -82,7 +82,7 @@ class Site(BaseModel):
     notes = db.TextProperty()     
 
     def __unicode__(self):
-        return 'Site #%s | %s' % (self.key().id(), self.name)
+        return 'Site #%s | %s' % (self.key().id_or_name(), self.name)
 
 class NewSite(BaseModel):
     """A work site."""
@@ -519,7 +519,7 @@ class Order(BaseModel):
             self.sub_total = sub_total
             self.put()
             logging.info('Updated subtotal for order %d to %0.2f', 
-                         self.key().id(), sub_total)
+                         self.key().id_or_name(), sub_total)
 
     def LogisticsStart(self):
         for od in self.orderdelivery_set:

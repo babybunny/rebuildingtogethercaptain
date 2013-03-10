@@ -1,5 +1,5 @@
 <h2>
-  Check Request # {{ entity.key.id}} 
+  Check Request # {{ entity.key.id_or_name}} 
   for Site {{ entity.site.number }}
 </h2>
 <hr>
@@ -7,15 +7,15 @@
 <tr>
   <td>Click to Edit</td>
   <td>
-    <a name="{{ entity.key.id }}"
-       href="{%url room.views.CheckRequestEdit entity.key.id%}">
-      {{entity.key.id|escape}}
+    <a name="{{ entity.key.id_or_name }}"
+       href="{%url room.views.CheckRequestEdit entity.key.id_or_name%}">
+      {{entity.key.id_or_name|escape}}
     </a>
   </td>
 </tr>
 <tr><td>Site</td>
   <td>
-    <a href="{% url room.views.SiteView entity.site.key.id %}">
+    <a href="{% url room.views.SiteView entity.site.key.id_or_name %}">
       {{ entity.site.number|escape }}
     </a>
   </td>

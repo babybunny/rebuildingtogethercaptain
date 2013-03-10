@@ -88,7 +88,7 @@ text-align: left;
       - 
       {% endif %}
       ${{ order.Total|floatformat:2 }}
-      <a href="{% url room.order.OrderEdit order.key.id %}" target="_blank">
+      <a href="{% url room.order.OrderEdit order.key.id_or_name %}" target="_blank">
 	edit
       </a>
       {% endfor %}
@@ -117,7 +117,7 @@ text-align: left;
     {% for sheet in order_sheets %}
     <div class="order_sheet">
       <a id="{{ sheet.code }}"
-	 href="{% url room.order.OrderNew site.key.id sheet.code %}">
+	 href="{% url room.order.OrderNew site.key.id_or_name sheet.code %}">
 	{{ sheet.name }}
       </a>
       <span></span>

@@ -12,8 +12,8 @@ $(function(){
   {% with site.checkrequest_set as entries %}
   {% with "CheckRequest" as model_cls_name %}
   {% for entity in entries %}
-  $('.jeditable-state[name="{{ entity.key.id }}"]').editable(
-     "{% url room.views.SiteExpenseState model_cls_name entity.key.id %}", {
+  $('.jeditable-state[name="{{ entity.key.id_or_name }}"]').editable(
+     "{% url room.views.SiteExpenseState model_cls_name entity.key.id_or_name %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -45,7 +45,7 @@ $(function(){
 <h2>Site #{{ site.number}} Expenses</h2>
 
 <p>
-  <a href="{% url room.views.SiteView site.key.id %}">
+  <a href="{% url room.views.SiteView site.key.id_or_name %}">
     Go back to Site #{{ site.number }}.
   </a>
 </p>

@@ -6,7 +6,7 @@
 	src="http://code.angularjs.org/0.9.16/angular-0.9.16.js"></script>
 <script type="text/javascript">
 function ExpenseCtrl() {
-  this.site = {{ expense.site.key.id }};
+  this.site = {{ expense.site.key.id_or_name }};
   this.site_choices = {{ sites_json }};
 }
 

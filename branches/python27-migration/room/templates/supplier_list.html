@@ -28,7 +28,7 @@ $(document).ready(function(){
     {% for person in entries %}
     <tr><td>
 	<span class="sortorder">{{ person.name }}</span>
-	<a href="{%url room.views.SupplierEdit person.key.id%}">
+	<a href="{%url room.views.SupplierEdit person.key.id_or_name%}">
 	  {{person.name|escape}}
 	</a>
       </td><td>

@@ -30,15 +30,15 @@
 <div style="float: right; max-width: 400px">
 These are the current pictures.  Use the picture upload field on the left to change the picture when you submit this form.
 <p>Thumbnail:<br/>
-<img src="{% url room.views.ItemThumbnail item.key.id %}">
+<img src="{% url room.views.ItemThumbnail item.key.id_or_name %}">
 </p>
 <p>Original picture:<br/>
-<img src="{% url room.views.ItemPicture item.key.id %}">
+<img src="{% url room.views.ItemPicture item.key.id_or_name %}">
 </p>
 </div>
 {% endif %}
-{% if item.key.id %}
-<form action="{% url room.views.ItemEdit item.key.id %}" 
+{% if item.key.id_or_name %}
+<form action="{% url room.views.ItemEdit item.key.id_or_name %}" 
       enctype="multipart/form-data" method="post">
 {% else %}
 <form action="{% url room.views.ItemNew %}" 
