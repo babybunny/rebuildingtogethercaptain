@@ -7,11 +7,10 @@ import csv
 import datetime
 import logging
 import os
-import simplejson
+import json
 from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
-from google.appengine.ext.db import djangoforms
 from google.appengine.ext.webapp import template
 
 import django
@@ -92,7 +91,7 @@ def _Autocomplete(request, model_class, program_filter=False):
     label = c.Label()
     matches[label] = c.key().id()
   response = http.HttpResponse(mimetype='application/json')  
-  response.write(simplejson.dumps(matches))
+  response.write(json.dumps(matches))
   return response
 
 
@@ -649,10 +648,10 @@ def SupplierNewSimple(request):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return http.HttpResponse(simplejson.dumps({'errors': errors}))
+    return http.HttpResponse(json.dumps({'errors': errors}))
   supplier.put()
-  return http.HttpResponse(simplejson.dumps({'key': str(supplier.key()),
-                                             'name': supplier.name}))
+  return http.HttpResponse(json.dumps({'key': str(supplier.key()),
+                                       'name': supplier.name}))
 
 def ItemList(request):
   """Request / -- show all items."""

@@ -5,7 +5,10 @@
 # This don't work in appengine, we use djangoforms instead.
 # from django.forms import ModelForm
 from django import forms  # DateField, DateTimeInput
-from google.appengine.ext.db import djangoforms
+
+# djangoforms is no longer supported in Python2.7 runtime. 
+# We need to use a local copy of it, for now :(
+import djangoforms
 import common
 import models
 
