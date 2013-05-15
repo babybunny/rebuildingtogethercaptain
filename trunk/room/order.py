@@ -1,5 +1,6 @@
 """Views and methods related to handling orders."""
 
+import collections
 import csv
 import datetime
 import logging
@@ -260,26 +261,19 @@ def _OrderExportInternal(writable, post_vars):
                    'LogisticsInstructions',
                    'Optional Item Note',
                    ])
-  order_items_by_order = {}
-  for i in range(0, len(orders), 30):  # 30 is the magic filter limit
+  order_items_by_order = collections.defaultdict(list)
+  # 30 is the magic filter limit, experimentally derived
+  for i in range(0, len(orders), 30):  
     batch_orders = orders[i:i+30]
     logging.info('loading batch of %d orders starting with %d', 
                  len(batch_orders), i)
     q = models.OrderItem.all()
     q.filter('order IN ', batch_orders)
     order_items = [oi for oi in q if oi.FloatQuantity()]
+    order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
     for oi in order_items:
-      order_id = oi.order.key().id()
-      if order_id not in order_items_by_order:
-        order_items_by_order[order_id] = []
-      order_items_by_order[order_id].append(oi)
-  
-  for o in orders:
-    order_id = o.key().id()
-    if order_id in order_items_by_order:
-      order_items = order_items_by_order[order_id]
-      order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
-    for oi in order_items:
+      o = oi.order
+      order_id = o.key().id()      
       row = [o.site.number,
              o.key().id(),
              o.modified.date().isoformat(),
@@ -296,8 +290,33 @@ def _OrderExportInternal(writable, post_vars):
              o.logistics_instructions,
              oi.name,
              ]
+      order_items_by_order[order_id].append(row)
+
+    for o in batch_orders:
+      if o.key().id() not in order_items_by_order:
+        row = [o.site.number,
+               o.key().id(),
+               o.modified.date().isoformat(),
+               o.site.street_number,
+               o.site.city_state_zip,
+               o.notes,
+               '<no items>',
+               '<no items>',
+               '<no items>',
+               '<no items>',
+               '<no items>',
+               o.logistics_start,
+               o.logistics_end,
+               o.logistics_instructions,
+               '<no items>',
+               ]
+        order_items_by_order[o.key().id()].append(row)
+  
+  for o in orders:
+    for row in order_items_by_order[o.key().id()]:
       row = [unicode(f).encode('ascii', 'ignore') for f in row]
       writer.writerow(row)
+
 
 def _SortOrderItemsWithSections(order_items):
   order_items.sort(
