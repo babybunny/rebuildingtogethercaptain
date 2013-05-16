@@ -1,0 +1,38 @@
+<h3>{{whatsGoingOn}}</h3>
+<form name="myForm">
+ 
+  <div class="control-group" ng-class="{error: myForm.year.$invalid}">
+    <label>Year</label>
+    <input type="number" name="year" ng-model="program.year" 
+           min="2000" integer required>
+    <span ng-show="myForm.year.$error.required" class="help-inline">
+        Required</span>
+    <span ng-show="myForm.year.$error.integer" class="help-inline">
+        Not a year</span>
+  </div>
+
+  <div class="control-group" ng-class="{error: myForm.name.$invalid}">
+    <label>Name</label>
+    <small>Like NRD, Safe, Energy, Teambuild, Misc, Youth.</small>
+    <input type="text" name="name" ng-model="program.name" required>
+    <span ng-show="myForm.name.$error.required" class="help-inline">
+        Required</span>
+  </div>
+ 
+  <div class="control-group" 
+       ng-class="{error: myForm.site_number_prefix.$invalid}">  
+    <label>Site Number Prefix</label>
+    <small>Like "130" for 2013 NRD, where "13" is the year (since 2000) 
+      and "0" is code for NRD.  Site numbers for the program will start with this, for example 13045DAL starts with "130" so it's in 2013 NRD.</small>
+    <input type="text"  name="site_number_prefix" 
+           ng-model="program.site_number_prefix" required>
+    <span ng-show="myForm.site_number_prefix.$error.required" 
+          class="help-inline">
+      Required</span>
+  </div>
+  
+  <br>
+  <a href="#/" class="btn">Cancel</a>
+  <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid"
+          class="btn btn-primary">Save</button>
+</form>

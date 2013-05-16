@@ -1,37 +1,55 @@
 
 angular.module('programServices', ['ngResource']).
     factory('Program', function($resource){
-  return $resource('rest/Program', {}, {
-    query: {method:'GET'}
+            // 'rest/Program' uses appengine-rest-server's REST interface
+  return $resource('/room/plain_models/Program', {}, {
+          query: {method: 'GET', isArray: true}
   });
 });
 
 angular.module('userServices', ['ngResource']).
     factory('User', function($resource){
   return $resource('data/User', {}, {
-    query: {method:'GET'}
+    query: {method: 'GET'}
   });
 });
 
 angular.module('program_functions', ['programServices', 'userServices']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.
-      when('/', {templateUrl: 'partials/program_list.html',   controller: ProgramCtrl}).
-        otherwise({redirectTo: '/phones'});  // huh?
+      when('/', 
+           {controller:ProgramListCtrl, 
+            templateUrl:'partials/program_list.html'}).
+      when('/edit/:programId',
+           {controller:ProgramEditCtrl, 
+            templateUrl:'partials/program_detail.html'}).
+      when('/new', 
+           {controller:ProgramCreateCtrl, 
+            templateUrl:'partials/program_detail.html'}).
+      otherwise({redirectTo:'/'});
   }]);
 
-function ProgramCtrl($scope, $routeParams, Program, User) {
+function ProgramListCtrl($scope, $routeParams, Program, User) {
   // query() returns JSON like this 
-  // {"list": {"Program": [{"status": "Active", "site_number_prefix": "130",
-  $scope.program_query = Program.query();  
+  // [{"status": "Active", "site_number_prefix": "130"}, ... ]
+  $scope.programs = Program.query();  
   $scope.user = User.query();
 
   $scope.IsSelectedProgram = function(program) {
-     var yearname = program.year + ' ' + program.name;
-     console.log('yn:"' + yearname + '" selected:"' + $scope.user.program_selected + '"');
-     if (yearname === $scope.user.program_selected) {
-       return true;
-     }
-     return false;
+      return program.key === $scope.user.program_selected;
   }; 
+}
+
+function ProgramEditCtrl($scope, $routeParams, Program, User) {
+    $scope.whatsGoingOn = "Edit a Program";
+
+}
+
+function ProgramCreateCtrl($scope, $location, Program, User) {
+    $scope.whatsGoingOn = "Create a new Program";
+    $scope.save = function() {
+        Program.save($scope.program, function(program) {
+                $location.path('/');
+            });
+    }
 }

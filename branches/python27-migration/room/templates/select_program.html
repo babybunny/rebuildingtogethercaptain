@@ -1,7 +1,9 @@
 {%extends "base.html"%}
 {% block script %}
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular-resource.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular-resource.js"></script>
+<script src="/js/bootstrap.js"></script>
+<link href="/css/bootstrap.css" rel="stylesheet" media="screen">
 <script src="js/program.js"></script>
 {% endblock script %}
 {% block breadcrumb %}
@@ -13,9 +15,10 @@
 
 <h2>{{ what_you_are_doing }}</h2>
 
-<div style="float: right" ng-app="program_functions">
-<div ng-view>
-</div>
+<div style="float: right; width: 300px" ng-app="program_functions">
+  <h2>RTP Programs</h2>
+  <div ng-view id="view">
+  </div>
 </div>
 
 
