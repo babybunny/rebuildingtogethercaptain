@@ -18,6 +18,7 @@ import models
 import response
 import common
 import order
+import plain_models
 import views
 
 TEST_SITE_NUMBER = '11999ZZZ'
@@ -68,11 +69,13 @@ def SelectProgram(request, program=None):
     what_you_are_doing = "Select a Program to work on"
     return common.Respond(request, 'select_program', locals())
 
-  if program not in common.PROGRAMS:
-    return http.HttpResponseError('program %s not in PROGRAMS' % program)
-  staff.program_selected = program
-  staff.put()
-  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+  if (program in common.PROGRAMS or 
+      plain_models.Program.get_by_key_name(program)):
+    staff.program_selected = program
+    staff.put()
+    return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+  else:
+    return http.HttpResponse('program %s not in PROGRAMS' % program, status=400)
 
 
 def SiteJump(request):
