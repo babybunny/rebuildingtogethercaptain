@@ -105,19 +105,22 @@ def SitesWithoutOrder(request, order_sheet_id):
   order_sites = [o.site for o in orders]
   sites_without_order = [s for s in all_sites if s not in order_sites]
   sites_without_order.sort(key=lambda s: s.number)
+  staff = models.Staff.all().order('name')
   template_dict = {'sites': sites_without_order,
                    'num_sites_without_order': len(sites_without_order),
                    'num_sites': len(all_sites),
+                   'staff': staff,
+                   'user': user,
                    'order_sheet': order_sheet,
-                   'EMAIL_SENDER': common.EMAIL_SENDER,
-                   'EMAIL_SENDER_READABLE': common.EMAIL_SENDER_READABLE,
                    'EMAIL_LOG': common.EMAIL_LOG,
+                   'EMAIL_LOG_LINK': common.EMAIL_LOG_LINK,
                    }
   return common.Respond(request, 'sites_without_order', template_dict)
     
 
 def SitesWithoutOrderSendEmail(request, order_sheet_id):
   subject = request.POST['subject']
+  cc = request.POST['cc']
   body = request.POST['body']
   logging.info(request.POST)
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
@@ -131,6 +134,9 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
     if site_id not in captains_by_site:
       captains_by_site[site_id] = []
     captains_by_site[site_id].append(captain_id)
+  staff_id = request.POST['staff']
+  staff = models.Staff.get_by_id(int(staff_id))
+  sender = str(staff.email)
   for site_id in captains_by_site:
     site = models.NewSite.get_by_id(int(site_id))
     if not site:
@@ -146,14 +152,15 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
     to = list(set([str(c.email) for c in captains]))
     template_dict = {
       'to': to,
+      'sender': sender,
       'captains': captains,
       'site': site,
       'order_sheet': order_sheet,
       'body': body,
-      }
+    }
     
     logging.info('sending mail re: %s to %s', subject, to)
-    common.SendMail(to, subject, body,
+    common.SendMail(to, sender, cc, subject, body,
                     'sites_without_order_email.html', template_dict)
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
