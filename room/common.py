@@ -13,9 +13,15 @@ import models
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
-NRD = '04/27/2013'
+NRD = '04/27/2014'
 
 PROGRAMS = [
+  '2014 NRD', 
+  '2014 Misc',
+  '2014 Safe',
+  '2014 Energy',
+  '2014 Teambuild',
+  '2014 Youth',
   '2013 NRD', 
   '2013 Misc',
   '2013 Safe',
