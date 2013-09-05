@@ -382,6 +382,8 @@
 		              ${{ entity.Total|floatformat:2 }}
 	              </td>
 	              <td>
+	                {{ entity.state }}
+                  <br/>
 		              <a name="{{ entity.key.id }}"
 		                 href="{%url room.views.CheckRequestView entity.key.id%}">
 		                view</a>
@@ -433,6 +435,8 @@
 		              ${{ entity.Total|floatformat:2 }}
 	              </td>
 	              <td>
+	                {{ entity.state }}
+                  <br/>
 		              <a name="{{ entity.key.id }}"
 		                 href="{%url room.views.VendorReceiptView entity.key.id%}">
 		                view</a>
@@ -484,6 +488,8 @@
 		              ${{ entity.Total|floatformat:2 }}
 	              </td>
 	              <td>
+	                {{ entity.state }}
+                  <br/>
 		              <a name="{{ entity.key.id }}"
 		                 href="{%url room.views.InKindDonationView entity.key.id%}">
 		                view
