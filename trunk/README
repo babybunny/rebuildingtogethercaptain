@@ -34,3 +34,22 @@ Start up the dev appserver.  Hit this URL to run all tests:
 http://localhost:8081/test
 To run just one module from the test/ dir:
 http://localhost:8081/test?name=test_order
+
+
+# Copying testdata into dev appserver
+port=8084
+kinds="Captain"
+for kind in $kinds; do
+  echo "uploading $kind"
+  echo | python $(which appcfg.py) upload_data --filename=testdata/$kind.csv --config_file=bulkloader.yaml --url=http://localhost:${port}/_ah/remote_api --kind=$kind --email test@example.com --passin
+done
+
+
+# Making a new testdata set.
+# Remove files if you want to over-write.
+kinds=$(grep kind: bulkloader.yaml | cut -b8- | xargs)
+for kind in $kinds; do
+  echo "downloading $kind"
+  python $(which appcfg.py) download_data --filename=testdata/$kind.csv --config_file=bulkloader.yaml --url=http://rebuildingtogethercaptain.appspot.com/_ah/remote_api --kind=$kind --email $email --passin < pass
+done
+
