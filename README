@@ -36,6 +36,11 @@ To run just one module from the test/ dir:
 http://localhost:8081/test?name=test_order
 
 
+# Testdata!
+# Conventional key ranges:
+# 1000-1999 Staff
+# 2000-2999 Captain
+
 # Copying testdata into dev appserver
 port=8084
 kinds="Captain"
