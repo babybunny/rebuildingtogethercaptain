@@ -41,6 +41,8 @@ http://localhost:8081/test?name=test_order
 # 1000-1999 Staff
 # 2000-2999 Captain
 
+kinds="Staff Captain NewSite"
+
 # Copying testdata into dev appserver
 port=8084
 kinds="Captain"
