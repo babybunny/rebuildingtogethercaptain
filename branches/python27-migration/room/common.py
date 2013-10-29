@@ -13,9 +13,15 @@ import models
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
-NRD = '04/27/2013'
+NRD = '04/27/2014'
 
 PROGRAMS = [
+  '2014 NRD', 
+  '2014 Misc',
+  '2014 Safe',
+  '2014 Energy',
+  '2014 Teambuild',
+  '2014 Youth',
   '2013 NRD', 
   '2013 Misc',
   '2013 Safe',
@@ -48,7 +54,8 @@ EMAIL_SENDER = 'rebuildingtogether.rooms@gmail.com'
 EMAIL_SENDER_READABLE = 'Rebuilding Together ROOMS Support'
 # CC'd on all emails as a logging mechanism.
 EMAIL_LOG = 'rebuildingtogethercaptain@googlegroups.com'
-
+EMAIL_LOG_LINK = ('https://groups.google.com/forum/#!forum/'
+                  'rebuildingtogethercaptain')
 # Placeholder Captain record which represents RTP Staff.
 STAFF_CAPTAIN_EMAIL = 'rebuildingtogether.rooms@gmail.com'
 
@@ -75,10 +82,11 @@ def NotifyAdminViaMail(subject, template, template_dict):
     message.body = text
   if html is not None:
     message.html = html
+  message.check_initialized()
   message.send()
 
 
-def SendMail(to, subject, text, template, template_dict):
+def SendMail(to, sender, cc, subject, text, template, template_dict):
   base_uri = GetBaseUri()
   td = template_dict.copy()
   is_dev = IsDev()
@@ -90,19 +98,18 @@ def SendMail(to, subject, text, template, template_dict):
   # because it shells out to a sendmail command with the arguments unquoted.
   if is_dev:
     sender = EMAIL_SENDER
-  else:
-    sender = '%s <%s>' % (EMAIL_SENDER_READABLE, EMAIL_SENDER)
   message.sender = sender
   message.subject = subject
+  message.cc = [a.strip() for a in cc.split(',')] + [EMAIL_LOG]
   if is_dev:
     message.to = EMAIL_LOG
   else:
     message.to = to
-  message.reply_to = EMAIL_LOG
   if text is not None:
     message.body = text
   if html is not None:
     message.html = html
+  message.check_initialized()
   message.send()
 
 

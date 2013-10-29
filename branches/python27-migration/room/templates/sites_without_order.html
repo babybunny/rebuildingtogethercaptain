@@ -83,11 +83,23 @@ Select one or more captains
 <div class="right">
 From: 
 <br>
-{{ EMAIL_SENDER_READABLE }} &lt;{{ EMAIL_SENDER }}&gt;
+<select name="staff">
+{% for s in staff %}
+<option value="{{ s.key.id }}"
+  {% ifequal s.email user.staff.email%}
+  selected
+  {% endifequal %} 
+>
+{{ s.name }} &lt;{{ s.email }}&gt;
+</option>
+{% endfor %}
+</select>
 <br>
-CC: 
+CC: (comma separated)
 <br>
-{{ EMAIL_LOG }}
+<input type="text" name="cc" length="1000" size="70"></input>
+<br>
+(will also CC the <a href="EMAIL_LOG_LINK">{{ EMAIL_LOG }} archive</a>)
 <br>
 Subject:
 <br>

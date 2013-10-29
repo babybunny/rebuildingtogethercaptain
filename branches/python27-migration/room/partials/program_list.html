@@ -4,15 +4,13 @@
     <p>
       Currently selected: {{user.program_selected}}
     </p>
-    <ul>
-      <li ng-repeat="program in programs">
-        <i>&quot;{{program.site_number_prefix}}.....&quot;</i>
-        <strong>{{program.year}} {{program.name}}</strong>
-        {{program.status}}
-        <span ng-hide="IsSelectedProgram(program)">
-        <a href="select_program/{{program.year}} {{program.name}}">select</a>
-        </span>
-      </li>
-    </ul>
+    <div ng-repeat="program in programs">
+      <button ng-click="select()" ng-disabled="IsSelectedProgram(program)"
+          class="btn btn-primary">Select</button>
+      <strong>{{program.year}} {{program.name}}</strong>
+      {{program.status}}
+      <i>&quot;{{program.site_number_prefix}}.....&quot;</i>
+      <a href="#/edit/{{program.key}}"><i class="icon-pencil"></i></a>
+    </div>
   </div>
 </div>

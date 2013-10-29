@@ -35,4 +35,6 @@
   <a href="#/" class="btn">Cancel</a>
   <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid"
           class="btn btn-primary">Save</button>
+  <button ng-click="destroy()"
+          ng-show="program.key" class="btn btn-danger">Delete</button>
 </form>

@@ -20,6 +20,14 @@ class Program(db.Model):
     status = db.StringProperty(choices=('Active', 'Inactive'), 
                                default='Inactive')
 
+    def plain(self):
+        return {
+            'key': self.key().name(),
+            'name': self.name,
+            'year': self.year,
+            'site_number_prefix': self.site_number_prefix,
+            'status': self.status,
+            }
 
 class Staff(db.Model):
     """A RTP staff member."""
@@ -27,6 +35,7 @@ class Staff(db.Model):
     email = db.EmailProperty()
     email.unique = True
     email.required = True
+    # The key name of a Program, like "2013 NRD".
     program_selected = db.StringProperty()
     user = db.UserProperty()
     last_welcome = db.DateTimeProperty()
@@ -34,22 +43,42 @@ class Staff(db.Model):
     since = db.DateProperty(auto_now_add=True)
 
 
-class ProgramHandler(webapp.RequestHandler):
+class PlainModelHandler(webapp.RequestHandler):
+    """Requires self.model_class to point to a plain_model."""
+    model_class = None
+
     def get(self):
-        res = []
-        for p in Program.all():
-            res.append({
-                    'key': p.key().name(),
-                    'name': p.name,
-                    'year': p.year,
-                    'site_number_prefix': p.site_number_prefix,
-                    'status': p.status,
-                    })
+        key = self.request.get('key')
+        if key:
+            p = self.model_class.get_by_key_name(key)
+            if not p:
+                self.abort(404)
+            res = p.plain()
+        else:
+            res = []
+            for p in self.model_class.all():
+                res.append(p.plain())
             
         self.response.out.write(json.dumps(res))
         self.response.headers['Content-Type'] = 'application/json'
 
+
+class StaffHandler(PlainModelHandler):
+    model_class = Staff
+
     def post(self):
+        """Only sets program_selected now."""
+        attrs = json.loads(self.request.body)
+        s = plain_models.Staff.get(key=db.Key(encoded=attrs['key']))
+        s.program_selected = attrs['program_selected']
+        s.put()
+    
+
+class ProgramHandler(PlainModelHandler):
+    model_class = Program
+
+    def post(self):
+        """Simply over-write existing Program with same key."""
         attrs = json.loads(self.request.body)
         key = '%d %s' % (attrs['year'], attrs['name'])
         p = Program(key_name=key)
@@ -61,7 +90,8 @@ class ProgramHandler(webapp.RequestHandler):
 
 application = webapp.WSGIApplication(
     [
-        ('/room/plain_models/Program', ProgramHandler)
+        ('/room/plain_models/Program', ProgramHandler),
+        ('/room/plain_models/Staff', StaffHandler),
         ],
     debug=True
     )
