@@ -77,7 +77,7 @@
 	        <strong>{{ sitecaptain.captain.name }}</strong>
 	        {% if user.staff %}
 	        (
-	        <a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id_or_name %}">
+	        <a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id %}">
 	          edit
 	        </a>
 	        )
@@ -117,11 +117,11 @@
       <td>
         <div class="big jeditable" 
 	           id="announcement_subject" 
-	           name="{{ site.key.id_or_name }}">{{ site.announcement_subject }}</div>
+	           name="{{ site.key.id }}">{{ site.announcement_subject }}</div>
         <div class="panel">
 	        <div class="padded jeditable-text"
 	             id="announcement_body"
-	             name="{{ site.key.id_or_name }}">{{ site.announcement_body }}</div>
+	             name="{{ site.key.id }}">{{ site.announcement_body }}</div>
         </div>
         {% if site_list_detail %}
         <p>{{ site.StreetAddress }}
@@ -176,7 +176,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.order.OrderPreview site.key.id_or_name %}">
+	                <a href="{% url room.order.OrderPreview site.key.id %}">
 	                  Place an Order 
 	                </a>
 	              </td>
@@ -204,7 +204,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.views.CheckRequestNew site.key.id_or_name %}">
+	                <a href="{% url room.views.CheckRequestNew site.key.id %}">
 		                Submit a Request
 	                </a>
 	              </td>
@@ -232,7 +232,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.views.VendorReceiptNew site.key.id_or_name %}">
+	                <a href="{% url room.views.VendorReceiptNew site.key.id %}">
 		                Add a Receipt
 	                </a>
 	              </td>
@@ -272,7 +272,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.views.InKindDonationNew site.key.id_or_name %}">
+	                <a href="{% url room.views.InKindDonationNew site.key.id %}">
 		                Add a Donation
 	                </a>
 	              </td>
@@ -323,18 +323,18 @@
 	                {{ order.state }}
 	                {% if order.CanMakeChanges %}
 	                <br>
-	                <a href="{% url room.order.OrderEdit order.key.id_or_name %}">
+	                <a href="{% url room.order.OrderEdit order.key.id %}">
 		                make changes
 	                </a>
 	                {% if user.staff %}
 	                or
-	                <a href="{% url room.order.OrderFulfill order.key.id_or_name site.key.id_or_name %}">
+	                <a href="{% url room.order.OrderFulfill order.key.id site.key.id %}">
 		                fulfill
 	                </a>
 	                {% endif %}
 	                {% else %}
 	                <br>
-	                <a href="{% url room.order.OrderView order.key.id_or_name %}">
+	                <a href="{% url room.order.OrderView order.key.id %}">
 		                view
 	                </a>      
 	                {% endif %}
@@ -353,7 +353,7 @@
         <a name="checkrequests_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{% url room.views.CheckRequestList site.key.id_or_name %}">
+	          <a href="{% url room.views.CheckRequestList site.key.id %}">
 	            list all
 	          </a>
 	        </span>
@@ -382,13 +382,15 @@
 		              ${{ entity.Total|floatformat:2 }}
 	              </td>
 	              <td>
-		              <a name="{{ entity.key.id_or_name }}"
-		                 href="{%url room.views.CheckRequestView entity.key.id_or_name%}">
+	                {{ entity.state }}
+                  <br/>
+		              <a name="{{ entity.key.id }}"
+		                 href="{%url room.views.CheckRequestView entity.key.id%}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
-		              <a name="{{ entity.key.id_or_name }}"
-		                 href="{%url room.views.CheckRequestEdit entity.key.id_or_name%}">
+		              <a name="{{ entity.key.id }}"
+		                 href="{%url room.views.CheckRequestEdit entity.key.id%}">
 		                edit
 		              </a>
 		              {% endif %}
@@ -404,7 +406,7 @@
         <a name="vendorreceipts_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{% url room.views.VendorReceiptList site.key.id_or_name %}">
+	          <a href="{% url room.views.VendorReceiptList site.key.id %}">
 	            list all
 	          </a>
 	        </span>
@@ -433,13 +435,15 @@
 		              ${{ entity.Total|floatformat:2 }}
 	              </td>
 	              <td>
-		              <a name="{{ entity.key.id_or_name }}"
-		                 href="{%url room.views.VendorReceiptView entity.key.id_or_name%}">
+	                {{ entity.state }}
+                  <br/>
+		              <a name="{{ entity.key.id }}"
+		                 href="{%url room.views.VendorReceiptView entity.key.id%}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
-		              <a name="{{ entity.key.id_or_name }}"
-		                 href="{%url room.views.VendorReceiptEdit entity.key.id_or_name%}">
+		              <a name="{{ entity.key.id }}"
+		                 href="{%url room.views.VendorReceiptEdit entity.key.id%}">
 		                edit
 		              </a>
 		              {% endif %}
@@ -455,7 +459,7 @@
         <a name="inkinddonations_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{% url room.views.InKindDonationList site.key.id_or_name %}">
+	          <a href="{% url room.views.InKindDonationList site.key.id %}">
 	            list all
 	          </a>
 	        </span>
@@ -484,14 +488,16 @@
 		              ${{ entity.Total|floatformat:2 }}
 	              </td>
 	              <td>
-		              <a name="{{ entity.key.id_or_name }}"
-		                 href="{%url room.views.InKindDonationView entity.key.id_or_name%}">
+	                {{ entity.state }}
+                  <br/>
+		              <a name="{{ entity.key.id }}"
+		                 href="{%url room.views.InKindDonationView entity.key.id%}">
 		                view
 		              </a>
 		              {% if user.staff %}
 		              <span> or </span>
-		              <a name="{{ entity.key.id_or_name }}"
-		                 href="{%url room.views.InKindDonationEdit entity.key.id_or_name%}">
+		              <a name="{{ entity.key.id }}"
+		                 href="{%url room.views.InKindDonationEdit entity.key.id%}">
 		                edit
 		              </a>
 		              {% endif %}

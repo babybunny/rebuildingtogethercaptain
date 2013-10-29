@@ -1,21 +1,31 @@
 {%extends "base.html"%}
 {% block script %}
+<link href="/css/bootstrap.css" rel="stylesheet" media="screen">
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular-resource.js"></script>
-<script src="/js/bootstrap.js"></script>
-<link href="/css/bootstrap.css" rel="stylesheet" media="screen">
 <script src="js/program.js"></script>
+<style>
+.select-program {
+  display: inline-block;
+  min-width: 80px;
+  text-align: right;
+  color: blue;
+}
+.icon-pencil {
+  float: right;
+}
+</style>
 {% endblock script %}
 {% block breadcrumb %}
   | Select Program
 {% endblock %}
 {%block body%}
-
-
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="/js/bootstrap.js"></script>
 
 <h2>{{ what_you_are_doing }}</h2>
 
-<div style="float: right; width: 300px" ng-app="program_functions">
+<div style="float: right; width: 400px" ng-app="program_functions">
   <h2>RTP Programs</h2>
   <div ng-view id="view">
   </div>
