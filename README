@@ -40,8 +40,10 @@ http://localhost:8081/test?name=test_order
 # Conventional key ranges:
 # 1000-1999 Staff
 # 2000-2999 Captain
+# <number>  NewSite
+# 3000-3999 SiteCaptain
 
-kinds="Staff Captain NewSite"
+kinds="Staff Captain NewSite SiteCaptain"
 
 # Copying testdata into dev appserver
 port=8084
