@@ -3,6 +3,11 @@ Imports site and captain data into ROOM.
 Intended to be run with the remote_api:
 bash> export PYTHONPATH=.:$PYTHONPATH
 bash> python $(which remote_api_shell.py) -s rebuildingtogethercaptain.appspot.com
+s~rebuildingtogethercaptain-hrd> import import_csv
+
+Great instructions at
+https://code.google.com/p/rebuildingtogethercaptain/issues/detail?id=181
+
 # or for development..
 bash> python $(which remote_api_shell.py) -s localhost:8081 
 dev~rebuildingtogethercaptain> reload(import_csv)
@@ -17,13 +22,14 @@ import main  # to initialize Django
 from room import models
 from google.appengine.ext import db
 
-PROGRAM = '2012 NRD'
+PROGRAM = '2014 NRD'
+# PROGRAM = '2014 Safe'
 
 def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
     """Change input_csv to actual input file - the default is test data."""
     reader = csv.DictReader(open(input_csv))
     for s in reader:
-      number = s["Project::zProject_ID"]
+      number = s["Number"]
       site = models.NewSite.all().filter('number =', number).get()
       if site:
           logging.info('site %s exists, skipping', number)
@@ -31,25 +37,25 @@ def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
       else:
           site = models.NewSite(number=number)
       site.program = PROGRAM
-      site.budget = int(s["Project::Project_Budget"])
+      # site.budget = int(s["Budget"])
 
       def clean_s(k):
           return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').encode('ascii', 'replace')
 
-      site.name = clean_s("Applicant's_Party_Record::Name ComposedTwoLinesWAKA")
-      site.street_number = clean_s("Address::Street Line")
+      site.name = clean_s("Recipient Name")
+      site.street_number = clean_s("Street Number")
       site.city_state_zip = "%s CA, %s" % (
-          clean_s("Address::City"), clean_s("Address::zip"))
-      site.applicant_home_phone = clean_s("Applicant's_Phone_Home::number")
-      site.applicant_work_phone = clean_s("Applicant's_Phone_Work::number")
-      site.applicant_mobile_phone = clean_s("Applicant's_Phone_Mobile::number")
-      site.applicant_email = clean_s("Applicant's_email::email")
-      site.sponsor = clean_s("project_Sponsorships_donorPartyRecord::Name Composed Simple")
-      site.rating = clean_s("Rating")
-      site.rrp_test = clean_s("RRP Is_Testing Required")
-      site.rrp_level = clean_s("RRP Level")
-      site.roof = clean_s("Roof_Request_Professional_Evaluation")
-      site.jurisdiction = clean_s("Project::Project Jurisdiction")
+          clean_s("City"), clean_s("Zip"))
+      site.applicant_home_phone = clean_s("Applicant Home Phone")
+      site.applicant_work_phone = clean_s("Applicant Work Phone: ")
+      site.applicant_mobile_phone = clean_s("Applicant Mobile Phone:")
+      # site.applicant_email = clean_s("Applicant email")
+      # site.sponsor = clean_s("Sponsor")
+      # site.rating = clean_s("TODO")
+      # site.rrp_test = clean_s("TODO RRP Is_Testing Required")
+      # site.rrp_level = clean_s("TODO RRP Level")
+      # site.roof = clean_s("TODO Roof_Request_Professional_Evaluation")
+      # site.jurisdiction = clean_s("Jurisdiction")
       site.put()
       logging.info('put site %s', number)
 
@@ -60,9 +66,9 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
       def clean_s(k):
           return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').encode('ascii', 'replace')
 
-      key = s['key']
-      name = "%s %s" % (clean_s("PartyIFindividual::First Name"),
-                        clean_s("PartyIFindividual::Last Name"))
+      key = s.get('key')
+      name = "%s %s" % (clean_s("First Name"),
+                        clean_s("Last Name"))
       email = s["Email"]
       captain = None
       if key:
@@ -81,14 +87,14 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
       # Over-write these values, assume volunteer database is more up to date.
       captain.name = name
       captain.email = email
-      captain.phone_mobile = clean_s("Phones Mobile::number")
-      captain.phone_work = clean_s("Phones Work::number")
-      captain.phone_home = clean_s("Phones Home::number")
-      captain.phone_fax = clean_s("Phones Fax::number")
-      captain.phone_other = clean_s("Phones Other::number")
+      captain.phone_mobile = clean_s("Phone mobile")
+      captain.phone_work = clean_s("Phone work")
+      captain.phone_home = clean_s("Phone home")
+      # captain.phone_fax = clean_s("Phones Fax::number")
+      # captain.phone_other = clean_s("Phones Other::number")
       captain.put()
 
-      number = s["Vol Log::Project num"]
+      number = s["Number"]
       site = models.NewSite.all().filter('number =', number).get()
       if not site:
           logging.error('site %s does not exist, skipping', number)
@@ -102,7 +108,7 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
                        site.number, captain.name)
           sitecaptain = models.SiteCaptain(site=site, captain=captain)
       # In input type is like "Volunteer Captain" but in model it's "Volunteer"
-      input_type = s["Vol Log::Type"]
+      input_type = s["Role"]
       for c in models.SiteCaptain.type.choices:
           if c in input_type:
               sitecaptain.type = c
@@ -116,6 +122,20 @@ Cari, 650-366-6597 x224, cari@rebuildingtogetherpeninsula.org
 Adam, 650-366-6597 x223, adam@rebuildingtogetherpeninsula.org
 """  
 ANNOUNCEMENT_SUBJECT = """Scope of work is due March 2 for CDBG sites; all forms due March 30."""
+
+# SAH
+ANNOUNCEMENT_SUBJECT = """Thank you for your help with SAH!"""
+ANNOUNCEMENT_BODY = ''
+
+# NRD 2014 
+ANNOUNCEMENT_BODY = """
+Thank you for serving as a captain this year!  Please use this space to include 
+notes/correspondence with staff.                                                 
+Contact RTP staff for assistance:                                                
+Roger, 650-366-6597 x227, roger@rebuildingtogetherpeninsula.org
+Adam, 650-366-6597 x223, adam@rebuildingtogetherpeninsula.org                    
+"""
+ANNOUNCEMENT_SUBJECT = """Scope of work is due March 5; all forms due March 28."""
 
 def set_announcement():
   for s in models.NewSite.all().filter('program =', PROGRAM):
