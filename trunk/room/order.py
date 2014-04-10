@@ -399,6 +399,7 @@ def _OrderPut(request, user, order):
         order_item.put()
 
   order.UpdateSubTotal()
+  order.UpdateLogistics()
 
   order.last_editor = user
   order.state = 'Received'
