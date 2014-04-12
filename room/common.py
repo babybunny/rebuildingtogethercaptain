@@ -100,7 +100,8 @@ def SendMail(to, sender, cc, subject, text, template, template_dict):
     sender = EMAIL_SENDER
   message.sender = sender
   message.subject = subject
-  message.cc = [a.strip() for a in cc.split(',')] + [EMAIL_LOG]
+  ccs = [a.strip() for a in cc.split(',')] + [EMAIL_LOG]
+  message.cc = [cc for cc in ccs if cc]
   if is_dev:
     message.to = EMAIL_LOG
   else:
