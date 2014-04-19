@@ -115,7 +115,7 @@ class NewSite(BaseModel):
     city_state_zip = db.StringProperty()  
     city_state_zip.help_text = "City State Zip, like Menlo Park CA 94025"
     city = db.StringProperty()
-    budget = db.IntegerProperty()
+    budget = db.IntegerProperty(default=0)
     announcement_subject = db.StringProperty(default='Nothing Needs Attention')
     announcement_body = db.TextProperty(
         default="Pat yourself on the back - no items need attention.\n"
@@ -276,7 +276,10 @@ class NewSite(BaseModel):
                 self.VendorReceiptTotal())
 
     def BudgetRemaining(self):
-        return self.budget - self.Expenses()
+        if self.budget:
+            return self.budget - self.Expenses()
+        else:
+            return 0.
 
     @property 
     def budget_remaining(self):
