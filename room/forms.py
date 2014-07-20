@@ -55,16 +55,6 @@ class CaptainContactForm(djangoforms.ModelForm):
                     'search_prefixes']
 
 
-class SiteForm(djangoforms.ModelForm):
-    work_start = DateField('Work Start Date')
-    work_end = DateField('Work End Date')
-    number = forms.CharField(
-        max_length=100,
-        help_text = '"10001DAL" reads: 2010, #001, Daly City')
-    class Meta:
-         model = models.Site
-
-
 class NewSiteForm(djangoforms.ModelForm):
     number = forms.CharField(
         max_length=10,
