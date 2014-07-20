@@ -69,8 +69,8 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
       key = s.get('key')
       name = "%s %s" % (clean_s("First Name"),
                         clean_s("Last Name"))
-      email = s["Email"]
-      captain = None
+      email = clean_s["Email"]
+  z    captain = None
       if key:
           captain = models.Captain.get_by_id(int(key))
           if captain:

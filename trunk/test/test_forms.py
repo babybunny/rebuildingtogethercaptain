@@ -16,9 +16,6 @@ class Test(unittest.TestCase):
     def testCaptainContactForm(self):
         self.assertTrue(forms.CaptainContactForm())
 
-    def testSiteForm(self):
-        self.assertTrue(forms.SiteForm())
-
     def testNewSiteForm(self):
         self.assertTrue(forms.NewSiteForm())
 
