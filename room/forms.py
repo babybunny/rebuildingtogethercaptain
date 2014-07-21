@@ -77,9 +77,10 @@ class CaptainSiteForm(djangoforms.ModelForm):
     work_start = DateField('Work Start Date')
     work_end = DateField('Work End Date')
     class Meta:
-         model = models.Site
-         exclude = ['number', 'name', 'street', 'applicant', 'sponsors', 
-                    'postal_address', 'search_prefixes']
+        # TODO: is this the wrong model!??  should be NewSite?
+        model = models.Site
+        exclude = ['number', 'name', 'street', 'applicant', 'sponsors', 
+                   'postal_address', 'search_prefixes']
 
 
 class SiteCaptainSiteForm(djangoforms.ModelForm):
