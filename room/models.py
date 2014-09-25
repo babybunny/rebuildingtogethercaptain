@@ -12,6 +12,18 @@ from google.appengine.ext import db
 
 SALES_TAX_RATE = 0.0925
 
+
+class Jurisdiction(BaseModel):
+    """A jurisdiction name for reporting purposes."""
+    name = db.StringProperty()
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
+
 class Captain(BaseModel):
     """A work captain."""    
     name = db.StringProperty(required=True)  # "Joe User"
@@ -105,6 +117,7 @@ class NewSite(BaseModel):
     rrp_test = db.StringProperty()
     rrp_level = db.StringProperty()
     jurisdiction = db.StringProperty()
+    jurisdiction_choice = db.ReferenceProperty(Jurisdiction)
     scope_of_work = db.TextProperty()
     sponsor = db.StringProperty()
     street_number = db.StringProperty()
@@ -208,6 +221,8 @@ class NewSite(BaseModel):
           obj.put()
 
     def put(self, *a, **k):
+        if self.jurisdiction_choice:
+            self.jurisdiction = self.jurisdiction_choice.name
         self.program = self.ProgramFromNumber()
         prefixes = set()
         for f in self.name, self.applicant, self.street_number:

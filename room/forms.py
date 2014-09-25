@@ -65,9 +65,12 @@ class NewSiteForm(djangoforms.ModelForm):
     city_state_zip = forms.CharField(
         max_length=100,
         help_text = models.NewSite.city_state_zip.help_text)
+    jurisdiction_choice = djangoforms.ModelChoiceField(
+        models.Jurisdiction, query=models.Jurisdiction.all().order('name'),
+        label='Jurisdiction')
     class Meta:
          model = models.NewSite
-         exclude = ['search_prefixes', 'program']
+         exclude = ['search_prefixes', 'program', 'jurisdiction']
 
 
 class CaptainSiteForm(djangoforms.ModelForm):
