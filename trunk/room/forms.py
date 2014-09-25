@@ -62,9 +62,6 @@ class NewSiteForm(djangoforms.ModelForm):
     street_number = forms.CharField(
         max_length=100,
         help_text = models.NewSite.street_number.help_text)
-    street = forms.CharField(
-        max_length=100,
-        help_text = models.NewSite.street.help_text)
     city_state_zip = forms.CharField(
         max_length=100,
         help_text = models.NewSite.city_state_zip.help_text)
@@ -79,7 +76,7 @@ class CaptainSiteForm(djangoforms.ModelForm):
     class Meta:
         # TODO: is this the wrong model!??  should be NewSite?
         model = models.Site
-        exclude = ['number', 'name', 'street', 'applicant', 'sponsors', 
+        exclude = ['number', 'name', 'applicant', 'sponsors', 
                    'postal_address', 'search_prefixes']
 
 

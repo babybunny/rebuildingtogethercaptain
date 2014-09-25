@@ -110,8 +110,6 @@ class NewSite(BaseModel):
     street_number = db.StringProperty()
     street_number.verbose_name = "Street Address"
     street_number.help_text = "Full street address like 960 Main Street, Apt 4"
-    street = db.StringProperty()  # Not full street address, for privacy.
-    street.help_text = "Simplified street name, for privacy, like Main Street."
     city_state_zip = db.StringProperty()  
     city_state_zip.help_text = "City State Zip, like Menlo Park CA 94025"
     city = db.StringProperty()
@@ -213,7 +211,7 @@ class NewSite(BaseModel):
     def put(self, *a, **k):
         self.program = self.ProgramFromNumber()
         prefixes = set()
-        for f in self.name, self.applicant, self.street:
+        for f in self.name, self.applicant, self.street_number:
             if not f:
                 continue
             prefixes.add(f)
