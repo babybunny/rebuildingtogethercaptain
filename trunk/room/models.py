@@ -104,8 +104,6 @@ class NewSite(BaseModel):
     program = db.StringProperty()
     name = db.StringProperty()  # "Belle Haven"
     name.verbose_name = 'Recipient Name'
-    # sites entered in 2010 do not have this field set explicitly
-    year = db.IntegerProperty(default=2011)  
     applicant = db.StringProperty()
     applicant.verbose_name = 'Applicant Contact'
     applicant_home_phone = db.StringProperty()
