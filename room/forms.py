@@ -70,7 +70,7 @@ class NewSiteForm(djangoforms.ModelForm):
         label='Jurisdiction')
     class Meta:
          model = models.NewSite
-         exclude = ['search_prefixes', 'program', 'jurisdiction']
+         exclude = ['search_prefixes', 'program', 'jurisdiction', 'year']
 
 
 class CaptainSiteForm(djangoforms.ModelForm):
