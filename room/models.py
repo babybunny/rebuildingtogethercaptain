@@ -112,7 +112,6 @@ class NewSite(BaseModel):
     street_number.help_text = "Full street address like 960 Main Street, Apt 4"
     city_state_zip = db.StringProperty()  
     city_state_zip.help_text = "City State Zip, like Menlo Park CA 94025"
-    city = db.StringProperty()
     budget = db.IntegerProperty(default=0)
     announcement_subject = db.StringProperty(default='Nothing Needs Attention')
     announcement_body = db.TextProperty(
