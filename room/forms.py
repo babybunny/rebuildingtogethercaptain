@@ -223,7 +223,7 @@ class VendorReceiptForm(SiteExpenseForm):
     
     supplier = djangoforms.ModelChoiceField(
         models.Supplier,
-        query=models.Supplier.all().order('name'),
+        query=models.Supplier.all().filter('active = ', 'Active').order('name'),
         label="Vendor",
         help_text="or add a new vendor using the form on the right")
     amount = forms.FloatField(required=True)
