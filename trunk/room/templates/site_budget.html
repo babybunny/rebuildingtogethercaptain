@@ -69,49 +69,53 @@ Sites - Budget View</h2>
     {% for site in entries %}
     <tr>
       <td>
-	<input type="checkbox" class="export_checkbox"
-	       name="{{ export_checkbox_prefix }}{{ site.key.id }}">
+	      <input type="checkbox" class="export_checkbox"
+	             name="{{ export_checkbox_prefix }}{{ site.key.id }}">
       </td>
       <td>
-	<span class="sortorder">{{ site.number }}</span>
-	<a href="{% url room.views.SiteView site.key.id %}">
-	  {{site.number|escape}}
-	</a>
+	      <span class="sortorder">{{ site.number }}</span>
+	      <a href="{% url room.views.SiteView site.key.id %}">
+	        {{site.number|escape}}
+	      </a>
+        &nbsp;
+	      <a href="{% url room.views.SiteSummary site.key.id %}">
+          summary
+	      </a>
       </td>
       <td>
-	{{ site.name|truncatewords:5 }}
+	      {{ site.name|truncatewords:5 }}
       </td>
       <td>
-	{{ site.sponsor|truncatewords:5 }}	 
+	      {{ site.sponsor|truncatewords:5 }}	 
       </td>
       <td class="dollar">
-	{{ site.budget|floatformat:2 }}
+	      {{ site.budget|floatformat:2 }}
       </td>
       <td class="dollar">
-	<span
-	{% if site.in_the_red %}
-	class="in-the-red dollar"
-	{% else %}
-	class="dollar" 
-	{% endif %}
-	>
-	{{ site.BudgetRemaining|floatformat:2 }}
-	</span>
+	      <span
+	         {% if site.in_the_red %}
+	         class="in-the-red dollar"
+	         {% else %}
+	         class="dollar" 
+	         {% endif %}
+	         >
+	        {{ site.BudgetRemaining|floatformat:2 }}
+	      </span>
       </td>
       <td class="dollar">
-	{{ site.Expenses|floatformat:2 }}
+	      {{ site.Expenses|floatformat:2 }}
       </td>
       <td class="dollar">
-	{{ site.order_total|floatformat:2 }}
+	      {{ site.order_total|floatformat:2 }}
       </td>
       <td class="dollar">
-	{{ site.CheckRequestTotal|floatformat:2 }}
+	      {{ site.CheckRequestTotal|floatformat:2 }}
       </td>
       <td class="dollar">
-	{{ site.VendorReceiptTotal|floatformat:2 }}
+	      {{ site.VendorReceiptTotal|floatformat:2 }}
       </td>
       <td class="dollar">
-	{{ site.InKindDonationTotal|floatformat:2 }}
+	      {{ site.InKindDonationTotal|floatformat:2 }}
       </td>
     </tr>
     {% endfor %}
