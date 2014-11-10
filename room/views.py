@@ -382,7 +382,7 @@ def SiteList(request):
   return common.Respond(request, 'site_list', d)
 
 
-def SiteBudget(request, search_term=None):
+def SiteBudget(request):
   """List all Sites with a "Budget" view."""
   _, _, staff = common.GetUser(request)
   if not staff:
@@ -391,9 +391,8 @@ def SiteBudget(request, search_term=None):
   query = models.NewSite.all()
   if staff and staff.program_selected:
     query.filter('program =', staff.program_selected)
-  if search_term is not None:
-    query.filter('search_prefixes = ', search_term.lower())
-
+  if request.GET['q'] is not None:
+    query.filter('search_prefixes = ', request.GET['q'].lower())
   return _EntryList(request, models.NewSite, 'site_budget', query=query, 
                     params={'export_csv': EXPORT_CSV,
                             'export_checkbox_prefix': POSTED_ID_PREFIX})
