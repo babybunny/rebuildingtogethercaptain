@@ -57,8 +57,11 @@ def StaffHome(request):
     return http.HttpResponseRedirect(urlresolvers.reverse(SelectProgram))
   order_sheets = list(models.OrderSheet.all())
   order_sheets.sort(key=lambda x: x.name)
+  jurisdictions = list(models.Jurisdiction.all())
+  jurisdictions.sort(key=lambda x: x.name)
   d = {'order_sheets': order_sheets,
        'test_site_number': TEST_SITE_NUMBER,
+       'jurisdictions': jurisdictions,
        }
   return common.Respond(request, 'staff_home', d)
 
