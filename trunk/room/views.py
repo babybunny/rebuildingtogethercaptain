@@ -395,12 +395,15 @@ def SiteBudget(request):
   if staff and staff.program_selected:
     query.filter('program =', staff.program_selected)
     params['program'] = staff.program_selected
+
+  # this 'q' param is just for testing
   if 'q' in request.GET:
     query.filter('search_prefixes = ', request.GET['q'].lower())
     params['search'] = request.GET['q']
-  if 'j' in request.GET:
-    query.filter('jurisdiction = ', request.GET['j'])
-    params['jurisdiction'] = request.GET['j']
+
+  params['jurisdiction'] = request.GET.get('j')
+  if params['jurisdiction']:
+    query.filter('jurisdiction = ', params['jurisdiction'])
 
   entries = list(query)
   total = 0

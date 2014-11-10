@@ -5,8 +5,16 @@
 $(function() {
   $("table.tablesorter").tablesorter({
     sortList: [[1, 0]],
-    headers: { 0: { sorter: false }}
-  });
+    headers: { 
+      0: { sorter: false },
+      3: { sorter: 'digit' },
+      4: { sorter: 'digit' },
+      5: { sorter: 'digit' },
+      6: { sorter: 'digit' },
+      7: { sorter: 'digit' },
+      8: { sorter: 'digit' },
+      9: { sorter: 'digit' }
+  }});
   $("#select_all").change(
     function() {
       var newval = $("#select_all").attr('checked');
@@ -27,12 +35,12 @@ $(function() {
 All 
 {% endif %}
 Sites - Budget View</h2>
-
 <p>
 {{ entries|length }} sites, ${{ total_expenses|floatformat:2 }} total expenses.
 </p>
 {%endblock%}
 {%block body%}
+{% if  num_entries %}
 <form method="POST" action="{% url room.views.SiteBudgetExport %}">
   To export many sites, check their boxes and then click 
   <input type="submit" name="submit" value="{{ export_csv }}">
@@ -110,4 +118,17 @@ Sites - Budget View</h2>
   </tbody>
 </table>
 </form>
+{% else %}
+<p>
+No sites for
+{% if jurisdiction %}
+jurisdiction {{ jurisdiction }}
+{% endif %}
+in program {{ program }}.
+</p>
+<p>
+  Please go back to <a href="{% url room.staff.StaffHome %}">Staff Home</a> 
+  and select a different program or jurisdiction.
+</p>
+{% endif %}
 {%endblock%}
