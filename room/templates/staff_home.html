@@ -128,9 +128,6 @@ $(function() {
 {%block about_this_page %}
 <h1>Hello RTP Staff!</h1>
 <p>
-  This is the Staff Page.  From here you can view or edit anything in the system.  
-</p>
-<p>
   Check out the 
   <a href="{% url room.scoreboard.Scoreboard %}">
     {{ user.staff.program_selected }} Scoreboard
@@ -153,18 +150,27 @@ $(function() {
     <td class="layout">
       <div class="panel">
       <h2>Sites</h2>
-	<span id="site_error">
-	  Start typing a site number, name, city, etc.
-	</span>
-	<br>
-	<input type="text" id="site_term" size="25">
-	<p>
-	  List all Sites: 
-	  <a href="{% url room.views.SiteList %}">Captains</a> 
-	  |
-	  <a href="{% url room.views.SiteBudget %}">budget/expenses</a> 
-	<br>
-	<a href="{% url room.views.SiteNew %}">Add a new Site</a>.
+	    <span id="site_error">
+	      Start typing a site number, name, city, jurisdiction
+	    </span>
+	    <br>
+	    <input type="text" id="site_term" size="25">
+	    <p>
+	      <a href="{% url room.views.SiteList %}">List all Sites and their Captains</a>.
+	      <br>
+	      <a href="{% url room.views.SiteNew %}">Add a new Site</a>.
+        <hr>
+        <form 
+	         method="GET" 
+	         action="{% url room.views.SiteBudget %}">
+          <input type="submit" value="Expenses">
+          <select name="j">
+            <option value="">All Jurisdictions</option>
+            {% for j in jurisdictions %}
+            <option value="{{ j }}">{{ j }}</option>
+            {% endfor %}
+          </select>
+        </form>
       </div>
       
       <div class="panel">
