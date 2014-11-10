@@ -384,18 +384,33 @@ def SiteList(request):
 
 def SiteBudget(request):
   """List all Sites with a "Budget" view."""
-  _, _, staff = common.GetUser(request)
+  user, _, staff = common.GetUser(request)
   if not staff:
     return http.HttpResponse(status=400)  
-
+  params = {    
+    'export_csv': EXPORT_CSV,
+    'export_checkbox_prefix': POSTED_ID_PREFIX
+    }
   query = models.NewSite.all()
   if staff and staff.program_selected:
     query.filter('program =', staff.program_selected)
-  if request.GET['q'] is not None:
+    params['program'] = staff.program_selected
+  if 'q' in request.GET:
     query.filter('search_prefixes = ', request.GET['q'].lower())
-  return _EntryList(request, models.NewSite, 'site_budget', query=query, 
-                    params={'export_csv': EXPORT_CSV,
-                            'export_checkbox_prefix': POSTED_ID_PREFIX})
+    params['search'] = request.GET['q']
+  if 'j' in request.GET:
+    query.filter('jurisdiction = ', request.GET['j'])
+    params['jurisdiction'] = request.GET['j']
+
+  entries = list(query)
+  total = 0
+  for site in entries:
+    total += site.Expenses() 
+
+  params.update({'entries': entries, 'num_entries': len(entries), 'user': user, 
+                 'total_expenses': total})
+  return common.Respond(request, 'site_budget', params)
+
 
 def SiteBudgetExport(request):
   """Export Site budget rows as CSV."""
