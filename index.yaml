@@ -141,6 +141,11 @@ indexes:
   - name: program
   - name: number
 
+- kind: NewSite
+  properties:
+  - name: program
+  - name: jurisdiction
+
 - kind: Order
   properties:
   - name: order_sheet

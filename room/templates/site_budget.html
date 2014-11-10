@@ -20,7 +20,17 @@ $(function() {
   | List Sites
 {% endblock %}
 {%block about_this_page %}
-<h2>All Sites - Budget View</h2>
+<h2>
+{% if jurisdiction %}
+{{ jurisdiction }}
+{% else %}
+All 
+{% endif %}
+Sites - Budget View</h2>
+
+<p>
+{{ entries|length }} sites, ${{ total_expenses|floatformat:2 }} total expenses.
+</p>
 {%endblock%}
 {%block body%}
 <form method="POST" action="{% url room.views.SiteBudgetExport %}">
