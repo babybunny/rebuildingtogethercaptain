@@ -223,7 +223,7 @@ class NewSite(BaseModel):
             self.jurisdiction = self.jurisdiction_choice.name
         self.program = self.ProgramFromNumber()
         prefixes = set()
-        for f in self.name, self.applicant, self.street_number:
+        for f in self.name, self.applicant, self.street_number, self.jurisdiction:
             if not f:
                 continue
             prefixes.add(f)
