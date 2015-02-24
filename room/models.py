@@ -354,6 +354,8 @@ class Supplier(BaseModel):
     since = db.DateProperty(auto_now_add=True)
     active = db.StringProperty(choices=('Active', 'Inactive'), 
                                default='Active')
+    visibility = db.StringProperty(choices=('Everyone', 'Staff Only'), 
+                                   default='Everyone')
 
     def __unicode__(self):
         return self.name
