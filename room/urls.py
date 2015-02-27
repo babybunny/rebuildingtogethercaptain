@@ -73,6 +73,8 @@ urlpatterns += patterns(
     (r'^captain/export$', 'CaptainExport'),
     (r'^captain/new$', 'CaptainNew'),
     (r'^captain/edit/(\d+)/$', 'CaptainEdit'),
+    (r'^admin/captain/delete_confirm/(\d+)/$', 'CaptainDeleteConfirm'),
+    (r'^admin/captain/delete/(\d+)/$', 'CaptainDelete'),
     (r'^admin/captain/put/(\d+)/$', 'CaptainPut'),
     (r'^captain/home/(\d+)/$', 'CaptainHome'),
     (r'^captain_home$', 'CaptainHome'),

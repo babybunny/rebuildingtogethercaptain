@@ -1,0 +1,55 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | Delete a Captain
+{% endblock %}
+{%block body%}
+
+<h2>{{ what_you_are_doing }}</h2>
+<form action="{% url room.views.CaptainDelete captain.key.id %}" method="post">
+
+  <div class="right">
+    {% for sitecaptain in sitecaptain_set %}
+    <p>
+      {{ sitecaptain.type }} Captain
+      <br>
+      <a href="{% url room.views.SiteListByNumber sitecaptain.site.number %}">
+        Site #{{ sitecaptain.site.number }}
+      </a>
+    </p>
+    {% endfor %}
+  </div>
+  
+  <div>
+    <table>
+      <tr>
+        <td>Name</td>
+        <td>{{ captain.name }}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{ captain.email }}</td>
+      </tr>
+      {% if sitecaptain_set %}
+      <tr>
+        <td>ERROR</td>
+        <td>Can not delete captain because it is mapped to some sites.</td>
+      </tr>
+      {% for sitecaptain in sitecaptain_set %}
+      <tr>
+        <td>{{ sitecaptain.type }} Captain</td>
+        <td><a href="{% url room.views.SiteListByNumber sitecaptain.site.number %}">
+            Site #{{ sitecaptain.site.number }}
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td></td>
+        <td><input type="submit" value="Delete this Captain"></td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+</form>
+{%endblock%}
