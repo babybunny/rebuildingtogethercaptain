@@ -605,6 +605,16 @@ def CaptainPut(request, captain_id):
   models.Captain.get_by_id(int(captain_id)).put()
   return http.HttpResponse('OK')
 
+def CaptainDeleteConfirm(request, captain_id):
+  captain = models.Captain.get_by_id(int(captain_id))
+  return common.Respond(request, 'captain_delete_confirm.html', 
+                        {'captain': captain,
+                         'sitecaptain_set': list(captain.sitecaptain_set)})
+
+def CaptainDelete(request, captain_id):
+  models.Captain.get_by_id(int(captain_id)).delete()
+  return http.HttpResponseRedirect(urlresolvers.reverse(CaptainList))
+
 def _PersonEdit(request, id, person_cls, form_cls, template, readable):
   user, _, _ = common.GetUser(request)
   person = None
