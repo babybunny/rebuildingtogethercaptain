@@ -130,6 +130,11 @@
 	          <br>(click to view on Google Maps)
           </a>
         </p>
+        {% if site.photo_link %}
+        <p>
+          <a target="_blank" href="{{ site.photo_link }}" alt="Link to photos on another website">Site Photos</a>
+        </p>
+        {% endif %}
         {% if site.notes %}
         <strong>Notes:</strong>
         <p>
