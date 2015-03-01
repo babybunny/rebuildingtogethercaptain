@@ -25,6 +25,18 @@ from google.appengine.ext import db
 PROGRAM = '2015 NRD'
 # PROGRAM = '2015 Safe'
 
+def import_photos(input_csv="../2012_ROOMS_phote.csv"):
+    """Change input_csv to actual input file - the default is test data."""
+    reader = csv.DictReader(open(input_csv))
+    for s in reader:
+      number = s["Number"]
+      site = models.NewSite.all().filter('number =', number).get()
+      if not site:
+          continue
+      if s['Flickr Pages']:
+          site.photo_link = s['Flickr Pages']
+          site.put()
+
 def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
     """Change input_csv to actual input file - the default is test data."""
     reader = csv.DictReader(open(input_csv))
