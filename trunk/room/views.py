@@ -262,6 +262,9 @@ def SiteEdit(request, site_id=None):
     template_dict = {'what_you_are_doing': 'Not permitted to edit this site.'}
     return common.Respond(request, 'staff_site', template_dict)
 
+  if site.jurisdiction and not site.jurisdiction_choice:
+    site.jurisdiction_choice = models.Jurisdiction.all().filter('name =', site.jurisdiction).get()
+
   form = form_class(data=None, instance=site)
     
   form_submit = 'Save changes to Site Info'
