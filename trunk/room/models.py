@@ -129,6 +129,8 @@ class NewSite(BaseModel):
         default="Pat yourself on the back - no items need attention.\n"
 	"You have a clean bill of health.")
     search_prefixes = db.StringListProperty()
+    photo_link = db.StringProperty()
+    photo_link.help_text = "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
 
     class ActiveItems(object):
         """Access user-input records with state and modified fields."""
