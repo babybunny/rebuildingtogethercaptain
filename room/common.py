@@ -15,6 +15,8 @@ import models
 # TODO: merge into PROGRAMS
 NRD = '04/25/2015'
 
+DEFAULT_CAPTAIN_PROGRAM = '2015 NRD'
+
 PROGRAMS = [
   '2016 NRD', 
   '2016 Misc',
