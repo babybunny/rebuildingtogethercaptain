@@ -16,6 +16,8 @@ $(document).ready(function(){
 <table class="list tablesorter" id="supplier_list">
   <thead>
     <tr>
+      <th>Active</th>
+      <th>Visibility</th>
       <th>Supplier</th>
       <th>Email</th>
       <th>Address</th>
@@ -27,6 +29,10 @@ $(document).ready(function(){
   <tbody>
     {% for person in entries %}
     <tr><td>
+	{{ person.active|escape }}
+      </td><td>
+	{{ person.visibility|escape }}
+      </td><td>
 	<span class="sortorder">{{ person.name }}</span>
 	<a href="{%url room.views.SupplierEdit person.key.id%}">
 	  {{person.name|escape}}

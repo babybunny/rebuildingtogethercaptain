@@ -220,16 +220,26 @@ class CheckRequestForm(SiteExpenseForm):
 
 class VendorReceiptForm(SiteExpenseForm):
     purchase_date = forms.DateField(required=True)
-    
-    supplier = djangoforms.ModelChoiceField(
-        models.Supplier,
-        query=models.Supplier.all().filter('active = ', 'Active').order('name'),
-        label="Vendor",
-        help_text="or add a new vendor using the form on the right")
     amount = forms.FloatField(required=True)
     class Meta:
         model = models.VendorReceipt
         exclude = ['last_editor', 'modified', 'program', 'vendor']
+
+    def __init__(self, *args, **kwargs):
+        staff = kwargs.get('staff')
+        super(VendorReceiptForm, self).__init__(*args, **kwargs)
+        if staff:
+            self.fields['supplier'] = djangoforms.ModelChoiceField(
+                models.Supplier,
+                query=models.Supplier.all().filter('active =', 'Active').filter('visibility IN', ['Everyone', 'Staff Only']).order('name'),
+                label="Vendor",
+                help_text="or add a new vendor using the form on the right")
+        else:
+            self.fields['supplier'] = djangoforms.ModelChoiceField(
+                models.Supplier,
+                query=models.Supplier.all().filter('active =', 'Active').filter('visibility IN', ['Everyone',]).order('name'),
+                label="Vendor",
+                help_text="or add a new vendor using the form on the right")
 
 
 class InKindDonationForm(SiteExpenseForm):

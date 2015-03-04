@@ -198,6 +198,12 @@ indexes:
   - name: active
   - name: name
 
+- kind: Supplier
+  properties:
+  - name: active
+  - name: visibility
+  - name: name
+
 - kind: VendorReceipt
   properties:
   - name: program

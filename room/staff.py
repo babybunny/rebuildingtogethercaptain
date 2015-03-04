@@ -246,6 +246,11 @@ def DeleteEmptyOrderItems(request):
         oi.delete()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+def PutSuppliers(request):
+  for o in models.Supplier.all():
+    o.put()
+  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
 def FixProgramFromNumber(request, site_number=None):
   if site_number is None:
     for site in models.NewSite.all():

@@ -11,6 +11,7 @@ urlpatterns = patterns(
     (r'^site/without_order/$', 'SitesWithoutOrder'),
     (r'^site/without_order/(\d+)/$', 'SitesWithoutOrder'),
     (r'^send_email/(\d+)/$$', 'SitesWithoutOrderSendEmail'),
+    (r'^admin/put_suppliers', 'PutSuppliers'),
     (r'^admin/fix_city', 'FixCity'),
     (r'^admin/fix_last_editor', 'FixLastEditor'),
     (r'^admin/add_standard_kit_order/(\w+)/$', 'AddStandardKitOrder'),
