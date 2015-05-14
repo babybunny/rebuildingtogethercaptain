@@ -80,4 +80,11 @@ $(function(){
 {% endif %}
 {% endwith %}
 
+{% with site.StaffTimes as entries %}
+{% if entries.Count %}
+<h3>Staff Time</h3>
+{% include "stafftime_table.html" %}
+{% endif %}
+{% endwith %}
+
 {%endblock%}

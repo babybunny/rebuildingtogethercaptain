@@ -23,10 +23,9 @@
 	{{ entity.site.number|escape }}
 	</a>
       </td><td>
-	{{ entity.position.position_name|escape }}
-  @ ${{ entity.position.hourly_rate|floatformat:2 }}
+	{{ entity.position|escape }}
       </td><td>
-	${{ entity.hours|floatformat:2 }}
+	{{ entity.hours|floatformat:2 }}
       </td>
       <td class="dollar">
 	${{ entity.Total|floatformat:2 }}

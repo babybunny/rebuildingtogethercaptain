@@ -719,6 +719,12 @@ class StaffPosition(BaseModel):
     last_editor = db.UserProperty()
     modified = db.DateTimeProperty(auto_now=True)
     
+    def __unicode__(self):
+        return '%s @ $%.2f' % (self.position_name, self.hourly_rate)
+
+    def __str__(self):
+        return '%s @ $%.2f' % (self.position_name, self.hourly_rate)
+
 
 class CheckRequest(BaseModel):
     """A Check Request is a request for reimbursement."""
@@ -843,7 +849,7 @@ class StaffTime(BaseModel):
     
     @property 
     def name(self):
-        return self.donor
+        return self.position
 
     def put(self, *a, **k):
         self.program = self.site.program

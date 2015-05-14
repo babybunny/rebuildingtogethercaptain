@@ -258,7 +258,7 @@
 	                </span>
 	              </td>
 	              <td class="value">
-	                {% if site.StaffTime.Count %}
+	                {% if site.StaffTimes.Count %}
 	                (${{ site.StaffTimeTotal|floatformat:2 }})
 	                {% else %}
 	                -
@@ -270,7 +270,7 @@
 	                </a>
 	              </td>
 	              <td class="action">
-	                {% if site.StaffTime.Count %}
+	                {% if site.StaffTimes.Count %}
 	                <a href="#stafftime_panel">
 		                Review 
 	                </a>
@@ -488,7 +488,7 @@
         </div>
 	      {% endif %}
         
-        {% if site.StaffTime.Count %}
+        {% if site.StaffTimes.Count %}
         <a name="stafftime_panel"></a>
         <div class="panel">
 	        <span class="actions">
@@ -498,7 +498,7 @@
 	        </span>
 	        <h3>Staff Time</h3>
 	        <table id="stafftime" class="list tablesorter">
-	          {% for entity in site.StaffTime.Items %}
+	          {% for entity in site.StaffTimes.Items %}
 	          {% if forloop.first %}
 	          <thead>
 	            <tr>
