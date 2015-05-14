@@ -198,6 +198,11 @@ indexes:
   - name: site
   - name: state
 
+- kind: StaffTime
+  properties:
+  - name: program
+  - name: state
+
 - kind: Supplier
   properties:
   - name: active
