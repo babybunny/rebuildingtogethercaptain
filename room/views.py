@@ -467,6 +467,7 @@ def _SiteBudgetExportInternal(writable, post_vars):
            s.CheckRequestTotal(),
            s.VendorReceiptTotal(),
            s.InKindDonationTotal(),
+           s.StaffTimeTotal(),
            ]
     row = [unicode(f).encode('ascii', 'ignore') for f in row]
     writer.writerow(row)
@@ -1011,11 +1012,24 @@ InKindDonationEdit = InKindDonation.Edit
 InKindDonationList = InKindDonation.List
 InKindDonationView = InKindDonation.View
 
+class StaffTime(SiteExpense):
+  model = models.StaffTime
+  template_base = 'stafftime'
+  readable = 'Staff Time'
+  form_cls = forms.StaffTimeForm
+
+
+StaffTimeNew = StaffTime.New
+StaffTimeEdit = StaffTime.Edit
+StaffTimeList = StaffTime.List
+StaffTimeView = StaffTime.View
+
 
 SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
     models.CheckRequest,
     models.VendorReceipt,
     models.InKindDonation,
+    models.StaffTime,
     ))
 
 def SiteExpenseState(request, item_cls, item_id):

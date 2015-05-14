@@ -176,6 +176,10 @@ class NewSite(BaseModel):
     def InKindDonations(self):
         return self.ActiveItems(self.inkinddonation_set)
 
+    @property 
+    def StaffTimes(self):
+        return self.ActiveItems(self.stafftime_set)
+
     @property
     def ScopeOfWork(self):
         if self.scope_of_work:
@@ -282,9 +286,14 @@ class NewSite(BaseModel):
         """Only works if self has been saved."""    
         return sum(cr.Total() or 0 for cr in self.InKindDonations)
 
+    def StaffTimeTotal(self):
+        """Only works if self has been saved."""    
+        return sum(cr.Total() or 0 for cr in self.StaffTimes)
+
     def Expenses(self):
         return (self.order_total + 
                 self.CheckRequestTotal() + 
+                self.StaffTimeTotal() + 
                 self.VendorReceiptTotal())
 
     def BudgetRemaining(self):
@@ -703,6 +712,14 @@ class InventoryItem(BaseModel):
     modified = db.DateTimeProperty(auto_now=True)
     
 
+class StaffPosition(BaseModel):
+    """Staff positions that have hourly billing."""
+    position_name = db.StringProperty()
+    hourly_rate = db.FloatProperty(default=0.0)
+    last_editor = db.UserProperty()
+    modified = db.DateTimeProperty(auto_now=True)
+    
+
 class CheckRequest(BaseModel):
     """A Check Request is a request for reimbursement."""
     site = db.ReferenceProperty(NewSite)
@@ -807,6 +824,34 @@ class InKindDonation(BaseModel):
 
     def Total(self):
         return self.labor_amount + self.materials_amount
+
+
+class StaffTime(BaseModel):
+    """Expense type that represents hourly staff time."""
+    site = db.ReferenceProperty(NewSite)
+    captain = db.ReferenceProperty(Captain)
+    program = db.StringProperty()
+    state = db.StringProperty(
+        choices=('new', 'submitted', 'fulfilled', 'deleted'), 
+        default='new')
+    position = db.ReferenceProperty(StaffPosition)
+    hours = db.FloatProperty(default=0.0)
+    hours.verbose_name = 'Hours'
+    description = db.TextProperty()
+    last_editor = db.UserProperty()
+    modified = db.DateTimeProperty(auto_now=True)
+    
+    @property 
+    def name(self):
+        return self.donor
+
+    def put(self, *a, **k):
+        self.program = self.site.program
+        super(BaseModel, self).put(*a, **k)        
+
+    def Total(self):
+        return self.hours * self.position.hourly_rate
+
 
 class Expense(BaseModel):
     """A generic expense."""

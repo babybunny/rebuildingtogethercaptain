@@ -1,0 +1,23 @@
+{%extends "base.html"%}
+{% block breadcrumb %}
+  | Add Staff Time
+{% endblock %}
+{%block body%}
+
+<h2>Adding Staff Time for Site {{ entity.site.number }}</h2>
+
+<form action="{% url room.views.StaffTimeEdit edit_id %}" method="post">
+
+<table>  
+{{form}}
+<tr>
+  <td>
+  </td>
+  <td>
+    <input type="submit" value="Save changes">
+  </td>
+</tr>
+</table>
+</form>
+
+{%endblock%}

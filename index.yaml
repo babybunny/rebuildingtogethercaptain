@@ -193,6 +193,11 @@ indexes:
   - name: site
   - name: captain
 
+- kind: StaffTime
+  properties:
+  - name: site
+  - name: state
+
 - kind: Supplier
   properties:
   - name: active

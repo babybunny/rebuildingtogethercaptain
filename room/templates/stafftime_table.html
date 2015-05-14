@@ -1,0 +1,39 @@
+<table cellpadding=5 class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Click to Edit</th>
+      <th>Site</th>
+      <th>Staff Position</th>
+      <th>Hours</th>
+      <th>Total</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entity in entries %}
+    <tr>
+      <td>
+	<a name="{{ entity.key.id }}"
+	   href="{%url room.views.StaffTimeEdit entity.key.id%}">
+	  {{entity.key.id|escape}}
+	</a>
+      </td><td>
+	<span class="sortorder">{{ entity.site.number }}</span>
+	<a href="{% url room.views.SiteView entity.site.key.id %}">
+	{{ entity.site.number|escape }}
+	</a>
+      </td><td>
+	{{ entity.position.position_name|escape }}
+  @ ${{ entity.position.hourly_rate|floatformat:2 }}
+      </td><td>
+	${{ entity.hours|floatformat:2 }}
+      </td>
+      <td class="dollar">
+	${{ entity.Total|floatformat:2 }}
+      </td><td>
+	{{ entity.description|escape }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

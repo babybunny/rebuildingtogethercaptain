@@ -1,0 +1,72 @@
+<h2>
+ Staff Time Entry # {{ entity.key.id}} 
+  for Site {{ entity.site.number }}
+</h2>
+<hr>
+<table cellpadding=5><tr>
+<tr>
+  <td>Click to Edit</td>
+  <td>
+    <a name="{{ entity.key.id }}"
+       href="{%url room.views.StaffTimeEdit entity.key.id%}">
+      {{entity.key.id|escape}}
+    </a>
+  </td>
+</tr>
+<tr><td>Site</td>
+  <td>
+    <a href="{% url room.views.SiteView entity.site.key.id %}">
+      {{ entity.site.number|escape }}
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>
+    Staff Position
+  </td>
+  <td>
+    {{ entity.position.position_name }} @ 
+    ${{ entity.position.hourly_rate }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Hours
+  </td>
+  <td>
+    ${{ entity.hours|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Total
+  </td>
+  <td>
+    ${{ entity.Total|floatformat:2 }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Description
+  </td>
+  <td>
+    {{ entity.description|escape|linebreaksbr }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Last Modified
+  </td>
+  <td>
+    {{ entity.modified }}
+  </td>
+</tr>
+<tr>
+  <td>
+    Modified By
+  </td>
+  <td>
+    {{ entity.last_editor|escape }}
+  </td>
+</tr>
+</table>

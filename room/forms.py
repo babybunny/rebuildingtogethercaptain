@@ -251,3 +251,18 @@ class InKindDonationForm(SiteExpenseForm):
         model = models.InKindDonation
         exclude = ['last_editor', 'modified', 'program']
         
+
+class StaffTimeForm(SiteExpenseForm):
+    description = forms.CharField(required=True, widget=forms.Textarea)
+    class Meta:
+        model = models.StaffTime
+        exclude = ['last_editor', 'modified', 'program']
+
+    def __init__(self, *args, **kwargs):
+        staff = kwargs.get('staff')
+        super(StaffTimeForm, self).__init__(*args, **kwargs)
+        self.fields['position'] = djangoforms.ModelChoiceField(
+            models.StaffPosition,
+            query=models.StaffPosition.all().order('position_name'),
+            label="Position",
+            help_text="or add a new position using the form on the right")

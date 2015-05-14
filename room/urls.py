@@ -111,6 +111,12 @@ urlpatterns += patterns(
     (r'^inkinddonation/edit/(\d+)/$', 'InKindDonationEdit'),
     (r'^inkinddonation/view/(\d+)/$', 'InKindDonationView'),
 
+    (r'^stafftime/list/$', 'StaffTimeList'),
+    (r'^stafftime/list/(\d+)/$', 'StaffTimeList'),
+    (r'^stafftime/new/(\d+)/$', 'StaffTimeNew'),
+    (r'^stafftime/edit/(\d+)/$', 'StaffTimeEdit'),
+    (r'^stafftime/view/(\d+)/$', 'StaffTimeView'),
+
     (r'^siteexpense/state/(\w+)/(\d+)/$', 'SiteExpenseState'),
     (r'^expense/new/(\d+)/$', 'ExpenseNew'),
     (r'^expense/(\d+)/$', 'Expense'),
