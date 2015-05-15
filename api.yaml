@@ -1,0 +1,15 @@
+application: rebuildingtogethercaptain-hrd
+runtime: python27
+api_version: 1
+module: api
+version: 1
+threadsafe: no
+
+handlers:
+# Endpoints handler
+- url: /_ah/spi/.*
+  script: room.api.application
+
+libraries:
+- name: endpoints
+  version: 1.0
