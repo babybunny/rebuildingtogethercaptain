@@ -254,6 +254,8 @@ class InKindDonationForm(SiteExpenseForm):
 
 class StaffTimeForm(SiteExpenseForm):
     description = forms.CharField(required=True, widget=forms.Textarea)
+    activity_date = forms.DateField(required=True)
+    hours = forms.FloatField(required=True)
     class Meta:
         model = models.StaffTime
         exclude = ['last_editor', 'modified', 'program']

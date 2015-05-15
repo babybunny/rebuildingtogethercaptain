@@ -1,4 +1,19 @@
 {%extends "base.html"%}
+{% block script %}
+{% include "datepicker_script.html" %}
+<script type="text/javascript">
+$(function() {
+  $("#id_activity_date").datepicker();
+});
+
+$.datepicker.setDefaults({
+   showOn: 'both',
+   buttonImageOnly: true,
+   buttonImage: '/static/calendar.gif',
+   buttonText: 'Calendar' });
+
+</script>
+{%endblock%}
 {% block breadcrumb %}
   | Add Staff Time
 {% endblock %}

@@ -505,6 +505,7 @@
 	              <th>Staff Position</th>
 	              <th>Hours</th>
 	              <th>Total</th>
+	              <th>Activity Date</th>
 	              <th>Description</th>
 	            </tr>
 	          </thead>
@@ -519,6 +520,9 @@
 	              </td>
 	              <td class="dollar">
 		              ${{ entity.Total|floatformat:2 }}
+	              </td>
+	              <td>
+		              {{ entity.activity_date|escape }}
 	              </td>
 	              <td>
 	                {{ entity.description }}
