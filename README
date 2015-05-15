@@ -62,3 +62,6 @@ for kind in $kinds; do
   python $(which appcfg.py) download_data --filename=testdata/$kind.csv --config_file=bulkloader.yaml --url=http://rebuildingtogethercaptain.appspot.com/_ah/remote_api --kind=$kind --email $email --passin < pass
 done
 
+
+# finding the endpoints
+https://1-dot-api-dot-rebuildingtogethercaptain-hrd.appspot.com/_ah/api/explorer
