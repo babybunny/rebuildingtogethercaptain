@@ -4,13 +4,16 @@ from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
 
+from google.appengine.api import users
+from google.appengine.ext import ndb
+
 
 class GenericResponse(messages.Message):
   message = messages.StringField(1)
 
 
 class StaffPosition(messages.Message):
-    key = messages.StringField(1)
+    key = messages.IntegerField(1)
     position_name = messages.StringField(2)
     hourly_rate = messages.FloatField(3)
 
@@ -25,13 +28,21 @@ class RoomApi(remote.Service):
                       GenericResponse,
                       name='staffposition.put')
     def put(self, request):
-        u = endpoints.get_current_user()
+        current_user = endpoints.get_current_user()
+        if current_user is None:
+            raise endpoints.UnauthorizedException('Invalid token.')
+        staff = ndb_models.Staff.query(
+            ndb_models.Staff.email == current_user.email().lower()).get()
+        if not staff:
+            raise endpoints.UnauthorizedException(
+                'Must be staff to use this API.')
+
         sp = ndb_models.StaffPosition(position_name=request.position_name,
                                       hourly_rate=request.hourly_rate)
         if request.key:
-            sp.key = request.key
+            sp.key = ndb.Key(ndb_models.StaffPosition, request.key)
         sp.put()
-        return GenericResponse()
+        return GenericResponse(message=staff.name)
 
 
 application = endpoints.api_server([RoomApi])
