@@ -10,12 +10,38 @@ from google.appengine.ext import ndb
 
 class GenericResponse(messages.Message):
   message = messages.StringField(1)
-
-
+  
+  
 class StaffPosition(messages.Message):
-    key = messages.IntegerField(1)
-    position_name = messages.StringField(2)
-    hourly_rate = messages.FloatField(3)
+  key = messages.IntegerField(1)
+  position_name = messages.StringField(2)
+  hourly_rate = messages.FloatField(3)
+  
+  
+class Program(messages.Message):
+  year = messages.IntegerField(1)
+  name = messages.StringField(2)
+  site_number_prefix = messages.StringField(3)
+  status = messages.StringField(4)
+
+class Programs(messages.Message):
+  program = messages.MessageField(Program, 1, repeated=True)
+
+
+def _authorize_staff():
+  """Simply call this to ensure that the user has a Staff record.
+  
+  Raises:
+  endpoints.UnauthorizedException if the user is not Staff.
+  """
+  current_user = endpoints.get_current_user()
+  if current_user is None:
+    raise endpoints.UnauthorizedException('Invalid token.')
+  staff = ndb_models.Staff.query(
+    ndb_models.Staff.email == current_user.email().lower()).get()
+  if not staff:
+    raise endpoints.UnauthorizedException(
+      'Must be staff to use this API.')
 
 
 @endpoints.api(name='roomApi',version='v1',
@@ -24,25 +50,38 @@ class StaffPosition(messages.Message):
                description='Rebuilding Together Peninsula ROOM System API')
 class RoomApi(remote.Service):
 
-    @endpoints.method(StaffPosition,
-                      GenericResponse,
-                      name='staffposition.put')
-    def put(self, request):
-        current_user = endpoints.get_current_user()
-        if current_user is None:
-            raise endpoints.UnauthorizedException('Invalid token.')
-        staff = ndb_models.Staff.query(
-            ndb_models.Staff.email == current_user.email().lower()).get()
-        if not staff:
-            raise endpoints.UnauthorizedException(
-                'Must be staff to use this API.')
+  @endpoints.method(StaffPosition,
+                    GenericResponse,
+                    name='staffposition.put')
+  def staffposition_put(self, request):
+    _authorize_staff()
+    sp = ndb_models.StaffPosition(position_name=request.position_name,
+                                  hourly_rate=request.hourly_rate)
+    if request.key:
+      sp.key = ndb.Key(ndb_models.StaffPosition, request.key)
+    sp.put()
+    return GenericResponse()
 
-        sp = ndb_models.StaffPosition(position_name=request.position_name,
-                                      hourly_rate=request.hourly_rate)
-        if request.key:
-            sp.key = ndb.Key(ndb_models.StaffPosition, request.key)
-        sp.put()
-        return GenericResponse(message=staff.name)
+  @endpoints.method(Program,
+                    GenericResponse,
+                    name='program.put')
+  def program_put(self, request):
+    _authorize_staff()
+    sp = ndb_models.Program(name=request.name,
+                            year=request.year,
+                            site_number_prefix=request.site_number_prefix,
+                            status=request.status)
+    sp.put()
+    return GenericResponse()
 
+  @endpoints.method(message_types.VoidMessage,
+                    Programs,
+                    http_method='GET',
+                    name='program.list')
+  def program_list(self, request):
+    programs = Programs()
+    for p in ndb_models.Program.query():
+      programs.program.append(Program(name=p.name, year=p.year))
+    return programs
 
 application = endpoints.api_server([RoomApi])

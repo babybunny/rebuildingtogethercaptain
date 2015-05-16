@@ -139,12 +139,12 @@ indexes:
 - kind: NewSite
   properties:
   - name: program
-  - name: number
+  - name: jurisdiction
 
 - kind: NewSite
   properties:
   - name: program
-  - name: jurisdiction
+  - name: number
 
 - kind: Order
   properties:
@@ -195,12 +195,12 @@ indexes:
 
 - kind: StaffTime
   properties:
-  - name: site
+  - name: program
   - name: state
 
 - kind: StaffTime
   properties:
-  - name: program
+  - name: site
   - name: state
 
 - kind: Supplier
