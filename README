@@ -65,3 +65,10 @@ done
 
 # finding the endpoints
 https://1-dot-api-dot-rebuildingtogethercaptain-hrd.appspot.com/_ah/api/explorer
+
+
+# trying out the endpoints-proto-datastore library 
+https://github.com/GoogleCloudPlatform/endpoints-proto-datastore
+http://endpoints-proto-datastore.appspot.com/
+
+git submodule add https://github.com/GoogleCloudPlatform/endpoints-proto-datastore
