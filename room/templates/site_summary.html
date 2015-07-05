@@ -152,6 +152,9 @@ Total Expenses:
       <th>
 	      $ Total
       </th>
+      <th>
+	      Description
+      </th>
     </tr>
   </thead>
   <tbody>    
@@ -166,6 +169,9 @@ Total Expenses:
       </td>
       <td class="dollar">
 	      $ {{ vr.Total|floatformat:2 }}
+      </td>
+      <td>
+	      {{ vr.description }}
       </td>
     </tr>
     {% endifnotequal %}
