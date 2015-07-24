@@ -63,6 +63,9 @@ Total Expenses:
 	      Vendor
       </th>
       <th>
+	      Form
+      </th>
+      <th>
 	      Invoice Date
       </th>
       <th>
@@ -80,6 +83,9 @@ Total Expenses:
         {% else %}
         <i>Vendor is added when order is reconciled.</i>
         {% endif %}
+      </td>
+      <td>
+        {{ order.order_sheet.name|escape }}
       </td>
       <td>
         {% if order.invoice_date %}
