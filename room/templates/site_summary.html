@@ -112,6 +112,9 @@ Total Expenses:
 	      Payment Date
       </th>
       <th>
+	      Description
+      </th>
+      <th>
 	      $ Total
       </th>
     </tr>
@@ -125,6 +128,9 @@ Total Expenses:
       </td>
       <td>
 	      {{ cr.payment_date|date:"d M Y" }}
+      </td>
+      <td>
+	      {{ cr.description }}
       </td>
       <td class="dollar">
 	      $ {{ cr.Total|floatformat:2 }}
@@ -150,6 +156,9 @@ Total Expenses:
 	      Purchase Date
       </th>
       <th>
+	      Description
+      </th>
+      <th>
 	      $ Total
       </th>
     </tr>
@@ -163,6 +172,9 @@ Total Expenses:
       </td>
       <td>
 	      {{ vr.purchase_date|date:"d M Y" }}
+      </td>
+      <td>
+	      {{ vr.description }}
       </td>
       <td class="dollar">
 	      $ {{ vr.Total|floatformat:2 }}

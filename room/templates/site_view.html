@@ -249,6 +249,7 @@
 	                {% endif %}
 	              </td>
 	            </tr>
+              {% if user.staff %}
 	            <tr>
 	              <td>
 	                <strong>Staff Time</strong>
@@ -277,6 +278,7 @@
 	                {% endif %}
 	              </td>
 	            </tr>
+              {% endif %}
 	            <tr>
 	              <td class="budget">
 	                <strong>Unspent Budget</strong>
@@ -487,7 +489,8 @@
 	        </table>
         </div>
 	      {% endif %}
-        
+
+        {% if user.staff %}
         {% if site.StaffTimes.Count %}
         <a name="stafftime_panel"></a>
         <div class="panel">
@@ -543,6 +546,7 @@
 	          </tbody>
 	        </table>
         </div>
+	      {% endif %}
 	      {% endif %}
         
         {% if site.InKindDonations.Count %}
