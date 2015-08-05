@@ -1,12 +1,12 @@
 {%extends "base.html"%}
 {% block script %}
-<script 
-   type="text/javascript" 
-   src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
 </script>
 <script type="text/javascript" src="/static/room.js"></script>
 <script
-   type="text/javascript" 
+   type="text/javascript"
    src="/static/jquery.jeditable.mini.js">
 </script>
 <script type="text/javascript">
@@ -33,10 +33,10 @@ $(function() {
 {%block about_this_page %}
 <h2>{{ what_you_are_doing }}</h2>
 <p>
-If you don't need to update quantities 
-then you go to the next step 
+If you don't need to update quantities
+then you go to the next step
 by clicking the
-<strong>{{ submit_button_text }}</strong> 
+<strong>{{ submit_button_text }}</strong>
 button.
 </p>
 {% if user.captain %}

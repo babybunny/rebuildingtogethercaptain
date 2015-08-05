@@ -1,8 +1,8 @@
 {%extends "base.html"%}
 {%block script%}
 <script
-   type="text/javascript" 
-   src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
 </script>
 {% include "tablesorter_script.html" %}
 <script type="text/javascript">
@@ -25,14 +25,14 @@ $(function() {
 {%block about_this_page %}
 <h1>Sites without any {{ order_sheet.name }} order</h1>
 <p>
-{{ num_sites_without_order }} of {{ num_sites }} 
+{{ num_sites_without_order }} of {{ num_sites }}
 sites have no {{ order_sheet.name }} order.
 </p>
 {% endblock %}
 {%block body%}
 
-<form 
-   method="POST" 
+<form
+   method="POST"
    action="{% url room.staff.SitesWithoutOrderSendEmail order_sheet.key.id %}">
 <div class="left">
 Select one or more captains
@@ -60,8 +60,8 @@ Select one or more captains
     <tr>
       <td>
         <input type="checkbox" class="captain"
-               id="{{sc.captain.key.id}}" 
-               name="site_captain" 
+               id="{{sc.captain.key.id}}"
+               name="site_captain"
                value="{{ site.key.id }} {{sc.captain.key.id}}" >
         <label for="{{sc.captain.key.id}}">
       </td>
@@ -69,7 +69,7 @@ Select one or more captains
         {% if site.IsCDBG %}CDBG{% endif %}
       </td>
       <td>
-        {{ site.number }} 
+        {{ site.number }}
       </td>
       <td>
         {{ sc.captain.name }} ({{ sc.type }})
@@ -81,14 +81,14 @@ Select one or more captains
 </table>
 </div>
 <div class="right">
-From: 
+From:
 <br>
 <select name="staff">
 {% for s in staff %}
 <option value="{{ s.key.id }}"
   {% ifequal s.email user.staff.email%}
   selected
-  {% endifequal %} 
+  {% endifequal %}
 >
 {{ s.name }} &lt;{{ s.email }}&gt;
 </option>

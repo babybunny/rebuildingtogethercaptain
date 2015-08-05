@@ -1,20 +1,20 @@
 {%extends "base.html"%}
 {% block script %}
-<link 
-   type="text/css" 
-   href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/le-frog/jquery-ui.css" 
+<link
+   type="text/css"
+   href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/le-frog/jquery-ui.css"
    rel="Stylesheet" />
 {% include "tablesorter_script.html" %}
 <script
-   type="text/javascript" 
+   type="text/javascript"
    src="/static/jquery.jeditable.mini.js">
 </script>
-<script 
-   type="text/javascript" 
-   src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
 </script>
 <script
-   type="text/javascript" 
+   type="text/javascript"
    src="/static/jquery.jeditable.datepicker.js">
 </script>
 <script type="text/javascript">
@@ -139,18 +139,18 @@ editable columns</span> and change the status to "Reconciled".
       </th>
     </tr>
   </thead>
-  <tbody>    
+  <tbody>
     {%for order in orders%}
     <tr>
-      <td>	
+      <td>
 	      <span class="sortorder">{{ order.site.number }}</span>
 	      <span class="actions">
-	        <a target="_blank" 
+	        <a target="_blank"
 	           href="{% url room.order.OrderView order.key.id %}">
 	          Review
 	        </a>
 	      </span>
-	      Site # 
+	      Site #
 	      <a target="_blank"
 	         href="{% url room.views.SiteView order.site.key.id %}">
 	        {{ order.site.number|escape }}
@@ -165,34 +165,34 @@ editable columns</span> and change the status to "Reconciled".
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.actual_total }}</span>
-	      <div class="jeditable-amount" 
-	           id="actual_total" 
+	      <div class="jeditable-amount"
+	           id="actual_total"
 	           name="{{ order.key.id }}"
 	           >{{ order.actual_total|floatformat:2 }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.reconciliation_notes }}</span>
-	      <div class="jeditable-notes" 
+	      <div class="jeditable-notes"
 	           id="reconciliation_notes"
 	           name="{{ order.key.id }}"
 	           >{{ order.reconciliation_notes }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.invoice_date|date:"Y/m/d"  }}</span>
-	      <div class="jeditable-invoice" 
+	      <div class="jeditable-invoice"
 	           id="invoice_date"
 	           name="{{ order.key.id }}"
 	           >{{ order.invoice_date|date:"Y/m/d" }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.vendor }}</span>
-	      <div class="jeditable-vendor" 
+	      <div class="jeditable-vendor"
 	           id="vendor"
 	           name="{{ order.key.id }}">{{ order.vendor }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.state }}</span>
-	      <div class="jeditable-state" 
+	      <div class="jeditable-state"
 	           id="state"
 	           name="{{ order.key.id }}">{{ order.state }}</div>
       </td>
