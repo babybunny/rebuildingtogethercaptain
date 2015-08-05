@@ -1,7 +1,7 @@
-<table class="site"> 
+<table class="site">
   <tbody>
     {% for site in entries %}
-    <tr> 
+    <tr>
       <td>
         <span class=big>
 	        <a name="site_{{ site.number }}"></a>
@@ -21,13 +21,13 @@
           </strong>
           {% endifnotequal %}
           {% if site.applicant_home_phone %}
-          <br>{{ site.applicant_home_phone }} <i>home</i> 
+          <br>{{ site.applicant_home_phone }} <i>home</i>
           {% endif %}
           {% if site.applicant_work_phone %}
-          <br>{{ site.applicant_work_phone }} <i>work</i> 
+          <br>{{ site.applicant_work_phone }} <i>work</i>
           {% endif %}
           {% if site.applicant_mobile_phone %}
-          <br>{{ site.applicant_mobile_phone }} <i>mobile</i> 
+          <br>{{ site.applicant_mobile_phone }} <i>mobile</i>
           {% endif %}
           {% if site.applicant_email %}
           <br><a href="mailto:{{ site.applicant_email }}">
@@ -35,7 +35,7 @@
           </a>
           {% endif %}
         </p>
-        
+
         {% if site.sponsor %}
         <p><i>Sponsored by:</i>
           <br><strong>{{ site.sponsor }}</strong>
@@ -47,7 +47,7 @@
           <br><strong>{{ site.jurisdiction }}</strong>
         </p>
         {% endif %}
-        
+
         {% ifequal site.rrp_test "Yes" %}
         <p><i>RRP Info:</i>
           <br/>
@@ -58,7 +58,7 @@
           </span>
           <br/>
           <strong>
-            RRP test required? {{ site.rrp_test }} 
+            RRP test required? {{ site.rrp_test }}
             {% if site.rrp_level %}
             <br/>
             RRP level is {{ site.rrp_level }}
@@ -73,7 +73,7 @@
         </p>
         {% else %}
         {% for sitecaptain in site.sitecaptain_set %}
-        <p> 
+        <p>
 	        <strong>{{ sitecaptain.captain.name }}</strong>
 	        {% if user.staff %}
 	        (
@@ -115,8 +115,8 @@
         {% endif %}
       </td>
       <td>
-        <div class="big jeditable" 
-	           id="announcement_subject" 
+        <div class="big jeditable"
+	           id="announcement_subject"
 	           name="{{ site.key.id }}">{{ site.announcement_subject }}</div>
         <div class="panel">
 	        <div class="padded jeditable-text"
@@ -125,8 +125,8 @@
         </div>
         {% if site_list_detail %}
         <p>{{ site.StreetAddress }}
-          <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress }}&ie=UTF8&z=14" target="_blank"> 
-	          <img src="http://maps.google.com/maps/api/staticmap?center={{ site.StreetAddress }}&markers=size:mid|color:red|{{ site.StreetAddress }}&zoom=11&size={{ map_width }}x{{ map_height }}&sensor=false&key=ABQIAAAAocapnBGvqx6JkB2K9HNychQhv5EN3SOvE9MJZZkkyl7jkpoomxR8v4PeXRpH7B7kzknEvwpb_hu-Jg" alt="map of {{ site.StreetAddress }}" width="{{ map_width }}" height="{{ map_height }}"> 
+          <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress }}&ie=UTF8&z=14" target="_blank">
+	          <img src="https://maps.google.com/maps/api/staticmap?center={{ site.StreetAddress }}&markers=size:mid|color:red|{{ site.StreetAddress }}&zoom=11&size={{ map_width }}x{{ map_height }}&sensor=false&key=ABQIAAAAocapnBGvqx6JkB2K9HNychQhv5EN3SOvE9MJZZkkyl7jkpoomxR8v4PeXRpH7B7kzknEvwpb_hu-Jg" alt="map of {{ site.StreetAddress }}" width="{{ map_width }}" height="{{ map_height }}">
 	          <br>(click to view on Google Maps)
           </a>
         </p>
@@ -141,14 +141,14 @@
 	        {{ site.notes }}
         </p>
         {% endif %}
-        {% else %}     
-        {{ site.street }}	
+        {% else %}
+        {{ site.street }}
         <br>{{ site.city }}
         {% endif %}
       </td>
       <td>
         <span class="big">
-	        {{ site.BudgetStatement }} 
+	        {{ site.BudgetStatement }}
         </span>
         <div class="panel">
           <table class="budget">
@@ -182,13 +182,13 @@
 	              </td>
 	              <td class="action">
 	                <a href="{% url room.order.OrderPreview site.key.id %}">
-	                  Place an Order 
+	                  Place an Order
 	                </a>
 	              </td>
 	              <td class="action">
 	                {% if site.Orders.Count %}
 	                <a href="#order_panel">
-		                Review 
+		                Review
 	                </a>
 	                {% endif %}
 	              </td>
@@ -216,7 +216,7 @@
 	              <td class="action">
 	                {% if site.CheckRequests.Count %}
 	                <a href="#checkrequests_panel">
-		                Review 
+		                Review
 	                </a>
 	                {% endif %}
 	              </td>
@@ -244,7 +244,7 @@
 	              <td class="action">
 	                {% if site.VendorReceipts.Count %}
 	                <a href="#vendorreceipts_panel">
-		                Review 
+		                Review
 	                </a>
 	                {% endif %}
 	              </td>
@@ -273,7 +273,7 @@
 	              <td class="action">
 	                {% if site.StaffTimes.Count %}
 	                <a href="#stafftime_panel">
-		                Review 
+		                Review
 	                </a>
 	                {% endif %}
 	              </td>
@@ -284,9 +284,9 @@
 	                <strong>Unspent Budget</strong>
 	              </td>
 	              <td class="value">
-	                ${{ site.BudgetRemaining|floatformat:2 }} 
+	                ${{ site.BudgetRemaining|floatformat:2 }}
 	              </td>
-	              <td>	      
+	              <td>
 	              </td>
 	              <td>
 	              </td>
@@ -314,7 +314,7 @@
 	              <td class="action">
 	                {% if site.InKindDonations.Count %}
 	                <a href="#inkinddonations_panel">
-		                Review 
+		                Review
 	                </a>
 	                {% endif %}
 	              </td>
@@ -326,7 +326,7 @@
         <a name="order_panel"></a>
         <div class="panel">
           <h3>Orders in progress</h3>
-          <table id="orders" class="list tablesorter">	      
+          <table id="orders" class="list tablesorter">
 	          <thead>
 	            <tr>
 	              <th>Order</th>
@@ -371,19 +371,19 @@
 	                <br>
 	                <a href="{% url room.order.OrderView order.key.id %}">
 		                view
-	                </a>      
+	                </a>
 	                {% endif %}
 	              </td>
 	              <td class="dollar">
 	                ${{ order.GrandTotal|floatformat:2 }}
 	              </td>
-	            </tr>  
+	            </tr>
 	            {% endfor %}
 	          </tbody>
           </table>
         </div>
         {% endif %}
-        
+
         {% if site.CheckRequests.Count %}
         <a name="checkrequests_panel"></a>
         <div class="panel">
@@ -436,7 +436,7 @@
 	        </table>
         </div>
         {% endif %}
-        
+
         {% if site.VendorReceipts.Count %}
         <a name="vendorreceipts_panel"></a>
         <div class="panel">
@@ -548,7 +548,7 @@
         </div>
 	      {% endif %}
 	      {% endif %}
-        
+
         {% if site.InKindDonations.Count %}
         <a name="inkinddonations_panel"></a>
         <div class="panel">
@@ -601,7 +601,7 @@
 	          </tbody>
 	        </table>
 	        {% endif %}
-          
+
         </div>
       </td>
     </tr>
@@ -612,4 +612,4 @@
     </tr>
     {% endfor %}
   </tbody>
-</table> 
+</table>
