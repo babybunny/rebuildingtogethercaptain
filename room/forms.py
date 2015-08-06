@@ -9,7 +9,7 @@ from google.appengine.ext.db import djangoforms
 import common
 import models
 
-VENDOR_SELECTIONS = (    
+VENDOR_SELECTIONS = (
     'Home Depot',
     'Kelly-Moore Paints',
     'Palo Alto Hardware',
@@ -23,7 +23,7 @@ VENDOR_SELECTIONS = (
 def DateField(label):
     """Helper to produce data fields for forms."""
     return forms.DateField(
-        label=label, required=False,  
+        label=label, required=False,
         help_text='mm/dd/yyyy',
         widget=forms.DateTimeInput(attrs={'class':'input',
                                           'size':'10'
@@ -33,12 +33,12 @@ def DateField(label):
 
 def SortedCaptainChoiceField():
     return djangoforms.ModelChoiceField(
-        models.Captain, 
+        models.Captain,
         models.Captain.all().order('name'))
 
 def SortedSiteChoiceField():
     return djangoforms.ModelChoiceField(
-        models.NewSite, 
+        models.NewSite,
         models.NewSite.all().order('number'))
 
 
@@ -70,7 +70,7 @@ class NewSiteForm(djangoforms.ModelForm):
         label='Jurisdiction')
     class Meta:
          model = models.NewSite
-         exclude = ['search_prefixes', 'program', 'jurisdiction', 'year']
+         exclude = ['search_prefixes', 'jurisdiction', 'year']
 
 
 class CaptainSiteForm(djangoforms.ModelForm):
@@ -79,7 +79,7 @@ class CaptainSiteForm(djangoforms.ModelForm):
     class Meta:
         # TODO: is this the wrong model!??  should be NewSite?
         model = models.Site
-        exclude = ['number', 'name', 'applicant', 'sponsors', 
+        exclude = ['number', 'name', 'applicant', 'sponsors',
                    'postal_address', 'search_prefixes']
 
 
@@ -114,7 +114,7 @@ class OrderSheetForm(djangoforms.ModelForm):
          exclude = ['created']
 
 
-class ItemForm(djangoforms.ModelForm):    
+class ItemForm(djangoforms.ModelForm):
     class Meta:
         model = models.Item
         exclude = ['last_editor', 'created', 'modified', 'thumbnail']
@@ -125,9 +125,9 @@ class OrderForm(djangoforms.ModelForm):
     site = SortedSiteChoiceField()
     class Meta:
         model = models.Order
-        exclude = ['last_editor', 'created', 'created_by', 
-                   'modified', 'order_sheet', 
-                   'sub_total', 'sales_tax', 'grand_total', 'state', 
+        exclude = ['last_editor', 'created', 'created_by',
+                   'modified', 'order_sheet',
+                   'sub_total', 'sales_tax', 'grand_total', 'state',
                    'program']
 
 
@@ -137,13 +137,13 @@ class CaptainOrderForm(djangoforms.ModelForm):
 
     class Meta:
         model = models.Order
-        exclude = ['last_editor', 'created', 'created_by', 
-                   'modified', 'order_sheet', 
-                   'sub_total', 'sales_tax', 'grand_total', 'state', 
+        exclude = ['last_editor', 'created', 'created_by',
+                   'modified', 'order_sheet',
+                   'sub_total', 'sales_tax', 'grand_total', 'state',
                    'captain', 'site', 'program']
 
 
-class NewOrderForm(djangoforms.ModelForm):    
+class NewOrderForm(djangoforms.ModelForm):
     site = djangoforms.ModelChoiceField(
         models.Site, widget=forms.HiddenInput)
     order_sheet = djangoforms.ModelChoiceField(
@@ -187,7 +187,7 @@ class SiteExpenseForm(djangoforms.ModelForm):
             entity = kwargs.get('instance')
             if entity:
                 site = entity.site
-                captains = [(sc.captain.key(), sc.captain.name) 
+                captains = [(sc.captain.key(), sc.captain.name)
                             for sc in site.sitecaptain_set]
                 captains.sort()
                 staff_captain = common.GetStaffCaptain()
@@ -250,7 +250,7 @@ class InKindDonationForm(SiteExpenseForm):
     class Meta:
         model = models.InKindDonation
         exclude = ['last_editor', 'modified', 'program']
-        
+
 
 class StaffTimeForm(SiteExpenseForm):
     description = forms.CharField(required=True, widget=forms.Textarea)

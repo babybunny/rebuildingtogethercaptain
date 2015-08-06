@@ -13,7 +13,7 @@ from google.appengine.ext.webapp import template
 import django
 from django import http
 from django import shortcuts
-from django.core import urlresolvers 
+from django.core import urlresolvers
 import forms
 import models
 import response
@@ -33,7 +33,7 @@ def FindHome(user, default='/'):
       staff.last_welcome = datetime.datetime.now()
       staff.put()
       return urlresolvers.reverse(StaffHome)
-    
+
     captain = models.Captain.all().filter('email = ', email).get()
     if captain:
       captain.last_welcome = datetime.datetime.now()
@@ -90,10 +90,10 @@ def SiteJump(request):
   else:
     return http.HttpResponseRedirect(
       urlresolvers.reverse(views.SiteView, args=[site.key().id()]))
-    
+
 
 def SitesWithoutOrder(request, order_sheet_id):
-  user, _, _ = common.GetUser(request)  
+  user, _, _ = common.GetUser(request)
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
     return http.HttpResponseNotFound(
@@ -101,7 +101,7 @@ def SitesWithoutOrder(request, order_sheet_id):
   query = models.NewSite.all()
   query.filter('program =', user.program_selected)
   all_sites = list(query)
-  
+
   orders = models.Order.all().filter('order_sheet =', order_sheet)
   orders.filter('state != ', 'new')
   orders.filter('program =', user.program_selected)
@@ -119,7 +119,7 @@ def SitesWithoutOrder(request, order_sheet_id):
                    'EMAIL_LOG_LINK': common.EMAIL_LOG_LINK,
                    }
   return common.Respond(request, 'sites_without_order', template_dict)
-    
+
 
 def SitesWithoutOrderSendEmail(request, order_sheet_id):
   subject = request.POST['subject']
@@ -161,7 +161,7 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
       'order_sheet': order_sheet,
       'body': body,
     }
-    
+
     logging.info('sending mail re: %s to %s', subject, to)
     common.SendMail(to, sender, cc, subject, body,
                     'sites_without_order_email.html', template_dict)
@@ -170,7 +170,7 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
 import re
 def FixCity(request):
   for s in models.NewSite.all():
-    m = re.match('(.+ [0-9-]+) (.*)', s.city_state_zip)  
+    m = re.match('(.+ [0-9-]+) (.*)', s.city_state_zip)
     if not m:
       logging.info('not fixing site number %s: %r', s.number, s.city_state_zip)
       continue
@@ -188,8 +188,8 @@ def FixLastEditor(request):
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 def AddStandardKitOrder(request, prefix):
-  user, _, _ = common.GetUser(request)    
-  skos = models.OrderSheet.all().filter('code = ', 'SDK').get() 
+  user, _, _ = common.GetUser(request)
+  skos = models.OrderSheet.all().filter('code = ', 'SDK').get()
   if not skos:
     logging.warn('can not find SDK order sheet')
     return http.HttpResponse(
@@ -202,11 +202,11 @@ def AddStandardKitOrder(request, prefix):
 
   for site in models.NewSite.all().filter('program =', user.program_selected):
     if not site.number.startswith(prefix):
-      logging.info('skipping site %r because wrong prefix %r', 
+      logging.info('skipping site %r because wrong prefix %r',
                    site.number, prefix)
       continue
     if site.order_set.filter('order_sheet = ', skos).count():
-      logging.info('skipping site %r because has SDK order', site.number)      
+      logging.info('skipping site %r because has SDK order', site.number)
       continue
     sko = models.Order(site=site, order_sheet=skos, state='Received')
     sko.put()
@@ -261,10 +261,9 @@ def FixProgramFromNumber(request, site_number=None):
   if site and site.number:
     program = site.ProgramFromNumber()
     if program and program != site.program:
-      logging.info('fixing program from %s to %s for site %s', 
+      logging.info('fixing program from %s to %s for site %s',
                    site.program, program, site.number)
       site.program = program
       site.put()
       site.SaveTheChildren()
   return http.HttpResponse('OK')
-      

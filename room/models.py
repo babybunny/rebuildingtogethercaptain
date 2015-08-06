@@ -195,8 +195,6 @@ class NewSite(BaseModel):
     return sow
 
   def ProgramFromNumber(self):
-    if self.program:
-      return
     year = '20' + self.number[0:2]
     mode = self.number[2]
     program = None
@@ -224,14 +222,17 @@ class NewSite(BaseModel):
 
   def SaveTheChildren(self):
     for child in (self.order_set, self.checkrequest_set,
-                  self.vendorreceipt_set, self.inkinddonation_set):
+                  self.vendorreceipt_set, self.inkinddonation_set,
+                  self.stafftime_set):
       for obj in child:
         obj.put()
 
   def put(self, *a, **k):
     if self.jurisdiction_choice:
       self.jurisdiction = self.jurisdiction_choice.name
-    self.program = self.ProgramFromNumber()
+    # issue213: program should be configurable
+    if not self.program:
+      self.program = self.ProgramFromNumber()
     prefixes = set()
     for f in self.name, self.applicant, self.street_number, self.jurisdiction:
       if not f:
