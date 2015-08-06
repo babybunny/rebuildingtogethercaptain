@@ -11,6 +11,7 @@ from django import shortcuts
 
 HELP_CONTACT = 'al@rebuildingtogetherpeninsula.org'
 
+
 def Respond(request, user, template_name, params=None):
   """Helper to render a response, passing standard stuff to the response.
 
@@ -42,5 +43,3 @@ def Respond(request, user, template_name, params=None):
   if not template_name.endswith('.html'):
     template_name += '.html'
   return shortcuts.render_to_response(template_name, params)
-
-

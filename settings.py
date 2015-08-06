@@ -20,17 +20,20 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-     ('Luke Stone', 'babybunny@gmail.com'),
+    ('Luke Stone', 'babybunny@gmail.com'),
 )
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'appengine'  # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+# 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_ENGINE = 'appengine'
 DATABASE_NAME = ''             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+# Set to empty string for localhost. Not used with sqlite3.
+DATABASE_HOST = ''
+# Set to empty string for default. Not used with sqlite3.
+DATABASE_PORT = ''
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -75,22 +78,22 @@ EMAIL_HOST = ''
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    #     'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-#    'django.contrib.sessions.middleware.SessionMiddleware',
-#    'django.contrib.auth.middleware.AuthenticationMiddleware',
-#    'django.middleware.doc.XViewMiddleware',
+    #    'django.contrib.sessions.middleware.SessionMiddleware',
+    #    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #    'django.middleware.doc.XViewMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-#   'django.core.context_processors.auth',
+    #   'django.core.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
-#    'django.core.context_processors.media',  # 0.97 only.
-#    'django.core.context_processors.request',
+    #    'django.core.context_processors.media',  # 0.97 only.
+    #    'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'urls'
@@ -103,14 +106,14 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-     'appengine_django',
-     'gaeunit',    
-     'django.contrib.humanize',
-#     'captains',
-#     'staff',
-#     'room',
-#    'django.contrib.auth',
-#    'django.contrib.contenttypes',
-#    'django.contrib.sessions',
-#    'django.contrib.sites',
+    'appengine_django',
+    'gaeunit',
+    'django.contrib.humanize',
+    #     'captains',
+    #     'staff',
+    #     'room',
+    #    'django.contrib.auth',
+    #    'django.contrib.contenttypes',
+    #    'django.contrib.sessions',
+    #    'django.contrib.sites',
 )
