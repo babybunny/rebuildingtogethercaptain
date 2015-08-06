@@ -2,14 +2,14 @@
 
 # Copyright 2010 Luke Stone
 
-# This is an online ordering system for construction captains for the 
-# annual Rebuilding Day. 
+# This is an online ordering system for construction captains for the
+# annual Rebuilding Day.
 
 # Set up
 
-# Install appengine_django, I forget the details. 
+# Install appengine_django, I forget the details.
 
-# Install gaeunit for Django 
+# Install gaeunit for Django
 From http://code.google.com/p/gaeunit/, I used gaeunit-2.0a_for_django.zip
 See svn revision 13.
 
@@ -20,7 +20,7 @@ and added to urls.py (based on gaeunit/urlsauto.py)
     (r'^test', include('gaeunit.urls')),
 
 
-# Install tablesorter and south-street date picker from jquery.  
+# Install tablesorter and south-street date picker from jquery.
 Again, I forget the details.
 
 # Install appengine rest server
@@ -62,3 +62,22 @@ for kind in $kinds; do
   python $(which appcfg.py) download_data --filename=testdata/$kind.csv --config_file=bulkloader.yaml --url=http://rebuildingtogethercaptain.appspot.com/_ah/remote_api --kind=$kind --email $email --passin < pass
 done
 
+# Git workflow
+# start on the master branch, nothing pending.
+  602  git co -b issue216   # make a new branch
+# make some changes
+  604  git status
+# deploy and test
+  613  git commit -a -m "autopep8 -i --indent-size 2 *.py"
+  615  git diff
+# repeat as desired
+  616  git commit -a -m "autopep8 -i --indent-size 2 -r room"
+  617  git status
+  621  git commit -a -m "autopep8 -i --indent-size 2 -r test"
+  622  git status
+  623  git commit -a -m "version"
+# after all commits on the issue216 branch, merge back into master
+  624  git co master
+  625  git merge issue216
+# send to server
+  626  git push
