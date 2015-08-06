@@ -50,7 +50,6 @@ def GoHome(request):
   return http.HttpResponseRedirect(FindHome(user))
 
 
-
 def StaffHome(request):
   user, _, staff = common.GetUser(request)
   if not staff.program_selected:
@@ -86,10 +85,10 @@ def SiteJump(request):
   site = models.NewSite.all().filter('number = ', number).get()
   if site is None:
     return http.HttpResponseRedirect(
-      urlresolvers.reverse(StaffHome))
+        urlresolvers.reverse(StaffHome))
   else:
     return http.HttpResponseRedirect(
-      urlresolvers.reverse(views.SiteView, args=[site.key().id()]))
+        urlresolvers.reverse(views.SiteView, args=[site.key().id()]))
 
 
 def SitesWithoutOrder(request, order_sheet_id):
@@ -97,7 +96,7 @@ def SitesWithoutOrder(request, order_sheet_id):
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
     return http.HttpResponseNotFound(
-      'No order_sheet exists with that key (%r)' % order_sheet_id)
+        'No order_sheet exists with that key (%r)' % order_sheet_id)
   query = models.NewSite.all()
   query.filter('program =', user.program_selected)
   all_sites = list(query)
@@ -129,7 +128,7 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
     return http.HttpResponseNotFound(
-      'No order_sheet exists with that key (%r)' % order_sheet_id)
+        'No order_sheet exists with that key (%r)' % order_sheet_id)
   captains_by_site = {}
   site_captains = request.POST.getlist('site_captain')
   for sc in site_captains:
@@ -154,12 +153,12 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
       captains.append(captain)
     to = list(set([str(c.email) for c in captains]))
     template_dict = {
-      'to': to,
-      'sender': sender,
-      'captains': captains,
-      'site': site,
-      'order_sheet': order_sheet,
-      'body': body,
+        'to': to,
+        'sender': sender,
+        'captains': captains,
+        'site': site,
+        'order_sheet': order_sheet,
+        'body': body,
     }
 
     logging.info('sending mail re: %s to %s', subject, to)
@@ -168,6 +167,8 @@ def SitesWithoutOrderSendEmail(request, order_sheet_id):
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
 import re
+
+
 def FixCity(request):
   for s in models.NewSite.all():
     m = re.match('(.+ [0-9-]+) (.*)', s.city_state_zip)
@@ -179,6 +180,7 @@ def FixCity(request):
     s.put()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+
 def FixLastEditor(request):
   for s in models.Order.all():
     if not s.last_editor:  # doesn't work if auto_current_user=True
@@ -187,18 +189,19 @@ def FixLastEditor(request):
       logging.info('fixed last_editor for order #%d', s.key().id())
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+
 def AddStandardKitOrder(request, prefix):
   user, _, _ = common.GetUser(request)
   skos = models.OrderSheet.all().filter('code = ', 'SDK').get()
   if not skos:
     logging.warn('can not find SDK order sheet')
     return http.HttpResponse(
-      urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+        urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
   i = skos.item_set.get()
   if not i:
     logging.warn('can not find item for SDK order sheet')
     return http.HttpResponse(
-      urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+        urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
 
   for site in models.NewSite.all().filter('program =', user.program_selected):
     if not site.number.startswith(prefix):
@@ -217,7 +220,8 @@ def AddStandardKitOrder(request, prefix):
     sko.put()
 
   return http.HttpResponse(
-    urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+      urlresolvers.reverse(AddStandardKitOrder, args=[prefix]))
+
 
 def RecomputeSearchPrefixes(request):
   for s in models.NewSite.all():
@@ -228,28 +232,33 @@ def RecomputeSearchPrefixes(request):
                                            args=[c.key().id()]))
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+
 def RecomputeOrderLogistics(request):
   for c in models.Order.all():
     taskqueue.add(url=urlresolvers.reverse(order.OrderUpdateLogistics,
                                            args=[c.key().id()]))
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+
 def RecomputeOrders(request):
   for o in models.Order.all():
     deferred.defer(order.RecomputeOrderItems, o)
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+
 def DeleteEmptyOrderItems(request):
-  for o in models.Order.all().filter('state !=' ,'new'):
+  for o in models.Order.all().filter('state !=', 'new'):
     for oi in o.orderitem_set:
       if oi.IsEmpty():
         oi.delete()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
 
+
 def PutSuppliers(request):
   for o in models.Supplier.all():
     o.put()
   return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+
 
 def FixProgramFromNumber(request, site_number=None):
   if site_number is None:

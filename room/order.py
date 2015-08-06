@@ -5,7 +5,7 @@ import csv
 import datetime
 import logging
 
-from django.core import urlresolvers 
+from django.core import urlresolvers
 from django import http
 from google.appengine.ext import db
 
@@ -24,6 +24,7 @@ def OrderList(request, order_sheet_id=None):
   d = _OrderListInternal(order_sheet_id, user.program_selected)
   return common.Respond(request, 'order_list', d)
 
+
 def _OrderListInternal(order_sheet_id, program=None):
   query = models.Order.all().filter('state != ', 'new')
   if program is not None:
@@ -38,12 +39,13 @@ def _OrderListInternal(order_sheet_id, program=None):
                  'fulfill_many': FULFILL_MULTIPLE}
   return {'orders': orders,
           'order_sheet': order_sheet,
-          'export_checkbox_prefix': 
+          'export_checkbox_prefix':
           views.POSTED_ID_PREFIX,
           'mass_action': mass_action,
-          'num_being_filled': len([o for o in orders 
+          'num_being_filled': len([o for o in orders
                                    if o.state == 'Being Filled'])
           }
+
 
 def OrderReconcile(request, order_sheet_id=None):
   """Reconcile filled orders."""
@@ -51,8 +53,10 @@ def OrderReconcile(request, order_sheet_id=None):
   d = _OrderReconcileInternal(order_sheet_id, user.program_selected)
   return common.Respond(request, 'order_reconcile', d)
 
+
 def _OrderReconcileInternal(order_sheet_id, program=None):
-  query = models.Order.all().filter('state IN ', ['Being Filled', 'Reconciled'])
+  query = models.Order.all().filter(
+      'state IN ', ['Being Filled', 'Reconciled'])
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is not None:
     query.filter('order_sheet = ', order_sheet)
@@ -65,6 +69,7 @@ def _OrderReconcileInternal(order_sheet_id, program=None):
           'order_sheet': order_sheet,
           'suppliers': suppliers,
           }
+
 
 def ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
   """Changes an order field based on POST data from jeditable."""
@@ -85,13 +90,16 @@ def ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
     value = output_filter(value)
   return http.HttpResponse(value, status=200)
 
+
 def ActualTotal(request, order_id):
   """Updates an order's actual_total field."""
   return ChangeOrder(request, order_id, input_sanitizer=lambda v: float(v))
 
+
 def ReconciliationNotes(request, order_id):
   """Updates an order's reconciliation_notes field."""
   return ChangeOrder(request, order_id, input_sanitizer=lambda v: v)
+
 
 def InvoiceDate(request, order_id):
   """Updates an order's invoice_date field.  value like 03/20/2012"""
@@ -102,13 +110,15 @@ def InvoiceDate(request, order_id):
     """Formats a datetime as Django template filter |date:"m/d/Y" """
     return dt.strftime("%m/%d/%Y")
 
-  return ChangeOrder(request, order_id, 
+  return ChangeOrder(request, order_id,
                      input_sanitizer=_ParseDatePickerFormat,
                      output_filter=_FormatDate)
+
 
 def State(request, order_id):
   """Updates an order's state field."""
   return ChangeOrder(request, order_id, input_sanitizer=lambda v: v)
+
 
 def Vendor(request, order_id):
   """Updates an order's state field."""
@@ -117,31 +127,37 @@ def Vendor(request, order_id):
 
   return ChangeOrder(request, order_id, input_sanitizer=_GetSupplier)
 
+
 def OrderView(request, order_id):
   order = models.Order.get_by_id(int(order_id))
   q = models.OrderItem.all().filter('order = ', order)
   order_items = [oi for oi in q if oi.FloatQuantity()]
   _SortOrderItemsWithSections(order_items)
   d = {'orders': [{'order': order,
-                  'order_items': order_items}],
+                   'order_items': order_items}],
        'action_verb': 'Review',
        'show_logistics_details': True,
        }
   return common.Respond(request, 'order_fulfill', d)
-  
+
+
 def OrderDeleteConfirm(request, order_sheet_id=None):
   order_ids = views.PostedIds(request.POST)
-  return _OrderConfirmInternal(order_ids, order_sheet_id, 
+  return _OrderConfirmInternal(order_ids, order_sheet_id,
                                state='Deleted')
 
 # TODO: combine two methods below once tests are OK.
+
+
 def OrderFulfillConfirm(request, order_sheet_id=None):
   order_ids = views.PostedIds(request.POST)
   return _OrderFulfillConfirmInternal(order_ids, order_sheet_id)
 
+
 def _OrderFulfillConfirmInternal(order_ids, order_sheet_id):
-  return _OrderConfirmInternal(order_ids, order_sheet_id, 
+  return _OrderConfirmInternal(order_ids, order_sheet_id,
                                state='Being Filled')
+
 
 def _OrderConfirmInternal(order_ids, order_sheet_id, state):
   orders = models.Order.get_by_id(order_ids)
@@ -157,36 +173,39 @@ def _OrderConfirmInternal(order_ids, order_sheet_id, state):
     if next_object is not None:
       return http.HttpResponseRedirect(urlresolvers.reverse(
           OrderList, args=[next_id]))
-      
+
     next_object = models.NewSite.get_by_id(next_id)
     if next_object is not None:
       return http.HttpResponseRedirect(urlresolvers.reverse(
-              views.SiteView, args=[next_id]))
-  
+          views.SiteView, args=[next_id]))
+
 FULFULL_OR_DELETE_OPTIONS = {
-  'fulfill': {
-    'action_verb': 'Fulfill',
-    'confirm_method': OrderFulfillConfirm,
-    'submit_value': 'Click here to print and confirm fulfillment has started',
-    'should_print': True,
+    'fulfill': {
+        'action_verb': 'Fulfill',
+        'confirm_method': OrderFulfillConfirm,
+        'submit_value': 'Click here to print and confirm fulfillment has started',
+        'should_print': True,
     },
-  'delete':  {
-    'action_verb': 'Delete',
-    'confirm_method': OrderDeleteConfirm,
-    'submit_value': 'Click here to confirm deletion',
-    'should_print': False,
+    'delete':  {
+        'action_verb': 'Delete',
+        'confirm_method': OrderDeleteConfirm,
+        'submit_value': 'Click here to confirm deletion',
+        'should_print': False,
     },
 }
+
 
 def OrderDelete(request, order_id, order_sheet_id=None):
   """Prompt user to delete the order."""
   d = _OrderFulfillInternal([order_id], order_sheet_id, mode='delete')
   return common.Respond(request, 'order_fulfill', d)
 
+
 def OrderFulfill(request, order_id, order_sheet_id=None):
   """Start the fulfillment process for an order."""
   d = _OrderFulfillInternal([order_id], order_sheet_id, mode='fulfill')
   return common.Respond(request, 'order_fulfill', d)
+
 
 def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
   options = FULFULL_OR_DELETE_OPTIONS[mode]
@@ -207,7 +226,7 @@ def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
     list_args.append(int(order_sheet_id))
     confirm_args.append(int(order_sheet_id))
   list_url = urlresolvers.reverse(OrderList, args=list_args)
-  confirm_url = urlresolvers.reverse(options['confirm_method'], 
+  confirm_url = urlresolvers.reverse(options['confirm_method'],
                                      args=confirm_args)
   orders.sort(key=lambda o: o['order'].site.number)
   return {'orders': orders,
@@ -220,9 +239,10 @@ def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
           'should_print': options['should_print'],
           'show_logistics_details': True,
           'num_orders': len(orders),
-          'export_checkbox_prefix': 
-          views.POSTED_ID_PREFIX,          
+          'export_checkbox_prefix':
+          views.POSTED_ID_PREFIX,
           }
+
 
 def OrderExport(request):
   """Export orders as CSV."""
@@ -230,7 +250,7 @@ def OrderExport(request):
   if request.POST['submit'] == views.EXPORT_CSV:
     response = http.HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = (
-      'attachment; filename=%s_orders.csv' % user.email())
+        'attachment; filename=%s_orders.csv' % user.email())
     _OrderExportInternal(response, request.POST)
     return response
   elif request.POST['submit'] == FULFILL_MULTIPLE:
@@ -238,16 +258,17 @@ def OrderExport(request):
     order_sheet_id = request.POST.get('order_sheet_id')
     d = _OrderFulfillInternal(order_ids, order_sheet_id, mode='fulfill')
     return common.Respond(request, 'order_fulfill', d)
-      
+
+
 def _OrderExportInternal(writable, post_vars):
-  """Write orders as CSV to a file-like object."""   
+  """Write orders as CSV to a file-like object."""
   order_ids = views.PostedIds(post_vars)
   orders = list(models.Order.get_by_id(order_ids))
   orders.sort(key=lambda o: o.site.number)
   writer = csv.writer(writable)
   writer.writerow(['Site Number',
                    'Order ID',
-                   'Order modified',                     
+                   'Order modified',
                    'Street Address',
                    'City State Zip',
                    'Order Note',
@@ -263,9 +284,9 @@ def _OrderExportInternal(writable, post_vars):
                    ])
   order_items_by_order = collections.defaultdict(list)
   # 30 is the magic filter limit, experimentally derived
-  for i in range(0, len(orders), 30):  
-    batch_orders = orders[i:i+30]
-    logging.info('loading batch of %d orders starting with %d', 
+  for i in range(0, len(orders), 30):
+    batch_orders = orders[i:i + 30]
+    logging.info('loading batch of %d orders starting with %d',
                  len(batch_orders), i)
     q = models.OrderItem.all()
     q.filter('order IN ', batch_orders)
@@ -273,7 +294,7 @@ def _OrderExportInternal(writable, post_vars):
     order_items.sort(key=lambda x: (x.item.order_form_section, x.item.name))
     for oi in order_items:
       o = oi.order
-      order_id = o.key().id()      
+      order_id = o.key().id()
       row = [o.site.number,
              o.key().id(),
              o.modified.date().isoformat(),
@@ -311,7 +332,7 @@ def _OrderExportInternal(writable, post_vars):
                '<no items>',
                ]
         order_items_by_order[o.key().id()].append(row)
-  
+
   for o in orders:
     for row in order_items_by_order[o.key().id()]:
       row = [unicode(f).encode('ascii', 'ignore') for f in row]
@@ -320,7 +341,7 @@ def _OrderExportInternal(writable, post_vars):
 
 def _SortOrderItemsWithSections(order_items):
   order_items.sort(
-    key=lambda x: (x.item.order_form_section or None, x.item.name))
+      key=lambda x: (x.item.order_form_section or None, x.item.name))
   prev_section = None
   for o in order_items:
     new_section = o.item.order_form_section or None
@@ -331,7 +352,7 @@ def _SortOrderItemsWithSections(order_items):
 
 def _OrderPut(request, user, order):
   order_items = list(models.OrderItem.all().filter('order = ', order))
-  _SortOrderItemsWithSections(order_items)  
+  _SortOrderItemsWithSections(order_items)
   if order.state == 'new':
     what = 'Enter quantities for items.'
     submit_button_text = 'Submit this order'
@@ -340,29 +361,29 @@ def _OrderPut(request, user, order):
     submit_button_text = 'Submit changes'
   if order.order_sheet.HasLogistics():
     submit_button_text += ' and proceed to delivery options'
-    
+
   form_cls = forms.CaptainOrderForm
   if user.staff:
     form_cls = forms.OrderForm
 
   form = form_cls(
-    data=request.POST or None, 
-    files=request.FILES or None,
-    instance=order)
+      data=request.POST or None,
+      files=request.FILES or None,
+      instance=order)
 
   # A little sketchy, but the best way to adjust HTML attributes of a field.
   form['notes'].field.widget.attrs['cols'] = 120
   form['notes'].field.widget.attrs['rows'] = max(
-    5, len(form.instance.VisibleNotes().splitlines()))
-  created_by_user = common.GetUser(request, 
+      5, len(form.instance.VisibleNotes().splitlines()))
+  created_by_user = common.GetUser(request,
                                    order.last_editor)[0],
-  template_dict = {'form': form, 
+  template_dict = {'form': form,
                    'notes_field': form['notes'],
-                   'order': order, 
+                   'order': order,
                    'order_items': order_items,
-                   'created_by_user': common.GetUser(request, 
+                   'created_by_user': common.GetUser(request,
                                                      order.created_by)[0],
-                   'modified_by_user': common.GetUser(request, 
+                   'modified_by_user': common.GetUser(request,
                                                       order.last_editor)[0],
                    'sales_tax_pct': SALES_TAX_RATE * 100.,
                    'what_you_are_doing': what,
@@ -407,7 +428,7 @@ def _OrderPut(request, user, order):
 
   if order.order_sheet.HasLogistics():
     return http.HttpResponseRedirect(
-      urlresolvers.reverse(OrderLogistics, args=[str(order.key().id())])), None
+        urlresolvers.reverse(OrderLogistics, args=[str(order.key().id())])), None
   else:
     return http.HttpResponseRedirect(urlresolvers.reverse(
         views.SiteView, args=[str(order.site.key().id())])), None
@@ -419,7 +440,7 @@ def OrderLogistics(request, order_id):
   if order is None:
     logging.warning('order is none')
     return http.HttpResponseRedirect(urlresolvers.reverse(views.CaptainHome))
-  
+
   od = None
   ods = list(order.orderdelivery_set)
   if ods:
@@ -451,37 +472,37 @@ def OrderLogistics(request, order_id):
 
   form_objects = {}
   form_objects['delivery'] = forms.DeliveryForm(
-    data=request.POST or None, 
-    files=request.FILES or None,
-    instance=delivery)
+      data=request.POST or None,
+      files=request.FILES or None,
+      instance=delivery)
   form_objects['pickup'] = forms.PickupForm(
-    data=request.POST or None, 
-    files=request.FILES or None,
-    instance=pickup)
+      data=request.POST or None,
+      files=request.FILES or None,
+      instance=pickup)
   form_objects['retrieval'] = forms.RetrievalForm(
-    data=request.POST or None, 
-    files=request.FILES or None,
-    instance=retrieval)
+      data=request.POST or None,
+      files=request.FILES or None,
+      instance=retrieval)
 
   existing_dates = []
   for d in order.site.delivery_set:
     for o in d.orderdelivery_set:
       existing_dates.append(
-        (d.delivery_date, 'Delivery', o.order.order_sheet.name, 
-         o.order.key().id()))
+          (d.delivery_date, 'Delivery', o.order.order_sheet.name,
+           o.order.key().id()))
   for d in order.site.pickup_set:
     for o in d.orderpickup_set:
       existing_dates.append(
-        (d.pickup_date, 'Pick-up', o.order.order_sheet.name, 
-         o.order.key().id()))
+          (d.pickup_date, 'Pick-up', o.order.order_sheet.name,
+           o.order.key().id()))
   for d in order.site.retrieval_set:
     for o in d.orderretrieval_set:
       existing_dates.append(
-        (d.dropoff_date, 'Drop-off', o.order.order_sheet.name, 
-         o.order.key().id()))
+          (d.dropoff_date, 'Drop-off', o.order.order_sheet.name,
+           o.order.key().id()))
       existing_dates.append(
-        (d.retrieval_date, 'Retrieval', o.order.order_sheet.name, 
-         o.order.key().id()))
+          (d.retrieval_date, 'Retrieval', o.order.order_sheet.name,
+           o.order.key().id()))
 
   existing_dates.sort()
 
@@ -501,7 +522,7 @@ def OrderLogistics(request, order_id):
                    'proceed_to_fulfill': proceed_to_fulfill}
 
   if not request.POST:
-    return common.Respond(request, 'order_logistics', template_dict)  
+    return common.Respond(request, 'order_logistics', template_dict)
 
   if request.POST.get('submit', '').startswith(complete['delivery']):
     errors = form_objects['delivery'].errors
@@ -513,7 +534,7 @@ def OrderLogistics(request, order_id):
     if errors:
       template_dict['errors'] = errors
       return common.Respond(request, 'order_logistics', template_dict)
-  
+
     delivery.put()
     if od is None:
       models.OrderDelivery(delivery=delivery, order=order).put()
@@ -531,7 +552,7 @@ def OrderLogistics(request, order_id):
     if errors:
       template_dict['errors'] = errors
       return common.Respond(request, 'order_logistics', template_dict)
-  
+
     pickup.put()
     if op is None:
       models.OrderPickup(pickup=pickup, order=order).put()
@@ -549,7 +570,7 @@ def OrderLogistics(request, order_id):
     if errors:
       template_dict['errors'] = errors
       return common.Respond(request, 'order_logistics', template_dict)
-  
+
     retrieval.put()
     if ot is None:
       models.OrderRetrieval(retrieval=retrieval, order=order).put()
@@ -566,7 +587,7 @@ def OrderLogistics(request, order_id):
   if request.POST.get('submit', '').endswith('(STAFF ONLY)'):
     return http.HttpResponseRedirect(urlresolvers.reverse(
         OrderFulfill, args=[str(order.key().id())]))
-  
+
   return http.HttpResponseRedirect(urlresolvers.reverse(
       views.SiteView, args=[str(order.site.key().id())]))
 
@@ -576,11 +597,12 @@ def OrderEdit(request, order_id):
   user, _, _ = common.GetUser(request)
   if user is None:
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
-  redirect, template_dict =  _OrderEditInternal(request, user, order_id)
+  redirect, template_dict = _OrderEditInternal(request, user, order_id)
   if redirect is not None:
-      return redirect
+    return redirect
   else:
-      return common.Respond(request, 'order', template_dict)
+    return common.Respond(request, 'order', template_dict)
+
 
 def _OrderEditInternal(request, user, order_id):
   logging.info('OrderEdit(%s) POST(%s)', order_id, request.POST)
@@ -592,7 +614,7 @@ def _OrderEditInternal(request, user, order_id):
 
   items = list(oi.item for oi in order.orderitem_set)
   for item in order.order_sheet.item_set:
-    if item in items: 
+    if item in items:
       continue
     order_item = models.OrderItem(order=order, item=item)
     order_item.put()
@@ -607,7 +629,7 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
   site = models.NewSite.get_by_id(int(site_id))
   order_sheet = models.OrderSheet.all().filter(
-    'code = ', order_sheet_code).get()
+      'code = ', order_sheet_code).get()
   # TODO: error if order_sheet is None
   order = models.Order(site=site, order_sheet=order_sheet, state='new')
   order.put()
@@ -617,9 +639,10 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
     order_item.put()
   redirect, template_dict = _OrderPut(request, user, order)
   if redirect is not None:
-      return redirect
+    return redirect
   else:
-      return common.Respond(request, 'order', template_dict)
+    return common.Respond(request, 'order', template_dict)
+
 
 def OrderPreview(request, site_id=None):
   user, _, _ = common.GetUser(request)
@@ -643,10 +666,11 @@ def OrderPreview(request, site_id=None):
     if os.code in existing_orders:
       os.existing_orders = existing_orders[os.code]
       os.num_existing_orders = len(existing_orders[os.code])
-    
+
   t = {'order_sheets': order_sheets,
        'site': site}
   return common.Respond(request, 'order_preview', t)
+
 
 def OrderItemName(request):
   user, _, _ = common.GetUser(request)
@@ -660,9 +684,11 @@ def OrderItemName(request):
   order_item.put()
   return http.HttpResponse(order_item.name)
 
+
 def OrderUpdateLogistics(request, order_id):
   models.Order.get_by_id(int(order_id)).UpdateLogistics()
   return http.HttpResponse('OK')
+
 
 def RecomputeOrderItems(o):
   for oi in o.orderitem_set:
@@ -670,9 +696,8 @@ def RecomputeOrderItems(o):
       oi.delete()
       continue
     if oi.quantity_float:
-      continue        
+      continue
     if oi.quantity is not None:
       oi.quantity_float = float(oi.quantity)
       oi.put()
   o.UpdateSubTotal()
-    

@@ -1,6 +1,6 @@
 """General views."""
 
-# TODO: combine Captain stuff with the generic Person stuff that handles 
+# TODO: combine Captain stuff with the generic Person stuff that handles
 # the Staff and Supplier views.
 
 import csv
@@ -20,7 +20,7 @@ from google.appengine.ext.webapp import template
 import django
 from django import http
 from django import shortcuts
-from django.core import urlresolvers 
+from django.core import urlresolvers
 import forms
 import models
 import response
@@ -54,9 +54,9 @@ def _EntryList(request, model_cls, template, params=None, query=None):
     query = model_cls.all()
   entries = list(query)
   entries.sort(key=lambda x: x.name)
-  d = {'entries': entries, 'num_entries': len(entries), 'user': user, 
+  d = {'entries': entries, 'num_entries': len(entries), 'user': user,
        'cls': model_cls,
-       'model_cls_name': model_cls.__name__ }
+       'model_cls_name': model_cls.__name__}
   if params:
     d.update(params)
   return common.Respond(request, template, d)
@@ -64,10 +64,10 @@ def _EntryList(request, model_cls, template, params=None, query=None):
 
 def _TryToSaveForm(save_form):
   """Saves form, catching errors and storing them back in the form.
-  
+
   Args:
     save_form: djangoforms.ModelForm instance to save.
-  
+
   Returns:
     success: True iff form was saved.
   """
@@ -84,23 +84,23 @@ def _TryToSaveForm(save_form):
 
 def _Autocomplete(request, model_class, program_filter=False):
   prefix = str(request.GET['term']).lower()
-  
+
   items = model_class.all()
   items.filter('search_prefixes = ', prefix)
   if program_filter:
-    user, _, _ = common.GetUser(request)  
+    user, _, _ = common.GetUser(request)
     items.filter('program =', user.program_selected)
   matches = {}
   for c in items:
     label = c.Label()
     matches[label] = c.key().id()
-  response = http.HttpResponse(mimetype='application/json')  
+  response = http.HttpResponse(mimetype='application/json')
   response.write(json.dumps(matches))
   return response
 
 
 def Help(request):
-  return common.Respond(request, 'help')  
+  return common.Respond(request, 'help')
 
 
 def CaptainHome(request, captain_id=None):
@@ -120,12 +120,12 @@ def CaptainHome(request, captain_id=None):
   AnnotateSitesWithEditability(sites, captain, staff)
   captain_form = forms.CaptainContactForm(data=request.POST or None,
                                           instance=captain)
-  return common.Respond(request, 'captain_home', 
+  return common.Respond(request, 'captain_home',
                         {'order_sheets': order_sheets,
                          'entries': sites,
                          'captain': captain,
                          'captain_form': captain_form,
-                         'captain_contact_submit': 
+                         'captain_contact_submit':
                          'Save changes to personal info',
                          'map_width': MAP_WIDTH, 'map_height': MAP_HEIGHT,
                          'site_list_detail': True,
@@ -136,7 +136,7 @@ def CaptainHome(request, captain_id=None):
 def OrderSheetList(request):
   """Request / -- show all canned orders."""
   order_sheets = list(models.OrderSheet.all().order('name'))
-  return common.Respond(request, 'order_sheet_list', 
+  return common.Respond(request, 'order_sheet_list',
                         {'order_sheets': order_sheets})
 
 
@@ -146,22 +146,22 @@ def OrderSheetEdit(request, order_sheet_id=None):
   order_sheet = None
   if order_sheet_id:
     order_sheet = models.OrderSheet.get(
-      db.Key.from_path(models.OrderSheet.kind(), int(order_sheet_id)))
+        db.Key.from_path(models.OrderSheet.kind(), int(order_sheet_id)))
     if order_sheet is None:
       return http.HttpResponseNotFound(
-        'No order_sheet exists with that key (%r)' % order_sheet_id)
+          'No order_sheet exists with that key (%r)' % order_sheet_id)
     what = 'Changing existing Order Form'
   else:
     what = 'Adding new Order Form'
 
-  form = forms.OrderSheetForm(data=request.POST or None, 
+  form = forms.OrderSheetForm(data=request.POST or None,
                               instance=order_sheet)
   if not request.POST:
-    return common.Respond(request, 'order_sheet', 
-                          {'form': form, 
-                           'order_sheet': order_sheet, 
+    return common.Respond(request, 'order_sheet',
+                          {'form': form,
+                           'order_sheet': order_sheet,
                            'what_you_are_doing': what})
-  
+
   errors = form.errors
   if not errors:
     try:
@@ -169,13 +169,14 @@ def OrderSheetEdit(request, order_sheet_id=None):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return common.Respond(request, 'order_sheet', 
-                          {'form': form, 
+    return common.Respond(request, 'order_sheet',
+                          {'form': form,
                            'order_sheet': order_sheet})
 
   order_sheet.put()
 
   return http.HttpResponseRedirect('/room/order_sheet/list')
+
 
 def OrderSheetNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
@@ -184,7 +185,7 @@ def OrderSheetNew(request):
 
 def AnnotateSitesWithEditability(entries, captain, staff):
   for site in entries:
-    if staff or (captain and site.sitecaptain_set 
+    if staff or (captain and site.sitecaptain_set
                  and captain in [sc.captain for sc in site.sitecaptain_set]):
       site.editable_by_current_user = True
     else:
@@ -235,9 +236,11 @@ def SiteExpenses(request, site_id):
   site = models.NewSite.get_by_id(int(site_id))
   return common.Respond(request, 'site_expenses', {'site': site})
 
+
 def SiteSummary(request, site_id):
   site = models.NewSite.get_by_id(int(site_id))
   return common.Respond(request, 'site_summary', {'site': site})
+
 
 def SiteEdit(request, site_id=None):
   """Create or edit a Site."""
@@ -247,14 +250,14 @@ def SiteEdit(request, site_id=None):
     site = models.NewSite.get_by_id(int(site_id))
     if site is None:
       return http.HttpResponseNotFound(
-        'No site exists with that key (%r)' % site_id)
+          'No site exists with that key (%r)' % site_id)
     what = 'Changing existing Site'
   else:
     what = 'Adding new Site'
 
   if staff:
     form_class = forms.NewSiteForm
-  elif (captain and site.sitecaptain_set 
+  elif (captain and site.sitecaptain_set
         and captain in [sc.captain for sc in site.sitecaptain_set]):
     form_class = forms.CaptainSiteForm
   else:
@@ -262,16 +265,17 @@ def SiteEdit(request, site_id=None):
     return common.Respond(request, 'staff_site', template_dict)
 
   if site and site.jurisdiction and not site.jurisdiction_choice:
-    site.jurisdiction_choice = models.Jurisdiction.all().filter('name =', site.jurisdiction).get()
+    site.jurisdiction_choice = models.Jurisdiction.all().filter(
+        'name =', site.jurisdiction).get()
 
   form = form_class(data=None, instance=site)
-    
+
   form_submit = 'Save changes to Site Info'
   sitecaptain_form = forms.SiteCaptainSiteForm()
   sitecaptain_form_submit = 'Add a Captain'
   sitecaptain_delete_form_submit = 'Delete'
   delete_sitecaptain = 'delete_sitecaptain'
-  template_dict = {'site': site, 
+  template_dict = {'site': site,
                    'staff': staff,
                    'captain': captain,
                    'form': form,
@@ -285,24 +289,25 @@ def SiteEdit(request, site_id=None):
     if request.POST['submit'] == form_submit:
       form = form_class(data=request.POST, instance=site)
       if site is None:
-        existing_site = models.NewSite.all().filter('number =', form.data['number']).get()
+        existing_site = models.NewSite.all().filter(
+            'number =', form.data['number']).get()
         if existing_site:
           return common.Respond(request, 'site_exists', {'site': existing_site})
-        
+
       template_dict['form'] = form
       if _TryToSaveForm(form):
         if staff:
           return http.HttpResponseRedirect(
-            urlresolvers.reverse(SiteView, args=[form.instance.key().id()]))
+              urlresolvers.reverse(SiteView, args=[form.instance.key().id()]))
         else:
           return http.HttpResponseRedirect(
-            urlresolvers.reverse(CaptainHome))
+              urlresolvers.reverse(CaptainHome))
     if delete_sitecaptain in request.POST:
       for id in request.POST.getlist(delete_sitecaptain):
         sc = models.SiteCaptain.get_by_id(int(id))
         if sc is not None:
           sc.delete()
-      return http.HttpResponseRedirect(urlresolvers.reverse(SiteEdit, 
+      return http.HttpResponseRedirect(urlresolvers.reverse(SiteEdit,
                                                             args=[site_id]))
 
     if request.POST['submit'] == sitecaptain_form_submit:
@@ -314,23 +319,23 @@ def SiteEdit(request, site_id=None):
       if not save_form.is_valid():  # creates cleaned_data as a side effect
         return common.Respond(request, 'staff_site', template_dict)
       save_form.cleaned_data['site'] = site
-      
+
       # Avoid entering duplicate SiteCaptains.
       for sitecaptain in site.sitecaptain_set:
         if (sitecaptain.captain == save_form.cleaned_data['captain']
-            and sitecaptain.type == save_form.cleaned_data['type']):
+                and sitecaptain.type == save_form.cleaned_data['type']):
           save_form.errors['__all__'] = 'That Captain already exists.'
           return common.Respond(request, 'staff_site', template_dict)
 
       if _TryToSaveForm(save_form):
-        return http.HttpResponseRedirect(urlresolvers.reverse(SiteView, 
+        return http.HttpResponseRedirect(urlresolvers.reverse(SiteView,
                                                               args=[site_id]))
     else:
       return common.Respond(request, 'staff_site', template_dict)
 
   else:
     return common.Respond(request, 'staff_site', template_dict)
-  
+
 
 def SiteNew(request):
   return SiteEdit(request, None)
@@ -375,15 +380,16 @@ def SiteList(request):
     query.filter('program =', staff.program_selected)
   entries = list(query)
   sitecaptains_by_site = {}
-  # TODO: this is fetching too many - we only need those for the current program
+  # TODO: this is fetching too many - we only need those for the current
+  # program
   for sc in models.SiteCaptain.all():
     sitecaptains_by_site.setdefault(sc.site.key().id(), []).append(sc)
   for s in entries:
     k = s.key().id()
     if k in sitecaptains_by_site:
       s.sitecaptains = sitecaptains_by_site[k]
-  d = {'entries': entries, 'num_entries': len(entries), 'user': user, 
-       'sitecaptains_by_site': sitecaptains_by_site }
+  d = {'entries': entries, 'num_entries': len(entries), 'user': user,
+       'sitecaptains_by_site': sitecaptains_by_site}
   return common.Respond(request, 'site_list', d)
 
 
@@ -391,11 +397,11 @@ def SiteBudget(request):
   """List all Sites with a "Budget" view."""
   user, _, staff = common.GetUser(request)
   if not staff:
-    return http.HttpResponse(status=400)  
-  params = {    
-    'export_csv': EXPORT_CSV,
-    'export_checkbox_prefix': POSTED_ID_PREFIX
-    }
+    return http.HttpResponse(status=400)
+  params = {
+      'export_csv': EXPORT_CSV,
+      'export_checkbox_prefix': POSTED_ID_PREFIX
+  }
   query = models.NewSite.all()
   if staff and staff.program_selected:
     query.filter('program =', staff.program_selected)
@@ -413,9 +419,9 @@ def SiteBudget(request):
   entries = list(query)
   total = 0
   for site in entries:
-    total += site.Expenses() 
+    total += site.Expenses()
 
-  params.update({'entries': entries, 'num_entries': len(entries), 'user': user, 
+  params.update({'entries': entries, 'num_entries': len(entries), 'user': user,
                  'total_expenses': total})
   return common.Respond(request, 'site_budget', params)
 
@@ -426,10 +432,11 @@ def SiteBudgetExport(request):
   if request.POST['submit'] == EXPORT_CSV:
     response = http.HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = (
-      'attachment; filename=%s_site_budget.csv' % user.email())
+        'attachment; filename=%s_site_budget.csv' % user.email())
     _SiteBudgetExportInternal(response, request.POST)
     return response
-      
+
+
 def PostedIds(post_vars):
   """Extract IDs from post_vars."""
   site_ids = []
@@ -437,9 +444,10 @@ def PostedIds(post_vars):
     if var.startswith(POSTED_ID_PREFIX):
       site_ids.append(int(var[len(POSTED_ID_PREFIX):]))
   return site_ids
-  
+
+
 def _SiteBudgetExportInternal(writable, post_vars):
-  """Write site budget rows as CSV to a file-like object."""   
+  """Write site budget rows as CSV to a file-like object."""
   site_ids = PostedIds(post_vars)
   sites = list(models.NewSite.get_by_id(site_ids))
   sites.sort(key=lambda o: o.number)
@@ -454,7 +462,7 @@ def _SiteBudgetExportInternal(writable, post_vars):
                    '$ Orders',
                    '$ Check Requests',
                    '$ Vendor Receipts',
-                   '$ In-Kind Donations',                   
+                   '$ In-Kind Donations',
                    ])
   for s in sites:
     row = [s.number,
@@ -473,6 +481,8 @@ def _SiteBudgetExportInternal(writable, post_vars):
     writer.writerow(row)
 
 # TODO: could be more complete
+
+
 def SiteExport(request):
   """Export all Sites as CSV."""
   user, _, _ = common.GetUser(request)
@@ -485,7 +495,7 @@ def SiteExport(request):
   writer = csv.writer(response)
   writer.writerow(['Site number',
                    'Name',
-                   'Captains', 
+                   'Captains',
                    'Type',
                    ])
   for s in sites:
@@ -499,10 +509,12 @@ def SiteExport(request):
                      ])
   return response
 
+
 def SiteListDebug(request):
   """Request / show all Sites in a debug mode."""
-  return _EntryList(request, models.NewSite, 'site_debug', 
+  return _EntryList(request, models.NewSite, 'site_debug',
                     query=models.NewSite.all().order('number'))
+
 
 def CaptainList(request):
   """Request / show all Captains.
@@ -519,8 +531,8 @@ def CaptainList(request):
     k = c.key().id()
     if k in sitecaptains_by_captain:
       c.sitecaptains = sitecaptains_by_captain[k]
-  d = {'entries': entries, 'user': user, 
-       'sitecaptains_by_captain': sitecaptains_by_captain }
+  d = {'entries': entries, 'user': user,
+       'sitecaptains_by_captain': sitecaptains_by_captain}
   return common.Respond(request, 'captain_list', d)
 
 
@@ -536,9 +548,9 @@ def CaptainExport(request):
                    'Email',
                    'Preferred Phone',
                    'Backup Phone',
-                   'Sites', 
+                   'Sites',
                    'Type',
-                   'T-Shirt',                     
+                   'T-Shirt',
                    'Last Welcome',
                    'Notes'])
   for c in captains:
@@ -567,7 +579,7 @@ def CaptainEdit(request, captain_id=None):
     captain = models.Captain.get_by_id(int(captain_id))
     if captain is None:
       return http.HttpResponseNotFound(
-        'No captain exists with that key (%r)' % captain_id)
+          'No captain exists with that key (%r)' % captain_id)
     what = 'Changing existing Captain'
   else:
     what = 'Adding new Captain'
@@ -576,47 +588,53 @@ def CaptainEdit(request, captain_id=None):
     form_class = forms.CaptainForm
   elif user_captain and user_captain == captain:
     form_class = forms.CaptainContactForm
-  else: 
+  else:
     template_dict = {
-      'what_you_are_doing': 'Not permitted to edit this Captain.'}
+        'what_you_are_doing': 'Not permitted to edit this Captain.'}
     return common.Respond(request, 'captain', template_dict)
 
   form = form_class(data=None, instance=captain)
-  template_dict = {'form': form, 'captain': captain, 
+  template_dict = {'form': form, 'captain': captain,
                    'what_you_are_doing': what}
 
   if request.POST:
     form = form_class(data=request.POST or None, instance=captain)
     template_dict['form'] = form
     if _TryToSaveForm(form):
-      if staff: 
+      if staff:
         return http.HttpResponseRedirect(urlresolvers.reverse(CaptainList))
       else:
         return http.HttpResponseRedirect(urlresolvers.reverse(CaptainHome))
 
   return common.Respond(request, 'captain', template_dict)
 
+
 def CaptainNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return CaptainEdit(request, None)
+
 
 def CaptainAutocomplete(request):
   """Return JSON to autocomplete a captain ID based on a prefix."""
   return _Autocomplete(request, models.Captain)
 
+
 def CaptainPut(request, captain_id):
   models.Captain.get_by_id(int(captain_id)).put()
   return http.HttpResponse('OK')
 
+
 def CaptainDeleteConfirm(request, captain_id):
   captain = models.Captain.get_by_id(int(captain_id))
-  return common.Respond(request, 'captain_delete_confirm.html', 
+  return common.Respond(request, 'captain_delete_confirm.html',
                         {'captain': captain,
                          'sitecaptain_set': list(captain.sitecaptain_set)})
+
 
 def CaptainDelete(request, captain_id):
   models.Captain.get_by_id(int(captain_id)).delete()
   return http.HttpResponseRedirect(urlresolvers.reverse(CaptainList))
+
 
 def _PersonEdit(request, id, person_cls, form_cls, template, readable):
   user, _, _ = common.GetUser(request)
@@ -625,13 +643,13 @@ def _PersonEdit(request, id, person_cls, form_cls, template, readable):
     person = person_cls.get_by_id(int(id))
     if person is None:
       return http.HttpResponseNotFound(
-        'No %s exists with that key (%r)' % (readable, id))
+          'No %s exists with that key (%r)' % (readable, id))
     what = 'Changing existing %s' % readable
   else:
     what = 'Adding new %s' % readable
   form = form_cls(data=request.POST or None,  instance=person)
   if not request.POST:
-    return common.Respond(request, template, 
+    return common.Respond(request, template,
                           {'form': form, 'person': person,
                            'what_you_are_doing': what})
   errors = form.errors
@@ -641,37 +659,44 @@ def _PersonEdit(request, id, person_cls, form_cls, template, readable):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return common.Respond(request, template, 
-                          {'form': form, 
+    return common.Respond(request, template,
+                          {'form': form,
                            'person': person})
   person.put()
   return http.HttpResponseRedirect('/room/')
 
+
 def StaffList(request):
   """Request / -- show all Staff."""
   return _EntryList(request, models.Staff, 'staff_list')
+
 
 def StaffEdit(request, staff_id=None):
   """Create or edit a Staff."""
   return _PersonEdit(request, staff_id, models.Staff, forms.StaffForm,
                      'staff', 'Staff')
 
+
 def StaffNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return StaffEdit(request, None)
 
+
 def SupplierList(request):
   """Request / -- show all Suppliers."""
   return _EntryList(request, models.Supplier, 'supplier_list')
+
 
 def SupplierEdit(request, supplier_id=None):
   """Create or edit a Supplier."""
   return _PersonEdit(request, supplier_id, models.Supplier, forms.SupplierForm,
                      'supplier', 'Supplier')
 
+
 def SupplierNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return SupplierEdit(request, None)
+
 
 def SupplierNewSimple(request):
   form = forms.SupplierFormSimple(data=request.POST)
@@ -687,15 +712,18 @@ def SupplierNewSimple(request):
   return http.HttpResponse(json.dumps({'key': str(supplier.key()),
                                        'name': supplier.name}))
 
+
 def ItemList(request):
   """Request / -- show all items."""
   return _EntryList(request, models.Item, 'item_list')
 
+
 def OrderSheetItemList(request, id):
   """Request / -- show all items in an Order Sheet."""
   sheet = models.OrderSheet.get_by_id(int(id))
-  return _EntryList(request, models.Item, 'order_sheet_item_list', 
+  return _EntryList(request, models.Item, 'order_sheet_item_list',
                     query=sheet.item_set, params={'order_sheet': sheet})
+
 
 def ItemEdit(request, item_id=None):
   """Create or edit a item.  GET shows a blank form, POST processes it."""
@@ -719,10 +747,10 @@ def ItemEdit(request, item_id=None):
                         instance=item)
 
   if not request.POST:
-    return common.Respond(request, 'item', 
-                          {'form': form, 'item': item, 
+    return common.Respond(request, 'item',
+                          {'form': form, 'item': item,
                            'what_you_are_doing': what})
-  
+
   errors = form.errors
   if not errors:
     try:
@@ -730,16 +758,16 @@ def ItemEdit(request, item_id=None):
     except ValueError, err:
       errors['__all__'] = unicode(err)
   if errors:
-    return common.Respond(request, 'item', 
+    return common.Respond(request, 'item',
                           {'form': form, 'item': item})
 
   item.last_editor = user
   if item.picture:
     try:
-      item.picture =  db.Blob(
-        images.resize(item.picture, PICTURE_HEIGHT, PICTURE_WIDTH))
+      item.picture = db.Blob(
+          images.resize(item.picture, PICTURE_HEIGHT, PICTURE_WIDTH))
       item.thumbnail = db.Blob(
-        images.resize(item.picture, THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH))
+          images.resize(item.picture, THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH))
     except images.BadImageError:
       item.picture = None
       item.thumbnail = None
@@ -788,7 +816,7 @@ def _UpdateItemCost(original_unit_cost, item):
   """Updates subtotals for all orders containing the item."""
   if original_unit_cost == item.unit_cost:
     return
-  logging.info('unit_cost changed from %0.2f to %0.2f, updating orders', 
+  logging.info('unit_cost changed from %0.2f to %0.2f, updating orders',
                original_unit_cost, item.unit_cost)
   q = models.OrderItem.all().filter('item =', item)
   order_items = [oi for oi in q if oi.FloatQuantity()]
@@ -798,11 +826,12 @@ def _UpdateItemCost(original_unit_cost, item):
       logging.info('skipping non-existent order')
       continue
     order_item.order.UpdateSubTotal()
-      
+
 
 def ItemNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return ItemEdit(request, None)
+
 
 def ItemPicture(request, item_id, is_thumbnail=False):
   """Return the picture of an Item."""
@@ -831,7 +860,7 @@ def ItemPicture(request, item_id, is_thumbnail=False):
     content_type = 'image/bmp'
   elif size >= 4 and image.startswith("\x00\x00\x01\x00"):
     content_type = 'image/ico'
-  else: 
+  else:
     content_type = 'text/plain'  # Fail!
   return http.HttpResponse(content=image, content_type=content_type)
 
@@ -846,7 +875,7 @@ def Inventory(request):
   if user is None:
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
 
-  for arg in request.POST:    
+  for arg in request.POST:
     if arg.startswith('item_'):
       _, inventory_item_key = arg.split('_', 1)
       inventory_item = models.InventoryItem.get(inventory_item_key)
@@ -858,11 +887,11 @@ def Inventory(request):
       inventory_item.quantity_float = quantity
       inventory_item.put()
 
-
   inventory_items = list(models.InventoryItem.all())
   inventory_items.sort(key=lambda x: x.item.name)
-  return common.Respond(request, 'inventory', 
+  return common.Respond(request, 'inventory',
                         {'invitems': inventory_items})
+
 
 class SiteExpense:
   """Generic class for check requests and vendor receipts."""
@@ -883,19 +912,18 @@ class SiteExpense:
       query.filter('site = ', site)
       params['which_site'] = 'Site ' + site.number
     else:
-      user, _, _ = common.GetUser(request)  
+      user, _, _ = common.GetUser(request)
       query.filter('program =', user.program_selected)
     return _EntryList(request, cls.model, 'site_expense_list',
                       params=params, query=query)
-  
+
   @classmethod
   def View(cls, request, id):
     """Printable static view of an expense."""
     entity = cls.model.get_by_id(int(id))
-    return common.Respond(request, cls.template_base + '_view', 
+    return common.Respond(request, cls.template_base + '_view',
                           {'entity': entity})
 
-  
   @classmethod
   def New(cls, request, site_id):
     """Create an entity.  GET shows a blank form, POST processes it."""
@@ -907,7 +935,7 @@ class SiteExpense:
       instance = cls.model(site=site)
     instance.put()
     return cls.Edit(request, instance.key().id())
-  
+
   @classmethod
   def Edit(cls, request, id):
     """Create or edit an entity."""
@@ -915,16 +943,16 @@ class SiteExpense:
     entity = cls.model.get_by_id(id)
     if entity is None:
       return http.HttpResponseNotFound(
-        'No %s exists with that key (%r)' % (cls.readable, id))
+          'No %s exists with that key (%r)' % (cls.readable, id))
     edit_id = entity.key().id()
 
-    if entity.state == 'new':      
+    if entity.state == 'new':
       what = 'Adding new %s' % cls.readable
     else:
       what = 'Changing existing %s' % cls.readable
 
     user, captain, staff = common.GetUser(request)
-    form = cls.form_cls(data=request.POST or None,  
+    form = cls.form_cls(data=request.POST or None,
                         instance=entity, staff=staff)
     if cls == VendorReceipt:
       supplier_form = forms.SupplierFormSimple()
@@ -932,12 +960,12 @@ class SiteExpense:
       supplier_form = None
     if not request.POST:
       return common.Respond(
-        request, cls.template_base, 
-        {'form': form, 
-         'supplier_form': supplier_form,
-         'entity': entity,
-         'edit_id': edit_id,
-         'what_you_are_doing': what})
+          request, cls.template_base,
+          {'form': form,
+           'supplier_form': supplier_form,
+           'entity': entity,
+           'edit_id': edit_id,
+           'what_you_are_doing': what})
 
     errors = form.errors
     if not errors:
@@ -947,26 +975,26 @@ class SiteExpense:
         errors['__all__'] = unicode(err)
     if errors:
       return common.Respond(
-        request, cls.template_base, 
-        {'form': form, 
-         'supplier_form': supplier_form,
-         'entity': entity,
-         'edit_id': edit_id,
-         'what': 'Fix errors below and try submitting again.'})
+          request, cls.template_base,
+          {'form': form,
+           'supplier_form': supplier_form,
+           'entity': entity,
+           'edit_id': edit_id,
+           'what': 'Fix errors below and try submitting again.'})
 
     entity.last_editor = user
     if entity.state == 'new':
       entity.state = 'submitted'
     entity.put()
     user = captain or staff
-    if user: 
+    if user:
       subj = '%s #%s for Site #%s Updated by %s' % (
-        cls.readable,
-        entity.key().id(), 
-        entity.site.number,
-        user.name)
-      common.NotifyAdminViaMail(subj, 
-                                template=cls.template_base + '_email.html', 
+          cls.readable,
+          entity.key().id(),
+          entity.site.number,
+          user.name)
+      common.NotifyAdminViaMail(subj,
+                                template=cls.template_base + '_email.html',
                                 template_dict={'entity': entity})
     return http.HttpResponseRedirect(urlresolvers.reverse(
         SiteView, args=[entity.site.key().id()]))
@@ -979,7 +1007,7 @@ class CheckRequest(SiteExpense):
   form_cls = forms.CheckRequestForm
 
 
-# If the urlpattern cappable name has a dot in it then Django tries to 
+# If the urlpattern cappable name has a dot in it then Django tries to
 # load the prefix as a module name.  This is a workaround.
 CheckRequestNew = CheckRequest.New
 CheckRequestEdit = CheckRequest.Edit
@@ -1012,6 +1040,7 @@ InKindDonationEdit = InKindDonation.Edit
 InKindDonationList = InKindDonation.List
 InKindDonationView = InKindDonation.View
 
+
 class StaffTime(SiteExpense):
   model = models.StaffTime
   template_base = 'stafftime'
@@ -1030,7 +1059,8 @@ SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
     models.VendorReceipt,
     models.InKindDonation,
     models.StaffTime,
-    ))
+))
+
 
 def SiteExpenseState(request, item_cls, item_id):
   """Updates a site expense's state field."""
@@ -1048,6 +1078,7 @@ def SiteExpenseState(request, item_cls, item_id):
   modl.put()
   return http.HttpResponse(value, status=200)
 
+
 def ExpenseNew(request, site_id):
   """Creates a new Expense."""
   site = models.NewSite.get_by_id(int(site_id))
@@ -1059,6 +1090,7 @@ def ExpenseNew(request, site_id):
     params.update({'expense': expense})
   return common.Respond(request, 'expense.html', params)
 
+
 def Expense(request, expense_id):
   """Displays or saves an Expense."""
   if request.META['REQUEST_METHOD'] == 'GET':
@@ -1068,12 +1100,11 @@ def Expense(request, expense_id):
       params['error'] = 'Expense ID %s not found!' % expense_id
     else:
       params.update(
-        {'expense': expense})
+          {'expense': expense})
     return common.Respond(request, 'expense.html', params)
   elif request.META['REQUEST_METHOD'] == 'POST':
     logging.info(request.POST)
 
+
 def StandardKit(request):
   return common.Respond(request, 'standard_kit.html', {})
-
-
