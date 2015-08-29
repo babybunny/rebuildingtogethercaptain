@@ -73,6 +73,8 @@ class NewSiteForm(djangoforms.ModelForm):
   jurisdiction_choice = djangoforms.ModelChoiceField(
       models.Jurisdiction, query=models.Jurisdiction.all().order('name'),
       label='Jurisdiction')
+  program_choices = [''] + common.PROGRAMS
+  program = forms.ChoiceField(choices=zip(program_choices, program_choices))
 
   class Meta:
     model = models.NewSite
