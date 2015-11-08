@@ -55,185 +55,205 @@ Total Expenses:
 
 {% with site.Orders as entries %}
 {% if entries.Count %}
-<h3>Orders</h3>
-<table class="list printable tablesorter" id="order_list">
-  <thead>
-    <tr>
-      <th>
-	      Vendor
-      </th>
-      <th>
-	      Form
-      </th>
-      <th>
-	      Invoice Date
-      </th>
-      <th>
-	      $ Total
-      </th>
-    </tr>
-  </thead>
-  <tbody>    
-    {% for order in entries %}
-    {% ifnotequal order.GrandTotal 0 %}
-    <tr>
-      <td>	
-        {% if order.vendor %}
-	      {{ order.vendor.name }}	
-        {% else %}
-        <i>Vendor is added when order is reconciled.</i>
-        {% endif %}
-      </td>
-      <td>
-        {{ order.order_sheet.name|escape }}
-      </td>
-      <td>
-        {% if order.invoice_date %}
-	      {{ order.invoice_date|date:"d M Y" }}	
-        {% else %}
-        <i>Invoice Date is added when order is reconciled.</i>
-        {% endif %}
-      </td>
-      <td class="dollar">
-	      $ {{ order.GrandTotal|floatformat:2 }}
-      </td>
-    </tr>
-    {% endifnotequal %}
-    {% endfor %}
-  </tbody>
-</table>
+<div class="expense">
+  <h3 class="total">
+    Total: ${{ site.OrderTotal|floatformat:2 }}
+  </h3>
+  <h3>Orders</h3>
+  <table class="list printable tablesorter" id="order_list">
+    <thead>
+      <tr>
+        <th>
+	        Vendor
+        </th>
+        <th>
+	        Form
+        </th>
+        <th>
+	        Invoice Date
+        </th>
+        <th>
+	        $
+        </th>
+      </tr>
+    </thead>
+    <tbody>    
+      {% for order in entries %}
+      {% ifnotequal order.GrandTotal 0 %}
+      <tr>
+        <td>	
+          {% if order.vendor %}
+	        {{ order.vendor.name }}	
+          {% else %}
+          <i>Vendor is added when order is reconciled.</i>
+          {% endif %}
+        </td>
+        <td>
+          {{ order.order_sheet.name|escape }}
+        </td>
+        <td>
+          {% if order.invoice_date %}
+	        {{ order.invoice_date|date:"d M Y" }}	
+          {% else %}
+          <i>Invoice Date is added when order is reconciled.</i>
+          {% endif %}
+        </td>
+        <td class="dollar">
+	        $ {{ order.GrandTotal|floatformat:2 }}
+        </td>
+      </tr>
+      {% endifnotequal %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 {% endwith %}
 
 {% with site.CheckRequests as entries %}
 {% if entries.Count %}
-<h3>Check Requests</h3>
-<table class="list printable tablesorter" id="order_list">
-  <thead>
-    <tr>
-      <th>
-	      Payable To
-      </th>
-      <th>
-	      Payment Date
-      </th>
-      <th>
-	      Description
-      </th>
-      <th>
-	      $ Total
-      </th>
-    </tr>
-  </thead>
-  <tbody>    
-    {% for cr in entries %}
-    {% ifnotequal cr.Total 0 %}
-    <tr>
-      <td>	
-	      {{ cr.name }}	
-      </td>
-      <td>
-	      {{ cr.payment_date|date:"d M Y" }}
-      </td>
-      <td>
-	      {{ cr.description }}
-      </td>
-      <td class="dollar">
-	      $ {{ cr.Total|floatformat:2 }}
-      </td>
-    </tr>
-    {% endifnotequal %}
-    {% endfor %}
-  </tbody>
-</table>
+<div class="expense">
+  <h3 class="total">
+    Total: ${{ site.CheckRequestTotal|floatformat:2 }}
+  </h3>
+  <h3>Check Requests</h3>
+  <table class="list printable tablesorter" id="order_list">
+    <thead>
+      <tr>
+        <th>
+	        Payable To
+        </th>
+        <th>
+	        Payment Date
+        </th>
+        <th>
+	        Description
+        </th>
+        <th>
+	        $ Total
+        </th>
+      </tr>
+    </thead>
+    <tbody>    
+      {% for cr in entries %}
+      {% ifnotequal cr.Total 0 %}
+      <tr>
+        <td>	
+	        {{ cr.name }}	
+        </td>
+        <td>
+	        {{ cr.payment_date|date:"d M Y" }}
+        </td>
+        <td>
+	        {{ cr.description }}
+        </td>
+        <td class="dollar">
+	        $ {{ cr.Total|floatformat:2 }}
+        </td>
+      </tr>
+      {% endifnotequal %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 {% endwith %}
 
 {% with site.VendorReceipts as entries %}
 {% if entries.Count %}
-<h3>Vendor Receipts</h3>
-<table class="list printable tablesorter" id="order_list">
-  <thead>
-    <tr>
-      <th>
-	      Vendor
-      </th>
-      <th>
-	      Purchase Date
-      </th>
-      <th>
-	      Description
-      </th>
-      <th>
-	      $ Total
-      </th>
-    </tr>
-  </thead>
-  <tbody>    
-    {% for vr in entries %}
-    {% ifnotequal vr.Total 0 %}
-    <tr>
-      <td>	
-	      {{ vr.supplier.name }}	
-      </td>
-      <td>
-	      {{ vr.purchase_date|date:"d M Y" }}
-      </td>
-      <td>
-	      {{ vr.description }}
-      </td>
-      <td class="dollar">
-	      $ {{ vr.Total|floatformat:2 }}
-      </td>
-    </tr>
-    {% endifnotequal %}
-    {% endfor %}
-  </tbody>
-</table>
+<div class="expense">
+  <h3 class="total">
+    Total: ${{ site.VendorReceiptTotal|floatformat:2 }}
+  </h3>
+  <h3>Vendor Receipts</h3>
+  <table class="list printable tablesorter" id="order_list">
+    <thead>
+      <tr>
+        <th>
+	        Vendor
+        </th>
+        <th>
+	        Purchase Date
+        </th>
+        <th>
+	        Description
+        </th>
+        <th>
+	        $ Total
+        </th>
+      </tr>
+    </thead>
+    <tbody>    
+      {% for vr in entries %}
+      {% ifnotequal vr.Total 0 %}
+      <tr>
+        <td>	
+	        {{ vr.supplier.name }}	
+        </td>
+        <td>
+	        {{ vr.purchase_date|date:"d M Y" }}
+        </td>
+        <td>
+	        {{ vr.description }}
+        </td>
+        <td class="dollar">
+	        $ {{ vr.Total|floatformat:2 }}
+        </td>
+      </tr>
+      {% endifnotequal %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 {% endwith %}
 
 {% with site.StaffTimes as entries %}
 {% if entries.Count %}
-<h3>Staff Time</h3>
-<table class="list printable tablesorter" id="order_list">
-  <thead>
-    <tr>
-      <th>
-	      Position
-      </th>
-      <th>
-	      Activity Date
-      </th>
-      <th>
-	      Hours
-      </th>
-      <th>
-	      $ Total
-      </th>
-    </tr>
-  </thead>
-  <tbody>    
-    {% for st in entries %}
-    {% ifnotequal st.Total 0 %}
-    <tr>
-      <td>	
-	      {{ st.position }}	
-      </td>
-      <td>	
-	      {{ st.activity_date }}	
-      </td>
-      <td>
-	      {{ st.hours}}
-      </td>
-      <td class="dollar">
-	      $ {{ st.Total|floatformat:2 }}
-      </td>
-    </tr>
-    {% endifnotequal %}
-    {% endfor %}
-  </tbody>
-</table>
+<div class="expense">
+  <h3 class="total">
+    Total: ${{ site.StaffTimeTotal|floatformat:2 }}
+  </h3>
+  <h3>Staff Time</h3>
+  <table class="list printable tablesorter" id="order_list">
+    <thead>
+      <tr>
+        <th>
+	        Position
+        </th>
+        <th>
+	        Activity Date
+        </th>
+        <th>
+	        Hours
+        </th>
+        <th>
+	        $ Total
+        </th>
+      </tr>
+    </thead>
+    <tbody>    
+      {% for st in entries %}
+      {% ifnotequal st.Total 0 %}
+      <tr>
+        <td>	
+	        {{ st.position }}	
+        </td>
+        <td>	
+	        {{ st.activity_date }}	
+        </td>
+        <td>
+	        {{ st.hours}}
+        </td>
+        <td class="dollar">
+	        $ {{ st.Total|floatformat:2 }}
+        </td>
+      </tr>
+      {% endifnotequal %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 {% endwith %}
 
