@@ -720,6 +720,7 @@ class StaffPosition(BaseModel):
   """Staff positions that have hourly billing."""
   position_name = db.StringProperty()
   hourly_rate = db.FloatProperty(default=0.0)
+  mileage_rate = db.FloatProperty(default=0.0)
   last_editor = db.UserProperty()
   modified = db.DateTimeProperty(auto_now=True)
 
