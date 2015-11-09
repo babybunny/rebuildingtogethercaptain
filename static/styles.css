@@ -58,10 +58,10 @@ body {
 .sortorder {
   display: None;
 }
-.expense h3 {
+.expense h3,h4 {
     display: inline-block;
 }
-.expense h3.total {
+.expense h3.total,h4.total {
     float: right;
 }
 span.jeditable-order-item-name {

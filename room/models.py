@@ -4,6 +4,7 @@
 
 # TODO: factor out a common Person class from Captain, Staff, Supplier
 
+import collections
 import datetime
 import logging
 import math
@@ -181,6 +182,25 @@ class NewSite(BaseModel):
   @property
   def StaffTimes(self):
     return self.ActiveItems(self.stafftime_set)
+
+  @property
+  def StaffTimesByPosition(self):
+    class Pos(object):
+
+      def __init__(self):
+        self.total = 0.0
+        self.stafftimes = []
+        self.name = None
+
+    by_pos = collections.defaultdict(Pos)
+    for s in self.StaffTimes:
+      name = str(s.position)
+      pos = by_pos[name]
+      if pos.name is None:
+        pos.name = name
+      pos.stafftimes.append(s)
+      pos.total += s.Total()
+    return by_pos.itervalues()
 
   @property
   def ScopeOfWork(self):
