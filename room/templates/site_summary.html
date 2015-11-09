@@ -228,6 +228,9 @@ Total Expenses:
 	        Hours
         </th>
         <th>
+	        Miles
+        </th>
+        <th>
 	        $ Total
         </th>
       </tr>
@@ -243,7 +246,10 @@ Total Expenses:
 	        {{ st.activity_date }}	
         </td>
         <td>
-	        {{ st.hours}}
+	        {{ st.hours }}
+        </td>
+        <td>
+	        {{ st.miles }}
         </td>
         <td class="dollar">
 	        $ {{ st.Total|floatformat:2 }}

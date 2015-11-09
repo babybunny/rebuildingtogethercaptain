@@ -864,7 +864,8 @@ class StaffTime(BaseModel):
     super(BaseModel, self).put(*a, **k)
 
   def Total(self):
-    return self.hours * self.position.hourly_rate
+    return (self.hours * self.position.hourly_rate +
+            self.miles * self.position.mileage_rate)
 
 
 class Expense(BaseModel):
