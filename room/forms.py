@@ -284,6 +284,7 @@ class StaffTimeForm(SiteExpenseForm):
   description = forms.CharField(required=True, widget=forms.Textarea)
   activity_date = forms.DateField(required=True)
   hours = forms.FloatField(required=True)
+  miles = forms.FloatField(required=True)
 
   class Meta:
     model = models.StaffTime

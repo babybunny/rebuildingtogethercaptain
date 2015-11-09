@@ -848,6 +848,8 @@ class StaffTime(BaseModel):
   position = db.ReferenceProperty(StaffPosition)
   hours = db.FloatProperty(default=0.0)
   hours.verbose_name = 'Hours'
+  miles = db.FloatProperty(default=0.0)
+  miles.verbose_name = 'Miles'
   activity_date = db.DateProperty()
   description = db.TextProperty()
   last_editor = db.UserProperty()
