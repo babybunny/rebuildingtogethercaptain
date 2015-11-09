@@ -5,6 +5,7 @@
       <th>Site</th>
       <th>Staff Position</th>
       <th>Hours</th>
+      <th>Miles</th>
       <th>Total</th>
       <th>Activity Date</th>
       <th>Description</th>
@@ -27,6 +28,9 @@
 	{{ entity.position|escape }}
       </td><td>
 	{{ entity.hours|floatformat:2 }}
+      </td>
+      </td><td>
+	{{ entity.miles|floatformat:2 }}
       </td>
       <td class="dollar">
 	${{ entity.Total|floatformat:2 }}
