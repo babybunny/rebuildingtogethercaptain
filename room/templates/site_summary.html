@@ -215,11 +215,19 @@ Total Expenses:
     Total: ${{ site.StaffTimeTotal|floatformat:2 }}
   </h3>
   <h3>Staff Time</h3>
-  <br/>
   {% for pos in by_pos %}
-  <h4 class="total">
-    Subtotal: ${{ pos.total }}</h4>
-  <h4>{{ pos.name }}</h4>
+  <div class="expense-header">
+    <h4 class="total">    
+      Hours: {{ pos.hours|floatformat:2 }} 
+      <span class="pad"></span>
+      Hours Subtotal: ${{ pos.hours_subtotal|floatformat:2 }}
+      <span class="pad"></span>
+      Miles: {{ pos.miles|floatformat:2 }} 
+      <span class="pad"></span>
+      Mileage Subtotal: ${{ pos.mileage_subtotal|floatformat:2 }}
+    </h4>
+    <h4>{{ pos.name }}</h4>
+  </div>
   <table class="list printable tablesorter" id="order_list">
     <thead>
       <tr>

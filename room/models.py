@@ -188,9 +188,12 @@ class NewSite(BaseModel):
     class Pos(object):
 
       def __init__(self):
-        self.total = 0.0
-        self.stafftimes = []
         self.name = None
+        self.hours = 0.0
+        self.hours_subtotal = 0.0
+        self.miles = 0.0
+        self.mileage_subtotal = 0.0
+        self.stafftimes = []
 
     by_pos = collections.defaultdict(Pos)
     for s in self.StaffTimes:
@@ -199,7 +202,10 @@ class NewSite(BaseModel):
       if pos.name is None:
         pos.name = name
       pos.stafftimes.append(s)
-      pos.total += s.Total()
+      pos.hours += s.hours
+      pos.hours_subtotal += s.HoursTotal()
+      pos.miles += s.miles
+      pos.mileage_subtotal += s.MileageTotal()
     return by_pos.itervalues()
 
   @property
@@ -875,17 +881,22 @@ class StaffTime(BaseModel):
   last_editor = db.UserProperty()
   modified = db.DateTimeProperty(auto_now=True)
 
-  @property
-  def name(self):
-    return self.position
-
   def put(self, *a, **k):
     self.program = self.site.program
     super(BaseModel, self).put(*a, **k)
 
+  @property
+  def name(self):
+    return self.position
+
+  def HoursTotal(self):
+    return self.hours * self.position.hourly_rate
+  
+  def MileageTotal(self):
+    return self.miles * self.position.mileage_rate
+
   def Total(self):
-    return (self.hours * self.position.hourly_rate +
-            self.miles * self.position.mileage_rate)
+    return self.HoursTotal() + self.MileageTotal()
 
 
 class Expense(BaseModel):

@@ -64,6 +64,9 @@ body {
 .expense h3.total,h4.total {
     float: right;
 }
+.expense h3.total,h4.total .pad {
+    margin-left: 30px;
+}
 span.jeditable-order-item-name {
   display: inline-block;
 }
