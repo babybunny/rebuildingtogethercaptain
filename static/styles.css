@@ -77,7 +77,7 @@ a.edit {
   white-space: nowrap;
 }
 div.notes {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 div.panel {
   padding-top: 0;
@@ -175,7 +175,7 @@ table.printable {
   border-spacing: 5px;
 }
 table.printable td {
-  border-top: 1px solid black;
+  border: 1px solid black;
 }
 table.site tbody { 
   margin-right: 10px;
