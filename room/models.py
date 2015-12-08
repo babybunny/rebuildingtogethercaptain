@@ -751,10 +751,10 @@ class StaffPosition(BaseModel):
   modified = db.DateTimeProperty(auto_now=True)
 
   def __unicode__(self):
-    return '%s @ $%.2f' % (self.position_name, self.hourly_rate)
+    return '%s' % self.position_name
 
   def __str__(self):
-    return '%s @ $%.2f' % (self.position_name, self.hourly_rate)
+    return '%s' % self.position_name
 
 
 class CheckRequest(BaseModel):
