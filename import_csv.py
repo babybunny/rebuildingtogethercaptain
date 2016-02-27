@@ -6,7 +6,7 @@ bash> python $(which remote_api_shell.py) -s rebuildingtogethercaptain.appspot.c
 s~rebuildingtogethercaptain-hrd> import import_csv
 
 Great instructions at
-https://code.google.com/p/rebuildingtogethercaptain/issues/detail?id=181
+https://github.com/babybunny/rebuildingtogethercaptain/issues/181
 
 # or for development..
 bash> python $(which remote_api_shell.py) -s localhost:8081
@@ -22,7 +22,7 @@ import main  # to initialize Django
 from room import models
 from google.appengine.ext import db
 
-PROGRAM = '2015 NRD'
+PROGRAM = '2016 NRD'
 # PROGRAM = '2015 Safe'
 
 
@@ -30,7 +30,7 @@ def import_photos(input_csv="../2012_ROOMS_phote.csv"):
   """Change input_csv to actual input file - the default is test data."""
   reader = csv.DictReader(open(input_csv))
   for s in reader:
-    number = s["Number"]
+    number = s["Site ID"]
     site = models.NewSite.all().filter('number =', number).get()
     if not site:
       continue
@@ -43,7 +43,7 @@ def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
   """Change input_csv to actual input file - the default is test data."""
   reader = csv.DictReader(open(input_csv))
   for s in reader:
-    number = s["Number"]
+    number = s["Site ID"]
     site = models.NewSite.all().filter('number =', number).get()
     if site:
       logging.info('site %s exists, skipping', number)
@@ -56,21 +56,24 @@ def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
     def clean_s(k):
       return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').encode('ascii', 'replace')
 
-    site.name = clean_s("Recipient Name")
+    site.name = clean_s("Recipient name")
     site.street_number = clean_s("Street Address")
     site.city_state_zip = "%s CA, %s" % (
-        clean_s("City"), clean_s("Zip Code"))
-    site.applicant = clean_s("Applicant Contact")
+        clean_s("Repair Application: Recipient's City"), 
+        clean_s("Repair Application: Recipient's Zip Code"))
+    site.applicant = clean_s("Applicant contact")
     site.applicant_home_phone = clean_s("Applicant Home Phone")
     site.applicant_work_phone = clean_s("Applicant Work Phone")
     site.applicant_mobile_phone = clean_s("Applicant Mobile Phone")
-    site.applicant_email = clean_s("Applicant Email")
-    site.sponsor = clean_s("Sponsor")
+    # site.applicant_email = clean_s("Applicant Email")
+    site.sponsor = clean_s("Campaign Description")
     # site.rating = clean_s("TODO")
-    # site.rrp_test = clean_s("TODO RRP Is_Testing Required")
-    # site.rrp_level = clean_s("TODO RRP Level")
-    # site.roof = clean_s("TODO Roof_Request_Professional_Evaluation")
+    site.rrp_test = clean_s("RRP Test")
+    site.rrp_level = clean_s("RRP Level")
+    site.roof = clean_s("Roof?")
     site.jurisdiction = clean_s("Jurisdiction")
+    site.announcement_subject = clean_s("Announcement subject")
+    site.announcement_body = clean_s("Announcement body")
     site.put()
     logging.info('put site %s', number)
 
@@ -108,7 +111,7 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
     # date.
     captain.name = name
     captain.email = email
-    captain.phone1 = clean_s("Phone")
+    captain.phone1 = clean_s("Preferred Phone") or None
     # captain.phone_mobile = clean_s("Phone mobile")
     # captain.phone_work = clean_s("Phone work")
     # captain.phone_home = clean_s("Phone home")
