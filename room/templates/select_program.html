@@ -6,7 +6,8 @@
 
 angular.module('programServices', ['ngResource']).
     factory('Program', function($resource){
-  return $resource('rest/Program', {}, {
+  // "autoapi" is the module, as in autoapi.yaml.  "1" is the version.
+  return $resource('https://1-dot-autoapi-dot-rebuildingtogethercaptain-hrd.appspot.com/_ah/api/roomAutoApi/v1/programs', {}, {
     query: {method:'GET'}
   });
 });
@@ -20,9 +21,9 @@ angular.module('program_functions', ['programServices']).
   }]);
 
 function ProgramCtrl($scope, $routeParams, Program) {
-  // query() returns JSON like this 
-  // {"list": {"Program": [{"status": "Active", "site_number_prefix": "130",
-  $scope.program_query = Program.query();  
+  // endpoints_proto_datastore returns JSON like this 
+  // {items: [{status: "Active", name: "test", year: "1999", ...
+  $scope.program_query = Program.query();
   $scope.selected_program = "{{ user.program_selected }}";
 
   $scope.IsSelectedProgram = function(program) {

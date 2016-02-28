@@ -4,7 +4,7 @@
       Currently selected: {{selected_program}}
     </p>
     <ul>
-      <li ng-repeat="program in program_query.list.Program">
+      <li ng-repeat="program in program_query.items">
         {{program.year}} {{program.name}} {{program.site_number_prefix}} {{program.status}}
         <span ng-hide="IsSelectedProgram(program)">
         <a href="select_program/{{program.year}} {{program.name}}">select</a>
