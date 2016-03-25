@@ -13,9 +13,9 @@ import models
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
-NRD = '04/25/2015'
+NRD = '04/30/2016'
 
-DEFAULT_CAPTAIN_PROGRAM = '2015 NRD'
+DEFAULT_CAPTAIN_PROGRAM = '2016 NRD'
 
 PROGRAMS = [
     '2016 NRD',
