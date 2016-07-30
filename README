@@ -62,22 +62,46 @@ for kind in $kinds; do
   python $(which appcfg.py) download_data --filename=testdata/$kind.csv --config_file=bulkloader.yaml --url=http://rebuildingtogethercaptain.appspot.com/_ah/remote_api --kind=$kind --email $email --passin < pass
 done
 
-# Git workflow
-# start on the master branch, nothing pending.
-  602  git co -b issue216   # make a new branch
-# make some changes
-  604  git status
-# deploy and test
-  613  git commit -a -m "autopep8 -i --indent-size 2 *.py"
-  615  git diff
-# repeat as desired
-  616  git commit -a -m "autopep8 -i --indent-size 2 -r room"
-  617  git status
-  621  git commit -a -m "autopep8 -i --indent-size 2 -r test"
-  622  git status
-  623  git commit -a -m "version"
-# after all commits on the issue216 branch, merge back into master
-  624  git co master
-  625  git merge issue216
-# send to server
-  626  git push
+# Change workflow using Git.
+# We use the github issue tracker to record the purpose of all changes, no matter how small.
+# We'll use a convention of using the issue number to create a name for a git branch and app version. 
+# Create an issue and it will automatically get an ID.
+# https://github.com/babybunny/rebuildingtogethercaptain/issues/216
+# In this example it's 216 and our branch and version will be "issue216".
+
+# Start on the master branch, nothing pending.
+$ git status
+On branch master
+Your branch is up-to-date with 'gh/master'.
+nothing to commit, working directory clean
+
+# Make a new branch.
+$ git co -b issue216   
+# Set version in app.yaml to "issue216"
+# Make some changes to the code.
+
+# Deploy and test cycle.  Commit every time you have something that looks like progress.
+$ git commit -a -m "description of my change"
+
+# Deploy using GAE Launcher local app.  
+# Use "Control > Clear deployment credentials" if you get a 403 error.
+
+# Test at the version-specific URL.
+# http://issue216.rebuildingtogethercaptain.appspot.com
+# You can compare with the default version at
+# http://rebuildingtogethercaptain.appspot.com
+
+# Repeat as desired.  Change, deploy, commit.
+$ git commit -a -m "oops, fix something"
+
+# Once everything looks good we want to share with the world.
+# Set the default version using the console:
+# https://console.cloud.google.com/appengine/versions?project=rebuildingtogethercaptain-hrd&moduleId=default
+# Merge the issue216 branch, merge back into master branch. 
+$ git co master
+$ git merge issue216
+# Send to the github server. 
+$ git push
+# Close the issue
+# https://github.com/babybunny/rebuildingtogethercaptain/issues/216
+# You're done!
