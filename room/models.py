@@ -357,7 +357,7 @@ class SiteCaptain(BaseModel):
       'Construction',
       'Team',
       'Volunteer',
-  ))
+  ), required=True)
 
 
 class Staff(BaseModel):
