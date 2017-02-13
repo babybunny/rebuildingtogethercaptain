@@ -758,7 +758,7 @@ class StaffPosition(BaseModel):
   modified = db.DateTimeProperty(auto_now=True)
 
   def GetHourlyRate(self, activity_date):
-    return self.mileage_rate
+    return self.hourly_rate
 
   def GetMileageRate(self, activity_date):
     return self.mileage_rate
