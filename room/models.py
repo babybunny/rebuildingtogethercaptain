@@ -5,7 +5,6 @@
 # TODO: factor out a common Person class from Captain, Staff, Supplier
 
 import collections
-import datetime
 import logging
 import math
 from appengine_django.models import BaseModel
@@ -742,15 +741,45 @@ class InventoryItem(BaseModel):
   modified = db.DateTimeProperty(auto_now=True)
 
 
+def _GetRateFromArray(default, array, activity_date):    
+  if not array:
+    return default
+  activity_date_str = activity_date.isoformat()
+  rate = default
+  for dr in sorted(s.split() for s in array):
+    if activity_date_str < dr[0]:
+      break
+    rate = float(dr[1])
+  return rate
+    
+
 class StaffPosition(BaseModel):
   """Staff positions that have hourly billing."""
   position_name = db.StringProperty()
 
-  # Deprecated in favor of the lists below.
+  # Defaults possibly superceded by the date-based lists below, and destined to be deprecated once
+  # all objects have moved to the date-based lists.
   hourly_rate = db.FloatProperty(default=0.0)
   mileage_rate = db.FloatProperty(default=0.0)
 
-  # Pairs of space-separated date and rate strings.
+  # Space-separated pairs of date and rate strings, to support
+  # rates that change over time. The scheme here is to list the effective date of rate changes, 
+  # along with the new rate.
+
+  # These are entered in the datastore editor as 
+  # type=Array and a value formatted like
+  # {
+  #   "values": [
+  #     {
+  #       "stringValue": "2016-01-01 10.0"
+  #     },
+  #     {
+  #       "stringValue": "2017-01-01 20.0"
+  #     }
+  #   ]
+  # }
+  # Then the values appear here as unicode strings:
+  # [u'2016-01-01 10.0', u'2017-01-01 20.0']
   hourly_rate_after_date = db.StringListProperty()
   mileage_rate_after_date = db.StringListProperty()
 
@@ -758,10 +787,10 @@ class StaffPosition(BaseModel):
   modified = db.DateTimeProperty(auto_now=True)
 
   def GetHourlyRate(self, activity_date):
-    return self.hourly_rate
+    return _GetRateFromArray(self.hourly_rate, self.hourly_rate_after_date, activity_date)
 
   def GetMileageRate(self, activity_date):
-    return self.mileage_rate
+    return _GetRateFromArray(self.mileage_rate, self.mileage_rate_after_date, activity_date)
 
   def __unicode__(self):
     return '%s' % self.position_name
