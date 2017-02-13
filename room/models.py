@@ -745,10 +745,23 @@ class InventoryItem(BaseModel):
 class StaffPosition(BaseModel):
   """Staff positions that have hourly billing."""
   position_name = db.StringProperty()
+
+  # Deprecated in favor of the lists below.
   hourly_rate = db.FloatProperty(default=0.0)
   mileage_rate = db.FloatProperty(default=0.0)
+
+  # Pairs of space-separated date and rate strings.
+  hourly_rate_after_date = db.StringListProperty()
+  mileage_rate_after_date = db.StringListProperty()
+
   last_editor = db.UserProperty()
   modified = db.DateTimeProperty(auto_now=True)
+
+  def GetHourlyRate(self, activity_date):
+    return self.mileage_rate
+
+  def GetMileageRate(self, activity_date):
+    return self.mileage_rate
 
   def __unicode__(self):
     return '%s' % self.position_name
@@ -890,10 +903,10 @@ class StaffTime(BaseModel):
     return self.position
 
   def HoursTotal(self):
-    return self.hours * self.position.hourly_rate
+    return self.hours * self.position.GetHourlyRate(self.activity_date)
   
   def MileageTotal(self):
-    return self.miles * self.position.mileage_rate
+    return self.miles * self.position.GetMileageRate(self.activity_date)
 
   def Total(self):
     return self.HoursTotal() + self.MileageTotal()
