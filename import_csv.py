@@ -22,9 +22,10 @@ import main  # to initialize Django
 from room import models
 from google.appengine.ext import db
 
-PROGRAM = '2016 NRD'
-# PROGRAM = '2015 Safe'
-
+##############
+# update me! #
+##############
+PROGRAM = '2017 NRD'
 
 def import_photos(input_csv="../2012_ROOMS_phote.csv"):
   """Change input_csv to actual input file - the default is test data."""
@@ -51,29 +52,27 @@ def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
     else:
       site = models.NewSite(number=number)
     site.program = PROGRAM
-    site.budget = int(s["Budgeted Cost"]) if s["Budgeted Cost"] else 0
+    site.budget = int(s["Budgeted Cost in Campaign"]) if s["Budgeted Cost in Campaign"] else 0
 
     def clean_s(k):
       return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').encode('ascii', 'replace')
 
-    site.name = clean_s("Recipient name")
+    site.name = clean_s("Repair Application: Applicant's Name")
     site.street_number = clean_s("Street Address")
     site.city_state_zip = "%s CA, %s" % (
         clean_s("Repair Application: Recipient's City"), 
         clean_s("Repair Application: Recipient's Zip Code"))
     site.applicant = clean_s("Applicant contact")
-    site.applicant_home_phone = clean_s("Applicant Home Phone")
-    site.applicant_work_phone = clean_s("Applicant Work Phone")
-    site.applicant_mobile_phone = clean_s("Applicant Mobile Phone")
-    # site.applicant_email = clean_s("Applicant Email")
-    site.sponsor = clean_s("Campaign Description")
-    # site.rating = clean_s("TODO")
-    site.rrp_test = clean_s("RRP Test")
-    site.rrp_level = clean_s("RRP Level")
-    site.roof = clean_s("Roof?")
+    site.applicant_home_phone = clean_s("Repair Application: Applicant Home Phone")
+    site.applicant_work_phone = clean_s("Repair Application: Applicant Work Phone")
+    site.applicant_mobile_phone = clean_s("Repair Application: Applicant Mobile Phone")
+    site.sponsor = clean_s("(Sponsor) Campaign Description")
+    site.rrp_test = clean_s("Repair Application: RRP Test Results")
+    site.rrp_level = clean_s("Repair Application: RRP Result Notes")
+    # site.roof = clean_s("Roof?")
     site.jurisdiction = clean_s("Jurisdiction")
-    site.announcement_subject = clean_s("Announcement subject")
-    site.announcement_body = clean_s("Announcement body")
+    site.announcement_subject = clean_s("Announcement Subject")
+    site.announcement_body = clean_s("Announcement Body")
     site.put()
     logging.info('put site %s', number)
 
