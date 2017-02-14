@@ -50,6 +50,8 @@ def _authorize_staff():
                description='Rebuilding Together Peninsula ROOM System API')
 class RoomApi(remote.Service):
 
+  # This needs an update for the new encoding for StaffPosition rates.  Per issue 238.
+  # If it's used at all...
   @endpoints.method(StaffPosition,
                     GenericResponse,
                     name='staffposition.put')

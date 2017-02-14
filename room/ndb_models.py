@@ -6,6 +6,7 @@ endpoints.
 """
 from google.appengine.ext import ndb
 
+# This needs an edit as it's diverged from the model in the master branch.
 class StaffPosition(ndb.Model):
     """Staff positions that have hourly billing."""
     position_name = ndb.StringProperty()
