@@ -86,32 +86,35 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
       return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').encode('ascii', 'replace')
 
     key = s.get('key')
-    name = "%s %s" % (clean_s("First Name"),
-                      clean_s("Last Name"))
     email = clean_s("Email")
+    rooms_id = clean_s("ROOMS Captain ID")
+    # name = "%s %s" % (clean_s("First Name"),
+    #                   clean_s("Last Name"))
+    name = clean_s("Name")
     captain = None
     if key:
       captain = models.Captain.get_by_id(int(key))
       if captain:
         logging.info('got captain from key %s', key)
     if not captain:
+      captain = models.Captain.all().filter('rooms_id =', rooms_id).get()
+      if captain:
+        logging.info('got captain from rooms_id %s', rooms_id)
+    if not captain:
       captain = models.Captain.all().filter('email =', email).get()
       if captain:
         logging.info('got captain from email %s', email)
-#       if not captain:
-#           captain = models.Captain.all().filter('name =', name).get()
-#           if captain:
-#               logging.info('got captain from name %s', name)
     if not captain:
-      logging.info('creating captain key %s name %s email %s',
-                   key, name, email)
-      captain = models.Captain(name=name, email=email)
+      logging.info('creating captain key %s name %s email %s rooms_id %s',
+                   key, name, email, rooms_id)
+      captain = models.Captain(name=name, email=email, rooms_id=rooms_id)
 
     # Over-write these values, assume volunteer database is more up to
     # date.
     captain.name = name
     captain.email = email
-    captain.phone1 = clean_s("Preferred Phone") or None
+    captain.rooms_id = rooms_id
+    # captain.phone1 = clean_s("Preferred Phone") or None
     # captain.phone_mobile = clean_s("Phone mobile")
     # captain.phone_work = clean_s("Phone work")
     # captain.phone_home = clean_s("Phone home")
@@ -134,7 +137,7 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
       sitecaptain = models.SiteCaptain(site=site, captain=captain)
     # In input type is like "Volunteer Captain" but in model it's
     # "Volunteer"
-    input_type = s["Project Role"]
+    input_type = s["Captain Type"]
     for c in models.SiteCaptain.type.choices:
       if c in input_type:
         sitecaptain.type = c
