@@ -54,15 +54,16 @@ def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
     site.program = PROGRAM
     site.budget = int(s["Budgeted Cost in Campaign"]) if s["Budgeted Cost in Campaign"] else 0
 
+    # Because Python 2.x csv module only reads ascii.
     def clean_s(k):
-      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').encode('ascii', 'replace')
+      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').replace('\xb1', '').encode('ascii', 'replace')
 
     site.name = clean_s("Repair Application: Applicant's Name")
     site.street_number = clean_s("Street Address")
     site.city_state_zip = "%s CA, %s" % (
         clean_s("Repair Application: Recipient's City"), 
         clean_s("Repair Application: Recipient's Zip Code"))
-    site.applicant = clean_s("Applicant contact")
+    site.applicant = clean_s("Repair Application: Applicant's Name")
     site.applicant_home_phone = clean_s("Repair Application: Applicant Home Phone")
     site.applicant_work_phone = clean_s("Repair Application: Applicant Work Phone")
     site.applicant_mobile_phone = clean_s("Repair Application: Applicant Mobile Phone")
