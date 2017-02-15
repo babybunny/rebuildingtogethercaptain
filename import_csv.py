@@ -128,21 +128,25 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
       logging.error('site %s does not exist, skipping', number)
       continue
 
+    # In input type is like "Volunteer Captain" but in model it's
+    # "Volunteer"
+    input_type = s["Captain Type"]
+    for t in models.SiteCaptain.type.choices:
+      if t in input_type:
+        break
+
     query = models.SiteCaptain.all()
     query.filter('site =', site).filter('captain =', captain)
     sitecaptain = query.get()
     if sitecaptain is None:
       logging.info('Creating new SiteCaptain mapping %s to %s',
                    site.number, captain.name)
-      sitecaptain = models.SiteCaptain(site=site, captain=captain)
-    # In input type is like "Volunteer Captain" but in model it's
-    # "Volunteer"
-    input_type = s["Captain Type"]
-    for c in models.SiteCaptain.type.choices:
-      if c in input_type:
-        sitecaptain.type = c
-        break
+      sitecaptain = models.SiteCaptain(site=site, captain=captain, type=t)
+    else:
+      logging.info('Found existing SiteCaptain')
+      sitecaptain.type = t
     sitecaptain.put()
+
 
 ANNOUNCEMENT_BODY = """Please remember that your Home Depot card will be held until we receive your scope of work form.
 Thank you for serving as a captain this year!  Please use this space to include notes/correspondence with staff.

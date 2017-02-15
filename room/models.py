@@ -31,7 +31,7 @@ class Captain(BaseModel):
   # I was getting errors about users that didn't exist when loading sample
   # data.
   email = db.EmailProperty()  # "joe@user.com"
-  rooms_id = db.StrongProperty()  # "joe@user.com"
+  rooms_id = db.StringProperty()
   phone1 = db.PhoneNumberProperty()
   phone1.verbose_name = 'Preferred Phone (deprecated)'
   phone2 = db.PhoneNumberProperty()
