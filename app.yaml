@@ -1,5 +1,5 @@
 application: rebuildingtogethercaptain-hrd
-version: 1
+version: endpoints1
 runtime: python
 api_version: 1
 
@@ -37,7 +37,6 @@ handlers:
   script: main.py
 
 builtins:
-- datastore_admin: on
 - remote_api: on
 - deferred: on
 
