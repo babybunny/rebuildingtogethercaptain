@@ -67,12 +67,12 @@
         </p>
         {% endifequal %}
 
-        {% if not site.sitecaptain_set %}
+        {% if not sitecaptains %}
         <p>
 	        No captains assigned yet!
         </p>
         {% else %}
-        {% for sitecaptain in site.sitecaptain_set %}
+        {% for sitecaptain in sitecaptains %}
         <p>
 	        <strong>{{ sitecaptain.captain.name }}</strong>
 	        {% if user.staff %}

@@ -225,6 +225,7 @@ def _SiteListInternal(request, site=None, new_order_form=None):
     entries.sort(key=lambda x: x.number)
   AnnotateSitesWithEditability(entries, user.captain, user.staff)
   d['entries'] = entries
+  d['sitecaptains'] = sorted(list(site.sitecaptain_set), key=lambda s:(s.type, s.captain.name))
   order_sheets = models.OrderSheet.all().order('name')
   d['order_sheets'] = order_sheets
   if params:
