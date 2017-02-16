@@ -77,6 +77,27 @@ class Captain(BaseModel):
     return "%s <%s>" % (self.name, self.email)
 
 
+class Site(BaseModel):
+  """A work site."""
+  # "10001DAL" reads: 2010, #001, Daly City
+  number = db.StringProperty(required=True)
+  number.unique = True
+  name = db.StringProperty()  # "Belle Haven"
+  name.verbose_name = 'Recipient Name'
+  street = db.StringProperty()  # Not full street address, for privacy.
+  applicant = db.StringProperty()
+  applicant.verbose_name = 'Applicant Contact'
+  sponsors = db.StringProperty()
+  difficulty = db.StringProperty()
+  postal_address = db.PostalAddressProperty()  # Full street address.
+  work_start = db.DateProperty()
+  work_end = db.DateProperty()
+  notes = db.TextProperty()
+
+  def __unicode__(self):
+    return 'Site #%s | %s' % (self.key().id(), self.name)
+
+
 class NewSite(BaseModel):
   """A work site."""
   # "10001DAL" reads: 2010, #001, Daly City
@@ -255,7 +276,6 @@ class NewSite(BaseModel):
         prefixes.add(self.number[2:2 + i])
         prefixes.add(self.number[5:5 + i])
     self.search_prefixes = [p.lower() for p in prefixes]
-    logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
     super(BaseModel, self).put(*a, **k)
     self.SaveTheChildren()
 
