@@ -1,7 +1,7 @@
 {%extends "base.html"%}
 {% block script %}
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular-resource.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular-resource.min.js"></script>
 <script>
 
 angular.module('programServices', ['ngResource']).
@@ -21,8 +21,10 @@ angular.module('program_functions', ['programServices']).
   }]);
 
 function ProgramCtrl($scope, $routeParams, Program) {
-  // endpoints_proto_datastore returns JSON like this 
+  // endpoints_proto_datastore autoapi returns JSON like this 
   // {items: [{status: "Active", name: "test", year: "1999", ...
+  // and Angular $resource query() returns JSON like this
+  // {"list": {"Program": [{"status": "Active", "site_number_prefix": "130",
   $scope.program_query = Program.query();
   $scope.selected_program = "{{ user.program_selected }}";
 
@@ -33,7 +35,7 @@ function ProgramCtrl($scope, $routeParams, Program) {
        return true;
      }
      return false;
-  }; 
+  };
 }
 </script>
 {% endblock script %}
@@ -57,7 +59,7 @@ Hard-coded programs
 <ul>
 {% for program in user.programs %}
 <li>
-  Click to select 
+  Click to select
   <a href="{% url room.staff.SelectProgram program %}">
     {{ program }}
   </a>

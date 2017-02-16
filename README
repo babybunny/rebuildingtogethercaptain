@@ -2,14 +2,14 @@
 
 # Copyright 2010 Luke Stone
 
-# This is an online ordering system for construction captains for the 
-# annual Rebuilding Day. 
+# This is an online ordering system for construction captains for the
+# annual Rebuilding Day.
 
 # Set up
 
-# Install appengine_django, I forget the details. 
+# Install appengine_django, I forget the details.
 
-# Install gaeunit for Django 
+# Install gaeunit for Django
 From http://code.google.com/p/gaeunit/, I used gaeunit-2.0a_for_django.zip
 See svn revision 13.
 
@@ -20,7 +20,7 @@ and added to urls.py (based on gaeunit/urlsauto.py)
     (r'^test', include('gaeunit.urls')),
 
 
-# Install tablesorter and south-street date picker from jquery.  
+# Install tablesorter and south-street date picker from jquery.
 Again, I forget the details.
 
 # Install appengine rest server
@@ -66,9 +66,62 @@ done
 # finding the endpoints
 https://1-dot-api-dot-rebuildingtogethercaptain-hrd.appspot.com/_ah/api/explorer
 
+https://1-dot-autoapi-dot-rebuildingtogethercaptain-hrd.appspot.com/_ah/api/roomAutoApi/v1/programs
+
 
 # trying out the endpoints-proto-datastore library 
 https://github.com/GoogleCloudPlatform/endpoints-proto-datastore
 http://endpoints-proto-datastore.appspot.com/
 
 git submodule add https://github.com/GoogleCloudPlatform/endpoints-proto-datastore
+
+# Change workflow using Git.
+# We use the github issue tracker to record the purpose of all changes, no matter how small.
+# We'll use a convention of using the issue number to create a name for a git branch and app version. 
+# Create an issue and it will automatically get an ID.
+# https://github.com/babybunny/rebuildingtogethercaptain/issues/216
+# In this example it's 216 and our branch and version will be "issue216".
+
+# Start on the master branch, nothing pending.
+$ git co master
+$ git pull.
+$ git status
+On branch master
+Your branch is up-to-date with 'gh/master'.
+nothing to commit, working directory clean
+
+# Make a new branch.
+$ git co -b issue216   
+# Set version in app.yaml to "issue216"
+# Make some changes to the code.
+
+# Deploy and test cycle.  Commit every time you have something that looks like progress.
+$ git commit -a -m "description of my change"
+
+# Deploy using GAE Launcher local app.  
+# Use "Control > Clear deployment credentials" if you get a 403 error.
+
+# Test at the version-specific URL.  You'll have to edit the "issue216" part to match your issue.
+# https://issue216-dot-rebuildingtogethercaptain-hrd.appspot.com/
+# You can compare with the default version at
+# https://rebuildingtogethercaptain.appspot.com
+
+# Repeat as desired.  Change, deploy, commit.
+$ git commit -a -m "oops, fix something"
+
+# Once everything looks good we want to share with the world.
+# Migrate traffic to the new version using the console:
+# https://console.cloud.google.com/appengine/versions?project=rebuildingtogethercaptain-hrd&moduleId=default
+# Click the check box next to your version and then click "Migrate Traffic" at the top of the page.  
+# Now your code is serving on the main site. 
+
+# Merge the issue216 branch, merge back into master branch. 
+$ git co master
+$ git pull 
+$ git merge issue216
+# Enter a simple message like : "merging issue 216"
+# Send to the github server. 
+$ git push
+# Close the issue
+# https://github.com/babybunny/rebuildingtogethercaptain/issues/216
+# You're done!

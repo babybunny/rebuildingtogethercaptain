@@ -21,7 +21,7 @@ urlpatterns = patterns(
     (r'^admin/fix_program$', 'FixProgramFromNumber'),
     (r'^admin/fix_program/(.+)/$', 'FixProgramFromNumber'),
     (r'^admin/recompute_orders$', 'RecomputeOrders'),
-    )
+)
 
 urlpatterns += patterns(
     'room.scoreboard',
@@ -30,13 +30,13 @@ urlpatterns += patterns(
     (r'^scoreboard/orders$', 'ScoreboardOrders'),
     (r'^scoreboard/captains$', 'ScoreboardCaptains'),
     (r'^scoreboard/staff$', 'ScoreboardStaff'),
-    )
+)
 
 urlpatterns += patterns(
     'room.views',
     (r'^help', 'Help'),
     (r'^standard_kit', 'StandardKit'),
-                       
+
     (r'^item$', 'ItemList'),
     (r'^item/list$', 'ItemList'),
     (r'^item/new$', 'ItemNew'),
@@ -120,7 +120,7 @@ urlpatterns += patterns(
     (r'^siteexpense/state/(\w+)/(\d+)/$', 'SiteExpenseState'),
     (r'^expense/new/(\d+)/$', 'ExpenseNew'),
     (r'^expense/(\d+)/$', 'Expense'),
-    )
+)
 
 urlpatterns += patterns(
     'room.order',
@@ -150,4 +150,4 @@ urlpatterns += patterns(
     (r'^order/fulfillconfirm/(\d+)/$', 'OrderFulfillConfirm'),
     (r'^order_item/name/$', 'OrderItemName'),
     (r'^admin/order/update_logistics/(\d+)/$', 'OrderUpdateLogistics'),
-    )
+)

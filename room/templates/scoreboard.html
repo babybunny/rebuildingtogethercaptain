@@ -3,17 +3,17 @@
 {%block breadcrumb%}
 {%endblock%}
 {% block script %}
-<link 
-   type="text/css" 
-   href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css" 
+<link
+   type="text/css"
+   href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css"
    rel="Stylesheet" />
-<script 
-   type="text/javascript" 
-   src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
 </script>
-<script 
-   type="text/javascript" 
-   src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
 </script>
 <script type="text/javascript">
 $(function() {
@@ -35,7 +35,7 @@ $(function() {
 {% endblock %}
 {%block body%}
 
-<div id="tabs">  
+<div id="tabs">
   <ul>
     <li><a href="#users">Users</a></li>
     <li><a href="{% url room.scoreboard.ScoreboardOrders %}">
@@ -52,12 +52,12 @@ $(function() {
     <p>
       <span class=attr>
 	Captains using system: <b>{{ num_captains_active }}</b>
-	of {{ num_captains }} total ({{ pct_captains_active|floatformat:1 }}%), 
-	with 
-	<b>{{ num_captains_with_tshirt }}</b> 
+	of {{ num_captains }} total ({{ pct_captains_active|floatformat:1 }}%),
+	with
+	<b>{{ num_captains_with_tshirt }}</b>
 	updating their T-shirt size.
       </span>
-    </p>    
+    </p>
   </div>
 </div>
 

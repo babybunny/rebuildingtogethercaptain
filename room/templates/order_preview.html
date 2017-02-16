@@ -1,16 +1,16 @@
 {%extends "base.html"%}
 {% block script %}
 <link
-   type="text/css" 
-   href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" 
+   type="text/css"
+   href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css"
    rel="Stylesheet" />
-<script 
-   type="text/javascript" 
-   src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
 </script>
 <script
-   type="text/javascript" 
-   src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
 </script>
 <script type="text/javascript">
 $(function() {
@@ -55,37 +55,37 @@ text-align: left;
 <p>
   Placing an order is a three step process.
 <ol class="new-order-steps">
-  <li>(this page) Choose which order form to use.  
-    The forms in ROOMS correspond to the paper forms in the Captains Binder, 
+  <li>(this page) Choose which order form to use.
+    The forms in ROOMS correspond to the paper forms in the Captains Binder,
     though some prices may have been updated.
   </li>
   <li>
-    Enter the quantities for items, and optionally add notes for the staff. 
+    Enter the quantities for items, and optionally add notes for the staff.
   </li>
   <li>
-    Enter desired logistics, including delivery, pickup, 
-    or drop-off and retrieval as appropriate.  
+    Enter desired logistics, including delivery, pickup,
+    or drop-off and retrieval as appropriate.
   </li>
 </ol>
  </p>
 {%endblock%}
-{%block body%} 
+{%block body%}
 <div>
   {% for sheet in order_sheets %}
-  <div class="description" id="preview-{{ sheet.code }}">   
+  <div class="description" id="preview-{{ sheet.code }}">
     {% if sheet.num_existing_orders %}
     <div class="alert">
       There are {{ sheet.num_existing_orders }} existing {{ sheet.name }}
-      orders for site {{ site.number }}.  You may want to edit one of these.  
+      orders for site {{ site.number }}.  You may want to edit one of these.
       Clicking the button on the left will create a new order.
       {% for order in sheet.existing_orders %}
       <br>
-      changed {{ order.modified|date:"d M" }} 
-      by {{ order.last_editor }} 
-      - 
+      changed {{ order.modified|date:"d M" }}
+      by {{ order.last_editor }}
+      -
       {% if order.LogisticsStart %}
-      {{ order.LogisticsStart }} 
-      - 
+      {{ order.LogisticsStart }}
+      -
       {% endif %}
       ${{ order.Total|floatformat:2 }}
       <a href="{% url room.order.OrderEdit order.key.id %}" target="_blank">
@@ -102,16 +102,16 @@ text-align: left;
     <br/>
     {% for oi in sheet.sorted_items %}
     {% if oi.item.VisibleOrderFormSection %}
-    {{ oi.item.VisibleOrderFormSection }} : 
+    {{ oi.item.VisibleOrderFormSection }} :
     {% endif %}
     {{ oi.item.VisibleName }}<br/>
-    {% endfor %}  
+    {% endfor %}
     {% else %}
     Sorry, no items available on the {{ sheet.name }} form.
     {% endif %}
   </div>
   {% endfor %}
-  
+
   <h4>Choose an order form from the list below.</h4>
   <div id="products">
     {% for sheet in order_sheets %}

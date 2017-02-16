@@ -1,9 +1,9 @@
 {%extends "base.html"%}
 {% block script %}
 {% include "datepicker_script.html" %}
-<script type="text/javascript" 
-	ng:autobind 
-	src="http://code.angularjs.org/0.9.16/angular-0.9.16.js"></script>
+<script type="text/javascript"
+	ng:autobind
+	src="https://code.angularjs.org/0.9.16/angular-0.9.16.js"></script>
 <script type="text/javascript">
 function ExpenseCtrl() {
   this.site = {{ expense.site.key.id }};

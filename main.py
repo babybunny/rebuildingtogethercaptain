@@ -41,6 +41,7 @@ from google.appengine.ext.webapp import util
 # Import the part of Django that we use here.
 import django.core.handlers.wsgi
 
+
 def main():
   # Ensure the Django zipfile is in the path if required.
   if have_django_zip and django_zip_path not in sys.path:

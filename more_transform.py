@@ -5,12 +5,13 @@ See http://googleappengine.googlecode.com/svn/trunk/python/google/appengine/ext/
 
 from google.appengine.api import datastore
 
+
 def create_optional_foreign_key(kind, key_is_id=False):
   """Like transform.create_foreign_key, but handles empty inputs."""
 
   def generate_foreign_key_lambda(value):
     if value is '':
-        return None
+      return None
     if key_is_id:
       value = int(value)
     return datastore.Key.from_path(kind, value)

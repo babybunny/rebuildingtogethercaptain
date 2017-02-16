@@ -3,55 +3,56 @@ Tests for
 '''
 import unittest
 
-from room import forms 
+from room import forms
+
 
 class Test(unittest.TestCase):
 
-    def testDateField(self):
-        self.assertTrue(forms.DateField('label'))
-        
-    def testCaptainForm(self):
-        self.assertTrue(forms.CaptainForm())
+  def testDateField(self):
+    self.assertTrue(forms.DateField('label'))
 
-    def testCaptainContactForm(self):
-        self.assertTrue(forms.CaptainContactForm())
+  def testCaptainForm(self):
+    self.assertTrue(forms.CaptainForm())
 
-    def testNewSiteForm(self):
-        self.assertTrue(forms.NewSiteForm())
+  def testCaptainContactForm(self):
+    self.assertTrue(forms.CaptainContactForm())
 
-    def testCaptainSiteForm(self):
-        self.assertTrue(forms.CaptainSiteForm())
+  def testNewSiteForm(self):
+    self.assertTrue(forms.NewSiteForm())
 
-    def testSiteCaptainSiteForm(self):
-        self.assertTrue(forms.SiteCaptainSiteForm())
+  def testCaptainSiteForm(self):
+    self.assertTrue(forms.CaptainSiteForm())
 
-    def testStaffForm(self):
-        self.assertTrue(forms.StaffForm())
+  def testSiteCaptainSiteForm(self):
+    self.assertTrue(forms.SiteCaptainSiteForm())
 
-    def testSupplierForm(self):
-        self.assertTrue(forms.SupplierForm())
+  def testStaffForm(self):
+    self.assertTrue(forms.StaffForm())
 
-    def testOrderSheetForm(self):
-        self.assertTrue(forms.OrderSheetForm())
+  def testSupplierForm(self):
+    self.assertTrue(forms.SupplierForm())
 
-    def testItemForm(self):
-        self.assertTrue(forms.ItemForm())
+  def testOrderSheetForm(self):
+    self.assertTrue(forms.OrderSheetForm())
 
-    def testOrderForm(self):
-        self.assertTrue(forms.OrderForm())
+  def testItemForm(self):
+    self.assertTrue(forms.ItemForm())
 
-    def testNewOrderForm(self):
-        self.assertTrue(forms.NewOrderForm())
+  def testOrderForm(self):
+    self.assertTrue(forms.OrderForm())
 
-    def testCaptainOrderForm(self):
-        self.assertTrue(forms.CaptainOrderForm())
+  def testNewOrderForm(self):
+    self.assertTrue(forms.NewOrderForm())
 
-    def testInventoryItemForm(self):
-        self.assertTrue(forms.InventoryItemForm())
+  def testCaptainOrderForm(self):
+    self.assertTrue(forms.CaptainOrderForm())
 
-    def testCheckRequestForm(self):
-        self.assertTrue(forms.CheckRequestForm())
+  def testInventoryItemForm(self):
+    self.assertTrue(forms.InventoryItemForm())
+
+  def testCheckRequestForm(self):
+    self.assertTrue(forms.CheckRequestForm())
 
 
 if __name__ == "__main__":
-    unittest.main()
+  unittest.main()

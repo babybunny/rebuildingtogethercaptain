@@ -9,6 +9,7 @@ from django import http
 from django import shortcuts
 from room import staff
 
+
 def Welcome(request):
   user = users.GetCurrentUser()
   home = staff.FindHome(user, '/')
@@ -20,8 +21,3 @@ def Welcome(request):
   params['user'] = user
   params['logout_url'] = users.create_logout_url('/')
   return shortcuts.render_to_response('welcome.html', params)
-
-
-  
-    
-

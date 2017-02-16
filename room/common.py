@@ -6,57 +6,60 @@ from google.appengine.api import mail
 from google.appengine.api import users
 import django
 from django import shortcuts
-from django.core import urlresolvers 
+from django.core import urlresolvers
 from django.template import loader
 import models
 
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
-NRD = '04/25/2015'
+NRD = '04/29/2017'
 
-DEFAULT_CAPTAIN_PROGRAM = '2015 NRD'
+DEFAULT_CAPTAIN_PROGRAM = '2017 NRD'
 
 PROGRAMS = [
-  '2016 NRD', 
-  '2016 Misc',
-  '2016 Safe',
-  '2016 Energy',
-  '2016 Teambuild',
-  '2016 Youth',
-  '2015 NRD', 
-  '2015 Misc',
-  '2015 Safe',
-  '2015 Energy',
-  '2015 Teambuild',
-  '2015 Youth',
-  '2014 NRD', 
-  '2014 Misc',
-  '2014 Safe',
-  '2014 Energy',
-  '2014 Teambuild',
-  '2014 Youth',
-  '2013 NRD', 
-  '2013 Misc',
-  '2013 Safe',
-  '2013 Energy',
-  '2013 Teambuild',
-  '2013 Youth',
-  '2012 NRD', 
-  '2012 Misc',
-  '2012 Safe',
-  '2012 Energy',
-  '2012 Teambuild',
-  '2012 Youth',
-  '2011 NRD', 
-  '2011 Misc',
-  '2011 Safe',
-  '2011 Energy',
-  '2011 Teambuild',
-  '2011 Youth',
-  '2011 Test',
-  '2010 NRD',
-  ]
+    '2017 NRD',
+    '2017 Safe',
+    '2017 Teambuild',
+    '2016 NRD',
+    '2016 Misc',
+    '2016 Safe',
+    '2016 Energy',
+    '2016 Teambuild',
+    '2016 Youth',
+    '2015 NRD',
+    '2015 Misc',
+    '2015 Safe',
+    '2015 Energy',
+    '2015 Teambuild',
+    '2015 Youth',
+    '2014 NRD',
+    '2014 Misc',
+    '2014 Safe',
+    '2014 Energy',
+    '2014 Teambuild',
+    '2014 Youth',
+    '2013 NRD',
+    '2013 Misc',
+    '2013 Safe',
+    '2013 Energy',
+    '2013 Teambuild',
+    '2013 Youth',
+    '2012 NRD',
+    '2012 Misc',
+    '2012 Safe',
+    '2012 Energy',
+    '2012 Teambuild',
+    '2012 Youth',
+    '2011 NRD',
+    '2011 Misc',
+    '2011 Safe',
+    '2011 Energy',
+    '2011 Teambuild',
+    '2011 Youth',
+    '2011 Test',
+    '2010 NRD',
+]
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
@@ -73,13 +76,14 @@ EMAIL_LOG_LINK = ('https://groups.google.com/forum/#!forum/'
 # Placeholder Captain record which represents RTP Staff.
 STAFF_CAPTAIN_EMAIL = 'rebuildingtogether.rooms@gmail.com'
 
+
 def NotifyAdminViaMail(subject, template, template_dict):
   base_uri = GetBaseUri()
   td = template_dict.copy()
   is_dev = IsDev()
   td['is_dev'] = is_dev
   td['base_uri'] = base_uri
-  html = loader.render_to_string(template, td)                                 
+  html = loader.render_to_string(template, td)
   text = pprint.pformat(td)
   message = mail.EmailMessage()
   # The "<Name> email" format of sender doesn't work with the dev server
@@ -106,7 +110,7 @@ def SendMail(to, sender, cc, subject, text, template, template_dict):
   is_dev = IsDev()
   td['is_dev'] = is_dev
   td['base_uri'] = base_uri
-  html = loader.render_to_string(template, td)                                 
+  html = loader.render_to_string(template, td)
   message = mail.EmailMessage()
   # The "<Name> email" format of sender doesn't work with the dev server
   # because it shells out to a sendmail command with the arguments unquoted.
@@ -133,9 +137,9 @@ def IsDev():
 
 
 def GetBaseUri():
-    if IsDev():
-      return 'http://localhost:%s/' % os.environ.get('SERVER_PORT')
-    return 'http://%s.appspot.com/' % os.environ.get('APPLICATION_ID')
+  if IsDev():
+    return 'http://localhost:%s/' % os.environ.get('SERVER_PORT')
+  return 'http://%s.appspot.com/' % os.environ.get('APPLICATION_ID')
 
 
 def GetUser(request, user=None):
@@ -143,7 +147,7 @@ def GetUser(request, user=None):
     user = users.GetCurrentUser()
   captain = models.Captain.all().filter('email = ', user.email().lower()).get()
   user.captain = captain
-  staff = models.Staff.all().filter('email = ', user.email().lower()).get()  
+  staff = models.Staff.all().filter('email = ', user.email().lower()).get()
   user.staff = staff
   if user.staff:
     user.programs = PROGRAMS
@@ -191,4 +195,3 @@ def Respond(request, template_name, params=None):
   if not template_name.endswith('.html'):
     template_name += '.html'
   return shortcuts.render_to_response(template_name, params)
-

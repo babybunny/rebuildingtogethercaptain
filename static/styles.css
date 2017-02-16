@@ -58,6 +58,15 @@ body {
 .sortorder {
   display: None;
 }
+.expense h3,h4 {
+    display: inline-block;
+}
+.expense h3.total,h4.total {
+    float: right;
+}
+.expense h3.total,h4.total .pad {
+    margin-left: 30px;
+}
 span.jeditable-order-item-name {
   display: inline-block;
 }
@@ -68,7 +77,7 @@ a.edit {
   white-space: nowrap;
 }
 div.notes {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 div.panel {
   padding-top: 0;
@@ -166,7 +175,7 @@ table.printable {
   border-spacing: 5px;
 }
 table.printable td {
-  border-top: 1px solid black;
+  border: 1px solid black;
 }
 table.site tbody { 
   margin-right: 10px;
