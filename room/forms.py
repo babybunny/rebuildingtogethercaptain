@@ -86,8 +86,7 @@ class CaptainSiteForm(djangoforms.ModelForm):
   work_end = DateField('Work End Date')
 
   class Meta:
-    # TODO: is this the wrong model!??  should be NewSite?
-    model = models.Site
+    model = models.NewSite
     exclude = ['number', 'name', 'applicant', 'sponsors',
                'postal_address', 'search_prefixes']
 
@@ -159,17 +158,6 @@ class CaptainOrderForm(djangoforms.ModelForm):
                'modified', 'order_sheet',
                'sub_total', 'sales_tax', 'grand_total', 'state',
                'captain', 'site', 'program']
-
-
-class NewOrderForm(djangoforms.ModelForm):
-  site = djangoforms.ModelChoiceField(
-      models.Site, widget=forms.HiddenInput)
-  order_sheet = djangoforms.ModelChoiceField(
-      models.OrderSheet, query=models.OrderSheet.all().order('name'))
-
-  class Meta:
-    model = models.Order
-    fields = ['site', 'order_sheet', 'program']
 
 
 class DeliveryForm(djangoforms.ModelForm):

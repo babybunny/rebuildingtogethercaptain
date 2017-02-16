@@ -31,7 +31,6 @@ PICTURE_HEIGHT, PICTURE_WIDTH = 600, 400
 THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH = 50, 50
 MAP_WIDTH = 300
 MAP_HEIGHT = 200
-START_NEW_ORDER_SUBMIT = 'Start New Order'
 POSTED_ID_PREFIX = 'export_'
 EXPORT_CSV = 'Export CSV'
 
@@ -115,7 +114,6 @@ def CaptainHome(request, captain_id=None):
     site = sitecaptain.site
     if site.program != common.DEFAULT_CAPTAIN_PROGRAM:
       continue
-    site.new_order_form = forms.NewOrderForm(initial=dict(site=site.key()))
     sites.append(site)
   AnnotateSitesWithEditability(sites, captain, staff)
   captain_form = forms.CaptainContactForm(data=request.POST or None,
@@ -129,7 +127,6 @@ def CaptainHome(request, captain_id=None):
                          'Save changes to personal info',
                          'map_width': MAP_WIDTH, 'map_height': MAP_HEIGHT,
                          'site_list_detail': True,
-                         'start_new_order_submit': START_NEW_ORDER_SUBMIT,
                          })
 
 
@@ -197,27 +194,22 @@ def SiteListByNumber(request, site_number):
   return _SiteListInternal(request, site)
 
 
-def SiteView(request, site_id=None, new_order_form=None):
+def SiteView(request, site_id=None):
   site = None
   if site_id is not None:
     site = models.NewSite.get_by_id(int(site_id))
-  return _SiteListInternal(request, site, new_order_form)
+  return _SiteListInternal(request, site)
 
 
-def _SiteListInternal(request, site=None, new_order_form=None):
+def _SiteListInternal(request, site=None):
   """Request / -- show all canned orders."""
   params = dict(map_width=MAP_WIDTH, map_height=MAP_HEIGHT)
   user, _, _ = common.GetUser(request)
   d = {'user': user}
   if site is not None:
     template = 'site_list_one'
-    if new_order_form is None:
-      site.new_order_form = forms.NewOrderForm(initial=dict(site=site.key()))
-    else:
-      site.new_order_form = new_order_form
     entries = [site]
     d['site_list_detail'] = True
-    d['start_new_order_submit'] = START_NEW_ORDER_SUBMIT
   else:
     # TODO: can we remove this view?
     template = 'site_list_all'
@@ -260,6 +252,7 @@ def SiteEdit(request, site_id=None):
     form_class = forms.NewSiteForm
   elif (captain and site.sitecaptain_set
         and captain in [sc.captain for sc in site.sitecaptain_set]):
+    logging.info("issue191 captain in siteedit")
     form_class = forms.CaptainSiteForm
   else:
     template_dict = {'what_you_are_doing': 'Not permitted to edit this site.'}

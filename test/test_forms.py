@@ -41,9 +41,6 @@ class Test(unittest.TestCase):
   def testOrderForm(self):
     self.assertTrue(forms.OrderForm())
 
-  def testNewOrderForm(self):
-    self.assertTrue(forms.NewOrderForm())
-
   def testCaptainOrderForm(self):
     self.assertTrue(forms.CaptainOrderForm())
 
