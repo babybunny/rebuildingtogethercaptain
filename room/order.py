@@ -391,7 +391,8 @@ def _OrderPut(request, user, order):
                    'submit_button_text': submit_button_text,
                    }
 
-  if not request.POST or request.POST['submit'] == views.START_NEW_ORDER_SUBMIT:
+  if not request.POST:
+    logging.error("issue191 no post in _OrderPut")
     return None, template_dict
 
   errors = form.errors
