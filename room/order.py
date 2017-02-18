@@ -392,7 +392,7 @@ def _OrderPut(request, user, order):
                    }
 
   if not request.POST:
-    logging.error("issue191 no post in _OrderPut")
+    logging.error("issue191log no post in _OrderPut")
     return None, template_dict
 
   errors = form.errors

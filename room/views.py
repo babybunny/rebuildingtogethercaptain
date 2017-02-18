@@ -252,7 +252,7 @@ def SiteEdit(request, site_id=None):
     form_class = forms.NewSiteForm
   elif (captain and site.sitecaptain_set
         and captain in [sc.captain for sc in site.sitecaptain_set]):
-    logging.info("issue191 captain in siteedit")
+    logging.info("issue191log captain in siteedit")
     form_class = forms.CaptainSiteForm
   else:
     template_dict = {'what_you_are_doing': 'Not permitted to edit this site.'}
