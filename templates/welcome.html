@@ -4,6 +4,18 @@
   <head>
     <title>Rebuilding Together, Peninsula - ROOM System</title>
     <link type="text/css" rel="stylesheet" href="/static/styles.css">
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="1093814363166-dp6d5juof62nf0siaja08fabqsh8ber3.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script>
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+}
+    </script>
   </head>
   <body>
     <table>
@@ -25,8 +37,10 @@
       If you have a ROOMS account, log in now.
       <br>
       <br>
+      <div class="g-signin2" data-onsuccess="onSignIn"></div>
       <br>
-      <a id="login_button" href="{% url room.staff.GoHome %}">LOGIN TO ROOMS</a>
+      <!-- TODO make it go to staff or captain home -->
+      <a id="login_button" href="/">LOGIN TO ROOMS</a>
       <br>
       <br>
       {% if user %}
@@ -51,7 +65,7 @@
     </p>
 
     <h3>New Captains - Getting Started</h3>
-    {% include "tutorials.html" %}
+    <!-- TODO include "tutorials.html"  -->
   </body>
 </html>
 

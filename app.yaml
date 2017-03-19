@@ -1,6 +1,7 @@
 application: rebuildingtogethercaptain-hrd
 version: endpoints1
 runtime: python27
+threadsafe: no
 api_version: 1
 
 handlers:
@@ -22,7 +23,15 @@ handlers:
 - url: /room/partials
   static_dir: room/partials
 
+- url: /*
+  script: main.app
+
 builtins:
 - remote_api: on
 - deferred: on
 
+libraries:
+- name: webapp2
+  version: "2.5.2"
+- name: jinja2
+  version: "2.6"
