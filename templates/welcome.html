@@ -39,10 +39,6 @@ function onSignIn(googleUser) {
       <br>
       <div class="g-signin2" data-onsuccess="onSignIn"></div>
       <br>
-      <!-- TODO make it go to staff or captain home -->
-      <a id="login_button" href="/">LOGIN TO ROOMS</a>
-      <br>
-      <br>
       {% if user %}
       <br>You're logged in as <b>{{ user.email }}</b> 
       <br>but this email is not 
@@ -65,7 +61,7 @@ function onSignIn(googleUser) {
     </p>
 
     <h3>New Captains - Getting Started</h3>
-    <!-- TODO include "tutorials.html"  -->
+    {% include "templates/tutorials.html" %}
   </body>
 </html>
 
