@@ -4,11 +4,7 @@ import os
 import pprint
 from google.appengine.api import mail
 from google.appengine.api import users
-import django
-from django import shortcuts
-from django.core import urlresolvers
-from django.template import loader
-import models
+import ndb_models
 
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
@@ -83,6 +79,8 @@ def NotifyAdminViaMail(subject, template, template_dict):
   is_dev = IsDev()
   td['is_dev'] = is_dev
   td['base_uri'] = base_uri
+
+  # issue252.  this will crash until that's resolved.
   html = loader.render_to_string(template, td)
   text = pprint.pformat(td)
   message = mail.EmailMessage()
@@ -145,9 +143,10 @@ def GetBaseUri():
 def GetUser(request, user=None):
   if user is None:
     user = users.GetCurrentUser()
-  captain = models.Captain.all().filter('email = ', user.email().lower()).get()
+  # issue253
+  captain = ndb_models.Captain.all().filter('email = ', user.email().lower()).get()
   user.captain = captain
-  staff = models.Staff.all().filter('email = ', user.email().lower()).get()
+  staff = ndb_models.Staff.all().filter('email = ', user.email().lower()).get()
   user.staff = staff
   if user.staff:
     user.programs = PROGRAMS
@@ -161,37 +160,3 @@ def GetUser(request, user=None):
 def GetStaffCaptain():
   """Returns a Captain record which represents the RTP Staff."""
   return models.Captain.all().filter('email = ', STAFF_CAPTAIN_EMAIL).get()
-
-
-def Respond(request, template_name, params=None):
-  """Helper to render a response, passing standard stuff to the response.
-
-  Args:
-    request: The request object.
-    template_name: The template name; '.html' is appended automatically.
-    params: A dict giving the template parameters; modified in-place.
-
-  Returns:
-    Whatever render_to_response(template_name, params) returns.
-
-  Raises:
-    Whatever render_to_response(template_name, params) raises.
-  """
-  user, _, _ = GetUser(request)
-  if params is None:
-    params = {}
-  if user:
-    params['user'] = user
-    params['sign_out'] = users.CreateLogoutURL('/')
-    params['show_admin_link'] = (users.IsCurrentUserAdmin() and
-                                 'Dev' in os.getenv('SERVER_SOFTWARE'))
-    params['show_dashboard_link'] = (users.IsCurrentUserAdmin() and
-                                     'Dev' not in os.getenv('SERVER_SOFTWARE'))
-  else:
-    params['sign_in'] = users.CreateLoginURL(request.path)
-  params['help_contact'] = HELP_CONTACT
-  params['help_phone'] = HELP_PHONE
-  params['help_person'] = HELP_PERSON
-  if not template_name.endswith('.html'):
-    template_name += '.html'
-  return shortcuts.render_to_response(template_name, params)

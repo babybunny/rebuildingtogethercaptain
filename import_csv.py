@@ -18,9 +18,7 @@ dev~rebuildingtogethercaptain> import_csv.import_captains(input_csv="../2012_ROO
 
 import csv
 import logging
-import main  # to initialize Django
 from room import models
-from google.appengine.ext import db
 
 ##############
 # update me! #

@@ -1,6 +1,6 @@
 application: rebuildingtogethercaptain-hrd
 version: endpoints1
-runtime: python
+runtime: python27
 api_version: 1
 
 handlers:
@@ -15,10 +15,6 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
 
-- url: /room/admin/.*
-  script: main.py
-  login: admin
-
 - url: /room/rest/.*
   script: room/rest_main.py
   login: required
@@ -26,19 +22,7 @@ handlers:
 - url: /room/partials
   static_dir: room/partials
 
-- url: /room/.*
-  script: main.py
-  login: required
-
-- url: /_ah/warmup
-  script: main.py
-
-- url: /.*
-  script: main.py
-
 builtins:
 - remote_api: on
 - deferred: on
 
-inbound_services:
-- warmup

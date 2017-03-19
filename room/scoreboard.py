@@ -4,9 +4,6 @@ import datetime
 import logging
 from google.appengine.api import users
 
-import django
-from django.core import urlresolvers
-import models
 import common
 import order
 import views
