@@ -12,6 +12,9 @@ handlers:
 - url: /node_modules
   static_dir: node_modules
 
+- url: /js
+  static_dir: app/js
+
 - url: /static
   static_dir: static
 
