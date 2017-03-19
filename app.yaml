@@ -6,6 +6,12 @@ threadsafe: no
 api_version: 1
 
 handlers:
+- url: /js/lib
+  static_dir: node_modules/requirejs
+
+- url: /node_modules
+  static_dir: node_modules
+
 - url: /static
   static_dir: static
 
