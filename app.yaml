@@ -1,4 +1,5 @@
 application: rebuildingtogethercaptain-hrd
+module: website
 version: endpoints1
 runtime: python27
 threadsafe: no
