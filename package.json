@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "requirejs": "latest",
+    "requirejs-text": "latest",
     "underscore": "latest",
     "backbone": "^1.3.3",
     "jquery": "latest",

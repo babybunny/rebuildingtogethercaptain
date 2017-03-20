@@ -1,7 +1,7 @@
 requirejs.config({
   baseUrl: 'js/lib',
   paths: {
-    app: '../app'
+    app: '../app',
   },
   shim: {
     'underscore-min': {
@@ -11,7 +11,7 @@ requirejs.config({
         deps: ['underscore-min'],
       exports: 'Backbone'
     },
-    'rooms': {
+    'app/rooms': {
       deps: ['underscore-min', 'backbone-min']
     }
   }

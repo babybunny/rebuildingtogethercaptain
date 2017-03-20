@@ -7,7 +7,7 @@
     <meta name="google-signin-scope" content="profile email">
     <meta name="google-signin-client_id" content="1093814363166-dp6d5juof62nf0siaja08fabqsh8ber3.apps.googleusercontent.com">
     <script type="text/javascript" src="js/lib/require.js"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+<!--    <script src="https://apis.google.com/js/platform.js" async defer></script>  -->
     <script>
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
@@ -37,9 +37,10 @@ function onSignIn(googleUser) {
     <div id="login_div">
       If you have a ROOMS account, log in now.
       <br>
-      <br>
-      <div class="g-signin2" data-onsuccess="onSignIn"></div>
-      <br>
+      <div id="signed-in-container">
+        <p>checking whether you're sighed in ...</p>
+      </div>
+
       {% if user %}
       <br>You're logged in as <b>{{ user.email }}</b> 
       <br>but this email is not 
@@ -62,7 +63,7 @@ function onSignIn(googleUser) {
     </p>
 
     <h3>New Captains - Getting Started</h3>
-    {% include "templates/tutorials.html" %}
+    {# include "templates/tutorials.html" #}
 
   <script type="text/javascript" src="js/app/main.js"></script>
   </body>
