@@ -10,9 +10,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-exec');
   
   grunt.registerTask('copy-require', function() {
-          grunt.file.mkdir('build/js/lib');
-          grunt.file.copy('node_modules/requirejs/require.js', 'build/js/lib/require.js');
-      });
+    grunt.file.mkdir('app/js/lib');
+    grunt.file.copy('node_modules/requirejs/require.js', 'build/js/lib/require.js');
+    grunt.file.copy('node_modules/backbone/backbone-min.js', 'build/js/lib/backbone-min.js');
+    grunt.file.copy('node_modules/underscore/underscore-min.js', 'build/js/lib/underscore-min.js');
+    grunt.file.copy('node_modules/jquery/dist/jquery.min.js', 'build/js/lib/jquery.js');
+  });
   
   grunt.registerTask('default', ['copy-require']);
 };

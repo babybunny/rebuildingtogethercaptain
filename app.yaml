@@ -7,12 +7,12 @@ api_version: 1
 
 handlers:
 - url: /js/lib
-  static_dir: node_modules/requirejs
+  static_dir: build/js/lib
 
 - url: /node_modules
   static_dir: node_modules
 
-- url: /js
+- url: /js/app
   static_dir: app/js
 
 - url: /static

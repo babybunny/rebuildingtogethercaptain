@@ -1,10 +1,23 @@
 requirejs.config({
-  baseUrl: 'js',
-  paths: {},
-  shim: {}
+  baseUrl: 'js/lib',
+  paths: {
+    app: '../app'
+  },
+  shim: {
+    'underscore-min': {
+      exports: '_'
+    },
+    'backbone-min': {
+        deps: ['underscore-min'],
+      exports: 'Backbone'
+    },
+    'rooms': {
+      deps: ['underscore-min', 'backbone-min']
+    }
+  }
 });
 
-require(['rooms'],
+require(['app/rooms'],
   function(Rooms) {
     window.rooms = new Rooms();
   }
