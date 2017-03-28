@@ -17,6 +17,9 @@ class StaffPosition(messages.Message):
   position_name = messages.StringField(2)
   hourly_rate = messages.FloatField(3)
   
+class User(messages.Message):
+  name = messages.StringField(1)
+  email = messages.StringField(2)
   
 class Program(messages.Message):
   year = messages.IntegerField(1)
