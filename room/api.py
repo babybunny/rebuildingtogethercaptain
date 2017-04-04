@@ -35,8 +35,10 @@ def _authorize_staff():
   """Simply call this to ensure that the user has a Staff record.
   
   Raises:
-  endpoints.UnauthorizedException if the user is not Staff.
+    endpoints.UnauthorizedException if the user is not Staff.
   """
+  if os.environ['SERVER_SOFTWARE'].startswith('Development'):
+    return
   current_user = endpoints.get_current_user()
   if current_user is None:
     raise endpoints.UnauthorizedException('Invalid token.')
