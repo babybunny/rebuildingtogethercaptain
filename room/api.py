@@ -11,7 +11,6 @@ from google.appengine.ext import ndb
 class GenericResponse(messages.Message):
   message = messages.StringField(1)
   
-  
 class StaffPosition(messages.Message):
   key = messages.IntegerField(1)
   position_name = messages.StringField(2)

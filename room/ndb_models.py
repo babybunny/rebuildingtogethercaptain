@@ -6,6 +6,18 @@ endpoints.
 """
 from google.appengine.ext import ndb
 
+
+class Jurisdiction(ndb.Model):
+  """A jurisdiction name for reporting purposes."""
+  name = ndb.StringProperty()
+
+  def __unicode__(self):
+    return self.name
+
+  def __str__(self):
+    return self.name
+
+
 # This needs an edit as it's diverged from the model in the master branch.
 class StaffPosition(ndb.Model):
     """Staff positions that have hourly billing."""
