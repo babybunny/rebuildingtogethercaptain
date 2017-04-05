@@ -19,6 +19,8 @@ class StaffPosition(messages.Message):
 class User(messages.Message):
   name = messages.StringField(1)
   email = messages.StringField(2)
+  staff_key = messages.StringField(3)
+  captain_key = messages.StringField(4)
   
 class Program(messages.Message):
   year = messages.IntegerField(1)
@@ -89,5 +91,20 @@ class RoomApi(remote.Service):
     for p in ndb_models.Program.query():
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
+
+  @endpoints.method(message_types.VoidMessage,
+                    User,
+                    http_method='GET',
+                    name='current_user.get')
+  def current_user_get(self, request):
+    res = User()
+    u = endpoints.get_current_user()
+    if u:
+      res.email = u.email()
+      for s in ndb_models.Staff.query(ndb_models.Staff.email == res.email):
+        res.staff_key = s.key.urlsafe()
+      for s in ndb_models.Captain.query(ndb_models.Captain.email == res.email):
+        res.captain_key = s.key.urlsafe()
+    return res
 
 application = endpoints.api_server([RoomApi])
