@@ -133,6 +133,8 @@ class NewSite(BaseModel):
   search_prefixes = db.StringListProperty()
   photo_link = db.StringProperty()
   photo_link.help_text = "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
+  volunteer_signup = db.StringProperty()
+  volunteer_signup.help_text = "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
 
   class ActiveItems(object):
     """Access user-input records with state and modified fields."""
@@ -741,7 +743,7 @@ class InventoryItem(BaseModel):
   modified = db.DateTimeProperty(auto_now=True)
 
 
-def _GetRateFromArray(default, array, activity_date):    
+def _GetRateFromArray(default, array, activity_date):
   if not array:
     return default
   activity_date_str = activity_date.isoformat()
@@ -751,7 +753,7 @@ def _GetRateFromArray(default, array, activity_date):
       break
     rate = float(dr[1])
   return rate
-    
+
 
 class StaffPosition(BaseModel):
   """Staff positions that have hourly billing."""
@@ -763,10 +765,10 @@ class StaffPosition(BaseModel):
   mileage_rate = db.FloatProperty(default=0.0)
 
   # Space-separated pairs of date and rate strings, to support
-  # rates that change over time. The scheme here is to list the effective date of rate changes, 
+  # rates that change over time. The scheme here is to list the effective date of rate changes,
   # along with the new rate.
 
-  # These are entered in the datastore editor as 
+  # These are entered in the datastore editor as
   # type=Array and a value formatted like
   # {
   #   "values": [
@@ -933,7 +935,7 @@ class StaffTime(BaseModel):
 
   def HoursTotal(self):
     return self.hours * self.position.GetHourlyRate(self.activity_date)
-  
+
   def MileageTotal(self):
     return self.miles * self.position.GetMileageRate(self.activity_date)
 
