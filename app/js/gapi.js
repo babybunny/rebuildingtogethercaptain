@@ -30,8 +30,8 @@ define(['app/config', 'backbone-min'], function(config, backbone) {
         googleAuth.currentUser.listen(updateUserDetails);
 
         // Handle the initial sign-in state.
-        updateSigninStatus(googleAuth.isSignedIn.get());
         updateUserDetails(googleAuth.currentUser.get());
+        updateSigninStatus(googleAuth.isSignedIn.get());
       });
     }
 
