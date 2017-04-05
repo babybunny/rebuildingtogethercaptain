@@ -39,7 +39,11 @@ define(['app/config', 'backbone-min'], function(config, backbone) {
       self.loginState.set('state', isSignedIn);
     }   
     function updateUserDetails(googleUser) {
-      self.loginState.set('email', googleUser.getBasicProfile().getEmail());
+        if (googleUser.isSignedIn()) {
+            self.loginState.set('email', googleUser.getBasicProfile().getEmail());
+        } else {
+            self.loginState.set('email', 'not signed in');
+        }
     }   
 
     handleClientLoad();

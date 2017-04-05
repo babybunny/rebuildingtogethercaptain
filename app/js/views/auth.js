@@ -17,7 +17,7 @@ define(['text!app/templates/auth.html'], function(template) {
                     var state = this.app.apiManager.loginState.get('state');
                     console.log('rendering auth with state: ' + state);
                     this.$el.html(this.template(
-                      {email: this.app.apiManager.loginState.get('email')}));
+                        {email: this.app.apiManager.loginState.get('email')}));
                     if (state) {
                         this.$('#signin-button').hide();
                         this.$('#signout-button').show();
