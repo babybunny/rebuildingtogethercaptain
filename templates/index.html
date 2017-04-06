@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Rebuilding Together, Peninsula - ROOM System</title>
+    <link type="text/css" rel="stylesheet" href="/static/styles.css">
+    <script type="text/javascript" async>
+      
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-31770226-1']);
+      _gaq.push(['_trackPageview']);
+      
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <script type="text/javascript" src="js/lib/require.js"></script>
+  </head>
+  <body>
+    <span class="breadcrumb">
+      <b>ROOM System</b>
+      <span class="program" id="selected-program">[program]</span>
+      <span id="take-me-home">[link to home]</span>
+    </span>
+    <span class="userinfo">
+      <span id="signed-in-container">
+        <p>checking whether you're signed in ...</p>
+      </span>
+      {%if show_admin_link%}
+      | <a href="/_ah/admin">Admin</a>
+      {%endif%}
+      | <a target="_new" href="/help">Help</a>
+      | <a target="_new" href="https://github.com/babybunny/rebuildingtogethercaptain/issues/new">Feedback</a>
+    </span>
+    <hr>
+    <table>
+      <tr>
+        <td>
+            <img src="/static/rtplogosm.gif" alt="RTP logo" 
+                        width="208" height="126">
+            </td>
+        <td class="about_this_page"></td>
+      </tr>
+    </table>
+    <div id="main-content">Loading ...</div>
+    <div class="footer">
+      © 2011 Rebuilding Together Peninsula
+    </div>
+    <script type="text/javascript" src="js/app/main.js"></script>
+  </body>
+</html>

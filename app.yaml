@@ -31,12 +31,12 @@ handlers:
 - url: /room/partials
   static_dir: room/partials
 
-- url: /*
-  script: main.app
-
 # Endpoints handler
 - url: /_ah/spi/.*
   script: room.api.application
+
+- url: /.*
+  script: main.app
 
 builtins:
 - remote_api: on

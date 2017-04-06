@@ -343,3 +343,7 @@ body .ui-widget {
   font-family: inherit;
   font-size: inherit;
 }
+#main-content {
+  width: 100%;
+  height: 600px;
+}

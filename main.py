@@ -11,10 +11,9 @@ class MainPage(webapp2.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
 
     def get(self):
-        """Renders the welcome page or redirects to correct page if user is logged in and known."""
-        user = users.get_current_user()
-        template_values = {'user': user}
-        template = jinja_environment.get_template('templates/welcome.html')
+        """Renders the main page."""
+        template_values = {'show_admin_link': users.IsCurrentUserAdmin()}
+        template = jinja_environment.get_template('templates/index.html')
         self.response.out.write(template.render(template_values))
 
 jinja_environment = jinja2.Environment(
