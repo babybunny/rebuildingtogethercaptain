@@ -1,4 +1,4 @@
-define(['text!app/templates/auth.html'], function(template) {
+define(['app/config', 'text!app/templates/auth.html'], function(unused_config, template) {
         var AuthView = Backbone.View.extend({
                 el: '#signed-in-container',
                 template: _.template(template),
@@ -18,7 +18,6 @@ define(['text!app/templates/auth.html'], function(template) {
                     console.log('rendering auth with state: ' + state + ' and email: '
                                 + this.app.apiManager.loginState.get('email'));
                     var t = this.template({email: this.app.apiManager.loginState.get('email')});
-                    console.log(t);
                     this.$el.html(t);
                     if (state) {
                         this.$('#signin-button').hide();

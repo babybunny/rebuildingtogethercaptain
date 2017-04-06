@@ -324,7 +324,7 @@ table.order_form_header span {
   padding: 15px;
   margin: 20px;  
 }
-#login_button {
+.login_button {
   background-color: #eee;
   color: #333;
   font: 30px Arial,sans-serif;
@@ -335,7 +335,7 @@ table.order_form_header span {
   border-bottom: 3px solid #333333;
   border-left: 3px solid #CCCCCC;
 }
-#login_button:hover {
+.login_button:hover {
   background-color: #ddd;
 }
 /* override jQuery theme defaults */
