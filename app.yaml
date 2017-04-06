@@ -1,6 +1,4 @@
-application: rebuildingtogethercaptain-hrd
-module: website
-version: 1
+service: endpoints
 runtime: python27
 threadsafe: no
 api_version: 1

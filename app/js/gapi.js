@@ -1,5 +1,6 @@
-define(['app/config', 'backbone-min'], function(config, backbone) {
+define(['app/config', 'backbone'], function(config, backbone) {
   var rooms;
+  var numApisToLoad = 2;  // the number of gapi.load or gapi.client.load calls below
   var LoginState = backbone.Model.extend();
 
   function ApiManager(_rooms) {
@@ -7,23 +8,16 @@ define(['app/config', 'backbone-min'], function(config, backbone) {
     this.loadGapi();
   }
 
-  _.extend(ApiManager.prototype, Backbone.Events);
+  _.extend(ApiManager.prototype, backbone.Events);
 
   ApiManager.prototype.loginState = new LoginState({state: 'unknown'});
 
   ApiManager.prototype.init = function() {
     var self = this;
 
-    // gapi.client.load('tasks', 'v1', function() { /* Loaded */ });
+    function loadedAuthedAndReady() {
+        console.log('all ready');
 
-    function handleClientLoad() {
-      gapi.client.setApiKey(config.apiKey);
-      gapi.load('client:auth2', initAuth);
-    }
-
-    function initAuth() {
-      gapi.client.init({ apiKey: config.apiKey, clientId: config.clientId, scope: config.scopes})
-      .then(function() {
         // Listen for sign-in state changes.
         googleAuth = gapi.auth2.getAuthInstance();
         googleAuth.isSignedIn.listen(updateSigninStatus);
@@ -32,9 +26,18 @@ define(['app/config', 'backbone-min'], function(config, backbone) {
         // Handle the initial sign-in state.
         updateUserDetails(googleAuth.currentUser.get());
         updateSigninStatus(googleAuth.isSignedIn.get());
-      });
+
+        self.trigger('ready');
     }
 
+    function apisLoaded() {
+      if (--numApisToLoad == 0) {
+          console.log('loaded all APIs');
+          gapi.client.init({ apiKey: config.apiKey, clientId: config.clientId, scope: config.scopes})
+          .then(loadedAuthedAndReady);
+      }
+    }
+    
     function updateSigninStatus(isSignedIn) {
       self.loginState.set('state', isSignedIn);
     }   
@@ -46,7 +49,9 @@ define(['app/config', 'backbone-min'], function(config, backbone) {
         }
     }   
 
-    handleClientLoad();
+    gapi.client.load('oauth2', 'v2', apisLoaded);
+    gapi.client.load('roomApi', 'v1', apisLoaded, 
+                     window.location + '_ah/api')
   };
 
   ApiManager.prototype.handleSignin = function() {
@@ -80,8 +85,11 @@ define(['app/config', 'backbone-min'], function(config, backbone) {
     });
   };
 
+  // Override sync with a custom method that works with gapi and our roomApi
   Backbone.sync = function(method, model, options) {
     options || (options = {});
+
+    console.log('sync: ' + method + ' ' + model.url);
 
     switch (method) {
       case 'create':
@@ -94,8 +102,22 @@ define(['app/config', 'backbone-min'], function(config, backbone) {
       break;
 
       case 'read':
+          var request = gapi.client.roomApi[model.url].list(options.data);
+          backbone.gapiRequest(request, method, model, options);
       break;
     }
+  };
+
+  Backbone.gapiRequest = function(request, method, model, options) {
+      var result;
+      request.execute(function(res) {
+              if (res.error) {
+                  if (options.error) options.error(res);
+              } else if (options.success) {
+                  result = res;
+                  options.success(result, true, request);
+              }
+          });
   };
 
   return ApiManager;

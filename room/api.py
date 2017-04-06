@@ -52,7 +52,9 @@ def _authorize_staff():
 
 @endpoints.api(name='roomApi',version='v1',
                auth_level=endpoints.AUTH_LEVEL.REQUIRED,
-               allowed_client_ids=[endpoints.API_EXPLORER_CLIENT_ID,],
+               allowed_client_ids=[
+    endpoints.API_EXPLORER_CLIENT_ID,
+    '1093814363166-dp6d5juof62nf0siaja08fabqsh8ber3.apps.googleusercontent.com'],
                description='Rebuilding Together Peninsula ROOM System API')
 class RoomApi(remote.Service):
 
@@ -95,7 +97,7 @@ class RoomApi(remote.Service):
   @endpoints.method(message_types.VoidMessage,
                     User,
                     http_method='GET',
-                    name='current_user.get')
+                    name='current_user.list')
   def current_user_get(self, request):
     res = User()
     u = endpoints.get_current_user()

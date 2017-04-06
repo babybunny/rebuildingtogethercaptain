@@ -11,8 +11,12 @@ requirejs.config({
         deps: ['underscore-min'],
       exports: 'Backbone'
     },
+    'backbone': {
+        deps: ['underscore-min'],
+      exports: 'Backbone'
+    },
     'app/rooms': {
-      deps: ['underscore-min', 'backbone-min']
+      deps: ['underscore-min', 'backbone']
     }
   }
 });
