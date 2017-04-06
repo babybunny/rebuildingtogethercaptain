@@ -133,8 +133,8 @@ class NewSite(BaseModel):
   search_prefixes = db.StringListProperty()
   photo_link = db.StringProperty()
   photo_link.help_text = "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
-  volunteer_signup = db.StringProperty()
-  volunteer_signup.help_text = "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
+  volunteer_signup_link = db.StringProperty()
+  volunteer_signup_link.help_text = "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
 
   class ActiveItems(object):
     """Access user-input records with state and modified fields."""
