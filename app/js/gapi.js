@@ -27,7 +27,7 @@ define(['app/config', 'backbone'], function(config, backbone) {
         updateUserDetails(googleAuth.currentUser.get());
         updateSigninStatus(googleAuth.isSignedIn.get());
 
-        self.trigger('ready');
+        self.trigger('signin');
     }
 
     function apisLoaded() {
@@ -44,6 +44,7 @@ define(['app/config', 'backbone'], function(config, backbone) {
     function updateUserDetails(googleUser) {
         if (googleUser.isSignedIn()) {
             self.loginState.set('email', googleUser.getBasicProfile().getEmail());
+            self.trigger('signin');
         } else {
             self.loginState.set('email', 'not signed in');
         }
@@ -59,7 +60,7 @@ define(['app/config', 'backbone'], function(config, backbone) {
   };
 
   ApiManager.prototype.handleSignout = function() {
-    gapi.auth2.getAuthInstance().signOut();
+    gapi.auth2.getAuthInstance().disconnect();
   };
 
   ApiManager.prototype.loadGapi = function() {
