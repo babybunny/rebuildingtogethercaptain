@@ -6,10 +6,10 @@ define(function() {
 
   User.prototype.home = function() {
       if(this.get('staff_key')) {
-          console.log('staff going home');
+          console.log('user is staff, going home');
           this.trigger('home:staff');
       } else {
-          console.log('nobody going home');
+          console.log('user is nobody, going home');
       }
   };
 

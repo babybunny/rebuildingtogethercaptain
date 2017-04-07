@@ -69,7 +69,7 @@ define(['app/config', 'backbone'], function(config, backbone) {
     // Don't load gapi if it's already present
     if (typeof gapi !== 'undefined') {
       console.log('gapi already loaded');
-      return this.init();
+      return self.init();
     }
 
     require(['https://apis.google.com/js/client.js'], function() {

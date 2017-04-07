@@ -22,15 +22,15 @@
     <span class="breadcrumb">
       <b>ROOM System</b>
       <span class="program" id="selected-program">[program]</span>
-      <span id="take-me-home">[link to home]</span>
+      <span id="take-me-home"><a href="/">Home</a></span>
     </span>
     <span class="userinfo">
       <span id="signed-in-container">
         <p>checking whether you're signed in ...</p>
       </span>
-      {%if show_admin_link%}
+      {% if show_admin_link %}
       | <a href="/_ah/admin">Admin</a>
-      {%endif%}
+      {% endif %}
       | <a target="_new" href="/help">Help</a>
       | <a target="_new" href="https://github.com/babybunny/rebuildingtogethercaptain/issues/new">Feedback</a>
     </span>

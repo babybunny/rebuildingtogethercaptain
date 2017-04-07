@@ -1,4 +1,4 @@
-define(['app/config', 'text!app/templates/auth.html'], function(unused_config, template) {
+define(['text!app/templates/auth.html'], function(template) {
         var AuthView = Backbone.View.extend({
                 el: '#signed-in-container',
                 template: _.template(template),

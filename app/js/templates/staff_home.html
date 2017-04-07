@@ -1,0 +1,310 @@
+<link
+   type="text/css"
+   href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css"
+   rel="Stylesheet" />
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+</script>
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+</script>
+<script type="text/javascript">
+
+function numKeys(o) {
+  var n = 0;
+  for (var k in o) {
+    if (o.hasOwnProperty(k)) {
+      n++;
+    }
+  }
+  return n;
+}
+
+function autocomplete(request, callback, url, input_selector, error_selector) {
+  $(error_selector).html('<i>Searching <%= program_selected %> for <b>'
+    + request.term + '</b></i>');
+  $.getJSON(url, {term: request.term},
+    function (data) {
+      var len = numKeys(data);
+      if (len == 0) {
+        $(error_selector).html(
+          '<i>Sorry, no results in <%= program_selected %> for <b>' +
+          request.term + '</b></i>');
+      } else {
+        $(error_selector).html(
+          '<i>Found ' + len + ' results for <strong>' +
+          request.term + '</strong></i>');
+      }
+      $(input_selector).data('data', data);
+      var autocomplete_data = [];
+      for (value in data) {
+        autocomplete_data.push(value);
+      }
+      autocomplete_data.sort();
+      callback(autocomplete_data);
+    }
+  );
+}
+
+function autocompleteCaptain(request, callback) {
+  return autocomplete(request, callback,
+                      '{% url room.views.CaptainAutocomplete %}',
+                      '#captain_term',
+                      '#captain_error');
+}
+
+function autocompleteSite(request, callback) {
+  return autocomplete(request, callback,
+                      '{% url room.views.SiteAutocomplete %}',
+                      '#site_term',
+                      '#site_error');
+}
+
+function sendToCaptainEdit() {
+  var values = $('#captain_term').data('data');
+  var autocomplete_value = $('#captain_term').val();
+  var id = values[autocomplete_value];
+  if (id == undefined) {
+    return;
+  }
+  $('#captain_error').html('<i>Loading Captain, ' +
+    autocomplete_value +
+    ', please wait a second...</i>');
+  $('#captain_term').hide();
+  var loc = window.location;
+  var new_loc = loc.protocol + '//' + loc.host +
+                '{% url room.views.CaptainEdit 999 %}';
+  new_loc = new_loc.replace('999', id);
+  window.location = new_loc;
+}
+
+function sendToSiteView() {
+  var values = $('#site_term').data('data');
+  var autocomplete_value = $('#site_term').val();
+  var id = values[autocomplete_value];
+  if (id == undefined) {
+    return;
+  }
+  $('#site_error').html('<i>Loading Site, ' +
+    autocomplete_value +
+    ', please wait a second...</i>');
+  $('#site_term').hide();
+  var loc = window.location;
+  var new_loc = loc.protocol + '//' + loc.host +
+                '{% url room.views.SiteView 999 %}';
+  new_loc = new_loc.replace('999', id);
+  window.location = new_loc;
+}
+
+$(function() {
+  $(".order_type").submit(function(e) {
+    e.preventDefault();
+    var loc = this.action + $(this).children(".order_sheet")[0].value;
+    location = loc;
+    return false;
+  });
+
+  $('#captain_term').autocomplete({
+    minLength: 1,
+    delay: 500,
+    source: autocompleteCaptain,
+    close: sendToCaptainEdit,
+  });
+  $('#site_term').autocomplete({
+    minLength: 1,
+    delay: 500,
+    source: autocompleteSite,
+    close: sendToSiteView,
+  });
+});
+</script>
+
+<h1>Hello RTP Staff!</h1>
+<p>
+  Check out the
+  <a href="{% url room.scoreboard.Scoreboard %}">
+    <%= program_selected %> Scoreboard
+  </a>
+  or the
+  <a href="{% url room.scoreboard.AllProgramsScoreboard %}">
+    All Programs Scoreboard
+  </a> for your data fun.
+</p>
+<p>
+  Administrators:
+  <a href="https://github.com/babybunny/rebuildingtogethercaptain/issues">list of issues</a>
+  | <a href="https://appengine.google.com/dashboard?&app_id=s~rebuildingtogethercaptain-hrd">AppEngine dashboard</a>
+</p>
+
+<table class="layout">
+  <tr>
+    <td class="layout">
+      <div class="panel">
+      <h2>Sites</h2>
+	    <span id="site_error">
+	      Start typing a site number, name, city, jurisdiction
+	    </span>
+	    <br>
+	    <input type="text" id="site_term" size="25">
+	    <p>
+	      <a href="{% url room.views.SiteList %}">List all Sites and their Captains</a>.
+	      <br>
+	      <a href="{% url room.views.SiteNew %}">Add a new Site</a>.
+        <hr>
+        <form
+	         method="GET"
+	         action="{% url room.views.SiteBudget %}">
+          <input type="submit" value="Expenses">
+          <select name="j">
+            <option value="">All Jurisdictions</option>
+            <% _.each(jurisdictions, function(j) { %>
+            <option value="<%= j %>"><%= j %></option>
+            <% }); %>
+          </select>
+        </form>
+      </div>
+
+      <div class="panel">
+	<h2>Captains</h2>
+	<span id="captain_error">Start typing a Captain's name or email</span>
+	<br>
+	<input type="text" id="captain_term" size="25">
+	<p>
+	<a href="{% url room.views.CaptainList %}">View a list</a>
+	of all Captains.
+	<br>
+	<a href="{% url room.views.CaptainNew %}">Add a new Captain</a>
+	.
+	</p>
+      </div>
+
+      <div class="panel">
+      <h2>Staff</h2>
+	<a href="{% url room.views.StaffList %}">View a list</a>
+	of all Staff.
+	<br>
+	<a href="{% url room.views.StaffNew %}">Add a new Staff</a>
+	.
+      </div>
+
+      <div class="panel">
+      <h2>Suppliers</h2>
+	<a href="{% url room.views.SupplierList %}">View a list</a>
+	of all Suppliers.
+	<br>
+	<a href="{% url room.views.SupplierNew %}">Add a new Supplier</a>
+	.
+      </div>
+
+
+    </td><td class="layout">
+      <div class="panel">
+      <h2>Email Captains</h2>
+      <form class="order_type"
+	    method="GET"
+	    action="{% url room.staff.SitesWithoutOrder %}">
+	To email captains of sites that have not placed a specific type of
+	order, select the order type
+	<br>
+      <select class="order_sheet">
+      <% _.each(order_sheets, function(os) { %>
+      <option value="<%= os.key.id %>">
+	      <%= os.name %>
+      </option>
+      <% }); %>
+      </select>
+      <br>
+      ... then click
+      <input type="submit" value="Compose Email">
+      </form>
+      <p>
+	<a href="http://groups.google.com/group/rebuildingtogethercaptain">
+	  Click here
+	</a>
+	to view the email archive
+	(new messages may take a few minutes to appear).
+	</p>
+      </div>
+
+      <div class="panel">
+      <h2>Orders</h2>
+      <form class="order_type"
+	    method="GET"
+	    action="{% url room.order.OrderList %}">
+	To view a list of Orders, select Order Form(s):
+	<br>
+      <select class="order_sheet">
+	<option value="">All Order Forms</option>
+      <% _.each(order_sheets, function(os) { %>
+      <option value="<%= os.key.id %>`">
+	      <%= os.name %>
+      </option>
+      <% }); %>
+      </select>
+      <br>
+      ... then click
+      <input type="submit" value="List Orders">
+      </form>
+      </div>
+
+      <div class="panel">
+      <h2>Order Forms</h2>
+      <a href="{% url room.views.OrderSheetList %}">View a list</a>
+      of all Order Forms.
+      <br>
+      <a href="{% url room.views.OrderSheetNew %}">Add a new Order Form</a>.
+      </div>
+
+      <div class="panel">
+      <h2>Items</h2>
+      <a href="{% url room.views.ItemList %}">View a list</a>
+      of all Items.
+      <br>
+      <a href="{% url room.views.ItemNew %}">Add a new Item</a>
+      </div>
+
+      <div class="panel">
+      <h2>Check Requests</h2>
+      <a href="{% url room.views.CheckRequestList %}">
+	View a list of all Check Requests.
+      </a>
+      <br>
+      Add a new Check Request from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>Vendor Receipts</h2>
+      <a href="{% url room.views.VendorReceiptList %}">
+	View a list of all Vendor Receipts.
+      </a>
+      <br>
+      Add a new Vendor Receipt from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>In-kind Donations</h2>
+      <a href="{% url room.views.InKindDonationList %}">
+	View a list of all In-kind Donations.
+      </a>
+      <br>
+      Add a new In-kind Donation from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>Staff time</h2>
+      <a href="{% url room.views.StaffTimeList %}">
+	View a list of all Staff Time entries.
+      </a>
+      <br>
+      Add a new Staff Time entry from the site's page.
+      </div>
+    </td>
+  </tr>
+</table>
+
+<p>Contact Luke if you need to delete something, there's a way to do it in the back end.
+</p>
+
+

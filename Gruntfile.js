@@ -17,6 +17,7 @@ module.exports = function(grunt) {
     grunt.file.copy('node_modules/backbone/backbone.js', 'build/js/lib/backbone.js');
     grunt.file.copy('node_modules/underscore/underscore-min.js', 'build/js/lib/underscore-min.js');
     grunt.file.copy('node_modules/jquery/dist/jquery.min.js', 'build/js/lib/jquery.js');
+    grunt.file.copy('node_modules/jqueryui/jquery-ui.min.js', 'build/js/lib/jquery-ui.js');
   });
   
   grunt.registerTask('default', ['copy-require']);
