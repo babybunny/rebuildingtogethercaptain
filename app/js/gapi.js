@@ -52,7 +52,8 @@ define(['app/config', 'backbone'], function(config, backbone) {
         
         gapi.client.load('oauth2', 'v2', apisLoaded);
         gapi.client.load('roomApi', 'v1', apisLoaded, 
-                         window.location + '_ah/api')
+                         '//' + window.location.hostname + ':'
+                         + window.location.port + '/_ah/api')
     };
     
     ApiManager.prototype.handleSignin = function() {
