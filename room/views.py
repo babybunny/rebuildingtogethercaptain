@@ -14,16 +14,9 @@ except ImportError:
 from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
-from google.appengine.ext.db import djangoforms
 from google.appengine.ext.webapp import template
 
-import django
-from django import http
-from django import shortcuts
-from django.core import urlresolvers
-import forms
-import models
-import response
+import ndb_models
 import common
 
 
@@ -1001,7 +994,7 @@ class SiteExpense:
 
 
 class CheckRequest(SiteExpense):
-  model = models.CheckRequest
+  model = ndb_models.CheckRequest
   template_base = 'checkrequest'
   readable = 'Check Request'
   form_cls = forms.CheckRequestForm
@@ -1016,10 +1009,9 @@ CheckRequestView = CheckRequest.View
 
 
 class VendorReceipt(SiteExpense):
-  model = models.VendorReceipt
+  model = ndb_models.VendorReceipt
   template_base = 'vendorreceipt'
   readable = 'Vendor Receipt'
-  form_cls = forms.VendorReceiptForm
 
 
 VendorReceiptNew = VendorReceipt.New
@@ -1029,10 +1021,9 @@ VendorReceiptView = VendorReceipt.View
 
 
 class InKindDonation(SiteExpense):
-  model = models.InKindDonation
+  model = ndb_models.InKindDonation
   template_base = 'inkinddonation'
   readable = 'In-kind Donation'
-  form_cls = forms.InKindDonationForm
 
 
 InKindDonationNew = InKindDonation.New
@@ -1042,10 +1033,9 @@ InKindDonationView = InKindDonation.View
 
 
 class StaffTime(SiteExpense):
-  model = models.StaffTime
+  model = ndb_models.StaffTime
   template_base = 'stafftime'
   readable = 'Staff Time'
-  form_cls = forms.StaffTimeForm
 
 
 StaffTimeNew = StaffTime.New
@@ -1055,10 +1045,10 @@ StaffTimeView = StaffTime.View
 
 
 SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
-    models.CheckRequest,
-    models.VendorReceipt,
-    models.InKindDonation,
-    models.StaffTime,
+    ndb_models.CheckRequest,
+    ndb_models.VendorReceipt,
+    ndb_models.InKindDonation,
+    ndb_models.StaffTime,
 ))
 
 

@@ -1,3 +1,4 @@
+import common
 import ndb_models
 import endpoints
 from protorpc import messages
@@ -16,6 +17,9 @@ class StaffPosition(messages.Message):
   position_name = messages.StringField(2)
   hourly_rate = messages.FloatField(3)
   
+class OauthUser(messages.Message):
+  email = messages.StringField(1)
+
 class User(messages.Message):
   name = messages.StringField(1)
   email = messages.StringField(2)
@@ -94,7 +98,7 @@ class RoomApi(remote.Service):
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
 
-  @endpoints.method(message_types.VoidMessage,
+  @endpoints.method(OauthUser,
                     User,
                     http_method='GET',
                     name='current_user.list')

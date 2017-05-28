@@ -1,9 +1,10 @@
 """Methods common to all handlers."""
 
+import logging
 import os
 import pprint
 from google.appengine.api import mail
-from google.appengine.api import users
+from google.appengine.api import oauth
 import ndb_models
 
 # Current value of National Rebuilding Day!
@@ -140,13 +141,21 @@ def GetBaseUri():
   return 'http://%s.appspot.com/' % os.environ.get('APPLICATION_ID')
 
 
-def GetUser(request, user=None):
-  if user is None:
-    user = users.GetCurrentUser()
-  # issue253
-  captain = ndb_models.Captain.all().filter('email = ', user.email().lower()).get()
+def GetUser():
+  try: 
+    user = oauth.get_current_user()
+    status = 'signed in as %s' % user.email()
+  except oauth.Error:
+    status = 'not signed in'
+
+  if IsDev():
+    email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')      
+    status = 'dev user signed in as %s' % email
+
+  logging.info(status)
+  captain = ndb_models.Captain.query(ndb_models.Captain.email == user.email().lower()).get()
   user.captain = captain
-  staff = ndb_models.Staff.all().filter('email = ', user.email().lower()).get()
+  staff = ndb_models.Staff.query(ndb_models.Staff.email == user.email().lower()).get()
   user.staff = staff
   if user.staff:
     user.programs = PROGRAMS
@@ -154,7 +163,7 @@ def GetUser(request, user=None):
   else:
     user.programs = []
     user.program_selected = None
-  return user, captain, staff
+  return user, status
 
 
 def GetStaffCaptain():

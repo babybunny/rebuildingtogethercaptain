@@ -3,6 +3,10 @@ runtime: python27
 threadsafe: no
 api_version: 1
 
+env_variables:
+  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.staff@gmail.com
+#  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.capn@gmail.com
+
 handlers:
 - url: /js/lib
   static_dir: build/js/lib

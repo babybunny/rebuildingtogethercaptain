@@ -7,19 +7,10 @@ from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.api import taskqueue
 from google.appengine.ext import deferred
-from google.appengine.ext.db import djangoforms
 from google.appengine.ext.webapp import template
 
-import django
-from django import http
-from django import shortcuts
-from django.core import urlresolvers
-import forms
-import models
-import response
+import ndb_models
 import common
-import order
-import views
 
 TEST_SITE_NUMBER = '11999ZZZ'
 
@@ -52,7 +43,7 @@ def GoHome(request):
 
 def StaffHome(request):
   user, _, staff = common.GetUser(request)
-  if not staff.program_selected:
+  if not user.staff.program_selected:
     return http.HttpResponseRedirect(urlresolvers.reverse(SelectProgram))
   order_sheets = list(models.OrderSheet.all())
   order_sheets.sort(key=lambda x: x.name)

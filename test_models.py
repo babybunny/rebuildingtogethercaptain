@@ -16,7 +16,7 @@ STAFFPOSITION = ndb_models.StaffPosition(
 
 STAFF = ndb_models.Staff(
   name="Mister Staff",
-  email="rebuildingtogether.rooms@gmail.com"
+  email="rebuildingtogether.staff@gmail.com"
   )
 
 CAPTAIN = ndb_models.Captain(
