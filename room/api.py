@@ -22,9 +22,11 @@ class OauthUser(messages.Message):
 
 class User(messages.Message):
   name = messages.StringField(1)
-  email = messages.StringField(2)
-  staff_key = messages.StringField(3)
-  captain_key = messages.StringField(4)
+  status = messages.StringField(2)
+  oauth_email = messages.StringField(3)
+  server_email = messages.StringField(4)
+  staff_key = messages.StringField(5)
+  captain_key = messages.StringField(6)
   
 class Program(messages.Message):
   year = messages.IntegerField(1)
@@ -104,13 +106,13 @@ class RoomApi(remote.Service):
                     name='current_user.list')
   def current_user_get(self, request):
     res = User()
-    u = endpoints.get_current_user()
-    if u:
-      res.email = u.email()
-      for s in ndb_models.Staff.query(ndb_models.Staff.email == res.email):
-        res.staff_key = s.key.urlsafe()
-      for s in ndb_models.Captain.query(ndb_models.Captain.email == res.email):
-        res.captain_key = s.key.urlsafe()
+    e_u = endpoints.get_current_user()
+    if e_u:
+      res.oauth_email = e_u.email()
+    c_u, res.status = common.GetUser()
+    if c_u.staff:
+      res.staff_key = c_u.staff.key.urlsafe()
+      
     return res
 
 application = endpoints.api_server([RoomApi])

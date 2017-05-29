@@ -5,6 +5,7 @@ import os
 import pprint
 from google.appengine.api import mail
 from google.appengine.api import oauth
+from google.appengine.api import users
 import ndb_models
 
 # Current value of National Rebuilding Day!
@@ -144,18 +145,20 @@ def GetBaseUri():
 def GetUser():
   try: 
     user = oauth.get_current_user()
-    status = 'signed in as %s' % user.email()
+    status = 'OAuth signed in as %s' % user.email()
   except oauth.Error:
-    status = 'not signed in'
+    status = 'OAuth not signed in'
 
   if IsDev():
-    email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')      
-    status = 'dev user signed in as %s' % email
-
+    user = users.User(email=os.environ.get('ROOMS_DEV_SIGNIN_EMAIL'))
+    status = ('DEV, using configured user %s (original status %s)'
+              % (user.email(), status))
   logging.info(status)
-  captain = ndb_models.Captain.query(ndb_models.Captain.email == user.email().lower()).get()
+  captain = ndb_models.Captain.query(
+    ndb_models.Captain.email == user.email().lower()).get()
   user.captain = captain
-  staff = ndb_models.Staff.query(ndb_models.Staff.email == user.email().lower()).get()
+  staff = ndb_models.Staff.query(
+    ndb_models.Staff.email == user.email().lower()).get()
   user.staff = staff
   if user.staff:
     user.programs = PROGRAMS

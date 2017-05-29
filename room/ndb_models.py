@@ -34,7 +34,10 @@ class Staff(ndb.Model):
     """
     name = ndb.StringProperty()
     email = ndb.StringProperty(required=True)
-
+    program_selected = ndb.StringProperty()
+    last_welcome = ndb.DateTimeProperty()
+    notes = ndb.TextProperty()
+    since = ndb.DateProperty(auto_now_add=True)
 
 class Captain(ndb.Model):
     """A work captain."""
