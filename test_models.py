@@ -46,46 +46,46 @@ JURISDICTION = ndb_models.Jurisdiction(
   name="FunkyTown"
   )
 
-Supplier = ndb_models.Supplier(
-  name = 'House of Supply'
-  email = 'supplier@example.com'
-  address = '123 Supplier St, Main City, CA 99999'
-  phone1 = '650 555 1111'
-  phone2 = '650 555 2222'
-  notes = """Supplier notes value"""
+SUPPLIER = ndb_models.Supplier(
+  name='House of Supply',
+  email='supplier@example.com',
+  address='123 Supplier St, Main City, CA 99999',
+  phone1='650 555 1111',
+  phone2='650 555 2222',
+  notes="""Supplier notes value""",
   )
 
 ORDERSHEET = ndb_models.OrderSheet(
-  name = 'Some Supplies'
-  code = 'SOM'
-  instructions = 'instructions value'
-  logistics_instructions = """Pick these up somewhere nice."""
-  # Set below default_supplier = ndb.KeyProperty(kind=Supplier)
-  delivery_options = 'Yes'
+  name='Some Supplies',
+  code='SOM',
+  instructions='instructions value',
+  logistics_instructions="""Pick these up somewhere nice.""",
+  # Set below default_supplier=ndb.KeyProperty(kind=Supplier),
+  delivery_options='Yes',
 )
 
 SITE = ndb_models.Site(
-  number = '110TEST'
-  program = '2011 Test'
-  name = 'Fixme Center'
-  applicant = 'Mister Applicant'
-  applicant_home_phone = '650 555 9999'
-  applicant_work_phone = '650 555 8888'
-  applicant_mobile_phone = '650 555 7777'
-  applicant_email = 'applicant@example.com'
-  rating = 'rating value'
-  roof = 'roof value'
-  rrp_test = 'rrp test value'
-  rrp_level = 'rrp level value'
-  # UNUSED? jurisdiction = ndb.StringProperty() 
-  # Set below jurisdiction_choice = ndb.KeyProperty(kind=Jurisdiction)
-  scope_of_work = """This is a big job. There is a lot to do."""
-  sponsor = 'Generous Group'
-  street_number = '123 Main Street'
-  city_state_zip = 'Acorn City, CA, 99999'
-  budget = 5000
-  announcement_subject = 'announcement value'
-  volunteer_signup_link = 'volunteer signup link value'
+  number='110TEST',
+  program='2011 Test',
+  name='Fixme Center',
+  applicant='Mister Applicant',
+  applicant_home_phone='650 555 9999',
+  applicant_work_phone='650 555 8888',
+  applicant_mobile_phone='650 555 7777',
+  applicant_email='applicant@example.com',
+  rating='rating value',
+  roof='roof value',
+  rrp_test='rrp test value',
+  rrp_level='rrp level value',
+  # UNUSED? jurisdiction=ndb.StringProperty() ,
+  # Set below jurisdiction_choice=ndb.KeyProperty(kind=Jurisdiction),
+  scope_of_work="""This is a big job. There is a lot to do.""",
+  sponsor='Generous Group',
+  street_number='123 Main Street',
+  city_state_zip='Acorn City, CA, 99999',
+  budget=5000,
+  announcement_subject='announcement value',
+  volunteer_signup_link='volunteer signup link value',
   )
 
 _KEYS = list()

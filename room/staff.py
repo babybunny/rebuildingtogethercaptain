@@ -45,6 +45,8 @@ def GoHome(request):
 
 def StaffHome(request):
   user, status = common.GetUser()
+  if not user.staff:
+    return webapp2.redirect_to('Start')
   if not user.staff.program_selected:
     return webapp2.redirect_to('SelectProgram')
   # http.HttpResponseRedirect(urlresolvers.reverse(SelectProgram))

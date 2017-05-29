@@ -59,6 +59,9 @@ app = webapp2.WSGIApplication([
                   name='SiteNew'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
+                  name='SiteView'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
                   name='SiteBudget'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
@@ -75,6 +78,9 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/help',
                   MainPage,
                   name='CaptainNew'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
+                  name='CaptainEdit'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='ItemList'),  # TODO

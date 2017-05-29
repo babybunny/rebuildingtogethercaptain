@@ -79,7 +79,7 @@ class Captain(ndb.Model):
       for i in xrange(1, 7):
         prefixes.add(self.email[:i])
     self.search_prefixes = [p.lower() for p in prefixes]
-    super(BaseModel, self).put(*a, **k)
+    super(Captain, self).put(*a, **k)
 
   def __unicode__(self):
     return self.name
@@ -199,6 +199,8 @@ class Site(ndb.Model):
   volunteer_signup_link = ndb.StringProperty()
   volunteer_signup_link.help_text = "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
 
+  def Label(self):
+    return "%s %s" % (self.number, self.name)
 
 
 
@@ -214,6 +216,3 @@ class Site(ndb.Model):
 
 
 
-
-
-    
