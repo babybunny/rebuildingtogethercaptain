@@ -1,71 +1,20 @@
-{%extends "base.html"%}
-{% block script %}
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular-resource.min.js"></script>
-<script>
-
-angular.module('programServices', ['ngResource']).
-    factory('Program', function($resource){
-  // "autoapi" is the module, as in autoapi.yaml.  "1" is the version.
-  return $resource('https://1-dot-autoapi-dot-rebuildingtogethercaptain-hrd.appspot.com/_ah/api/roomAutoApi/v1/programs', {}, {
-    query: {method:'GET'}
-  });
-});
-
-
-angular.module('program_functions', ['programServices']).
-  config(['$routeProvider', function($routeProvider) {
-    $routeProvider.
-      when('/', {templateUrl: 'partials/program_list.html',   controller: ProgramCtrl}).
-      otherwise({redirectTo: '/phones'});
-  }]);
-
-function ProgramCtrl($scope, $routeParams, Program) {
-  // endpoints_proto_datastore autoapi returns JSON like this 
-  // {items: [{status: "Active", name: "test", year: "1999", ...
-  // and Angular $resource query() returns JSON like this
-  // {"list": {"Program": [{"status": "Active", "site_number_prefix": "130",
-  $scope.program_query = Program.query();
-  $scope.selected_program = "{{ user.program_selected }}";
-
-  $scope.IsSelectedProgram = function(program) {
-     var yearname = program.year + ' ' + program.name;
-     console.log('yn:"' + yearname + '" selected:"' + $scope.selected_program + '"');
-     if (yearname === $scope.selected_program) {
-       return true;
-     }
-     return false;
-  };
-}
-</script>
-{% endblock script %}
-{% block breadcrumb %}
-  | Select Program
-{% endblock %}
-{%block body%}
-
-
-
+{% extends "templates/base.html" %}
+{% block about_this_page %}
 <h2>{{ what_you_are_doing }}</h2>
-
-<div style="float: right" ng-app="program_functions">
-<div ng-view>
-</div>
-</div>
-
-
+{% endblock %}
+{% block body %}
 <p>
 Hard-coded programs
 <ul>
 {% for program in user.programs %}
 <li>
   Click to select
-  <a href="{% url room.staff.SelectProgram program %}">
+  <a href="{{ program_url_base }}?program={{ program }}">
     {{ program }}
   </a>
 </li>
 {% endfor %}
 </ul>
+{% endblock %}
 
 
-{%endblock%}

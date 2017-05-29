@@ -14,7 +14,7 @@ define(
             this.user = new User();
             this.routes = new Routes();
             this.routes.app = this;
-            Backbone.history.start({pushState: true});
+            // Backbone.history.start({pushState: true});
             
             this.apiManager.on('signin', function() { 
                 self.user.fetch();            
@@ -22,7 +22,11 @@ define(
             this.user.on('change', self.user.home);
             this.user.on('home:staff', function() {
                 console.log('got user event');
-                self.routes.navigate('room/staff_home', {trigger: true});
+                var loc = window.location;
+                // needs to match 'StaffHome' Route in main.py
+                var new_loc = loc.protocol + '//' + loc.host + '/staff_home';
+                window.location = new_loc;
+                //self.routes.navigate('room/staff_home', {trigger: true});
             });               
         };
         Rooms.prototype = {

@@ -1,7 +1,9 @@
 """Staff views"""
 
 import datetime
+import json
 import logging
+import webapp2
 from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -42,12 +44,13 @@ def GoHome(request):
 
 
 def StaffHome(request):
-  user, _, staff = common.GetUser(request)
+  user, status = common.GetUser()
   if not user.staff.program_selected:
-    return http.HttpResponseRedirect(urlresolvers.reverse(SelectProgram))
-  order_sheets = list(models.OrderSheet.all())
+    return webapp2.redirect_to('SelectProgram')
+  # http.HttpResponseRedirect(urlresolvers.reverse(SelectProgram))
+  order_sheets = list(ndb_models.OrderSheet.query())
   order_sheets.sort(key=lambda x: x.name)
-  jurisdictions = list(models.Jurisdiction.all())
+  jurisdictions = list(ndb_models.Jurisdiction.query())
   jurisdictions.sort(key=lambda x: x.name)
   d = {'order_sheets': order_sheets,
        'test_site_number': TEST_SITE_NUMBER,
@@ -56,21 +59,53 @@ def StaffHome(request):
   return common.Respond(request, 'staff_home', d)
 
 
-def SelectProgram(request, program=None):
-  user, _, staff = common.GetUser(request)
-  if program is None:
-    what_you_are_doing = "Select a Program to work on"
-    return common.Respond(request, 'select_program', locals())
+# class SelectProgram(webapp2.RequestHandler):
 
-  if program not in common.PROGRAMS:
-    return http.HttpResponseError('program %s not in PROGRAMS' % program)
-  staff.program_selected = program
-  staff.put()
-  return http.HttpResponseRedirect(urlresolvers.reverse(StaffHome))
+def SelectProgram(request):
+    user, _ = common.GetUser()
+    if not user.staff:
+      return webapp2.redirect_to('Main')
+    program = request.get('program')
+    if not program:
+      what_you_are_doing = "Select a Program to work on"
+      program_url_base = webapp2.uri_for('SelectProgram')
+      return common.Respond(request, 'select_program', locals())
+
+    if program not in common.PROGRAMS:
+      return http.HttpResponseError('program %s not in PROGRAMS' % program)
+    user.staff.program_selected = program
+    user.staff.put()
+    return webapp2.redirect_to('StaffHome')
+
+
+def _Autocomplete(request, model_class, program_filter=False):
+  prefix = str(request.get('term').lower())
+  items = model_class.query()
+  items.filter(model_class.search_prefixes == prefix)
+  if program_filter:
+    user, _ = common.GetUser()
+    items.filter(model_class.program == user.program_selected)
+  matches = {}
+  for i in items.iter():
+    label = i.Label()
+    matches[label] = i.key.urlsafe()
+  response = webapp2.Response(content_type='application/json')
+  response.write(json.dumps(matches))
+  return response
+
+
+def SiteAutocomplete(request):
+  """Return JSON to autocomplete a Site ID based on a prefix."""
+  return _Autocomplete(request, ndb_models.Site, program_filter=True)
+
+
+def CaptainAutocomplete(request):
+  """Return JSON to autocomplete a Captain."""
+  return _Autocomplete(request, ndb_models.Captain)
 
 
 def SiteJump(request):
-  user, _, _ = common.GetUser(request)
+  user, _ = common.GetUser()
   d = {'user': user}
   number = request.GET['number']
   site = models.NewSite.all().filter('number = ', number).get()
@@ -83,7 +118,7 @@ def SiteJump(request):
 
 
 def SitesWithoutOrder(request, order_sheet_id):
-  user, _, _ = common.GetUser(request)
+  user, _ = common.GetUser()
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is None:
     return http.HttpResponseNotFound(
@@ -182,7 +217,7 @@ def FixLastEditor(request):
 
 
 def AddStandardKitOrder(request, prefix):
-  user, _, _ = common.GetUser(request)
+  user, _ = common.GetUser()
   skos = models.OrderSheet.all().filter('code = ', 'SDK').get()
   if not skos:
     logging.warn('can not find SDK order sheet')
@@ -267,3 +302,5 @@ def FixProgramFromNumber(request, site_number=None):
       site.put()
       site.SaveTheChildren()
   return http.HttpResponse('OK')
+
+

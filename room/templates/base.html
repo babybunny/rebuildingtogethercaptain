@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Rebuilding Together, Peninsula - ROOM System</title>
+    <link type="text/css" rel="stylesheet" href="/static/styles.css">
+    <script type="text/javascript" src="js/lib/require.js"></script>
+  </head>
+  <body>
+    <span class="breadcrumb">
+      <b>ROOM System</b>
+      <span class="program" id="selected-program">
+        {% if user.program_selected %}
+        {{ user.program_selected }}
+        {% else %}
+        {{ user.programs.0 }}
+        {% endif %}
+        {% if user.programs %}
+        <a href="{{ webapp2.uri_for('SelectProgram') }}">change</a>
+        {% endif %}
+      </span>
+      {% if user.staff %}
+      | <a href="{{ webapp2.uri_for('StaffHome') }}">Staff Home</a>
+      {% endif %}
+      {% if user.captain %}
+      | <a href="{{ webapp2.uri_for('CaptainHome') }}">Captain's Page</a>
+      {% endif %}
+      {% block breadcrumb %}{%endblock%}
+    </span>
+    <span class="userinfo">
+      {%if user %}
+      {% if user.nickname == user.email %}
+      <b>{{user.email}}</b>
+      {% else %}
+      <b>{{user.nickname}} &lt;{{user.email}}&gt;</b>
+      {% endif %}
+      {%if show_admin_link%}
+      | <a href="/_ah/admin">Admin</a>
+      {%endif%}
+      {%if sign_out%} | <a href="{{sign_out}}">Sign out</a>{%endif%}
+      {% else %}
+      {%if sign_in%}<a href="{{sign_in}}">Sign in</a>{%endif%}
+      {%endif%}
+      | <a target="_new" href="{{ webapp2.uri_for('Help') }}">Help</a>
+      | <a target="_new" href="https://github.com/babybunny/rebuildingtogethercaptain/issues/new">Feedback</a>
+    </span>
+    <hr>
+    <table>
+      <tr>
+	      <td>
+	        <a href="http://www.rebuildingtogetherpeninsula.org">
+	          <img src="/static/rtplogosm.gif" alt="RTP logo" 
+	               width="208" height="126">
+	        </a>
+	      </td>
+	      <td class="about_this_page">
+          {% block about_this_page %}About This Page Placeholder{% endblock %}
+	      </td>
+      </tr>
+    </table>
+    {% block body %}Body Placeholder{% endblock %}
+    <div class="footer">
+      © 2011 Rebuilding Together Peninsula
+    </div>
+  </body>
+</html>
+

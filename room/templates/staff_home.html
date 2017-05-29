@@ -1,4 +1,4 @@
-{%extends "base.html"%}
+{%extends "templates/base.html"%}
 {%block breadcrumb%}
 {%endblock%}
 {%block script%}
@@ -54,14 +54,14 @@ function autocomplete(request, callback, url, input_selector, error_selector) {
 
 function autocompleteCaptain(request, callback) {
   return autocomplete(request, callback,
-                      '{% url room.views.CaptainAutocomplete %}',
+                      '{{ webapp2.uri_for('CaptainAutocomplete') }}',
                       '#captain_term',
                       '#captain_error');
 }
 
 function autocompleteSite(request, callback) {
   return autocomplete(request, callback,
-                      '{% url room.views.SiteAutocomplete %}',
+                      '{{ webapp2.uri_for('SiteAutocomplete') }}',
                       '#site_term',
                       '#site_error');
 }
@@ -79,7 +79,7 @@ function sendToCaptainEdit() {
   $('#captain_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host +
-                '{% url room.views.CaptainEdit 999 %}';
+                '{{ webapp2.uri_for('CaptainEdit') }}';
   new_loc = new_loc.replace('999', id);
   window.location = new_loc;
 }
@@ -97,7 +97,7 @@ function sendToSiteView() {
   $('#site_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host +
-                '{% url room.views.SiteView 999 %}';
+                '{{ webapp2.uri_for('SiteView') }}';
   new_loc = new_loc.replace('999', id);
   window.location = new_loc;
 }
@@ -129,11 +129,11 @@ $(function() {
 <h1>Hello RTP Staff!</h1>
 <p>
   Check out the
-  <a href="{% url room.scoreboard.Scoreboard %}">
+  <a href="{{ webapp2.uri_for('Scoreboard') }}">
     {{ user.staff.program_selected }} Scoreboard
   </a>
   or the
-  <a href="{% url room.scoreboard.AllProgramsScoreboard %}">
+  <a href="{{ webapp2.uri_for('AllProgramsScoreboard') }}">
     All Programs Scoreboard
   </a> for your data fun.
 </p>
@@ -156,13 +156,13 @@ $(function() {
 	    <br>
 	    <input type="text" id="site_term" size="25">
 	    <p>
-	      <a href="{% url room.views.SiteList %}">List all Sites and their Captains</a>.
+	      <a href="{{ webapp2.uri_for('SiteList') }}">List all Sites and their Captains</a>.
 	      <br>
-	      <a href="{% url room.views.SiteNew %}">Add a new Site</a>.
+	      <a href="{{ webapp2.uri_for('SiteNew') }}">Add a new Site</a>.
         <hr>
         <form
 	         method="GET"
-	         action="{% url room.views.SiteBudget %}">
+	         action="{{ webapp2.uri_for('SiteBudget') }}">
           <input type="submit" value="Expenses">
           <select name="j">
             <option value="">All Jurisdictions</option>
@@ -179,29 +179,29 @@ $(function() {
 	<br>
 	<input type="text" id="captain_term" size="25">
 	<p>
-	<a href="{% url room.views.CaptainList %}">View a list</a>
+	<a href="{{ webapp2.uri_for('CaptainList') }}">View a list</a>
 	of all Captains.
 	<br>
-	<a href="{% url room.views.CaptainNew %}">Add a new Captain</a>
+	<a href="{{ webapp2.uri_for('CaptainNew') }}">Add a new Captain</a>
 	.
 	</p>
       </div>
 
       <div class="panel">
       <h2>Staff</h2>
-	<a href="{% url room.views.StaffList %}">View a list</a>
+	<a href="{{ webapp2.uri_for('StaffList') }}">View a list</a>
 	of all Staff.
 	<br>
-	<a href="{% url room.views.StaffNew %}">Add a new Staff</a>
+	<a href="{{ webapp2.uri_for('StaffNew') }}">Add a new Staff</a>
 	.
       </div>
 
       <div class="panel">
       <h2>Suppliers</h2>
-	<a href="{% url room.views.SupplierList %}">View a list</a>
+	<a href="{{ webapp2.uri_for('SupplierList') }}">View a list</a>
 	of all Suppliers.
 	<br>
-	<a href="{% url room.views.SupplierNew %}">Add a new Supplier</a>
+	<a href="{{ webapp2.uri_for('SupplierNew') }}">Add a new Supplier</a>
 	.
       </div>
 
@@ -211,7 +211,7 @@ $(function() {
       <h2>Email Captains</h2>
       <form class="order_type"
 	    method="GET"
-	    action="{% url room.staff.SitesWithoutOrder %}">
+	    action="{{ webapp2.uri_for('SitesWithoutOrder') }}">
 	To email captains of sites that have not placed a specific type of
 	order, select the order type
 	<br>
@@ -239,7 +239,7 @@ $(function() {
       <h2>Orders</h2>
       <form class="order_type"
 	    method="GET"
-	    action="{% url room.order.OrderList %}">
+	    action="{{ webapp2.uri_for('OrderList') }}">
 	To view a list of Orders, select Order Form(s):
 	<br>
       <select class="order_sheet">
@@ -258,23 +258,23 @@ $(function() {
 
       <div class="panel">
       <h2>Order Forms</h2>
-      <a href="{% url room.views.OrderSheetList %}">View a list</a>
+      <a href="{{ webapp2.uri_for('OrderSheetList') }}">View a list</a>
       of all Order Forms.
       <br>
-      <a href="{% url room.views.OrderSheetNew %}">Add a new Order Form</a>.
+      <a href="{{ webapp2.uri_for('OrderSheetNew') }}">Add a new Order Form</a>.
       </div>
 
       <div class="panel">
       <h2>Items</h2>
-      <a href="{% url room.views.ItemList %}">View a list</a>
+      <a href="{{ webapp2.uri_for('ItemList') }}">View a list</a>
       of all Items.
       <br>
-      <a href="{% url room.views.ItemNew %}">Add a new Item</a>
+      <a href="{{ webapp2.uri_for('ItemNew') }}">Add a new Item</a>
       </div>
 
       <div class="panel">
       <h2>Check Requests</h2>
-      <a href="{% url room.views.CheckRequestList %}">
+      <a href="{{ webapp2.uri_for('CheckRequestList') }}">
 	View a list of all Check Requests.
       </a>
       <br>
@@ -283,7 +283,7 @@ $(function() {
 
       <div class="panel">
       <h2>Vendor Receipts</h2>
-      <a href="{% url room.views.VendorReceiptList %}">
+      <a href="{{ webapp2.uri_for('VendorReceiptList') }}">
 	View a list of all Vendor Receipts.
       </a>
       <br>
@@ -292,7 +292,7 @@ $(function() {
 
       <div class="panel">
       <h2>In-kind Donations</h2>
-      <a href="{% url room.views.InKindDonationList %}">
+      <a href="{{ webapp2.uri_for('InKindDonationList') }}">
 	View a list of all In-kind Donations.
       </a>
       <br>
@@ -301,7 +301,7 @@ $(function() {
 
       <div class="panel">
       <h2>Staff time</h2>
-      <a href="{% url room.views.StaffTimeList %}">
+      <a href="{{ webapp2.uri_for('StaffTimeList') }}">
 	View a list of all Staff Time entries.
       </a>
       <br>

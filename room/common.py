@@ -1,8 +1,10 @@
 """Methods common to all handlers."""
 
+import jinja2
 import logging
 import os
 import pprint
+import webapp2
 from google.appengine.api import mail
 from google.appengine.api import oauth
 from google.appengine.api import users
@@ -154,15 +156,13 @@ def GetUser():
     status = ('DEV, using configured user %s (original status %s)'
               % (user.email(), status))
   logging.info(status)
-  captain = ndb_models.Captain.query(
+  user.captain = ndb_models.Captain.query(
     ndb_models.Captain.email == user.email().lower()).get()
-  user.captain = captain
-  staff = ndb_models.Staff.query(
+  user.staff = ndb_models.Staff.query(
     ndb_models.Staff.email == user.email().lower()).get()
-  user.staff = staff
   if user.staff:
     user.programs = PROGRAMS
-    user.program_selected = staff.program_selected
+    user.program_selected = user.staff.program_selected
   else:
     user.programs = []
     user.program_selected = None
@@ -172,3 +172,31 @@ def GetUser():
 def GetStaffCaptain():
   """Returns a Captain record which represents the RTP Staff."""
   return models.Captain.all().filter('email = ', STAFF_CAPTAIN_EMAIL).get()
+
+
+
+jinja_environment = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
+def Respond(request_handler, template_name, params=None):
+  """Helper to render a response, passing standard stuff to the response.
+  Args:
+    request: The webapp2.RequestHandler instance that is handling this request.
+    template_name: The template name; '.html' is appended automatically.
+    params: A dict giving the template parameters; modified in-place.
+  Returns:
+    webapp2.Response
+  Raises:
+    TODO
+  """
+  if params is None:
+    params = {}
+  params['webapp2'] = webapp2
+  params['user'], params['user_status'] = GetUser()
+  params['help_contact'] = HELP_CONTACT
+  params['help_phone'] = HELP_PHONE
+  params['help_person'] = HELP_PERSON
+  if not template_name.endswith('.html'):
+    template_name += '.html'
+  template = jinja_environment.get_template('templates/' + template_name)
+  request_handler.response.out.write(template.render(params))
