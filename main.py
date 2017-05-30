@@ -8,6 +8,7 @@ import webapp2
 from room import common
 from room import ndb_models
 from room import staff
+# from room import views
 
 from google.appengine.api import oauth
 
@@ -57,8 +58,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/help',
                   MainPage,
                   name='SiteNew'),  # TODO
-    webapp2.Route(r'/help',
-                  MainPage,
+    webapp2.Route(r'/site_view/<site_key:\w+>',
+                  MainPage, # views.SiteView,
                   name='SiteView'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,

@@ -79,7 +79,7 @@ function sendToCaptainEdit() {
   $('#captain_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host +
-                '{{ webapp2.uri_for('CaptainEdit') }}';
+                '{{ webapp2.uri_for('CaptainEdit', id) }}';
   new_loc = new_loc.replace('999', id);
   window.location = new_loc;
 }
@@ -97,8 +97,8 @@ function sendToSiteView() {
   $('#site_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host +
-                '{{ webapp2.uri_for('SiteView') }}';
-  new_loc = new_loc.replace('999', id);
+                '{{ webapp2.uri_for('SiteView', site_key='site_id_placeholder') }}';
+  new_loc = new_loc.replace('site_id_placeholder', id);
   window.location = new_loc;
 }
 

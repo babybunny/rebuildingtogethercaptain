@@ -190,10 +190,10 @@ def SiteListByNumber(request, site_number):
   return _SiteListInternal(request, site)
 
 
-def SiteView(request, site_id=None, new_order_form=None):
+def SiteView(request, site_key=None, new_order_form=None):
   site = None
-  if site_id is not None:
-    site = models.NewSite.get_by_id(int(site_id))
+  if site_key is not None:
+    site = models.NewSite.get_by_id(int(site_key))
   return _SiteListInternal(request, site, new_order_form)
 
 
