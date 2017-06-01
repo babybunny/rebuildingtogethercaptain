@@ -14,13 +14,15 @@ from google.appengine.api import oauth
 
 class MainPage(webapp2.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
-
+    
     def get(self):
         """Renders the main page."""
         user, status = common.GetUser()
+        if user.staff:
+            self.redirect_to('StaffHome')
         oauth_user = 'placeholder'
         template_values = dict(locals())
-        template = jinja_environment.get_template('templates/index.html')
+        template = jinja_environment.get_template('templates/welcome.html')
         self.response.out.write(template.render(template_values))
 
 

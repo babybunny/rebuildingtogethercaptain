@@ -316,9 +316,9 @@ td.order_form_section_header {
 table.order_form_header span {
   padding-right: 30px;			
 }
-#login_div {
+#welcome-auth-view {
   float: right;
-  min-width: 300px;
+  width: 300px;
   height: 250px;
   border: 1px solid #666;
   padding: 15px;

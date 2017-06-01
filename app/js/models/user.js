@@ -7,10 +7,10 @@ define(
         
         User.prototype.home = function() {
             if(this.get('staff_key')) {
-                console.log('user is staff, going home');
-                this.trigger('home:staff');
+                console.log('user is staff');
+                this.trigger('user:is:staff');
             } else {
-                console.log('user is nobody, going home');
+                console.log('user is not staff');
             }
         };
         

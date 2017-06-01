@@ -112,6 +112,8 @@ class RoomApi(remote.Service):
     c_u, res.status = common.GetUser()
     if c_u.staff:
       res.staff_key = c_u.staff.key.urlsafe()
+    if c_u.captain:
+      res.captain_key = c_u.captain.key.urlsafe()
       
     return res
 
