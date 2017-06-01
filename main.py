@@ -20,10 +20,17 @@ class MainPage(webapp2.RequestHandler):
         user, status = common.GetUser()
         if user.staff:
             self.redirect_to('StaffHome')
+        if user.captain:
+            self.redirect_to('Help')
         oauth_user = 'placeholder'
         template_values = dict(locals())
         template = jinja_environment.get_template('templates/welcome.html')
         self.response.out.write(template.render(template_values))
+
+        
+class Placeholder(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write('Placeholder')
 
 
 jinja_environment = jinja2.Environment(
@@ -34,7 +41,7 @@ app = webapp2.WSGIApplication([
                   MainPage,
                   name='Start'),
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='Help'),  # TODO
     webapp2.Route(r'/staff_home',
                   staff.StaffHome,

@@ -28,6 +28,7 @@
       {% endif %}
       {% block breadcrumb %}{%endblock%}
     </span>
+    <span id="#signed-in-container"></span>
     <span class="userinfo" title="{{ user_status }}">
       {%if user %}
       {% if user.nickname() == user.email() %}
@@ -43,7 +44,6 @@
       {%if sign_in%}<a href="{{sign_in}}">Sign in</a>{%endif%}
       {%endif%}
       | <a target="_new" href="{{ webapp2.uri_for('Help') }}">Help</a>
-      | <a target="_new" href="https://github.com/babybunny/rebuildingtogethercaptain/issues/new">Feedback</a>
     </span>
     <hr>
     <table>
