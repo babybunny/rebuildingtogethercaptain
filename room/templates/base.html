@@ -4,7 +4,7 @@
   <head>
     <title>Rebuilding Together, Peninsula - ROOM System</title>
     <link type="text/css" rel="stylesheet" href="/static/styles.css">
-    <script type="text/javascript" src="js/lib/require.js"></script>
+    <script type="text/javascript" data-main="js/app/rooms" src="js/lib/require.js"></script>
     {% block script %}{% endblock %}
   </head>
   <body>
@@ -28,20 +28,10 @@
       {% endif %}
       {% block breadcrumb %}{%endblock%}
     </span>
-    <span id="#signed-in-container"></span>
-    <span class="userinfo" title="{{ user_status }}">
-      {%if user %}
-      {% if user.nickname() == user.email() %}
-      <b>{{ user.email() }}</b>
-      {% else %}
-      <b>{{ user.nickname() }} &lt;{{ user.email() }}&gt;</b>
-      {% endif %}
+    <span class="userinfo">
+      <span id="auth-view" title="{{ user_status }}">Signing in ...</span>
       {%if show_admin_link%}
       | <a href="/_ah/admin">Admin</a>
-      {%endif%}
-      {%if sign_out%} | <a href="{{sign_out}}">Sign out</a>{%endif%}
-      {% else %}
-      {%if sign_in%}<a href="{{sign_in}}">Sign in</a>{%endif%}
       {%endif%}
       | <a target="_new" href="{{ webapp2.uri_for('Help') }}">Help</a>
     </span>

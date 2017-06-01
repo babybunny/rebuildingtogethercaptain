@@ -1,8 +1,8 @@
 define(
-    ['jquery-ui',
+    ['jquery-ui', 'backbone',
      'text!app/templates/staff_home.html'
     ],
-    function(unused_jquery, template) {
+    function(unused_jquery, Backbone, template) {
         var StaffView = Backbone.View.extend({
             el: '#main-content',
             template: _.template(template),
