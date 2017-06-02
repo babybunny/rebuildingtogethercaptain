@@ -18,15 +18,6 @@ class Jurisdiction(ndb.Model):
     return self.name
 
 
-# This needs an edit as it's diverged from the model in the master branch.
-class StaffPosition(ndb.Model):
-    """Staff positions that have hourly billing."""
-    position_name = ndb.StringProperty()
-    hourly_rate = ndb.FloatProperty(default=0.0)
-    last_editor = ndb.UserProperty()
-    modified = ndb.DateTimeProperty(auto_now=True)
-
-
 class Staff(ndb.Model):
     """Minimal variant of the Staff model.
 
@@ -161,6 +152,82 @@ class OrderSheet(ndb.Model):
             self.retrieval_options == 'Yes')      
 
 
+class Item(ndb.Model):
+  """Represents a type of thing that may in the inventory."""
+  bar_code_number = ndb.IntegerProperty()
+  # bar_code_number.unique = True
+  name = ndb.StringProperty(required=True)
+  # name.unique = True
+  appears_on_order_form = ndb.KeyProperty(kind=OrderSheet)
+  order_form_section = ndb.StringProperty()
+  description = ndb.StringProperty()
+  # 'Each' 'Box' 'Pair' etc
+  measure = ndb.StringProperty(
+      choices=('Each', 'Roll', 'Bottle', 'Box', 'Pair', 'Board', 'Bundle',
+               'Bag', 'Ton', 'Yard', 'Sheet', 'Cartridge', 'Tube', 'Tub',
+               'Sq. Yds.', 'Gallon', 'Section', 'Home', 'Box', 'Drop-off',
+               '', 'Other'))
+  # Dollars.
+  unit_cost = ndb.FloatProperty()
+  must_be_returned = ndb.StringProperty(choices=['Yes', 'No'], default='No')
+  picture = ndb.BlobProperty()
+  thumbnail = ndb.BlobProperty()
+  supplier = ndb.KeyProperty(kind=Supplier)
+  supplier_part_number = ndb.StringProperty()
+  url = ndb.StringProperty()
+  last_editor = ndb.UserProperty()
+  created = ndb.DateTimeProperty(auto_now_add=True)
+  modified = ndb.DateTimeProperty(auto_now=True)
+  supports_extra_name_on_order = ndb.BooleanProperty(default=False)
+
+  def __unicode__(self):
+    return self.description
+
+  def VisibleSortableLabel(self, label):
+    """Strips numeric prefixes used for sorting.
+
+    Labels may have a digit prefix which is used for sorting, but
+    should not be shown to users.
+    """
+    if not label:
+      return ''
+    parts = label.split()
+    if len(parts) > 0 and parts[0].isdigit():
+      return ' '.join(parts[1:])
+    return label
+
+  def VisibleName(self):
+    return self.VisibleSortableLabel(self.name)
+
+  def VisibleOrderFormSection(self):
+    return self.VisibleSortableLabel(self.order_form_section)
+
+
+
+class _ActiveItems(object):
+  """Similar to backreference "*_set" properties in the old db interface."""
+
+  def __init__(self, ref, kind_cls):
+    """
+    Args:
+      ref: instance of a model that is referenced by another kind of model
+      kind_cls: the class of the ndb kind, like in Key()
+    """
+    self._query = kind_cls.query(kind_cls.site == ref.key)
+    self._query.filter(kind_cls.state != 'new')
+    self._query.filter(kind_cls.state != 'deleted')
+
+  def Count(self):
+    return self._query.count()
+
+  def Items(self):
+    for item in sorted(self._query,
+                       key=lambda o: o.modified, reverse=True):
+      yield item
+
+  def __iter__(self):
+    return self.Items()
+
 class Site(ndb.Model):
   """A work site."""
   # "10001DAL" reads: 2010, #001, Daly City
@@ -198,31 +265,6 @@ class Site(ndb.Model):
   volunteer_signup_link = ndb.StringProperty()
   volunteer_signup_link.help_text = "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
 
-
-  class ActiveItems(object):
-    """Access user-input records with state and modified fields."""
-
-    def __init__(self, ref, kind_cls):
-      """
-      Args:
-        ref: instance of a model that is referenced by another kind of model
-        kind_cls: the class of the ndb kind, like in Key()
-      """
-      self._query = kind_cls.query(kind_cls.site == ref.key)
-      self._query.filter(kind_cls.state != 'new')
-      self._query.filter(kind_cls.state != 'deleted')
-
-    def Count(self):
-      return self._query.count()
-
-    def Items(self):
-      for item in sorted(self._query,
-                         key=lambda o: o.modified, reverse=True):
-        yield item
-
-    def __iter__(self):
-      return self.Items()
-
   @property
   def IsCDBG(self):
     return 'CDBG' in self.jurisdiction
@@ -235,23 +277,23 @@ class Site(ndb.Model):
 
   @property
   def Orders(self):
-    return self.ActiveItems(self, Order)
+    return _ActiveItems(self, Order)
 
   @property
   def CheckRequests(self):
-    return self.ActiveItems(self, CheckRequest)
+    return _ActiveItems(self, CheckRequest)
 
   @property
   def VendorReceipts(self):
-    return self.ActiveItems(self, VendorReceipt)
+    return _ActiveItems(self, VendorReceipt)
 
   @property
   def InKindDonations(self):
-    return self.ActiveItems(self, InKindDonation)
+    return _ActiveItems(self, InKindDonation)
 
   @property
   def StaffTimes(self):
-    return self.ActiveItems(self, StaffTime)
+    return _ActiveItems(self, StaffTime)
 
   @property
   def StaffTimesByPosition(self):
@@ -284,8 +326,8 @@ class Site(ndb.Model):
     if self.scope_of_work:
       return self.scope_of_work
     sow = ''
-    for o in self.order_set:
-      if o.order_sheet.name == 'Scope of Work':
+    for o in self.Orders:
+      if o.order_sheet.get().name == 'Scope of Work':
         sow = o.notes
     self.scope_of_work = sow
     self.put()
@@ -319,9 +361,9 @@ class Site(ndb.Model):
                                 
   
   def SaveTheChildren(self):
-    for child in (self.order_set, self.checkrequest_set,
-                  self.vendorreceipt_set, self.inkinddonation_set,
-                  self.stafftime_set):
+    for child in (self.Orders, self.CheckRequests,
+                  self.VendorReceipts, self.InKindDonations,
+                  self.StaffTimes):
       for obj in child:
         obj.put()
                           
@@ -456,6 +498,10 @@ class Order(ndb.Model):
   modified = ndb.DateTimeProperty(auto_now=True)
   last_editor = ndb.UserProperty(auto_current_user=True)
 
+  @property
+  def OrderItems(self):
+    return _ActiveItems(self, OrderItem)
+
   def put(self, *a, **k):
     self.program = self.site.program
     super(ndb.Model, self).put(*a, **k)
@@ -463,7 +509,7 @@ class Order(ndb.Model):
   def __unicode__(self):
     return ' '.join((self.site.number, self.site.name,
                      self.order_sheet.name,
-                     '%d items' % len(list(self.orderitem_set)),
+                     '%d items' % self.OrderItems.Count(),
                      '$%0.2f' % self.GrandTotal()))
 
   def CanMakeChanges(self):
@@ -558,6 +604,170 @@ class Order(ndb.Model):
     self.logistics_end = self.LogisticsEnd()
     self.logistics_instructions = self.LogisticsInstructions()
     self.put()
+
+
+class OrderItem(ndb.Model):
+  """The Items that are in a given Order."""
+  item = ndb.KeyProperty(kind=Item)
+  order = ndb.KeyProperty(kind=Order)
+  supplier = ndb.KeyProperty(kind=Supplier)
+  quantity = ndb.IntegerProperty(default=0)
+  quantity_float = ndb.FloatProperty(default=0.0)
+  name = ndb.StringProperty(default="")
+
+  def FloatQuantity(self):
+    """Returns quantity as a float."""
+    if self.quantity:
+      return float(self.quantity)
+    elif self.quantity_float:
+      return self.quantity_float
+    else:
+      return 0.0
+
+  def IsEmpty(self):
+    quantity = self.FloatQuantity()
+    return not quantity and not self.name
+
+  def SupportsName(self):
+    return (self.item.supports_extra_name_on_order
+            or self.order.order_sheet.supports_extra_name_on_order)
+
+  def VisibleQuantity(self):
+    quantity = self.FloatQuantity()
+    if quantity:
+      if quantity % 1 == 0:
+        return str(int(quantity))
+      else:
+        return str(quantity)
+    else:
+      return ''
+
+  def VisibleCost(self):
+    quantity = self.FloatQuantity()
+    if quantity and not self.item.unit_cost:
+      return '0'
+    if quantity and self.item.unit_cost:
+      return '%.2f' % (quantity * self.item.unit_cost)
+    else:
+      return ''
+
+
+class Delivery(ndb.Model):
+  """Delivery to a site (no retrieval)."""
+  site = ndb.KeyProperty(kind=Site, required=True)
+  delivery_date = ndb.StringProperty()
+  delivery_date.verbose_name = 'Delivery Date (Mon-Fri only)'
+  contact = ndb.StringProperty()
+  contact.verbose_name = "Contact person (who will accept delivery)"
+  contact_phone = ndb.StringProperty()
+  notes = ndb.TextProperty()
+  notes.verbose_name = (
+      'Instructions for delivery person')
+
+
+class OrderDelivery(ndb.Model):
+  """Maps Order to Delivery."""
+  order = ndb.KeyProperty(kind=Order, required=True)
+  delivery = ndb.KeyProperty(kind=Delivery, required=True)
+
+
+class Pickup(ndb.Model):
+  """Pick up from RTP warehouse."""
+  site = ndb.KeyProperty(kind=Site, required=True)
+  pickup_date = ndb.StringProperty()
+  pickup_date.verbose_name = 'Pickup Date (Mon-Fri only)'
+  return_date = ndb.StringProperty()
+  return_date.verbose_name = '(Optional) Return date for durable equipment'
+  contact = ndb.StringProperty()
+  contact.verbose_name = "Contact person (who will pick up)"
+  contact_phone = ndb.StringProperty()
+  notes = ndb.TextProperty()
+  notes.verbose_name = (
+      'Instructions for warehouse staff')
+
+
+class OrderPickup(ndb.Model):
+  """Maps Order to Pickup."""
+  order = ndb.KeyProperty(kind=Order, required=True)
+  pickup = ndb.KeyProperty(kind=Pickup, required=True)
+
+
+class Retrieval(ndb.Model):
+  """Delivery and retrieval to and from a site."""
+  site = ndb.KeyProperty(kind=Site, required=True)
+  dropoff_date = ndb.StringProperty()
+  dropoff_date.verbose_name = 'Delivery Date (Mon-Fri only)'
+  retrieval_date = ndb.StringProperty()
+  retrieval_date.verbose_name = 'Retrieval Date (Mon-Fri only)'
+  contact = ndb.StringProperty()
+  contact.verbose_name = "Contact person (who will accept delivery)"
+  contact_phone = ndb.StringProperty()
+  notes = ndb.TextProperty()
+  notes.verbose_name = (
+      'Instructions for delivery person')
+
+
+class OrderRetrieval(ndb.Model):
+  """Maps Order to Retrieval."""
+  order = ndb.KeyProperty(kind=Order, required=True)
+  retrieval = ndb.KeyProperty(kind=Retrieval, required=True)
+
+
+class InventoryItem(ndb.Model):
+  """The Items that are in the inventory."""
+  item = ndb.KeyProperty(kind=Item)
+  quantity = ndb.IntegerProperty(default=0)
+  quantity_float = ndb.FloatProperty(default=0.0)
+  location = ndb.StringProperty()
+  available_on = ndb.DateProperty()
+  last_editor = ndb.UserProperty()
+  modified = ndb.DateTimeProperty(auto_now=True)
+
+
+class StaffPosition(ndb.Model):
+  """Staff positions that have hourly billing."""
+  position_name = ndb.StringProperty()
+
+  # Defaults possibly superceded by the date-based lists below, and destined to be deprecated once
+  # all objects have moved to the date-based lists.
+  hourly_rate = ndb.FloatProperty(default=0.0)
+  mileage_rate = ndb.FloatProperty(default=0.0)
+
+  # Space-separated pairs of date and rate strings, to support
+  # rates that change over time. The scheme here is to list the effective date of rate changes, 
+  # along with the new rate.
+
+  # These are entered in the datastore editor as 
+  # type=Array and a value formatted like
+  # {
+  #   "values": [
+  #     {
+  #       "stringValue": "2016-01-01 10.0"
+  #     },
+  #     {
+  #       "stringValue": "2017-01-01 20.0"
+  #     }
+  #   ]
+  # }
+  # Then the values appear here as unicode strings:
+  # [u'2016-01-01 10.0', u'2017-01-01 20.0']
+  hourly_rate_after_date = ndb.StringProperty(repeated=True)
+  mileage_rate_after_date = ndb.StringProperty(repeated=True)
+
+  last_editor = ndb.UserProperty()
+  modified = ndb.DateTimeProperty(auto_now=True)
+
+  def GetHourlyRate(self, activity_date):
+    return _GetRateFromArray(self.hourly_rate, self.hourly_rate_after_date, activity_date)
+
+  def GetMileageRate(self, activity_date):
+    return _GetRateFromArray(self.mileage_rate, self.mileage_rate_after_date, activity_date)
+
+  def __unicode__(self):
+    return '%s' % self.position_name
+
+  def __str__(self):
+    return '%s' % self.position_name
 
 
 class CheckRequest(ndb.Model):
