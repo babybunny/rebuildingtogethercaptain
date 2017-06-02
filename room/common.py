@@ -176,7 +176,8 @@ def GetStaffCaptain():
 
 
 jinja_environment = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+    loader=jinja2.FileSystemLoader(
+      os.path.join(os.path.dirname(__file__), 'templates')))
 
 def Respond(request_handler, template_name, params=None):
   """Helper to render a response, passing standard stuff to the response.
@@ -198,5 +199,5 @@ def Respond(request_handler, template_name, params=None):
   params['help_person'] = HELP_PERSON
   if not template_name.endswith('.html'):
     template_name += '.html'
-  template = jinja_environment.get_template('templates/' + template_name)
+  template = jinja_environment.get_template(template_name)
   request_handler.response.out.write(template.render(params))

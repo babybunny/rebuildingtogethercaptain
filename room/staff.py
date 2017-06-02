@@ -4,12 +4,8 @@ import datetime
 import json
 import logging
 import webapp2
-from google.appengine.api import images
-from google.appengine.api import users
-from google.appengine.ext import db
 from google.appengine.api import taskqueue
 from google.appengine.ext import deferred
-from google.appengine.ext.webapp import template
 
 import ndb_models
 import common
@@ -17,39 +13,12 @@ import common
 TEST_SITE_NUMBER = '11999ZZZ'
 
 
-def FindHome(user, default='/'):
-  """Return path of user's home page, or a default page."""
-  if user and user.email():
-    email = user.email().lower()
-    staff = models.Staff.all().filter('email = ', email).get()
-    if staff:
-      staff.last_welcome = datetime.datetime.now()
-      staff.put()
-      return urlresolvers.reverse(StaffHome)
-
-    captain = models.Captain.all().filter('email = ', email).get()
-    if captain:
-      captain.last_welcome = datetime.datetime.now()
-      captain.put()
-      return urlresolvers.reverse(views.CaptainHome)
-
-  logging.info('Can not find Captain or Staff for user: %s' % user)
-
-  return default
-
-
-def GoHome(request):
-  user = users.GetCurrentUser()
-  return http.HttpResponseRedirect(FindHome(user))
-
-
 def StaffHome(request):
   user, status = common.GetUser()
-  if not user.staff:
+  if not user or not user.staff:
     return webapp2.redirect_to('Start')
   if not user.staff.program_selected:
     return webapp2.redirect_to('SelectProgram')
-  # http.HttpResponseRedirect(urlresolvers.reverse(SelectProgram))
   order_sheets = list(ndb_models.OrderSheet.query())
   order_sheets.sort(key=lambda x: x.name)
   jurisdictions = list(ndb_models.Jurisdiction.query())
@@ -61,12 +30,10 @@ def StaffHome(request):
   return common.Respond(request, 'staff_home', d)
 
 
-# class SelectProgram(webapp2.RequestHandler):
-
 def SelectProgram(request):
     user, _ = common.GetUser()
-    if not user.staff:
-      return webapp2.redirect_to('Main')
+    if not user and not user.staff:
+      return webapp2.redirect_to('Start')
     program = request.get('program')
     if not program:
       what_you_are_doing = "Select a Program to work on"
@@ -109,14 +76,12 @@ def CaptainAutocomplete(request):
 def SiteJump(request):
   user, _ = common.GetUser()
   d = {'user': user}
-  number = request.GET['number']
-  site = models.NewSite.all().filter('number = ', number).get()
+  number = request.get('number')
+  site = ndb_models.Site.query().filter(ndb_models.Site.number == number).get()
   if site is None:
-    return http.HttpResponseRedirect(
-        urlresolvers.reverse(StaffHome))
+    return webapp2.redirect_to('StaffHome')
   else:
-    return http.HttpResponseRedirect(
-        urlresolvers.reverse(views.SiteView, args=[site.key().id()]))
+    return webapp2.redirect_to('SiteView', site.key.integer_id())
 
 
 def SitesWithoutOrder(request, order_sheet_id):

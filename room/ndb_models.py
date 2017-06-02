@@ -161,7 +161,6 @@ class OrderSheet(ndb.Model):
             self.retrieval_options == 'Yes')      
 
 
-
 class Site(ndb.Model):
   """A work site."""
   # "10001DAL" reads: 2010, #001, Daly City
@@ -199,12 +198,527 @@ class Site(ndb.Model):
   volunteer_signup_link = ndb.StringProperty()
   volunteer_signup_link.help_text = "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
 
+
+  class ActiveItems(object):
+    """Access user-input records with state and modified fields."""
+
+    def __init__(self, ref, kind_cls):
+      """
+      Args:
+        ref: instance of a model that is referenced by another kind of model
+        kind_cls: the class of the ndb kind, like in Key()
+      """
+      self._query = kind_cls.query(kind_cls.site == ref.key)
+      self._query.filter(kind_cls.state != 'new')
+      self._query.filter(kind_cls.state != 'deleted')
+
+    def Count(self):
+      return self._query.count()
+
+    def Items(self):
+      for item in sorted(self._query,
+                         key=lambda o: o.modified, reverse=True):
+        yield item
+
+    def __iter__(self):
+      return self.Items()
+
+  @property
+  def IsCDBG(self):
+    return 'CDBG' in self.jurisdiction
+
+  @property
+  def ContactPerson(self):
+    if self.applicant:
+      return self.applicant
+    return self.name
+
+  @property
+  def Orders(self):
+    return self.ActiveItems(self, Order)
+
+  @property
+  def CheckRequests(self):
+    return self.ActiveItems(self, CheckRequest)
+
+  @property
+  def VendorReceipts(self):
+    return self.ActiveItems(self, VendorReceipt)
+
+  @property
+  def InKindDonations(self):
+    return self.ActiveItems(self, InKindDonation)
+
+  @property
+  def StaffTimes(self):
+    return self.ActiveItems(self, StaffTime)
+
+  @property
+  def StaffTimesByPosition(self):
+    class Pos(object):
+
+      def __init__(self):
+        self.name = None
+        self.hours = 0.0
+        self.hours_subtotal = 0.0
+        self.miles = 0.0
+        self.mileage_subtotal = 0.0
+        self.stafftimes = []
+
+    by_pos = collections.defaultdict(Pos)
+    for s in self.StaffTimes:
+      name = str(s.position)
+      pos = by_pos[name]
+      if pos.name is None:
+        pos.name = name
+      pos.stafftimes.append(s)
+      pos.hours += s.hours
+      pos.hours_subtotal += s.HoursTotal()
+      pos.miles += s.miles
+      pos.mileage_subtotal += s.MileageTotal()
+    return by_pos.itervalues()
+  
+  
+  @property
+  def ScopeOfWork(self):
+    if self.scope_of_work:
+      return self.scope_of_work
+    sow = ''
+    for o in self.order_set:
+      if o.order_sheet.name == 'Scope of Work':
+        sow = o.notes
+    self.scope_of_work = sow
+    self.put()
+    return sow
+  
+  def ProgramFromNumber(self):
+    year = '20' + self.number[0:2]
+    mode = self.number[2]
+    program = None
+    if mode == '0':
+      program = year + ' NRD'
+    elif mode == '1':
+      program = year + ' NRD'
+    elif mode == '3':
+      program = year + ' Misc'
+    elif mode == '5':
+      program = year + ' Safe'
+    elif mode == '6':
+      program = year + ' Safe'
+    elif mode == '7':
+      program = year + ' Energy'
+    elif mode == '8':
+      program = year + ' Teambuild'
+    elif mode == '9':
+      program = year + ' Youth'
+    elif mode == 'Z':
+      program = year + ' Test'
+    else:
+      logging.warn('no program for site number %s', self.number)
+    return program
+                                
+  
+  def SaveTheChildren(self):
+    for child in (self.order_set, self.checkrequest_set,
+                  self.vendorreceipt_set, self.inkinddonation_set,
+                  self.stafftime_set):
+      for obj in child:
+        obj.put()
+                          
+
+  def put(self, *a, **k):
+    if self.jurisdiction_choice:
+      self.jurisdiction = self.jurisdiction_choice.name
+    # issue213: program should be configurable
+    if not self.program:
+      self.program = self.ProgramFromNumber()
+    prefixes = set()
+    for f in self.name, self.applicant, self.street_number, self.jurisdiction:
+      if not f:
+        continue
+      prefixes.add(f)
+      for part in f.split():
+        prefixes.add(part)
+        for i in xrange(1, 7):
+          prefixes.add(part[:i])
+
+    if self.number:
+      prefixes.add(self.number)
+      for i in xrange(1, 7):
+        prefixes.add(self.number[:i])
+        prefixes.add(self.number[2:2 + i])
+        prefixes.add(self.number[5:5 + i])
+    self.search_prefixes = [p.lower() for p in prefixes]
+    logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
+    super(ndb.Model, self).put(*a, **k)
+    self.SaveTheChildren()
+
+  
   def Label(self):
     return "%s %s" % (self.number, self.name)
 
 
+  def __unicode__(self):
+    """Only works if self has been saved."""
+    return 'Site #%s | %s' % (self.number, self.name)
+
+  def StreetAddress(self):
+    return '%s, %s' % (' '.join(self.street_number.split()),
+                       ' '.join(self.city_state_zip.split()))
+  
+  def NeedsAttention(self):
+    return self.announcement_subject is not None
+  
+  def OrderTotal(self):
+    """Only works if self has been saved."""
+    cost = sum(order.GrandTotal() for order in self.Orders)
+    return cost
+  
+  @property
+  def order_total(self):
+    if not hasattr(self, '_order_total'):
+      self._order_total = self.OrderTotal()
+    return self._order_total
+    
+  def CheckRequestTotal(self):
+    """Only works if self has been saved."""
+    return sum(cr.Total() or 0 for cr in self.CheckRequests)
+  
+  def VendorReceiptTotal(self):
+    """Only works if self has been saved."""
+    return sum(cr.amount or 0 for cr in self.VendorReceipts)
+  
+  def InKindDonationTotal(self):
+    """Only works if self has been saved."""
+    return sum(cr.Total() or 0 for cr in self.InKindDonations)
+  
+  def StaffTimeTotal(self):
+    """Only works if self has been saved."""
+    return sum(cr.Total() or 0 for cr in self.StaffTimes)
+  
+  def Expenses(self):
+    return (self.order_total +
+            self.CheckRequestTotal() +
+            self.StaffTimeTotal() +
+            self.VendorReceiptTotal())
+  
+  def BudgetRemaining(self):
+    if self.budget:
+      return self.budget - self.Expenses()
+    else:
+      return 0.
+    
+  @property
+  def budget_remaining(self):
+    if not hasattr(self, '_budget_remaining'):
+      self._budget_remaining = self.BudgetRemaining()
+      return self._budget_remaining
+    
+  @property
+  def in_the_red(self):
+    return self.budget_remaining < 0
+  
+  def BudgetStatement(self):
+    if self.BudgetRemaining() > 0:
+      return '$%0.2f unspent budget' % self.BudgetRemaining()
+    else:
+      return '$%0.2f over budget' % (-1 * self.BudgetRemaining())
+    
+  
+class SiteCaptain(ndb.Model):
+  """Associates a site and a Captain."""
+  site = ndb.KeyProperty(kind=Site, required=True)
+  captain = ndb.KeyProperty(kind=Captain, required=True)
+  type = ndb.StringProperty(choices=(
+    'Construction',
+    'Team',
+    'Volunteer',
+  ))
 
 
+class Order(ndb.Model):
+  """A Captain can make an Order for a list of Items."""
+  site = ndb.KeyProperty(kind=Site, required=True)
+  order_sheet = ndb.KeyProperty(kind=OrderSheet, required=True)
+  program = ndb.StringProperty()
+  sub_total = ndb.FloatProperty()
+  notes = ndb.TextProperty()
+  state = ndb.StringProperty()
+  actual_total = ndb.FloatProperty()
+  reconciliation_notes = ndb.TextProperty(default='')
+  invoice_date = ndb.DateTimeProperty()
+  vendor = ndb.KeyProperty(kind=Supplier)
+  logistics_start = ndb.StringProperty()
+  logistics_end = ndb.StringProperty()
+  logistics_instructions = ndb.TextProperty()
+  created = ndb.DateTimeProperty(auto_now_add=True)
+  created_by = ndb.UserProperty(auto_current_user_add=True)
+  modified = ndb.DateTimeProperty(auto_now=True)
+  last_editor = ndb.UserProperty(auto_current_user=True)
+
+  def put(self, *a, **k):
+    self.program = self.site.program
+    super(ndb.Model, self).put(*a, **k)
+
+  def __unicode__(self):
+    return ' '.join((self.site.number, self.site.name,
+                     self.order_sheet.name,
+                     '%d items' % len(list(self.orderitem_set)),
+                     '$%0.2f' % self.GrandTotal()))
+
+  def CanMakeChanges(self):
+    return self.state in ('new', 'Received')
+
+  def VisibleNotes(self):
+    if self.notes is None:
+      return ''
+    return self.notes
+
+  def EstimatedTotal(self):
+    if self.sub_total is None:
+      return 0.
+    t = self.sub_total * (1. + SALES_TAX_RATE)
+    return math.ceil(t * 100.) / 100.
+
+  def GrandTotal(self):
+    if self.state == 'Deleted':
+      return 0.
+    if self.actual_total is not None:
+      return self.actual_total
+    else:
+      return self.EstimatedTotal()
+
+  def Total(self):
+    return self.GrandTotal()
+
+  def SalesTax(self):
+    if self.state == 'Deleted':
+      return 0.
+    if self.sub_total is None:
+      return 0.
+    return self.sub_total * SALES_TAX_RATE
+
+  # TODO: seems incorrect to update fulfilled orders.
+  def UpdateSubTotal(self):
+    """Recomputes sub_total by summing the cost of items and adding tax."""
+    sub_total = 0.
+    order_items = OrderItem.all().filter('order = ', self)
+    for oi in order_items:
+      quantity = oi.FloatQuantity()
+      if oi.item.unit_cost is not None and quantity:
+        sub_total += quantity * oi.item.unit_cost
+    if self.sub_total != sub_total:
+      self.sub_total = sub_total
+      self.put()
+      logging.info('Updated subtotal for order %d to %0.2f',
+                   self.key().id(), sub_total)
+
+  def LogisticsStart(self):
+    for od in self.orderdelivery_set:
+      return "%s (Delivery)" % od.delivery.delivery_date
+    for od in self.orderpickup_set:
+      return "%s (Pickup)" % od.pickup.pickup_date
+    for od in self.orderretrieval_set:
+      return "%s (Drop-off)" % od.retrieval.dropoff_date
+    return None
+
+  def LogisticsEnd(self):
+    for od in self.orderretrieval_set:
+      return "%s (Retrieval)" % od.retrieval.retrieval_date
+    return None
+
+  def LogisticsInstructions(self):
+    for od in self.orderdelivery_set:
+      return "%s%s %s%s %s" % (
+          od.delivery.contact and 'Contact ' or '',
+          od.delivery.contact or '',
+          od.delivery.contact_phone and 'at ' or '',
+          od.delivery.contact_phone or '',
+          od.delivery.notes or '')
+
+    for od in self.orderpickup_set:
+      return "%s%s %s%s %s" % (
+          od.pickup.contact and 'Contact ' or '',
+          od.pickup.contact or '',
+          od.pickup.contact_phone and 'at ' or '',
+          od.pickup.contact_phone or '',
+          od.pickup.notes or '')
+
+    for od in self.orderretrieval_set:
+      return "%s%s %s%s %s" % (
+          od.retrieval.contact and 'Contact ' or '',
+          od.retrieval.contact or '',
+          od.retrieval.contact_phone and 'at ' or '',
+          od.retrieval.contact_phone or '',
+          od.retrieval.notes or '')
+    return ''
+
+  def UpdateLogistics(self):
+    self.logistics_start = self.LogisticsStart()
+    self.logistics_end = self.LogisticsEnd()
+    self.logistics_instructions = self.LogisticsInstructions()
+    self.put()
+
+
+class CheckRequest(ndb.Model):
+  """A Check Request is a request for reimbursement."""
+  site = ndb.KeyProperty(kind=Site)
+  captain = ndb.KeyProperty(kind=Captain)
+  program = ndb.StringProperty()
+  payment_date = ndb.DateProperty()
+  labor_amount = ndb.FloatProperty(default=0.0)
+  labor_amount.verbose_name = 'Labor Amount ($)'
+  materials_amount = ndb.FloatProperty(default=0.0)
+  materials_amount.verbose_name = 'Materials Amount ($)'
+  food_amount = ndb.FloatProperty(default=0.0)
+  food_amount.verbose_name = 'Food Amount ($)'
+  description = ndb.TextProperty()
+  name = ndb.StringProperty()
+  name.verbose_name = 'Payable To'
+  address = ndb.TextProperty()
+  address.verbose_name = "Payee Address"
+  tax_id = ndb.StringProperty()
+  tax_id.verbose_name = "Payee Tax ID"
+  tax_id.help_text = ("we'll notify you if we still need this information "
+                      "to process the check")
+  form_of_business = ndb.StringProperty(
+      choices=('Corporation', 'Partnership', 'Sole Proprietor',
+               'Don\'t Know'))
+  form_of_business.verbose_name = "Payee Business Type"
+  state = ndb.StringProperty(
+      choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'),
+      default='new')
+  last_editor = ndb.UserProperty()
+  modified = ndb.DateTimeProperty(auto_now=True)
+
+  def put(self, *a, **k):
+    self.program = self.site.program
+    super(ndb.Model, self).put(*a, **k)
+
+  def Total(self):
+    return self.labor_amount + self.materials_amount + self.food_amount
+
+
+class VendorReceipt(ndb.Model):
+  """A Vendor Receipt is a report of a purchase outside of ROOMS."""
+  site = ndb.KeyProperty(kind=Site)
+  captain = ndb.KeyProperty(kind=Captain)
+  program = ndb.StringProperty()
+  purchase_date = ndb.DateProperty()
+  vendor = ndb.StringProperty()
+  supplier = ndb.KeyProperty(kind=Supplier)
+  amount = ndb.FloatProperty()
+  amount.verbose_name = 'Purchase Amount ($)'
+  description = ndb.TextProperty()
+  state = ndb.StringProperty(
+      choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'),
+      default='new')
+  last_editor = ndb.UserProperty()
+  modified = ndb.DateTimeProperty(auto_now=True)
+
+  @property
+  def name(self):
+    if self.supplier:
+      return self.supplier.name
+    return self.vendor
+
+  def put(self, *a, **k):
+    self.program = self.site.program
+    super(ndb.Model, self).put(*a, **k)
+
+  def Total(self):
+    return self.amount or 0
+
+
+class InKindDonation(ndb.Model):
+  """An In-kind donation to a site."""
+  site = ndb.KeyProperty(kind=Site)
+  captain = ndb.KeyProperty(kind=Captain)
+  program = ndb.StringProperty()
+  donation_date = ndb.DateProperty()
+  donor = ndb.StringProperty()
+  donor_phone = ndb.StringProperty()
+  donor_info = ndb.TextProperty()
+  donor_info.verbose_name = (
+      'Include as much of the following donor information as possible:'
+      ' donor name, company, address, phone, email.')
+  labor_amount = ndb.FloatProperty(default=0.0)
+  labor_amount.verbose_name = 'Labor Value ($)'
+  materials_amount = ndb.FloatProperty(default=0.0)
+  materials_amount.verbose_name = 'Materials Value ($)'
+  description = ndb.TextProperty()
+  budget = ndb.StringProperty(choices=('Normal', 'Roofing'), default='Normal')
+  state = ndb.StringProperty(
+      choices=('new', 'submitted', 'pending letter', 'fulfilled', 'deleted'),
+      default='new')
+  last_editor = ndb.UserProperty()
+  modified = ndb.DateTimeProperty(auto_now=True)
+
+  @property
+  def name(self):
+    return self.donor
+
+  def put(self, *a, **k):
+    self.program = self.site.program
+    super(ndb.Model, self).put(*a, **k)
+
+  def Total(self):
+    return self.labor_amount + self.materials_amount
+
+
+class StaffTime(ndb.Model):
+  """Expense type that represents hourly staff time."""
+  site = ndb.KeyProperty(kind=Site)
+  captain = ndb.KeyProperty(kind=Captain)
+  program = ndb.StringProperty()
+  state = ndb.StringProperty(
+      choices=('new', 'submitted', 'fulfilled', 'deleted'),
+      default='new')
+  position = ndb.KeyProperty(kind=StaffPosition)
+  hours = ndb.FloatProperty(default=0.0)
+  hours.verbose_name = 'Hours'
+  miles = ndb.FloatProperty(default=0.0)
+  miles.verbose_name = 'Miles'
+  activity_date = ndb.DateProperty()
+  description = ndb.TextProperty()
+  last_editor = ndb.UserProperty()
+  modified = ndb.DateTimeProperty(auto_now=True)
+
+  def put(self, *a, **k):
+    self.program = self.site.program
+    super(ndb.Model, self).put(*a, **k)
+
+  @property
+  def name(self):
+    return self.position
+
+  def HoursTotal(self):
+    return self.hours * self.position.GetHourlyRate(self.activity_date)
+  
+  def MileageTotal(self):
+    return self.miles * self.position.GetMileageRate(self.activity_date)
+
+  def Total(self):
+    return self.HoursTotal() + self.MileageTotal()
+
+
+class Expense(ndb.Model):
+  """A generic expense."""
+  payee = ndb.KeyProperty(kind=Supplier)
+  action = ndb.StringProperty(choices=('on account', 'need reimbursement'))
+
+  site = ndb.KeyProperty(kind=Site)
+  captain = ndb.KeyProperty(kind=Captain)
+  program = ndb.StringProperty()
+  date = ndb.DateProperty()
+  amount = ndb.FloatProperty()
+  amount.verbose_name = 'Purchase Amount ($)'
+  description = ndb.TextProperty()
+  state = ndb.StringProperty(
+      choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'),
+      default='new')
+  last_editor = ndb.UserProperty()
+  modified = ndb.DateTimeProperty(auto_now=True)
 
 
 

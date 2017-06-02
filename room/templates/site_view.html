@@ -12,14 +12,15 @@
         {{ site.street_number }}
         <br/>
         {{ site.city_state_zip }}
-        {% ifnotequal site.applicant site.name %}
+
         <p>
+          {% if site.applicant != site.name %}
           <i>Applicant's main contact</i>
           <br>
           <strong>
             {{ site.ContactPerson }}
           </strong>
-          {% endifnotequal %}
+          {% endif %}
           {% if site.applicant_home_phone %}
           <br>{{ site.applicant_home_phone }} <i>home</i>
           {% endif %}
@@ -48,7 +49,7 @@
         </p>
         {% endif %}
 
-        {% ifequal site.rrp_test "Yes" %}
+        {% if site.rrp_test == "Yes" %}
         <p><i>RRP Info:</i>
           <br/>
           <span class="tiny">
@@ -65,19 +66,20 @@
             {% endif %}
           </strong>
         </p>
-        {% endifequal %}
-
+        {% endif %}
+            
         {% if not site.sitecaptain_set %}
         <p>
 	        No captains assigned yet!
         </p>
         {% else %}
         {% for sitecaptain in site.sitecaptain_set %}
+        {% set captain = sitecaptain.captain.get() %}
         <p>
-	        <strong>{{ sitecaptain.captain.name }}</strong>
+	        <strong>{{ captain.name }}</strong>
 	        {% if user.staff %}
 	        (
-	        <a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id %}">
+	        <a href="{{ webapp2.uri_for('CaptainEdit', args=[sitecaptain.captain.integer_id()]) }}">
 	          edit
 	        </a>
 	        )
@@ -85,29 +87,29 @@
 	        <br>{{ sitecaptain.type }} Captain
 	        {% if site_list_detail %}
 	        <br>
-	        <a href="mailto:{{ sitecaptain.captain.email }}">
-	          {{ sitecaptain.captain.email }}
+	        <a href="mailto:{{ captain.email }}">
+	          {{ captain.email }}
 	        </a>
-	        {% if sitecaptain.captain.phone1 %}
-	        <br>{{ sitecaptain.captain.phone1 }} <i>primary</i>
+	        {% if captain.phone1 %}
+	        <br>{{ captain.phone1 }} <i>primary</i>
 	        {% endif %}
-	        {% if sitecaptain.captain.phone2 %}
-	        <br>{{ sitecaptain.captain.phone2 }} <i>secondary</i>
+	        {% if captain.phone2 %}
+	        <br>{{ captain.phone2 }} <i>secondary</i>
 	        {% endif %}
-	        {% if sitecaptain.captain.phone_mobile %}
-	        <br>{{ sitecaptain.captain.phone_mobile }} <i>mobile</i>
+	        {% if captain.phone_mobile %}
+	        <br>{{ captain.phone_mobile }} <i>mobile</i>
 	        {% endif %}
-	        {% if sitecaptain.captain.phone_home %}
-	        <br>{{ sitecaptain.captain.phone_home }} <i>home</i>
+	        {% if captain.phone_home %}
+	        <br>{{ captain.phone_home }} <i>home</i>
 	        {% endif %}
-	        {% if sitecaptain.captain.phone_work %}
-	        <br>{{ sitecaptain.captain.phone_work }} <i>work</i>
+	        {% if captain.phone_work %}
+	        <br>{{ captain.phone_work }} <i>work</i>
 	        {% endif %}
-	        {% if sitecaptain.captain.phone_fax %}
-	        <br>{{ sitecaptain.captain.phone_fax }} <i>fax</i>
+	        {% if captain.phone_fax %}
+	        <br>{{ captain.phone_fax }} <i>fax</i>
 	        {% endif %}
-	        {% if sitecaptain.captain.phone_other %}
-	        <br>{{ sitecaptain.captain.phone_other }} <i>other</i>
+	        {% if captain.phone_other %}
+	        <br>{{ captain.phone_other }} <i>other</i>
 	        {% endif %}
 	        {% endif %}
         </p>
@@ -124,9 +126,9 @@
 	             name="{{ site.key.id }}">{{ site.announcement_body }}</div>
         </div>
         {% if site_list_detail %}
-        <p>{{ site.StreetAddress }}
+        <p>{{ site.StreetAddress() }}
           <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress }}&ie=UTF8&z=14" target="_blank">
-	          <img src="https://maps.google.com/maps/api/staticmap?center={{ site.StreetAddress }}&markers=size:mid|color:red|{{ site.StreetAddress }}&zoom=11&size={{ map_width }}x{{ map_height }}&sensor=false&key=ABQIAAAAocapnBGvqx6JkB2K9HNychQhv5EN3SOvE9MJZZkkyl7jkpoomxR8v4PeXRpH7B7kzknEvwpb_hu-Jg" alt="map of {{ site.StreetAddress }}" width="{{ map_width }}" height="{{ map_height }}">
+	          <img src="https://maps.google.com/maps/api/staticmap?center={{ site.StreetAddress() }}&markers=size:mid|color:red|{{ site.StreetAddress() }}&zoom=11&size={{ map_width }}x{{ map_height }}&sensor=false&key=ABQIAAAAocapnBGvqx6JkB2K9HNychQhv5EN3SOvE9MJZZkkyl7jkpoomxR8v4PeXRpH7B7kzknEvwpb_hu-Jg" alt="map of {{ site.StreetAddress() }}" width="{{ map_width }}" height="{{ map_height }}">
 	          <br>(click to view on Google Maps)
           </a>
         </p>
@@ -145,10 +147,10 @@
         {{ site.street }}
         <br>{{ site.city }}
         {% endif %}
-      </td>
+      </td>      
       <td>
         <span class="big">
-	        {{ site.BudgetStatement }}
+	        {{ site.BudgetStatement() }}
         </span>
         <div class="panel">
           <table class="budget">
@@ -158,7 +160,7 @@
 	                <strong>Starting Budget</strong>
 	              </td>
 	              <td class="value">
-	                ${{ site.budget|floatformat:2 }}
+	                ${{ site.budget|round(2) }}
 	              </td>
 	              <td>
 	              </td>
@@ -174,19 +176,19 @@
 	                </span>
 	              </td>
 	              <td class="value">
-	                {% if site.OrderTotal %}
-	                (${{ site.OrderTotal|floatformat:2 }})
+	                {% if site.OrderTotal() %}
+	                (${{ site.OrderTotal()|round(2) }})
 	                {% else %}
 	                -
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.order.OrderPreview site.key.id %}">
+	                <a href="{{ webapp2.uri_for('OrderPreview', args=[site.key.integer_id()]) }}">
 	                  Place an Order
 	                </a>
 	              </td>
 	              <td class="action">
-	                {% if site.Orders.Count %}
+	                {% if site.Orders.Count() %}
 	                <a href="#order_panel">
 		                Review
 	                </a>
@@ -202,19 +204,19 @@
 	                </span>
 	              </td>
 	              <td class="value">
-	                {% if site.CheckRequests.Count %}
-	                (${{ site.CheckRequestTotal|floatformat:2 }})
+	                {% if site.CheckRequests.Count() %}
+	                (${{ site.CheckRequestTotal()|round(2) }})
 	                {% else %}
 	                -
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.views.CheckRequestNew site.key.id %}">
+	                <a href="{{ webapp2.uri_for('CheckRequestNew', args=[site.key.integer_id()]) }}">
 		                Submit a Request
 	                </a>
 	              </td>
 	              <td class="action">
-	                {% if site.CheckRequests.Count %}
+	                {% if site.CheckRequests.Count() %}
 	                <a href="#checkrequests_panel">
 		                Review
 	                </a>
@@ -230,19 +232,19 @@
 	                </span>
 	              </td>
 	              <td class="value">
-	                {% if site.VendorReceipts.Count %}
-	                (${{ site.VendorReceiptTotal|floatformat:2 }})
+	                {% if site.VendorReceipts.Count() %}
+	                (${{ site.VendorReceiptTotal()|round(2) }})
 	                {% else %}
 	                -
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.views.VendorReceiptNew site.key.id %}">
+	                <a href="{{ webapp2.uri_for('VendorReceiptNew', args=[site.key.integer_id()]) }}">
 		                Add a Receipt
 	                </a>
 	              </td>
 	              <td class="action">
-	                {% if site.VendorReceipts.Count %}
+	                {% if site.VendorReceipts.Count() %}
 	                <a href="#vendorreceipts_panel">
 		                Review
 	                </a>
@@ -259,19 +261,19 @@
 	                </span>
 	              </td>
 	              <td class="value">
-	                {% if site.StaffTimes.Count %}
-	                (${{ site.StaffTimeTotal|floatformat:2 }})
+	                {% if site.StaffTimes.Count() %}
+	                (${{ site.StaffTimeTotal()|round(2) }})
 	                {% else %}
 	                -
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.views.StaffTimeNew site.key.id %}">
+	                <a href="{{ webapp2.uri_for('StaffTimeNew', args=[site.key.integer_id()]) }}">
 		                Add Staff Time
 	                </a>
 	              </td>
 	              <td class="action">
-	                {% if site.StaffTimes.Count %}
+	                {% if site.StaffTimes.Count() %}
 	                <a href="#stafftime_panel">
 		                Review
 	                </a>
@@ -284,7 +286,7 @@
 	                <strong>Unspent Budget</strong>
 	              </td>
 	              <td class="value">
-	                ${{ site.BudgetRemaining|floatformat:2 }}
+	                ${{ site.BudgetRemaining()|round(2) }}
 	              </td>
 	              <td>
 	              </td>
@@ -300,19 +302,19 @@
 	              </span>
 	              </td>
 	              <td class="value">
-	                {% if site.InKindDonations.Count %}
-	                ${{ site.InKindDonationTotal|floatformat:2 }}
+	                {% if site.InKindDonations.Count() %}
+	                ${{ site.InKindDonationTotal()|round(2) }}
 	                {% else %}
 	                -
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{% url room.views.InKindDonationNew site.key.id %}">
+	                <a href="{{ webapp2.uri_for('InKindDonationNew', args=[site.key.integer_id()]) }}">
 		                Add a Donation
 	                </a>
 	              </td>
 	              <td class="action">
-	                {% if site.InKindDonations.Count %}
+	                {% if site.InKindDonations.Count() %}
 	                <a href="#inkinddonations_panel">
 		                Review
 	                </a>
@@ -322,7 +324,8 @@
 	          </tbody>
           </table>
         </div>
-        {% if site.Orders.Count %}
+
+        {% if site.Orders.Count() %}
         <a name="order_panel"></a>
         <div class="panel">
           <h3>Orders in progress</h3>
@@ -336,7 +339,7 @@
 	            </tr>
 	          </thead>
 	          <tbody>
-	            {% for order in site.Orders.Items %}
+              {% for order in site.Orders.Items() %}
 	            <tr>
 	              <td>
 	                <b>{{ order.order_sheet.name }}</b>
@@ -358,44 +361,44 @@
 	                {{ order.state }}
 	                {% if order.CanMakeChanges %}
 	                <br>
-	                <a href="{% url room.order.OrderEdit order.key.id %}">
+	                <a href="{{ webapp2.uri_for('OrderEdit', args=[order.key.integer_id()]) }}">
 		                make changes
 	                </a>
 	                {% if user.staff %}
 	                or
-	                <a href="{% url room.order.OrderFulfill order.key.id site.key.id %}">
+	                <a href="{{ webapp2.uri_for('OrderFulfill', args=[order.key.integer_id(), site.key.integer_id()]) }}">
 		                fulfill
 	                </a>
 	                {% endif %}
 	                {% else %}
 	                <br>
-	                <a href="{% url room.order.OrderView order.key.id %}">
+	                <a href="{{ webapp2.uri_for('OrderView', args=[order.key.integer_id()]) }}">
 		                view
 	                </a>
 	                {% endif %}
 	              </td>
 	              <td class="dollar">
-	                ${{ order.GrandTotal|floatformat:2 }}
+	                ${{ order.GrandTotal()|round(2) }}
 	              </td>
 	            </tr>
-	            {% endfor %}
-	          </tbody>
+	            {% endfor %}              
+            </tbody>
           </table>
         </div>
         {% endif %}
 
-        {% if site.CheckRequests.Count %}
+        {% if site.CheckRequests.Count() %}
         <a name="checkrequests_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{% url room.views.CheckRequestList site.key.id %}">
+	          <a href="{{ webapp2.uri_for('CheckRequestList', args=[site.key.integer_id()]) }}">
 	            list all
 	          </a>
 	        </span>
 	        <h3>Check Requests</h3>
 	        <table id="checkrequests" class="list tablesorter">
-	          {% for entity in site.CheckRequests.Items %}
-	          {% if forloop.first %}
+	          {% for entity in site.CheckRequests.Items() %}
+	          {% if loop.first %}
 	          <thead>
 	            <tr>
 	              <th>Captain</th>
@@ -414,18 +417,18 @@
 		              {{ entity.name|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total|floatformat:2 }}
+		              ${{ entity.Total()|round(2) }}
 	              </td>
 	              <td>
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.CheckRequestView entity.key.id%}">
+		                 href="{{ webapp2.uri_for('CheckRequestView', args=[entity.key.integer_id()]) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.CheckRequestEdit entity.key.id%}">
+		                 href="{{ webapp2.uri_for('CheckRequestEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>
 		              {% endif %}
@@ -437,18 +440,18 @@
         </div>
         {% endif %}
 
-        {% if site.VendorReceipts.Count %}
+        {% if site.VendorReceipts.Count() %}
         <a name="vendorreceipts_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{% url room.views.VendorReceiptList site.key.id %}">
+	          <a href="{{ webapp2.uri_for('VendorReceiptList', args=[site.key.integer_id()]) }}">
 	            list all
 	          </a>
 	        </span>
 	        <h3>Vendor Receipts</h3>
 	        <table id="vendorreceipts" class="list tablesorter">
-	          {% for entity in site.VendorReceipts.Items %}
-	          {% if forloop.first %}
+	          {% for entity in site.VendorReceipts.Items() %}
+	          {% if loop.first %}
 	          <thead>
 	            <tr>
 	              <th>Captain</th>
@@ -467,18 +470,18 @@
 		              {{ entity.name|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total|floatformat:2 }}
+		              ${{ entity.Total()|round(2) }}
 	              </td>
 	              <td>
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.VendorReceiptView entity.key.id%}">
+		                 href="{{ webapp2.uri_for('VendorReceiptView', args=[entity.key.integer_id()]) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.VendorReceiptEdit entity.key.id%}">
+		                 href="{{ webapp2.uri_for('VendorReceiptEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>
 		              {% endif %}
@@ -491,18 +494,18 @@
 	      {% endif %}
 
         {% if user.staff %}
-        {% if site.StaffTimes.Count %}
+        {% if site.StaffTimes.Count() %}
         <a name="stafftime_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{% url room.views.StaffTimeList site.key.id %}">
+	          <a href="{{ webapp2.uri_for('StaffTimeList', args=[site.key.integer_id()]) }}">
 	            list all
 	          </a>
 	        </span>
 	        <h3>Staff Time</h3>
 	        <table id="stafftime" class="list tablesorter">
-	          {% for entity in site.StaffTimes.Items %}
-	          {% if forloop.first %}
+	          {% for entity in site.StaffTimes.Items() %}
+	          {% if loop.first %}
 	          <thead>
 	            <tr>
 	              <th>Staff Position</th>
@@ -526,7 +529,7 @@
 		              {{ entity.miles|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total|floatformat:2 }}
+		              ${{ entity.Total()|round(2) }}
 	              </td>
 	              <td>
 		              {{ entity.activity_date|escape }}
@@ -535,12 +538,12 @@
 	                {{ entity.description }}
                   <br/>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.StaffTimeView entity.key.id%}">
+		                 href="{{ webapp2.uri_for('StaffTimeView', args=[entity.key.integer_id()]) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.StaffTimeEdit entity.key.id%}">
+		                 href="{{ webapp2.uri_for('StaffTimeEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>
 		              {% endif %}
@@ -552,19 +555,19 @@
         </div>
 	      {% endif %}
 	      {% endif %}
-
-        {% if site.InKindDonations.Count %}
+        
+        {% if site.InKindDonations.Count() %}
         <a name="inkinddonations_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{% url room.views.InKindDonationList site.key.id %}">
+	          <a href="{{ webapp2.uri_for('InKindDonationList', args=[site.key.integer_id()]) }}">
 	            list all
 	          </a>
 	        </span>
 	        <h3>In-kind Donations</h3>
 	        <table id="inkinddonations" class="list tablesorter">
-	          {% for entity in site.InKindDonations.Items %}
-	          {% if forloop.first %}
+	          {% for entity in site.InKindDonations.Items() %}
+	          {% if loop.first %}
 	          <thead>
 	            <tr>
 	              <th>Captain</th>
@@ -583,19 +586,19 @@
 		              {{ entity.donor|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total|floatformat:2 }}
+		              ${{ entity.Total()|round(2) }}
 	              </td>
 	              <td>
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.InKindDonationView entity.key.id%}">
+		                 href="{{ webapp2.uri_for('InKindDonationView', args=[entity.key.integer_id()]) }}">
 		                view
 		              </a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.id }}"
-		                 href="{%url room.views.InKindDonationEdit entity.key.id%}">
+		                 href="{{ webapp2.uri_for('InKindDonationEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>
 		              {% endif %}
@@ -605,8 +608,8 @@
 	          </tbody>
 	        </table>
 	        {% endif %}
-
         </div>
+        
       </td>
     </tr>
     <tr>

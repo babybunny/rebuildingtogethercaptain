@@ -88,6 +88,10 @@ SITE = ndb_models.Site(
   volunteer_signup_link='volunteer signup link value',
   )
 
+SITECAPTAIN = ndb_models.SiteCaptain(
+  type='Construction'
+  )
+
 _KEYS = list()
 
 
@@ -95,7 +99,10 @@ def CreateAll():
   """Creates all the models in this module."""
   _KEYS.append(STAFFPOSITION.put())
   _KEYS.append(STAFF.put())
-  _KEYS.append(CAPTAIN.put())
+
+  captain_key = CAPTAIN.put()
+  _KEYS.append(captain_key)
+
   _KEYS.append(PROGRAM.put())
   _KEYS.append(PROGRAM2.put())
   jurisdiction_key = JURISDICTION.put()
@@ -108,8 +115,12 @@ def CreateAll():
   _KEYS.append(ORDERSHEET.put())
 
   SITE.jurisdiction_choice = jurisdiction_key
-  _KEYS.append(SITE.put())
+  site_key = SITE.put()
+  _KEYS.append(site_key)
 
+  SITECAPTAIN.site = site_key
+  SITECAPTAIN.captain = captain_key
+  _KEYS.append(SITECAPTAIN.put())
   
 def DeleteAll():
   global _KEYS

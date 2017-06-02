@@ -75,23 +75,6 @@ def _TryToSaveForm(save_form):
   return not errors
 
 
-def _Autocomplete(request, model_class, program_filter=False):
-  prefix = str(request.GET['term']).lower()
-
-  items = model_class.all()
-  items.filter('search_prefixes = ', prefix)
-  if program_filter:
-    user, _, _ = common.GetUser(request)
-    items.filter('program =', user.program_selected)
-  matches = {}
-  for c in items:
-    label = c.Label()
-    matches[label] = c.key().id()
-  response = http.HttpResponse(mimetype='application/json')
-  response.write(json.dumps(matches))
-  return response
-
-
 def Help(request):
   return common.Respond(request, 'help')
 
@@ -337,11 +320,6 @@ def SiteNew(request):
 def SitePut(request, site_id):
   models.NewSite.get_by_id(int(site_id)).put()
   return http.HttpResponse('OK')
-
-
-def SiteAutocomplete(request):
-  """Return JSON to autocomplete a Site ID based on a prefix."""
-  return _Autocomplete(request, models.NewSite, program_filter=True)
 
 
 def SiteAnnouncement(request, site_id):
@@ -605,11 +583,6 @@ def CaptainEdit(request, captain_id=None):
 def CaptainNew(request):
   """Create a item.  GET shows a blank form, POST processes it."""
   return CaptainEdit(request, None)
-
-
-def CaptainAutocomplete(request):
-  """Return JSON to autocomplete a captain ID based on a prefix."""
-  return _Autocomplete(request, models.Captain)
 
 
 def CaptainPut(request, captain_id):

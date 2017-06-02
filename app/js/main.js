@@ -1,3 +1,5 @@
+// don't think we need this file any more.
+
 requirejs.config({
     baseUrl: 'js/lib',
     paths: {

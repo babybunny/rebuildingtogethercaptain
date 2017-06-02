@@ -8,6 +8,7 @@ import webapp2
 from room import common
 from room import ndb_models
 from room import staff
+from room import captain
 # from room import views
 
 from google.appengine.api import oauth
@@ -21,7 +22,7 @@ class MainPage(webapp2.RequestHandler):
         if user.staff:
             self.redirect_to('StaffHome')
         if user.captain:
-            self.redirect_to('Help')
+            self.redirect_to('CaptainHome')
         oauth_user = 'placeholder'
         template_values = dict(locals())
         template = jinja_environment.get_template('templates/welcome.html')
@@ -55,13 +56,16 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/site_autocomplete',
                   staff.SiteAutocomplete,
                   name='SiteAutocomplete'),
-    webapp2.Route(r'/help',
+    webapp2.Route(r'/captain_home',
+                  captain.CaptainHome,
+                  name='CaptainHome'),
+    webapp2.Route(r'/scoreboard',
                   MainPage,
                   name='Scoreboard'),  # TODO
-    webapp2.Route(r'/help',
+    webapp2.Route(r'/scoreboard/all',
                   MainPage,
                   name='AllProgramsScoreboard'),  # TODO
-    webapp2.Route(r'/help',
+    webapp2.Route(r'/site_list',
                   MainPage,
                   name='SiteList'),  # TODO
     webapp2.Route(r'/help',
@@ -82,6 +86,9 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/help',
                   MainPage,
                   name='OrderNew'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
+                  name='OrderPreview'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='CaptainList'),  # TODO
