@@ -82,6 +82,9 @@ app = webapp2.WSGIApplication([
                   name='SitesWithoutOrder'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
+                  name='OrderEdit'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
                   name='OrderList'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,

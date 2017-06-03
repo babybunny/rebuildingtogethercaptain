@@ -174,6 +174,28 @@ def CreateAll():
     available_on=datetime.date(2011, 3, 4)
   ).put()
 
+  _KEYS['ORDER'] = ndb_models.Order(
+    site=_KEYS['SITE'],
+    order_sheet=_KEYS['ORDERSHEET'],
+    program='2011 Test',
+    sub_total=9.99,
+    notes='''These are very very nice order notes.''',
+    state='',
+    actual_total=10.11,
+    reconciliation_notes='''These are the reconciliation notes from the very nice staff''',
+    invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 3),
+    vendor=_KEYS['SUPPLIER'],
+    logistics_start='a logistic start',
+    logistics_end='a logistic end',
+    logistics_instructions='''a logistic instruction'''
+  ).put()
+
+  """template
+  _KEYS['ORDER'] = ndb_models.Order(
+
+  ).put()
+  """
+
   logging.info('added keys: {}', _KEYS.keys())
 
   
