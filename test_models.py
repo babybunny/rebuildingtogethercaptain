@@ -109,6 +109,17 @@ def CreateAll():
     state='submitted',
   ).put()
 
+  _KEYS['VENDORRECEIPT'] = ndb_models.VendorReceipt(
+    site=_KEYS['SITE'],
+    captain=_KEYS['CAPTAIN'],
+    program='2011 Test',
+    purchase_date=datetime.date(2011, 2, 3),
+    amount=45.67,
+    supplier=_KEYS['SUPPLIER'],
+    description='''For a receipt''',
+    state='submitted',
+  ).put()
+
   _KEYS['SUPPLIER'] = ndb_models.Supplier(
     name='House of Supply',
     email='supplier@example.com',
