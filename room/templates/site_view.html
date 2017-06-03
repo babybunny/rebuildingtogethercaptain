@@ -342,19 +342,19 @@
               {% for order in site.Orders.Items() %}
 	            <tr>
 	              <td>
-	                <b>{{ order.order_sheet.name }}</b>
+	                <b>{{ order.order_sheet.get().name }}</b>
 	              </td>
 	              <td>
 	                {% for od in order.orderdelivery_set %}
-	                {{ od.delivery.delivery_date }} (Delivery)
+	                {{ od.delivery.get().delivery_date }} (Delivery)
 	                {% endfor %}
 	                {% for od in order.orderpickup_set %}
-	                {{ od.pickup.pickup_date }} (Pickup)
+	                {{ od.pickup.get().pickup_date }} (Pickup)
 	                {% endfor %}
 	                {% for od in order.orderretrieval_set %}
-	                {{ od.retrieval.dropoff_date }} (Drop-off)
+	                {{ od.retrieval.get().dropoff_date }} (Drop-off)
 	                <br/>
-	                {{ od.retrieval.retrieval_date }} (Retrieval)
+	                {{ od.retrieval.get().retrieval_date }} (Retrieval)
 	                {% endfor %}
 	              </td>
 	              <td>
@@ -411,7 +411,7 @@
 	            {% endif %}
 	            <tr>
 	              <td>
-		              {{ entity.captain.name|escape }}
+		              {{ entity.captain.get().name|escape }}
 	              </td>
 	              <td>
 		              {{ entity.name|escape }}
@@ -464,7 +464,7 @@
 	            {% endif %}
 	            <tr>
 	              <td>
-		              {{ entity.captain.name|escape }}
+		              {{ entity.captain.get().name|escape }}
 	              </td>
 	              <td>
 		              {{ entity.name|escape }}
@@ -580,7 +580,7 @@
 	            {% endif %}
 	            <tr>
 	              <td>
-		              {{ entity.captain.name|escape }}
+		              {{ entity.captain.get().name|escape }}
 	              </td>
 	              <td>
 		              {{ entity.donor|escape }}

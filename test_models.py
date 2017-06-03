@@ -190,6 +190,45 @@ def CreateAll():
     logistics_instructions='''a logistic instruction'''
   ).put()
 
+  _KEYS['DELIVERY'] = ndb_models.Delivery(
+    site=_KEYS['SITE'],
+    delivery_date='Apr 12',
+    contact='Joe Delivery',
+    notes='''meet me at the side door''',
+  ).put()
+
+  _KEYS['ORDERDELIVERY'] = ndb_models.OrderDelivery(
+    order=_KEYS['ORDER'],
+    delivery=_KEYS['DELIVERY'],
+  ).put()
+
+  _KEYS['PICKUP'] = ndb_models.Pickup(
+    site=_KEYS['SITE'],
+    pickup_date='Apr 13',
+    return_date='Apr 19',
+    contact='Joe Pickup',
+    notes='''meet me at the side door for pickup''',
+  ).put()
+
+  _KEYS['ORDERPICKUP'] = ndb_models.OrderPickup(
+    order=_KEYS['ORDER'],
+    pickup=_KEYS['PICKUP'],
+  ).put()
+
+  _KEYS['RETRIEVAL'] = ndb_models.Retrieval(
+    site=_KEYS['SITE'],
+    dropoff_date='Apr 14',
+    retrieval_date='Apr 21',
+    contact='Joe Retrieval',
+    contact_phone='555-1212b',
+    notes='''meet me at the side door for retrieval''',
+  ).put()
+
+  _KEYS['ORDERRETRIEVAL'] = ndb_models.OrderRetrieval(
+    order=_KEYS['ORDER'],
+    retrieval=_KEYS['RETRIEVAL'],
+  ).put()
+
   """template
   _KEYS['ORDER'] = ndb_models.Order(
 

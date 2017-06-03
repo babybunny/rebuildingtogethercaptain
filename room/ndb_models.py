@@ -501,7 +501,19 @@ class Order(ndb.Model):
 
   @property
   def OrderItems(self):
-    return _ActiveItems(self, OrderItem)
+    return OrderItem.query(OrderItem.order == self.key)
+
+  @property
+  def orderdelivery_set(self):
+    return OrderDelivery.query(OrderDelivery.order == self.key)
+
+  @property
+  def orderpickup_set(self):
+    return OrderPickup.query(OrderPickup.order == self.key)
+  
+  @property
+  def orderretrieval_set(self):
+    return OrderRetrieval.query(OrderRetrieval.order == self.key)  
 
   def put(self, *a, **k):
     self.program = self.site.get().program
