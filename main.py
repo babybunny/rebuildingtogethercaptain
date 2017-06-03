@@ -136,16 +136,25 @@ app = webapp2.WSGIApplication([
                   name='InKindDonationList'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
+                  name='InKindDonationView'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
                   name='InKindDonationNew'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='VendorReceiptList'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
+                  name='VendorReceiptView'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
                   name='VendorReceiptNew'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='StaffTimeList'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
+                  name='StaffTimeView'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='StaffTimeNew'),  # TODO
