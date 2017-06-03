@@ -4,6 +4,7 @@ Many of these are similar to models in models.py, which are Django models.  We
 need these ndb versions for use with runtime: python27, which is required by 
 endpoints.
 """
+import logging
 from google.appengine.ext import ndb
 
 
@@ -70,7 +71,7 @@ class Captain(ndb.Model):
       for i in xrange(1, 7):
         prefixes.add(self.email[:i])
     self.search_prefixes = [p.lower() for p in prefixes]
-    super(Captain, self).put(*a, **k)
+    return super(Captain, self).put(*a, **k)
 
   def __unicode__(self):
     return self.name
@@ -370,7 +371,7 @@ class Site(ndb.Model):
 
   def put(self, *a, **k):
     if self.jurisdiction_choice:
-      self.jurisdiction = self.jurisdiction_choice.name
+      self.jurisdiction = self.jurisdiction_choice.get().name
     # issue213: program should be configurable
     if not self.program:
       self.program = self.ProgramFromNumber()
@@ -392,9 +393,9 @@ class Site(ndb.Model):
         prefixes.add(self.number[5:5 + i])
     self.search_prefixes = [p.lower() for p in prefixes]
     logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
-    super(ndb.Model, self).put(*a, **k)
+    k = super(Site, self).put(*a, **k)
     self.SaveTheChildren()
-
+    return k
   
   def Label(self):
     return "%s %s" % (self.number, self.name)
@@ -503,12 +504,12 @@ class Order(ndb.Model):
     return _ActiveItems(self, OrderItem)
 
   def put(self, *a, **k):
-    self.program = self.site.program
-    super(ndb.Model, self).put(*a, **k)
+    self.program = self.site.get().program
+    return super(Order, self).put(*a, **k)
 
   def __unicode__(self):
-    return ' '.join((self.site.number, self.site.name,
-                     self.order_sheet.name,
+    return ' '.join((self.site.get().number, self.site.get().name,
+                     self.order_sheet.get().name,
                      '%d items' % self.OrderItems.Count(),
                      '$%0.2f' % self.GrandTotal()))
 
@@ -551,52 +552,52 @@ class Order(ndb.Model):
     order_items = OrderItem.all().filter('order = ', self)
     for oi in order_items:
       quantity = oi.FloatQuantity()
-      if oi.item.unit_cost is not None and quantity:
-        sub_total += quantity * oi.item.unit_cost
+      if oi.item.get().unit_cost is not None and quantity:
+        sub_total += quantity * oi.item.get().unit_cost
     if self.sub_total != sub_total:
       self.sub_total = sub_total
       self.put()
       logging.info('Updated subtotal for order %d to %0.2f',
-                   self.key().id(), sub_total)
+                   self.key.integer_id(), sub_total)
 
   def LogisticsStart(self):
     for od in self.orderdelivery_set:
-      return "%s (Delivery)" % od.delivery.delivery_date
+      return "%s (Delivery)" % od.delivery.get().delivery_date
     for od in self.orderpickup_set:
-      return "%s (Pickup)" % od.pickup.pickup_date
+      return "%s (Pickup)" % od.pickup.get().pickup_date
     for od in self.orderretrieval_set:
-      return "%s (Drop-off)" % od.retrieval.dropoff_date
+      return "%s (Drop-off)" % od.retrieval.get().dropoff_date
     return None
 
   def LogisticsEnd(self):
     for od in self.orderretrieval_set:
-      return "%s (Retrieval)" % od.retrieval.retrieval_date
+      return "%s (Retrieval)" % od.retrieval.get().retrieval_date
     return None
 
   def LogisticsInstructions(self):
     for od in self.orderdelivery_set:
       return "%s%s %s%s %s" % (
-          od.delivery.contact and 'Contact ' or '',
-          od.delivery.contact or '',
-          od.delivery.contact_phone and 'at ' or '',
-          od.delivery.contact_phone or '',
-          od.delivery.notes or '')
+          od.delivery.get().contact and 'Contact ' or '',
+          od.delivery.get().contact or '',
+          od.delivery.get().contact_phone and 'at ' or '',
+          od.delivery.get().contact_phone or '',
+          od.delivery.get().notes or '')
 
     for od in self.orderpickup_set:
       return "%s%s %s%s %s" % (
-          od.pickup.contact and 'Contact ' or '',
-          od.pickup.contact or '',
-          od.pickup.contact_phone and 'at ' or '',
-          od.pickup.contact_phone or '',
-          od.pickup.notes or '')
+          od.pickup.get().contact and 'Contact ' or '',
+          od.pickup.get().contact or '',
+          od.pickup.get().contact_phone and 'at ' or '',
+          od.pickup.get().contact_phone or '',
+          od.pickup.get().notes or '')
 
     for od in self.orderretrieval_set:
       return "%s%s %s%s %s" % (
-          od.retrieval.contact and 'Contact ' or '',
-          od.retrieval.contact or '',
-          od.retrieval.contact_phone and 'at ' or '',
-          od.retrieval.contact_phone or '',
-          od.retrieval.notes or '')
+          od.retrieval.get().contact and 'Contact ' or '',
+          od.retrieval.get().contact or '',
+          od.retrieval.get().contact_phone and 'at ' or '',
+          od.retrieval.get().contact_phone or '',
+          od.retrieval.get().notes or '')
     return ''
 
   def UpdateLogistics(self):
@@ -629,8 +630,8 @@ class OrderItem(ndb.Model):
     return not quantity and not self.name
 
   def SupportsName(self):
-    return (self.item.supports_extra_name_on_order
-            or self.order.order_sheet.supports_extra_name_on_order)
+    return (self.item.get().supports_extra_name_on_order
+            or self.order.get().order_sheet.get().supports_extra_name_on_order)
 
   def VisibleQuantity(self):
     quantity = self.FloatQuantity()
@@ -644,10 +645,11 @@ class OrderItem(ndb.Model):
 
   def VisibleCost(self):
     quantity = self.FloatQuantity()
-    if quantity and not self.item.unit_cost:
+    unit_cost = self.item.get().unit_cost
+    if quantity and not unit_cost:
       return '0'
-    if quantity and self.item.unit_cost:
-      return '%.2f' % (quantity * self.item.unit_cost)
+    if quantity and unit_cost:
+      return '%.2f' % (quantity * unit_cost)
     else:
       return ''
 
@@ -722,6 +724,18 @@ class InventoryItem(ndb.Model):
   available_on = ndb.DateProperty()
   last_editor = ndb.UserProperty()
   modified = ndb.DateTimeProperty(auto_now=True)
+
+
+def _GetRateFromArray(default, array, activity_date):    
+  if not array:
+    return default
+  activity_date_str = activity_date.isoformat()
+  rate = default
+  for dr in sorted(s.split() for s in array):
+    if activity_date_str < dr[0]:
+      break
+    rate = float(dr[1])
+  return rate
 
 
 class StaffPosition(ndb.Model):
@@ -802,8 +816,8 @@ class CheckRequest(ndb.Model):
   modified = ndb.DateTimeProperty(auto_now=True)
 
   def put(self, *a, **k):
-    self.program = self.site.program
-    super(ndb.Model, self).put(*a, **k)
+    self.program = self.site.get().program
+    return super(CheckRequest, self).put(*a, **k)
 
   def Total(self):
     return self.labor_amount + self.materials_amount + self.food_amount
@@ -829,12 +843,12 @@ class VendorReceipt(ndb.Model):
   @property
   def name(self):
     if self.supplier:
-      return self.supplier.name
+      return self.supplier.get().name
     return self.vendor
 
   def put(self, *a, **k):
-    self.program = self.site.program
-    super(ndb.Model, self).put(*a, **k)
+    self.program = self.site.get().program
+    return super(VendorReceipt, self).put(*a, **k)
 
   def Total(self):
     return self.amount or 0
@@ -869,8 +883,8 @@ class InKindDonation(ndb.Model):
     return self.donor
 
   def put(self, *a, **k):
-    self.program = self.site.program
-    super(ndb.Model, self).put(*a, **k)
+    self.program = self.site.get().program
+    return super(InKindDonation, self).put(*a, **k)
 
   def Total(self):
     return self.labor_amount + self.materials_amount
@@ -878,13 +892,13 @@ class InKindDonation(ndb.Model):
 
 class StaffTime(ndb.Model):
   """Expense type that represents hourly staff time."""
-  site = ndb.KeyProperty(kind=Site)
+  site = ndb.KeyProperty(kind=Site, required=True)
   captain = ndb.KeyProperty(kind=Captain)
+  position = ndb.KeyProperty(kind=StaffPosition)
   program = ndb.StringProperty()
   state = ndb.StringProperty(
       choices=('new', 'submitted', 'fulfilled', 'deleted'),
       default='new')
-  position = ndb.KeyProperty(kind=StaffPosition)
   hours = ndb.FloatProperty(default=0.0)
   hours.verbose_name = 'Hours'
   miles = ndb.FloatProperty(default=0.0)
@@ -895,18 +909,18 @@ class StaffTime(ndb.Model):
   modified = ndb.DateTimeProperty(auto_now=True)
 
   def put(self, *a, **k):
-    self.program = self.site.program
-    super(ndb.Model, self).put(*a, **k)
+    self.program = self.site.get().program
+    return super(StaffTime, self).put(*a, **k)
 
   @property
   def name(self):
     return self.position
 
   def HoursTotal(self):
-    return self.hours * self.position.GetHourlyRate(self.activity_date)
+    return self.hours * self.position.get().GetHourlyRate(self.activity_date)
   
   def MileageTotal(self):
-    return self.miles * self.position.GetMileageRate(self.activity_date)
+    return self.miles * self.position.get().GetMileageRate(self.activity_date)
 
   def Total(self):
     return self.HoursTotal() + self.MileageTotal()
@@ -929,14 +943,4 @@ class Expense(ndb.Model):
       default='new')
   last_editor = ndb.UserProperty()
   modified = ndb.DateTimeProperty(auto_now=True)
-
-
-
-
-
-
-
-
-
-
 
