@@ -65,7 +65,7 @@ def _Autocomplete(request, model_class, program_filter=False):
 
 def SiteAutocomplete(request):
   """Return JSON to autocomplete a Site ID based on a prefix."""
-  return _Autocomplete(request, ndb_models.Site, program_filter=True)
+  return _Autocomplete(request, ndb_models.NewSite, program_filter=True)
 
 
 def CaptainAutocomplete(request):
@@ -77,7 +77,7 @@ def SiteJump(request):
   user, _ = common.GetUser()
   d = {'user': user}
   number = request.get('number')
-  site = ndb_models.Site.query().filter(ndb_models.Site.number == number).get()
+  site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
   if site is None:
     return webapp2.redirect_to('StaffHome')
   else:

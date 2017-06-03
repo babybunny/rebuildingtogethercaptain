@@ -229,7 +229,7 @@ class _ActiveItems(object):
   def __iter__(self):
     return self.Items()
 
-class Site(ndb.Model):
+class NewSite(ndb.Model):
   """A work site."""
   # "10001DAL" reads: 2010, #001, Daly City
   number = ndb.StringProperty(required=True)  # unique
@@ -393,7 +393,7 @@ class Site(ndb.Model):
         prefixes.add(self.number[5:5 + i])
     self.search_prefixes = [p.lower() for p in prefixes]
     logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
-    k = super(Site, self).put(*a, **k)
+    k = super(NewSite, self).put(*a, **k)
     self.SaveTheChildren()
     return k
   
@@ -470,7 +470,7 @@ class Site(ndb.Model):
   
 class SiteCaptain(ndb.Model):
   """Associates a site and a Captain."""
-  site = ndb.KeyProperty(kind=Site, required=True)
+  site = ndb.KeyProperty(kind=NewSite, required=True)
   captain = ndb.KeyProperty(kind=Captain, required=True)
   type = ndb.StringProperty(choices=(
     'Construction',
@@ -481,7 +481,7 @@ class SiteCaptain(ndb.Model):
 
 class Order(ndb.Model):
   """A Captain can make an Order for a list of Items."""
-  site = ndb.KeyProperty(kind=Site, required=True)
+  site = ndb.KeyProperty(kind=NewSite, required=True)
   order_sheet = ndb.KeyProperty(kind=OrderSheet, required=True)
   program = ndb.StringProperty()
   sub_total = ndb.FloatProperty()
@@ -656,7 +656,7 @@ class OrderItem(ndb.Model):
 
 class Delivery(ndb.Model):
   """Delivery to a site (no retrieval)."""
-  site = ndb.KeyProperty(kind=Site, required=True)
+  site = ndb.KeyProperty(kind=NewSite, required=True)
   delivery_date = ndb.StringProperty()
   delivery_date.verbose_name = 'Delivery Date (Mon-Fri only)'
   contact = ndb.StringProperty()
@@ -675,7 +675,7 @@ class OrderDelivery(ndb.Model):
 
 class Pickup(ndb.Model):
   """Pick up from RTP warehouse."""
-  site = ndb.KeyProperty(kind=Site, required=True)
+  site = ndb.KeyProperty(kind=NewSite, required=True)
   pickup_date = ndb.StringProperty()
   pickup_date.verbose_name = 'Pickup Date (Mon-Fri only)'
   return_date = ndb.StringProperty()
@@ -696,7 +696,7 @@ class OrderPickup(ndb.Model):
 
 class Retrieval(ndb.Model):
   """Delivery and retrieval to and from a site."""
-  site = ndb.KeyProperty(kind=Site, required=True)
+  site = ndb.KeyProperty(kind=NewSite, required=True)
   dropoff_date = ndb.StringProperty()
   dropoff_date.verbose_name = 'Delivery Date (Mon-Fri only)'
   retrieval_date = ndb.StringProperty()
@@ -786,7 +786,7 @@ class StaffPosition(ndb.Model):
 
 class CheckRequest(ndb.Model):
   """A Check Request is a request for reimbursement."""
-  site = ndb.KeyProperty(kind=Site)
+  site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
   payment_date = ndb.DateProperty()
@@ -825,7 +825,7 @@ class CheckRequest(ndb.Model):
 
 class VendorReceipt(ndb.Model):
   """A Vendor Receipt is a report of a purchase outside of ROOMS."""
-  site = ndb.KeyProperty(kind=Site)
+  site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
   purchase_date = ndb.DateProperty()
@@ -856,7 +856,7 @@ class VendorReceipt(ndb.Model):
 
 class InKindDonation(ndb.Model):
   """An In-kind donation to a site."""
-  site = ndb.KeyProperty(kind=Site)
+  site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
   donation_date = ndb.DateProperty()
@@ -892,7 +892,7 @@ class InKindDonation(ndb.Model):
 
 class StaffTime(ndb.Model):
   """Expense type that represents hourly staff time."""
-  site = ndb.KeyProperty(kind=Site, required=True)
+  site = ndb.KeyProperty(kind=NewSite, required=True)
   captain = ndb.KeyProperty(kind=Captain)
   position = ndb.KeyProperty(kind=StaffPosition)
   program = ndb.StringProperty()
@@ -926,12 +926,15 @@ class StaffTime(ndb.Model):
     return self.HoursTotal() + self.MileageTotal()
 
 
+# I think this can be removed.  There is a template and view called "Expense"
+# but I don't see anything that references this model.   And there are no
+# entities in the prod datastore.
 class Expense(ndb.Model):
   """A generic expense."""
   payee = ndb.KeyProperty(kind=Supplier)
   action = ndb.StringProperty(choices=('on account', 'need reimbursement'))
 
-  site = ndb.KeyProperty(kind=Site)
+  site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
   date = ndb.DateProperty()

@@ -82,7 +82,7 @@ def CreateAll():
   )
   _KEYS.append(ORDERSHEET.put())
 
-  SITE = ndb_models.Site(
+  SITE = ndb_models.NewSite(
     jurisdiction_choice=jurisdiction_key,
     number='110TEST',
     program='2011 Test',
@@ -134,3 +134,9 @@ def DeleteAll():
     _KEYS.pop().delete()
   _KEYS = list()
 
+
+def main(argv):
+  host_port = argv[1]
+  
+if __name__ == '__main__':
+  main()
