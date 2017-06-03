@@ -8,6 +8,31 @@ import logging
 from google.appengine.ext import ndb
 
 
+class _ActiveItems(object):
+  """Similar to backreference "*_set" properties in the old db interface."""
+
+  def __init__(self, ref, kind_cls):
+    """
+    Args:
+      ref: instance of a model that is referenced by another kind of model
+      kind_cls: ndb kind to be selected, like in Key(kind=kind_cls)
+    """
+    self._query = kind_cls.query(kind_cls.site == ref.key)
+    self._query.filter(kind_cls.state != 'new')
+    self._query.filter(kind_cls.state != 'deleted')
+
+  def Count(self):
+    return self._query.count()
+
+  def Items(self):
+    for item in sorted(self._query,
+                       key=lambda o: o.modified, reverse=True):
+      yield item
+
+  def __iter__(self):
+    return self.Items()
+
+  
 class Jurisdiction(ndb.Model):
   """A jurisdiction name for reporting purposes."""
   name = ndb.StringProperty()
@@ -203,31 +228,6 @@ class Item(ndb.Model):
   def VisibleOrderFormSection(self):
     return self.VisibleSortableLabel(self.order_form_section)
 
-
-
-class _ActiveItems(object):
-  """Similar to backreference "*_set" properties in the old db interface."""
-
-  def __init__(self, ref, kind_cls):
-    """
-    Args:
-      ref: instance of a model that is referenced by another kind of model
-      kind_cls: the class of the ndb kind, like in Key()
-    """
-    self._query = kind_cls.query(kind_cls.site == ref.key)
-    self._query.filter(kind_cls.state != 'new')
-    self._query.filter(kind_cls.state != 'deleted')
-
-  def Count(self):
-    return self._query.count()
-
-  def Items(self):
-    for item in sorted(self._query,
-                       key=lambda o: o.modified, reverse=True):
-      yield item
-
-  def __iter__(self):
-    return self.Items()
 
 class NewSite(ndb.Model):
   """A work site."""
