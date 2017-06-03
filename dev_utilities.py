@@ -1,7 +1,5 @@
 import argparse
 
-import test_models
-
 try:
     import dev_appserver
     dev_appserver.fix_sys_path()
@@ -12,6 +10,7 @@ except ImportError:
 from google.appengine.ext import ndb
 from google.appengine.ext.remote_api import remote_api_stub
 
+import test_models
 
 def main(port):
     servername = 'localhost:{}'.format(port)
