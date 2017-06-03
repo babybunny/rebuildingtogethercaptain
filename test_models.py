@@ -120,6 +120,20 @@ def CreateAll():
     state='submitted',
   ).put()
 
+  _KEYS['INKINDDONATION'] = ndb_models.InKindDonation(
+    site=_KEYS['SITE'],
+    captain=_KEYS['CAPTAIN'],
+    program='2011 Test',
+    donation_date=datetime.date(2011, 2, 3),
+    donor='Miss Donor',
+    donor_phone='555-1212',
+    donor_info='''A very nice donor, indeed''',
+    labor_amount=45.67,
+    materials_amount=23.45,
+    description='''A very nice donation of labor and materials''',
+    state='submitted',
+  ).put()
+
   _KEYS['SUPPLIER'] = ndb_models.Supplier(
     name='House of Supply',
     email='supplier@example.com',
