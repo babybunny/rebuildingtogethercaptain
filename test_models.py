@@ -152,6 +152,19 @@ def CreateAll():
     delivery_options='Yes',
   ).put()
 
+  _KEYS['ITEM'] = ndb_models.Item(
+    bar_code_number=1234,
+    name='My First Item',
+    appears_on_order_form=_KEYS['ORDERSHEET'],
+    order_form_section='The First Section',
+    description="""A Very nice item, very nice.""",
+    measure='Each',
+    unit_cost=9.99,
+    supplier=_KEYS['SUPPLIER'],
+    supplier_part_number='part1234',
+    url='http://example.com/item',
+    supports_extra_name_on_order=False,
+  ).put()
 
   logging.info('added keys: {}', _KEYS.keys())
 
