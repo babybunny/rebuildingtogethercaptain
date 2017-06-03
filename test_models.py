@@ -166,6 +166,14 @@ def CreateAll():
     supports_extra_name_on_order=False,
   ).put()
 
+  _KEYS['INVENTORYITEM'] = ndb_models.InventoryItem(
+    item=_KEYS['ITEM'],
+    quantity=0,
+    quantity_float=0.0,
+    location='Everybody knows, its nowhere',
+    available_on=datetime.date(2011, 3, 4)
+  ).put()
+
   logging.info('added keys: {}', _KEYS.keys())
 
   
