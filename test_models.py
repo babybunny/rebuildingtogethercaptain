@@ -52,6 +52,15 @@ def CreateAll():
     name="FunkyTown"
   ).put()
   
+  _KEYS['SUPPLIER'] = ndb_models.Supplier(
+    name='House of Supply',
+    email='supplier@example.com',
+    address='123 Supplier St, Main City, CA 99999',
+    phone1='650 555 1111',
+    phone2='650 555 2222',
+    notes="""Supplier notes value""",
+  ).put()
+
   _KEYS['SITE'] = ndb_models.NewSite(
     jurisdiction_choice=_KEYS['JURISDICTION'],
     number='110TEST',
@@ -134,15 +143,6 @@ def CreateAll():
     state='submitted',
   ).put()
 
-  _KEYS['SUPPLIER'] = ndb_models.Supplier(
-    name='House of Supply',
-    email='supplier@example.com',
-    address='123 Supplier St, Main City, CA 99999',
-    phone1='650 555 1111',
-    phone2='650 555 2222',
-    notes="""Supplier notes value""",
-  ).put()
-
   _KEYS['ORDERSHEET'] = ndb_models.OrderSheet(
     default_supplier=_KEYS['SUPPLIER'],
     name='Some Supplies',
@@ -190,6 +190,22 @@ def CreateAll():
     logistics_instructions='''a logistic instruction'''
   ).put()
 
+  _KEYS['ORDER2'] = ndb_models.Order(
+    site=_KEYS['SITE'],
+    order_sheet=_KEYS['ORDERSHEET'],
+    program='2011 Test',
+    sub_total=8.88,
+    notes='''These are very very nice order2 notes.''',
+    state='',
+    actual_total=9.10,
+    reconciliation_notes='''These are the reconciliation notes from the very nice staff on order2''',
+    invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 6),
+    vendor=_KEYS['SUPPLIER'],
+    logistics_start='a logistic start',
+    logistics_end='a logistic end',
+    logistics_instructions='''another logistic instruction'''
+  ).put()
+
   _KEYS['DELIVERY'] = ndb_models.Delivery(
     site=_KEYS['SITE'],
     delivery_date='Apr 12',
@@ -229,7 +245,7 @@ def CreateAll():
     retrieval=_KEYS['RETRIEVAL'],
   ).put()
 
-  _KEYS['ORDERITEM'] = ndb_models.Orderitem(
+  _KEYS['ORDERITEM'] = ndb_models.OrderItem(
     order=_KEYS['ORDER'],
     item=_KEYS['ITEM'],
     supplier=_KEYS['SUPPLIER'],
