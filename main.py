@@ -127,6 +127,9 @@ app = webapp2.WSGIApplication([
                   name='CheckRequestList'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
+                  name='CheckRequestView'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
                   name='CheckRequestNew'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,

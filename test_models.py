@@ -7,28 +7,25 @@ Also, these models may be used in unit tests.
 """
 
 import datetime
+import logging
 from room import ndb_models
 
-_KEYS = list()
+_KEYS = dict()
 
 
 def CreateAll():
   """Creates all the models in this module."""
-  STAFFPOSITION = ndb_models.StaffPosition(
+  _KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
     hourly_rate=19.19
-  )
-  staffposition_key = STAFFPOSITION.put()
-  _KEYS.append(staffposition_key)
+  ).put()
 
-  STAFF = ndb_models.Staff(
+  _KEYS['STAFF'] = ndb_models.Staff(
     name="Mister Staff",
     email="rebuildingtogether.staff@gmail.com"
-  )
-  staff_key = STAFF.put()
-  _KEYS.append(staff_key)
+  ).put()
   
-  CAPTAIN = ndb_models.Captain(
+  _KEYS['CAPTAIN'] = ndb_models.Captain(
     name="Miss Captain",
     email="rebuildingtogether.capn@gmail.com",
     rooms_id="R00001",
@@ -36,54 +33,27 @@ def CreateAll():
     tshirt_size="Large",
     notes="You may say I'm a dreamer",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
-  )
-  captain_key = CAPTAIN.put()
-  _KEYS.append(captain_key)
+  ).put()
 
-  PROGRAM = ndb_models.Program(
+  _KEYS['PROGRAM'] = ndb_models.Program(
     year=2011,
     name="TEST",
     site_number_prefix="110",
     status="Active"
-  )
-  PROGRAM2 = ndb_models.Program(
+  ).put()
+  _KEYS['PROGRAM2'] = ndb_models.Program(
     year=2012,
     name="TEST",
     site_number_prefix="120",
     status="Active"
-  )
-  _KEYS.append(PROGRAM.put())
-  _KEYS.append(PROGRAM2.put())
+  ).put()
   
-  JURISDICTION = ndb_models.Jurisdiction(
+  _KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
-  )
-  jurisdiction_key = JURISDICTION.put()
-  _KEYS.append(jurisdiction_key)
+  ).put()
   
-  SUPPLIER = ndb_models.Supplier(
-    name='House of Supply',
-    email='supplier@example.com',
-    address='123 Supplier St, Main City, CA 99999',
-    phone1='650 555 1111',
-    phone2='650 555 2222',
-    notes="""Supplier notes value""",
-  )
-  supplier_key = SUPPLIER.put()
-  _KEYS.append(supplier_key)
-
-  ORDERSHEET = ndb_models.OrderSheet(
-    default_supplier=supplier_key,
-    name='Some Supplies',
-    code='SOM',
-    instructions='instructions value',
-    logistics_instructions="""Pick these up somewhere nice.""",
-    delivery_options='Yes',
-  )
-  _KEYS.append(ORDERSHEET.put())
-
-  SITE = ndb_models.NewSite(
-    jurisdiction_choice=jurisdiction_key,
+  _KEYS['SITE'] = ndb_models.NewSite(
+    jurisdiction_choice=_KEYS['JURISDICTION'],
     number='110TEST',
     program='2011 Test',
     name='Fixme Center',
@@ -103,40 +73,68 @@ def CreateAll():
     budget=5000,
     announcement_subject='announcement value',
     volunteer_signup_link='volunteer signup link value',
-  )
-  site_key = SITE.put()
-  _KEYS.append(site_key)
+  ).put()
 
-  STAFFTIME = ndb_models.StaffTime(  
-    site=site_key,
-    captain=captain_key,
-    position=staffposition_key,
+  _KEYS['SITECAPTAIN'] = ndb_models.SiteCaptain(
+    site=_KEYS['SITE'],
+    captain=_KEYS['CAPTAIN'],
+    type='Construction'
+  ).put()
+
+  _KEYS['STAFFTIME'] = ndb_models.StaffTime(  
+    site=_KEYS['SITE'],
+    captain=_KEYS['CAPTAIN'],
+    position=_KEYS['STAFFPOSITION'],
     program='2011 Test',
     state='submitted',
     hours=1.5,
     miles=11.1,
     activity_date=datetime.datetime(2017, 1, 30, 1, 2, 3),
     description="""Description of the time that staff spent."""
-  )
-  _KEYS.append(STAFFTIME.put())
+  ).put()
 
-  SITECAPTAIN = ndb_models.SiteCaptain(
-    site=site_key,
-    captain=captain_key,
-    type='Construction'
-  )
-  _KEYS.append(SITECAPTAIN.put())
+  _KEYS['CHECKREQUEST'] = ndb_models.CheckRequest(
+    site=_KEYS['SITE'],
+    captain=_KEYS['CAPTAIN'],
+    program='2011 Test',
+    payment_date=datetime.date(2011, 2, 3),
+    labor_amount=45.67,
+    materials_amount=23.45,
+    food_amount=12.34,
+    description='''For Services Rendered''',
+    name='Mister Payable To',
+    address='123 checkrequest street',
+    tax_id='123-456-8790',
+    form_of_business='Corporation',
+    state='submitted',
+  ).put()
+
+  _KEYS['SUPPLIER'] = ndb_models.Supplier(
+    name='House of Supply',
+    email='supplier@example.com',
+    address='123 Supplier St, Main City, CA 99999',
+    phone1='650 555 1111',
+    phone2='650 555 2222',
+    notes="""Supplier notes value""",
+  ).put()
+
+  _KEYS['ORDERSHEET'] = ndb_models.OrderSheet(
+    default_supplier=_KEYS['SUPPLIER'],
+    name='Some Supplies',
+    code='SOM',
+    instructions='instructions value',
+    logistics_instructions="""Pick these up somewhere nice.""",
+    delivery_options='Yes',
+  ).put()
+
+
+  logging.info('added keys: {}', _KEYS.keys())
 
   
 def DeleteAll():
   global _KEYS
   while _KEYS:
-    _KEYS.pop().delete()
-  _KEYS = list()
-
-
-def main(argv):
-  host_port = argv[1]
-  
-if __name__ == '__main__':
-  main()
+    name, key = _KEYS.popitem()
+    logging.info('deleting {}', name)
+    key.delete()
+  _KEYS = dict()
