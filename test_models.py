@@ -229,6 +229,15 @@ def CreateAll():
     retrieval=_KEYS['RETRIEVAL'],
   ).put()
 
+  _KEYS['ORDERITEM'] = ndb_models.Orderitem(
+    order=_KEYS['ORDER'],
+    item=_KEYS['ITEM'],
+    supplier=_KEYS['SUPPLIER'],
+    quantity=0,
+    quantity_float=1.1,
+    name='order item?',
+  ).put()
+
   """template
   _KEYS['ORDER'] = ndb_models.Order(
 
