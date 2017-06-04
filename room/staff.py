@@ -4,8 +4,7 @@ import datetime
 import json
 import logging
 import webapp2
-from google.appengine.api import taskqueue
-from google.appengine.ext import deferred
+from google.appengine.ext import ndb
 
 import ndb_models
 import common
@@ -127,6 +126,16 @@ def _EntryList(request, model_cls, template, params=None, query=None):
 class SupplierList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
+
+  
+class Supplier(StaffHandler):
+  def get(self, supplier_id=None):
+    d = dict()
+    if supplier_id:
+      supplier_id = int(supplier_id)
+      if supplier_id:
+        d['supplier'] = ndb.Key(ndb_models.Supplier, supplier_id).get()
+    return common.Respond(self.request, 'supplier', d)
 
   
 class SiteJump(StaffHandler):

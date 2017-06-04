@@ -34,7 +34,7 @@ $(document).ready(function(){
 	{{ person.visibility|escape }}
       </td><td>
 	<span class="sortorder">{{ person.name }}</span>
-	<a href="{{ webapp2.uri_for('SupplierEdit', supplier_id=person.key.integer_id()) }}">
+	<a href="{{ webapp2.uri_for('Supplier', supplier_id=person.key.integer_id()) }}">
 	  {{person.name|escape}}
 	</a>
       </td><td>
@@ -52,6 +52,6 @@ $(document).ready(function(){
   </tbody>
 </table>
 
-<form action="{{ webapp2.uri_for('SupplierNew') }}"><input type=submit value="Add a new Supplier"></form>
+<form action="{{ webapp2.uri_for('Supplier', supplier_id='0') }}"><input type=submit value="Add a new Supplier"></form>
 
 {%endblock%}

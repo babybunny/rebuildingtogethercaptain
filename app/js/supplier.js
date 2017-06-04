@@ -7,29 +7,27 @@ requirejs.config({
 
 require(
     ['app/routes', 'app/gapi', 
-     'app/views/auth', 'app/models/user',
+     'app/views/auth', 'app/models/user'
      'app/models/supplier'
     ], 
     function(Routes, ApiManager, 
              AuthView, User,
-             Supplier) {
+             Supplier) { 
         var Rooms = function() {
             var self = this;
             this.user = new User();
             this.apiManager = new ApiManager(this);
             this.views.auth = new AuthView(this);
-            this.models.supplier = new Supplier(this);
             this.routes = new Routes();
             this.routes.app = this;
-            Backbone.history.start({pushState: true});
-            console.log('rooms!');
+            // Backbone.history.start({pushState: true});
+            
             this.apiManager.on('signin', function() { 
                 self.user.fetch();            
             });
         };
         Rooms.prototype = {
             views: {},
-            models: {},
         };
         window.rooms = new Rooms();
     }
