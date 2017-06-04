@@ -119,12 +119,15 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/help',
                   MainPage,
                   name='StaffNew'),  # TODO
-    webapp2.Route(r'/help',
-                  MainPage,
+    webapp2.Route(r'/supplier',
+                  staff.SupplierList,
                   name='SupplierList'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='SupplierNew'),  # TODO
+    webapp2.Route(r'/help/<supplier_id:\d+>',
+                  MainPage,
+                  name='SupplierEdit'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='CheckRequestList'),  # TODO

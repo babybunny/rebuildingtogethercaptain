@@ -95,7 +95,40 @@ class CaptainAutocomplete(StaffHandler):
   def get(self):
     return _Autocomplete(self.request, ndb_models.Captain)
 
+    
+def _EntryList(request, model_cls, template, params=None, query=None):
+  """Generic helper method to perform a list view.
 
+  This method does not enforce any authorization. It should be called after 
+  authorization is successful..
+
+  Template should iterate over a list called 'entries'.
+  Sorts entries on their 'name' attribute (which they must have).
+
+  Args:
+    request: the request object
+    model_cls: the class of model, like models.Captain
+    template: name of template file, like 'captain_list'
+    params: dict of more template parameters
+    query: db.Query object to use, if not model_cls.query()
+    """
+  if query is None:
+    query = model_cls.query()
+  entries = list(query)
+  entries.sort(key=lambda x: x.name)
+  d = {'entries': entries, 'num_entries': len(entries),
+       'cls': model_cls,
+       'model_cls_name': model_cls.__name__}
+  if params:
+    d.update(params)
+  return common.Respond(request, template, d)
+
+
+class SupplierList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
+
+  
 class SiteJump(StaffHandler):
   def get(self):
     user, _ = common.GetUser()

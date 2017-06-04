@@ -34,7 +34,7 @@ $(document).ready(function(){
 	{{ person.visibility|escape }}
       </td><td>
 	<span class="sortorder">{{ person.name }}</span>
-	<a href="{%url room.views.SupplierEdit person.key.id%}">
+	<a href="{{ webapp2.uri_for('SupplierEdit', supplier_id=person.key.integer_id()) }}">
 	  {{person.name|escape}}
 	</a>
       </td><td>
@@ -46,12 +46,12 @@ $(document).ready(function(){
       </td><td>
 	{{ person.phone2|escape }}
       </td><td>
-	{{ person.notes|escape|linebreaksbr }}
+	{{ person.notes|escape }}{# TODO: was linebreaksbr #}
     </td></tr>
     {% endfor %}
   </tbody>
 </table>
 
-<form action="{%url room.views.SupplierNew %}"><input type=submit value="Add a new Supplier"></form>
+<form action="{{ webapp2.uri_for('SupplierNew') }}"><input type=submit value="Add a new Supplier"></form>
 
 {%endblock%}
