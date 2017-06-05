@@ -89,14 +89,22 @@ define(['app/config', 'backbone'], function(config, backbone) {
     // Override sync with a custom method that works with gapi and our roomApi
     Backbone.sync = function(method, model, options) {
         options || (options = {});
-        
+        options.data || (options.data = {});
+        if (model.id) {
+            options.data.id = model.id;
+        }
+
         console.log('Backbone sync: ' + method + ' url: ' + model.url() + ' options: ' + JSON.stringify(options));
         
         switch (method) {
         case 'create':
+            var request = gapi.client.roomApi[model.urlRoot].post(model.attributes);
+            backbone.gapiRequest(request, method, model, options);
             break;
             
         case 'update':
+            var request = gapi.client.roomApi[model.urlRoot].put(model.attributes);
+            backbone.gapiRequest(request, method, model, options);
             break;
             
         case 'delete':

@@ -3,12 +3,14 @@
 <html>
   <head>
     <title>Rebuilding Together, Peninsula - ROOM System</title>
-    <link type="text/css" rel="stylesheet" href="/static/styles.css">
     <script type="text/javascript" data-main="/js/app/rooms" src="/js/lib/require.js"></script>
     {% block script %}{% endblock %}
+    <link href="/css/lib/bootstrap.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/static/styles.css">
   </head>
   <body>
-    <span class="breadcrumb">
+    <div class="header">
+    <span class="breadcrumm">
       <b>ROOM System</b>
       <span class="program" id="selected-program">
         {% if user.program_selected %}
@@ -35,7 +37,7 @@
       {%endif%}
       | <a target="_new" href="{{ webapp2.uri_for('Help') }}">Help</a>
     </span>
-    <hr>
+    </div>
     <table>
       <tr>
 	      <td>

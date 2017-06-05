@@ -135,21 +135,8 @@ class RoomApi(remote.Service):
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
 
-  
-  @endpoints.method(endpoints.ResourceContainer(message_types.VoidMessage,
-                                                id=messages.IntegerField(2)),
-                    Supplier,
-                    http_method='GET',
-                    path='supplier/{id}',
-                    name='supplier.list')
-  def supplier_list(self, request):
-    _authorize_staff()
-    if not request.id:
-      raise endpoints.BadRequestException('id is required')
-    p = ndb.Key(ndb_models.Supplier, request.id).get()
-    if not p:
-      raise endpoints.NotFoundException(
-        'No Supplier found with key %s' % request.id)
+  @classmethod
+  def _SupplierMessageFromModel(cls, p):
     s = Supplier(
       name=p.name,
       email=p.email,
@@ -165,6 +152,23 @@ class RoomApi(remote.Service):
       s.since = p.since.isoformat()  # datetime, for display only
     return s
 
+  @endpoints.method(endpoints.ResourceContainer(message_types.VoidMessage,
+                                                id=messages.IntegerField(2)),
+                    Supplier,
+                    http_method='GET',
+                    path='supplier/{id}',
+                    name='supplier.list')
+  def supplier_list(self, request):
+    _authorize_staff()
+    if not request.id:
+      raise endpoints.BadRequestException('id is required')
+    mdl = ndb.Key(ndb_models.Supplier, request.id).get()
+    if not mdl:
+      raise endpoints.NotFoundException(
+        'No Supplier found with key %s' % request.id)    
+    return self._SupplierMessageFromModel(mdl)
+
+  
   @endpoints.method(Supplier,
                     Supplier,
                     http_method='POST',
@@ -172,25 +176,44 @@ class RoomApi(remote.Service):
                     name='supplier.post')
   def supplier_post(self, request):
     _authorize_staff()
-    if request.id:
-      s = ndb.Key(ndb_models.Supplier, request.id).get()
-      if not s:
-        raise endpoints.NotFoundException(
-          'No Supplier found with key %s' % request.id)
-    else:
-      s = ndb_models.Supplier()
+    mdl = ndb_models.Supplier()
+    mdl.name = request.name
+    mdl.email = request.email
+    mdl.address = request.address
+    mdl.phone1 = request.phone1
+    mdl.phone2 = request.phone2
+    mdl.notes = request.notes
+    mdl.active = request.active
+    mdl.visibility = request.visibility
+    mdl.put()
+    return self._SupplierMessageFromModel(mdl)
 
-    s.name = request.name
-    s.email = request.email
-    s.address = request.address
-    s.phone1 = request.phone1
-    s.phone2 = request.phone2
-    s.notes = request.notes
-    s.active = request.active
-    s.visibility = request.visibility
-    k = s.put()
-    request.id = k.integer_id()
-    return request
+  
+  @endpoints.method(endpoints.ResourceContainer(Supplier,
+                                                id=messages.IntegerField(2)),
+                    Supplier,
+                    http_method='PUT',
+                    path='supplier/{id}',
+                    name='supplier.put')
+  def supplier_put(self, request):
+    _authorize_staff()
+    if not request.id:
+      raise endpoints.BadRequestException('id is required')
+    mdl = ndb.Key(ndb_models.Supplier, request.id).get()
+    if not mdl:
+      raise endpoints.NotFoundException(
+        'No Supplier found with key %s' % request.id)
+
+    mdl.name = request.name
+    mdl.email = request.email
+    mdl.address = request.address
+    mdl.phone1 = request.phone1
+    mdl.phone2 = request.phone2
+    mdl.notes = request.notes
+    mdl.active = request.active
+    mdl.visibility = request.visibility
+    mdl.put()
+    return self._SupplierMessageFromModel(mdl)
 
 
 application = endpoints.api_server([RoomApi])

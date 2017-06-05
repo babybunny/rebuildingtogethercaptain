@@ -12,6 +12,9 @@ handlers:
 - url: /js/lib
   static_dir: build/js/lib
 
+- url: /css/lib
+  static_dir: build/css
+
 - url: /js/app
   static_dir: app/js
 

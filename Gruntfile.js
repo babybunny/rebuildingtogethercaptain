@@ -18,6 +18,9 @@ module.exports = function(grunt) {
     grunt.file.copy('node_modules/underscore/underscore-min.js', 'build/js/lib/underscore-min.js');
     grunt.file.copy('node_modules/jquery/dist/jquery.min.js', 'build/js/lib/jquery.js');
     grunt.file.copy('node_modules/jqueryui/jquery-ui.min.js', 'build/js/lib/jquery-ui.js');
+    grunt.file.copy('node_modules/backform/src/backform.js', 'build/js/lib/backform.js');
+    grunt.file.copy('node_modules/bootstrap/dist/css/bootstrap.css', 'build/css/bootstrap.css');
+    grunt.file.copy('node_modules/bootstrap/dist/js/bootstrap.min.js', 'build/js/lib/bootstrap.js');
   });
   
   grunt.registerTask('default', ['copy-require']);
