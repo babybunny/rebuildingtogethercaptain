@@ -1,14 +1,17 @@
 {%extends "base.html"%}
-{% block breadcrumb %}
+{%block breadcrumb%}
   | Change a Supplier
-{% endblock %}
+{%endblock%}
+{%block about_this_page%}
+<h2>Create or edit a Supplier</h2>
+<p>
+  <a href='{{ webapp2.uri_for('SupplierList') }}'>see the entire Supplier list</a>
+</p>
+{%endblock%}
 {%block body%}
 
 <h2>{{ what_you_are_doing }}</h2>
 
-<p>
-  <a href='{{ webapp2.uri_for('SupplierList') }}'>see the entire Supplier list</a>
-</p>
 
 <div id='supplier-view'>Loading supplier module ...</div>
 

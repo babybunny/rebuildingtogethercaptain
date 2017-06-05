@@ -10,9 +10,13 @@ $(document).ready(function(){
 {% block breadcrumb %}
   | List Suppliers
 {% endblock %}
+{%block about_this_page%}
+<h2>List of Suppliers</h2>
+<p>
+  <a href="{{ webapp2.uri_for('Supplier', supplier_id='') }}" alt="new supplier">Add a new Supplier</a>
+</p>
+{%endblock%}
 {%block body%}
-<h2>All Suppliers</h2>
-
 <table class="list tablesorter" id="supplier_list">
   <thead>
     <tr>
@@ -51,7 +55,5 @@ $(document).ready(function(){
     {% endfor %}
   </tbody>
 </table>
-
-<form action="{{ webapp2.uri_for('Supplier', supplier_id='0') }}"><input type=submit value="Add a new Supplier"></form>
 
 {%endblock%}

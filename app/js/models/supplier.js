@@ -3,7 +3,7 @@ define(
     function(Backbone) {
         var Model = Backbone.Model.extend({
             // matches first part of 'name' in @endpoints.method
-            url: 'supplier'
+            urlRoot: 'supplier'
         });
         
         return Model;

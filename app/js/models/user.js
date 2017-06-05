@@ -3,7 +3,7 @@ define(
     function(backbone) {
         var User = backbone.Model.extend({
             // matches first part of 'name' in @endpoints.method
-            url: 'current_user'
+            urlRoot: 'current_user'
         });
         
         return User;

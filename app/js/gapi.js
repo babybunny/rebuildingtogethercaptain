@@ -16,7 +16,7 @@ define(['app/config', 'backbone'], function(config, backbone) {
         var self = this;
         
         function loadedAuthedAndReady() {
-            console.log('all ready');
+            console.log('gapi ready');
             
             // Listen for sign-in state changes.
             googleAuth = gapi.auth2.getAuthInstance();
@@ -44,7 +44,6 @@ define(['app/config', 'backbone'], function(config, backbone) {
         function updateUserDetails(googleUser) {
             if (googleUser.isSignedIn()) {
                 self.loginState.set('email', googleUser.getBasicProfile().getEmail());
-                self.trigger('signin');
             } else {
                 self.loginState.set('email', 'not signed in');
             }
@@ -91,7 +90,7 @@ define(['app/config', 'backbone'], function(config, backbone) {
     Backbone.sync = function(method, model, options) {
         options || (options = {});
         
-        console.log('sync: ' + method + ' ' + model.url);
+        console.log('Backbone sync: ' + method + ' url: ' + model.url() + ' options: ' + JSON.stringify(options));
         
         switch (method) {
         case 'create':
@@ -104,7 +103,7 @@ define(['app/config', 'backbone'], function(config, backbone) {
             break;
             
         case 'read':
-            var request = gapi.client.roomApi[model.url].list(options.data);
+            var request = gapi.client.roomApi[model.urlRoot].list(options.data);
             backbone.gapiRequest(request, method, model, options);
             break;
         }

@@ -1,0 +1,23 @@
+<span id="supplier-loading">Loading supplier ...</span>
+<span id="supplier-loaded">Loaded supplier ID <%= s.id %></span>
+<span id="supplier-new">New supplier</span>
+<form id="supplier-form">
+  <table>
+    <tr><th><label for="id_name">Name:</label></th><td><input type="text" name="name" value="<%= s.name %>" id="id_name" /></td></tr>
+    <tr><th><label for="id_email">Email:</label></th><td><input type="text" name="email" value="<%= s.email %>" id="id_email" /></td></tr>
+    <tr><th><label for="id_address">Address:</label></th><td><input type="text" name="address" value="<%= s.address %>" id="id_address" /></td></tr>
+    <tr><th><label for="id_phone1">Phone1:</label></th><td><input type="text" value="<%= s.phone1 %>" name="phone1" id="id_phone1" /></td></tr>
+    <tr><th><label for="id_phone2">Phone2:</label></th><td><input type="text" value="<%= s.phone2 %>" name="phone2" id="id_phone2" /></td></tr>
+    <tr><th><label for="id_notes">Notes:</label></th><td><textarea id="id_notes" rows="10" cols="40" name="notes"><%= s.notes %></textarea></td></tr>
+    <tr><th><label for="id_active">Active:</label></th><td><select name="active" id="id_active">
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+    </select></td></tr>
+    <tr><th><label for="id_visibility">Visibility:</label></th><td><select name="visibility" id="id_visibility">
+          <option value="Everyone">Everyone</option>
+          <option value="Staff Only">Staff Only</option>
+    </select></td></tr>
+    <tr><th><label for="id_since">Since:</label></th><td><%= s.since %></td></tr>
+    <tr><td><input type="submit" id="supplier-save" value="Save changes to this Supplier"></td></tr>
+  </table>
+  </form>
