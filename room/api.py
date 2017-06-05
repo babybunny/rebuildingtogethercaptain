@@ -144,25 +144,53 @@ class RoomApi(remote.Service):
                     name='supplier.list')
   def supplier_list(self, request):
     _authorize_staff()
-    s = Supplier()
-    if request.id:
-      p = ndb.Key(ndb_models.Supplier, request.id).get()
-      if not p:
-        return s
-      s = Supplier(
-        name=p.name,
-        email=p.email,
-        address=p.address,
-        phone1=p.phone1,
-        phone2=p.phone2,
-        notes=p.notes,
-        active=p.active,            
-        visibility=p.visibility,
-        id=p.key.integer_id(),
-      )
-      if p.since:
-        s.since = p.since.isoformat()  # datetime, for display only
+    if not request.id:
+      raise endpoints.BadRequestException('id is required')
+    p = ndb.Key(ndb_models.Supplier, request.id).get()
+    if not p:
+      raise endpoints.NotFoundException(
+        'No Supplier found with key %s' % request.id)
+    s = Supplier(
+      name=p.name,
+      email=p.email,
+      address=p.address,
+      phone1=p.phone1,
+      phone2=p.phone2,
+      notes=p.notes,
+      active=p.active,            
+      visibility=p.visibility,
+      id=p.key.integer_id(),
+    )
+    if p.since:
+      s.since = p.since.isoformat()  # datetime, for display only
     return s
+
+  @endpoints.method(Supplier,
+                    Supplier,
+                    http_method='POST',
+                    path='supplier',
+                    name='supplier.post')
+  def supplier_post(self, request):
+    _authorize_staff()
+    if request.id:
+      s = ndb.Key(ndb_models.Supplier, request.id).get()
+      if not s:
+        raise endpoints.NotFoundException(
+          'No Supplier found with key %s' % request.id)
+    else:
+      s = ndb_models.Supplier()
+
+    s.name = request.name
+    s.email = request.email
+    s.address = request.address
+    s.phone1 = request.phone1
+    s.phone2 = request.phone2
+    s.notes = request.notes
+    s.active = request.active
+    s.visibility = request.visibility
+    k = s.put()
+    request.id = k.integer_id()
+    return request
 
 
 application = endpoints.api_server([RoomApi])
