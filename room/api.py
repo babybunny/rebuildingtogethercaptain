@@ -135,23 +135,40 @@ class RoomApi(remote.Service):
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
 
+  ############
+  # Supplier #
+  ############
+  
   @classmethod
-  def _SupplierMessageFromModel(cls, p):
+  def _SupplierModelToMessage(unused_cls, mdl):
     s = Supplier(
-      name=p.name,
-      email=p.email,
-      address=p.address,
-      phone1=p.phone1,
-      phone2=p.phone2,
-      notes=p.notes,
-      active=p.active,            
-      visibility=p.visibility,
-      id=p.key.integer_id(),
+      name=mdl.name,
+      email=mdl.email,
+      address=mdl.address,
+      phone1=mdl.phone1,
+      phone2=mdl.phone2,
+      notes=mdl.notes,
+      active=mdl.active,            
+      visibility=mdl.visibility,
+      id=mdl.key.integer_id(),
     )
-    if p.since:
-      s.since = p.since.isoformat()  # datetime, for display only
+    if mdl.since:
+      s.since = mdl.since.isoformat()  # datetime, for display only
     return s
 
+  @classmethod
+  def _SupplierMessageToModel(unused_cls, msg, mdl):
+    mdl.name = msg.name
+    mdl.email = msg.email
+    mdl.address = msg.address
+    mdl.phone1 = msg.phone1
+    mdl.phone2 = msg.phone2
+    mdl.notes = msg.notes
+    mdl.active = msg.active
+    mdl.visibility = msg.visibility
+    # can't set "since", it's automatic
+    return mdl
+    
   @endpoints.method(endpoints.ResourceContainer(message_types.VoidMessage,
                                                 id=messages.IntegerField(2)),
                     Supplier,
@@ -166,7 +183,7 @@ class RoomApi(remote.Service):
     if not mdl:
       raise endpoints.NotFoundException(
         'No Supplier found with key %s' % request.id)    
-    return self._SupplierMessageFromModel(mdl)
+    return self._SupplierModelToMessage(mdl)
 
   
   @endpoints.method(Supplier,
@@ -177,16 +194,9 @@ class RoomApi(remote.Service):
   def supplier_post(self, request):
     _authorize_staff()
     mdl = ndb_models.Supplier()
-    mdl.name = request.name
-    mdl.email = request.email
-    mdl.address = request.address
-    mdl.phone1 = request.phone1
-    mdl.phone2 = request.phone2
-    mdl.notes = request.notes
-    mdl.active = request.active
-    mdl.visibility = request.visibility
+    self._SupplierMessageToModel(request, mdl)
     mdl.put()
-    return self._SupplierMessageFromModel(mdl)
+    return self._SupplierModelToMessage(mdl)
 
   
   @endpoints.method(endpoints.ResourceContainer(Supplier,
@@ -204,16 +214,9 @@ class RoomApi(remote.Service):
       raise endpoints.NotFoundException(
         'No Supplier found with key %s' % request.id)
 
-    mdl.name = request.name
-    mdl.email = request.email
-    mdl.address = request.address
-    mdl.phone1 = request.phone1
-    mdl.phone2 = request.phone2
-    mdl.notes = request.notes
-    mdl.active = request.active
-    mdl.visibility = request.visibility
+    self._SupplierMessageToModel(request, mdl)
     mdl.put()
-    return self._SupplierMessageFromModel(mdl)
+    return self._SupplierModelToMessage(mdl)
 
 
 application = endpoints.api_server([RoomApi])
