@@ -1,7 +1,7 @@
 define(
-    ['backbone', 'backform', 'bootstrap',
+    ['backbone', 'backform', 'bootstrap', 'jquery',
      'text!app/templates/supplier.html'],
-    function(Backbone, Backform, bootstrap, template) {
+    function(Backbone, Backform, bootstrap, jquery, template) {
         var fields = [{
             name: "id", // The key of the model attribute
             label: "ID", // The label to display next to the control
