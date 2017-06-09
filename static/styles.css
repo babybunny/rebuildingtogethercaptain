@@ -117,14 +117,13 @@ div.right {
 }
 div.body {
     padding-bottom: 20px;
+    min-height: 400px;
 }
 div.footer {
   font-size: smaller;
   clear: both;
   margin-top: 10px;
   border-top: 1px solid grey;
-  position: absolute;
-  bottom: 0;
   height: 20px;
   text-align: center;
   width: 950px;
