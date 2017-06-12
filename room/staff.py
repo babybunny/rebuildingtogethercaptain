@@ -135,6 +135,11 @@ class SupplierList(StaffHandler):
     return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
 
   
+class StaffList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Staff, 'staff_list')
+
+  
 class SiteList(StaffHandler):
   def get(self, id=None):
     if id:
@@ -168,15 +173,23 @@ class EditView(StaffHandler):
       d[self.template_value] = ndb.Key(self.model_class, id).get()
     return common.Respond(self.request, self.template_file, d)
 
+  
 class Supplier(EditView):
   model_class = ndb_models.Supplier
   template_value = 'supplier'
   template_file = 'supplier'
 
 
+class Staff(EditView):
+  model_class = ndb_models.Staff
+  template_value = 'staff'
+  template_file = 'staff'
+
+
+# TODO: not so easy :)
 class Site(EditView):
-  model_class = ndb_models.NewSite
-  template_value = 'site'
-  template_file = 'site'
+  model_class = ndb_models.Staff
+  template_value = 'staff'
+  template_file = 'staff'
 
 

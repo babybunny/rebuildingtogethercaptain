@@ -58,6 +58,15 @@ class Supplier(messages.Message):
   visibility = messages.StringField(9)
   id = messages.IntegerField(10)
 
+class Staff(messages.Message):
+  id = messages.IntegerField(1)
+  name = messages.StringField(2)
+  email = messages.StringField(3)
+  last_welcome = messages.StringField(4)
+  program_selected = messages.StringField(5)
+  notes = messages.StringField(6)
+  since = messages.StringField(7)
+
   
 def _authorize_staff():
   """Simply call this to ensure that the user has a Staff record.
@@ -212,6 +221,63 @@ class RoomApi(remote.Service):
     mdl.put()
     return self._SupplierModelToMessage(mdl)
 
+
+  @classmethod
+  def _StaffModelToMessage(unused_cls, mdl):
+    s = Staff(
+      name=mdl.name,
+      email=mdl.email,
+      last_welcome=mdl.last_welcome,
+      program_selected=mdl.program_selected,
+      notes=mdl.notes,
+      id=mdl.key.integer_id(),
+    )
+    if mdl.since:
+      s.since = mdl.since.isoformat()  # datetime, for display only
+    return s
+
+  @classmethod
+  def _StaffMessageToModel(unused_cls, msg, mdl):
+    mdl.name = msg.name
+    mdl.email = msg.email
+    mdl.last_welcome = msg.last_welcome
+    mdl.program_selected = msg.program_selected
+    mdl.notes = msg.notes
+    # can't set "since", it's automatic
+    return mdl
+
+  @remote.method(SimpleId, Staff)
+  def staff_read(self, request):
+    _authorize_user()
+    if not request.id:
+      raise Exception('id is required')
+    mdl = ndb.Key(ndb_models.Staff, request.id).get()
+    if not mdl:
+      raise Exception(
+        'No Staff found with key %s' % request.id)    
+    return self._StaffModelToMessage(mdl)
+  
+  @remote.method(Staff, Staff)
+  def staff_create(self, request):
+    _authorize_staff()
+    mdl = ndb_models.Staff()
+    self._StaffMessageToModel(request, mdl)
+    mdl.put()
+    return self._StaffModelToMessage(mdl)
+
+  @remote.method(Staff, Staff)
+  def staff_update(self, request):
+    _authorize_staff()
+    if not request.id:
+      raise Exception('id is required')
+    mdl = ndb.Key(ndb_models.Staff, request.id).get()
+    if not mdl:
+      raise Exception(
+        'No Staff found with key %s' % request.id)
+
+    self._StaffMessageToModel(request, mdl)
+    mdl.put()
+    return self._StaffModelToMessage(mdl)
 
 application = service.service_mapping(RoomApi, r'/wsgi_service')
 logging.info(RoomApi.all_remote_methods())

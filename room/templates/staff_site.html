@@ -1,13 +1,13 @@
 {%extends "base.html"%}
 {% block breadcrumb %}
-  | <a href="{% url room.views.SiteList %}">List Sites</a>
+  | <a href="{{ webapp2.uri_for('SiteList') }}">List Sites</a>
   | Change a Site
 {% endblock %}
 {%block about_this_page %}
 <h2>{{ what_you_are_doing }}</h2>
 {% if site %}
 <p>
-  <a href="{% url room.views.SiteView site.key.id %}">
+  <a href="{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}">
     Click here to view site # {{ site.number }} and orders.
   </a>
 </p>
@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td class="layout">
-      <form action="{% if site.key.id %}{% url room.views.SiteEdit site.key.id %}{% else %}{% url room.views.SiteNew %}{% endif %}" method="post">
+      <form action="{% if site.key.integer_id() %}{{ webapp2.uri_for('SiteEdit', id=site.key.integer_id()) }}{% else %}{{ webapp2.uri_for('SiteNew') }}{% endif %}" method="post">
 	<table>
 	  {{form}}
 	  <tr>
@@ -51,7 +51,7 @@
 	  <td colspan=2>
 	    {% for sitecaptain in site.sitecaptain_set %}
 	    <li>
-	      <a href="{% url room.views.CaptainList %}#{{ sitecaptain.captain.key.id }}">
+	      <a href="{{ webapp2.uri_for('CaptainList') }}#{{ sitecaptain.captain.key.integer_id() }}">
 		{{ sitecaptain.captain.name }}
 	      </a>
 	      ({{ sitecaptain.type }} )
@@ -109,8 +109,8 @@
 		{% for sitecaptain in site.sitecaptain_set %}
 		<li>
 		  <input type="checkbox" name="{{ delete_sitecaptain }}" 
-			 value="{{ sitecaptain.key.id }}">
-		  <a href="{% url room.views.CaptainEdit sitecaptain.captain.key.id %}">
+			 value="{{ sitecaptain.key.integer_id() }}">
+		  <a href="{{ webapp2.uri_for('CaptainEdit', id=sitecaptain.captain.key.integer_id()) }}">
 		    {{ sitecaptain.captain.name }}
 		  </a>
 		  ({{ sitecaptain.type }} )

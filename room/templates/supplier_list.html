@@ -3,7 +3,7 @@
 {% include "tablesorter_script.html" %}
 <script type="text/javascript">
 $(document).ready(function(){
-  $("#supplier_list").tablesorter();
+  $("table.tablesorter").tablesorter();
 });
 </script>
 {%endblock%}
@@ -17,7 +17,7 @@ $(document).ready(function(){
 </p>
 {%endblock%}
 {%block body%}
-<table class="list tablesorter" id="supplier_list">
+<table class="list tablesorter">
   <thead>
     <tr>
       <th>Active</th>
@@ -31,26 +31,26 @@ $(document).ready(function(){
     </tr>
   </thead>
   <tbody>
-    {% for person in entries %}
+    {% for entry in entries %}
     <tr><td>
-	{{ person.active|escape }}
+	{{ entry.active|escape }}
       </td><td>
-	{{ person.visibility|escape }}
+	{{ entry.visibility|escape }}
       </td><td>
-	<span class="sortorder">{{ person.name }}</span>
-	<a href="{{ webapp2.uri_for('Supplier', id=person.key.integer_id()) }}">
-	  {{person.name|escape}}
+	<span class="sortorder">{{ entry.name }}</span>
+	<a href="{{ webapp2.uri_for('Supplier', id=entry.key.integer_id()) }}">
+	  {{entry.name|escape}}
 	</a>
       </td><td>
-	{{ person.email|escape }}
+	{{ entry.email|escape }}
       </td><td>
-	{{ person.address|escape }}
+	{{ entry.address|escape }}
       </td><td>
-	{{ person.phone1|escape }}
+	{{ entry.phone1|escape }}
       </td><td>
-	{{ person.phone2|escape }}
+	{{ entry.phone2|escape }}
       </td><td>
-	{{ person.notes|escape }}{# TODO: was linebreaksbr #}
+	{{ entry.notes|escape }}{# TODO: was linebreaksbr #}
     </td></tr>
     {% endfor %}
   </tbody>

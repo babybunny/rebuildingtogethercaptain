@@ -4,46 +4,53 @@
 <script type="text/javascript">
 $(function(){
   $("table.tablesorter").tablesorter();
-});
+ });
 </script>
 {%endblock%}
 {% block breadcrumb %}
   | List Staff
 {% endblock %}
+{%block about_this_page%}
+<h2>List of Staff</h2>
+<p>
+  <a href="{{ webapp2.uri_for('Staff', id='') }}" alt="new staff">Add a new Staff</a>
+</p>
+{%endblock%}
 {%block body%}
-<h2>All Staff</h2>
-
 <table class="list tablesorter">
   <thead>
     <tr>
       <th>Name</th>
       <th>Email</th>
+      <th>Last Sign In</th>
+      <th>Program Selected</th>
       <th>Notes</th>
     </tr>
   </thead>
   <tbody>
-    {% for person in entries %}
+    {% for entry in entries %}
     <tr>
       <td>
-	<span class="sortorder">{{ person.name }}</span>
-	<a name="{{ person.key.id }}"
-	   href="{%url room.views.StaffEdit person.key.id%}">
-	  {{person.name|escape}}
-	</a>
+	      <span class="sortorder">{{ entry.name }}</span>
+	      <a name="{{ entry.key.integer_id() }}"
+	         href="{{ webapp2.uri_for('Staff', id=entry.key.integer_id()) }}">
+	        {{entry.name|escape}}
+	      </a>
       </td>
       <td>
-	{{ person.email|escape }}
+	      {{ entry.email|escape }}
       </td>
       <td>
-	{{ person.notes|escape }}
-    </td>
+	      {{ entry.last_welcome|escape }}
+      </td>
+      <td>
+	      {{ entry.program_selected|escape }}
+      </td>
+      <td>
+	      {{ entry.notes|escape }}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-
-<form action="{%url room.views.StaffNew %}">
-  <input type=submit value="Add a new Staff">
-</form>
-
 {%endblock%}
