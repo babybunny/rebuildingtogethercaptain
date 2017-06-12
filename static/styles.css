@@ -328,27 +328,27 @@ td.order_form_section_header {
 table.order_form_header span {
   padding-right: 30px;			
 }
-#welcome-auth-view {
-  float: right;
-  width: 300px;
-  height: 250px;
-  border: 1px solid #666;
-  padding: 15px;
-  margin: 20px;  
+#login_div {
+    float: right;
+    min-width: 300px;
+    height: 250px;
+    border: 1px solid #666;
+    padding: 15px;
+    margin: 20px;
 }
-.login_button {
-  background-color: #eee;
-  color: #333;
-  font: 30px Arial,sans-serif;
-  padding: 5px;
-  text-decoration: none;
-  border-top: 3px solid #CCCCCC;
-  border-right: 3px solid #333333;
-  border-bottom: 3px solid #333333;
-  border-left: 3px solid #CCCCCC;
+#login_button {
+    background-color: #eee;
+    color: #333;
+    font: 30px Arial,sans-serif;
+    padding: 5px;
+    text-decoration: none;
+    border-top: 3px solid #CCCCCC;
+    border-right: 3px solid #333333;
+    border-bottom: 3px solid #333333;
+    border-left: 3px solid #CCCCCC;
 }
-.login_button:hover {
-  background-color: #ddd;
+#login_button:hover {
+    background-color: #ddd;
 }
 /* override jQuery theme defaults */
 body .ui-widget {

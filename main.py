@@ -11,7 +11,7 @@ from room import staff
 from room import captain
 # from room import views
 
-from google.appengine.api import oauth
+from google.appengine.api import users
 
 class MainPage(webapp2.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
@@ -23,6 +23,8 @@ class MainPage(webapp2.RequestHandler):
             self.redirect_to('StaffHome')
         if user.captain:
             self.redirect_to('CaptainHome')
+        login_url = users.create_login_url('/')
+        logout_url = users.create_logout_url('/')
         template_values = dict(locals())
         template = jinja_environment.get_template('templates/welcome.html')
         self.response.out.write(template.render(template_values))

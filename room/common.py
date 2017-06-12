@@ -6,7 +6,6 @@ import os
 import pprint
 import webapp2
 from google.appengine.api import mail
-from google.appengine.api import oauth
 from google.appengine.api import users
 import ndb_models
 
@@ -146,7 +145,7 @@ def GetBaseUri():
 
 def GetUser():
   user = users.get_current_user()
-  if user:
+  if user and user.email():
     status = 'User signed in as %s' % user.email()
   else:
     status = 'User not available with users.get_current_user'
@@ -160,6 +159,9 @@ def GetUser():
     ndb_models.Captain.email == user.email().lower()).get()
   user.staff = ndb_models.Staff.query(
     ndb_models.Staff.email == user.email().lower()).get()
+
+  user.logout_url = users.create_logout_url('/')
+
   if user.staff:
     user.programs = PROGRAMS
     user.program_selected = user.staff.program_selected
