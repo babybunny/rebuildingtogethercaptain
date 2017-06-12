@@ -145,11 +145,11 @@ def GetBaseUri():
 
 
 def GetUser():
-  try: 
-    user = oauth.get_current_user()
-    status = 'OAuth signed in as %s' % user.email()
-  except oauth.Error:
-    status = 'OAuth not signed in'
+  user = users.get_current_user()
+  if user:
+    status = 'User signed in as %s' % user.email()
+  else:
+    status = 'User not available with users.get_current_user'
 
   if IsDev():
     user = users.User(email=os.environ.get('ROOMS_DEV_SIGNIN_EMAIL'))

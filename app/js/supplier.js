@@ -1,4 +1,7 @@
 requirejs.config({
+    shim: {
+        "bootstrap" : { "deps" :['jquery'] }  // because bootstrap doesn't use AMD to declare its dependency on jquery
+    },
     baseUrl: '/js/lib',
     paths: {
         app: '/js/app',
@@ -6,28 +9,51 @@ requirejs.config({
 });
 
 require(
-    ['app/routes', 'app/gapi', 
-     'app/views/auth', 'app/models/user'
-     'app/models/supplier'
+    [
+        'backbone',
+        'app/routes', 
+        'app/models/supplier',
+        'app/views/supplier'
     ], 
-    function(Routes, ApiManager, 
-             AuthView, User,
-             Supplier) { 
+    function(Backbone, Routes, Supplier, SupplierView) { 
+        Backbone.sync = function(method, model, options) {
+            console.log('Backbone sync: ' + method + ' options: ' + JSON.stringify(options));
+
+                var settings = {
+                    url: this.urlRoot + method,
+                    method: "POST",
+                    contentType: "application/json",
+                    success: function(data, status, xhr) {
+                        console.log('supplier ' + method + ' success: ' + JSON.stringify(data));
+                        options.success(data);
+                    }
+                };
+                
+                switch (method) {
+                case 'read':
+                    Backbone.$.ajax(_.extend(settings, {
+                        data: JSON.stringify({"id": model.id})
+                    }))
+                    break;
+                case 'create':
+                case 'update':
+                    Backbone.$.ajax(_.extend(settings, {
+                        data: JSON.stringify(model.attributes),
+                    }))
+                    break;
+                }
+            }
         var Rooms = function() {
             var self = this;
-            this.user = new User();
-            this.apiManager = new ApiManager(this);
-            this.views.auth = new AuthView(this);
-            this.routes = new Routes();
-            this.routes.app = this;
-            // Backbone.history.start({pushState: true});
-            
-            this.apiManager.on('signin', function() { 
-                self.user.fetch();            
-            });
+            this.routes = new Routes(this);
+            this.go();
         };
         Rooms.prototype = {
             views: {},
+            models: {},
+            go: function() {
+                Backbone.history.start({pushState: true});
+            }
         };
         window.rooms = new Rooms();
     }

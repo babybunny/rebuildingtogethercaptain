@@ -2,8 +2,8 @@ define(
     ['backbone'],
     function(Backbone) {
         var Model = Backbone.Model.extend({
-            // matches first part of 'name' in @endpoints.method
-            urlRoot: 'supplier'
+            // matches first part of method name in @remote.method
+            urlRoot: '/wsgi_service.supplier_',
         });
         
         return Model;

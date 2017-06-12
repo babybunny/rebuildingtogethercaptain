@@ -23,7 +23,6 @@ class MainPage(webapp2.RequestHandler):
             self.redirect_to('StaffHome')
         if user.captain:
             self.redirect_to('CaptainHome')
-        oauth_user = 'placeholder'
         template_values = dict(locals())
         template = jinja_environment.get_template('templates/welcome.html')
         self.response.out.write(template.render(template_values))

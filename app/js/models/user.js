@@ -3,7 +3,7 @@ define(
     function(backbone) {
         var User = backbone.Model.extend({
             // matches first part of 'name' in @endpoints.method
-            urlRoot: 'current_user'
+            urlRoot: 'wsgi_service.current_user'
         });
         
         return User;
