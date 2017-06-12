@@ -160,7 +160,7 @@
 	                <strong>Starting Budget</strong>
 	              </td>
 	              <td class="value">
-	                ${{ site.budget|round(2) }}
+	                ${{ "%0.2f" % site.budget }}
 	              </td>
 	              <td>
 	              </td>
@@ -177,7 +177,7 @@
 	              </td>
 	              <td class="value">
 	                {% if site.OrderTotal() %}
-	                (${{ site.OrderTotal()|round(2) }})
+	                (${{ "%0.2f" % site.OrderTotal() }})
 	                {% else %}
 	                -
 	                {% endif %}
@@ -205,7 +205,7 @@
 	              </td>
 	              <td class="value">
 	                {% if site.CheckRequests.Count() %}
-	                (${{ site.CheckRequestTotal()|round(2) }})
+	                (${{ "%0.2f" % site.CheckRequestTotal() }})
 	                {% else %}
 	                -
 	                {% endif %}
@@ -233,7 +233,7 @@
 	              </td>
 	              <td class="value">
 	                {% if site.VendorReceipts.Count() %}
-	                (${{ site.VendorReceiptTotal()|round(2) }})
+	                (${{ "%0.2f" % site.VendorReceiptTotal() }})
 	                {% else %}
 	                -
 	                {% endif %}
@@ -262,7 +262,7 @@
 	              </td>
 	              <td class="value">
 	                {% if site.StaffTimes.Count() %}
-	                (${{ site.StaffTimeTotal()|round(2) }})
+	                (${{ "%0.2f" % site.StaffTimeTotal() }})
 	                {% else %}
 	                -
 	                {% endif %}
@@ -286,7 +286,7 @@
 	                <strong>Unspent Budget</strong>
 	              </td>
 	              <td class="value">
-	                ${{ site.BudgetRemaining()|round(2) }}
+	                ${{ "%0.2f" % site.BudgetRemaining() }}
 	              </td>
 	              <td>
 	              </td>
@@ -303,7 +303,7 @@
 	              </td>
 	              <td class="value">
 	                {% if site.InKindDonations.Count() %}
-	                ${{ site.InKindDonationTotal()|round(2) }}
+	                ${{ "%0.2f" % site.InKindDonationTotal() }}
 	                {% else %}
 	                -
 	                {% endif %}
@@ -378,7 +378,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="dollar">
-	                ${{ order.GrandTotal()|round(2) }}
+	                ${{ "%0.2f" % order.GrandTotal() }}
 	              </td>
 	            </tr>
 	            {% endfor %}              
@@ -417,7 +417,7 @@
 		              {{ entity.name|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total()|round(2) }}
+		              ${{ "%0.2f" % entity.Total() }}
 	              </td>
 	              <td>
 	                {{ entity.state }}
@@ -470,7 +470,7 @@
 		              {{ entity.name|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total()|round(2) }}
+		              ${{ "%0.2f" % entity.Total() }}
 	              </td>
 	              <td>
 	                {{ entity.state }}
@@ -529,7 +529,7 @@
 		              {{ entity.miles|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total()|round(2) }}
+		              ${{ "%0.2f" % entity.Total() }}
 	              </td>
 	              <td>
 		              {{ entity.activity_date|escape }}
@@ -586,7 +586,7 @@
 		              {{ entity.donor|escape }}
 	              </td>
 	              <td class="dollar">
-		              ${{ entity.Total()|round(2) }}
+		              ${{ "%0.2f" % entity.Total() }}
 	              </td>
 	              <td>
 	                {{ entity.state }}
