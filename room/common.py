@@ -144,30 +144,31 @@ def GetBaseUri():
 
 
 def GetUser():
-  user = users.get_current_user()
-  if user and user.email():
-    status = 'User signed in as %s' % user.email()
-  else:
-    status = 'User not available with users.get_current_user'
-
   if IsDev():
     user = users.User(email=os.environ.get('ROOMS_DEV_SIGNIN_EMAIL'))
-    status = ('DEV, using configured user %s (original status %s)'
-              % (user.email(), status))
-  logging.info(status)
-  user.captain = ndb_models.Captain.query(
-    ndb_models.Captain.email == user.email().lower()).get()
-  user.staff = ndb_models.Staff.query(
-    ndb_models.Staff.email == user.email().lower()).get()
+    status = 'DEV, using configured user %s' % user.email()
+  else:
+    user = users.get_current_user()
+    if user and user.email():
+      status = 'User signed in as %s' % user.email()
+    else:
+      status = 'User not available with users.get_current_user'
 
+  logging.info(status)
   user.logout_url = users.create_logout_url('/')
 
-  if user.staff:
-    user.programs = PROGRAMS
-    user.program_selected = user.staff.program_selected
-  else:
-    user.programs = []
-    user.program_selected = None
+  if user and user.email():
+    user.captain = ndb_models.Captain.query(
+      ndb_models.Captain.email == user.email().lower()).get()
+    user.staff = ndb_models.Staff.query(
+      ndb_models.Staff.email == user.email().lower()).get()
+
+    if user.staff:
+      user.programs = PROGRAMS
+      user.program_selected = user.staff.program_selected
+    else:
+      user.programs = []
+      user.program_selected = None
   return user, status
 
 
