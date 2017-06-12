@@ -29,13 +29,6 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
 
-- url: /room/rest/.*
-  script: room/rest_main.py
-  login: required
-
-- url: /room/partials
-  static_dir: room/partials
-
 # WSGI protorpc service handler
 - url: /wsgi_service.*
   script: room.wsgi_service.application
