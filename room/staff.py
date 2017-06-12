@@ -68,32 +68,38 @@ class StaffHome(StaffHandler):
     return common.Respond(self.request, 'staff_home', d)
 
 
-def _Autocomplete(request, model_class, program_filter=False):
-  prefix = str(request.get('term').lower())
-  items = model_class.query()
-  items.filter(model_class.search_prefixes == prefix)
-  if program_filter:
-    user, _ = common.GetUser()
-    items.filter(model_class.program == user.program_selected)
-  matches = {}
-  for i in items.iter():
-    label = i.Label()
-    matches[label] = i.key.urlsafe()
-  response = webapp2.Response(content_type='application/json')
-  response.write(json.dumps(matches))
-  return response
+class AutocompleteHandler(StaffHandler):
+  model_class = None
+  program_filter = False
+
+  def get(self):
+    prefix = str(self.request.get('term').lower())
+    logging.info(prefix)
+    items = self.model_class.query()
+    # items.filter(model_class.search_prefixes == prefix)
+    if self.program_filter:
+      user, _ = common.GetUser()
+    #  items.filter(model_class.program == user.program_selected)
+    matches = {}
+    for i in items.iter():
+      label = i.Label()
+      matches[label] = i.key.urlsafe()
+
+    logging.info(matches)
+    self.response.content_type='application/json'
+    self.response.write(json.dumps(matches))
 
 
-class SiteAutocomplete(StaffHandler):
+class SiteAutocomplete(AutocompleteHandler):
   """Return JSON to autocomplete a Site ID based on a prefix."""
-  def get(self):
-    return _Autocomplete(self.request, ndb_models.NewSite, program_filter=True)
+  model_class = ndb_models.NewSite
+  program_filter = True
 
 
-class CaptainAutocomplete(StaffHandler):
+class CaptainAutocomplete(AutocompleteHandler):
   """Return JSON to autocomplete a Captain."""
-  def get(self):
-    return _Autocomplete(self.request, ndb_models.Captain)
+  model_class = ndb_models.Captain
+  program_filter = True
 
     
 def _EntryList(request, model_cls, template, params=None, query=None):
