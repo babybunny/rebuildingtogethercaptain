@@ -85,9 +85,9 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/site_summary/<site_id:\d+>',
                   staff.Site,
                   name='SiteSummary'),  # TODO
-    webapp2.Route(r'/site_view/<site_id:\d+>',
+    webapp2.Route(r'/site/list/<site_id:\d+>/',  # back compat
                   staff.Site,
-                  name='SiteView'),  # TODO
+                  name='SiteView'),
     webapp2.Route(r'/help',
                   MainPage,
                   name='SiteBudget'),  # TODO
