@@ -1,4 +1,4 @@
-service: endpoints
+service: service
 runtime: python27
 threadsafe: no
 api_version: 1
@@ -33,10 +33,6 @@ handlers:
 - url: /wsgi_service.*
   script: room.wsgi_service.application
 
-# Endpoints handler
-- url: /_ah/spi/.*
-  script: room.api.application
-
 - url: /.*
   script: main.app
 
@@ -45,8 +41,6 @@ builtins:
 - deferred: on
 
 libraries:
-- name: endpoints
-  version: 1.0
 - name: webapp2
   version: "2.5.2"
 - name: jinja2
