@@ -155,7 +155,6 @@ def GetUser():
       status = 'User not available with users.get_current_user'
 
   logging.info(status)
-  user.logout_url = users.create_logout_url('/')
 
   if user and user.email():
     user.captain = ndb_models.Captain.query(
@@ -197,6 +196,7 @@ def Respond(request_handler, template_name, params=None):
     params = {}
   params['webapp2'] = webapp2
   params['user'], params['user_status'] = GetUser()
+  params['logout_url'] = users.create_logout_url('/')
   params['help_contact'] = HELP_CONTACT
   params['help_phone'] = HELP_PHONE
   params['help_person'] = HELP_PERSON

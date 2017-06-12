@@ -19,9 +19,9 @@ class MainPage(webapp2.RequestHandler):
     def get(self):
         """Renders the main page."""
         user, status = common.GetUser()
-        if user.staff:
+        if user and user.staff:
             self.redirect_to('StaffHome')
-        if user.captain:
+        if user and user.captain:
             self.redirect_to('CaptainHome')
         login_url = users.create_login_url('/')
         logout_url = users.create_logout_url('/')

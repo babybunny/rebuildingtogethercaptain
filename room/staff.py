@@ -67,6 +67,7 @@ class StaffHome(StaffHandler):
          }
     return common.Respond(self.request, 'staff_home', d)
 
+
 def _Autocomplete(request, model_class, program_filter=False):
   prefix = str(request.get('term').lower())
   items = model_class.query()
