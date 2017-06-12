@@ -135,36 +135,48 @@ class SupplierList(StaffHandler):
     return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
 
   
-class Supplier(StaffHandler):
-  def get(self, supplier_id=None):
-    d = dict()
-    if supplier_id:
-      supplier_id = int(supplier_id)
-      if supplier_id:
-        d['supplier'] = ndb.Key(ndb_models.Supplier, supplier_id).get()
-    return common.Respond(self.request, 'supplier', d)
-
-
-class Site(StaffHandler):
-  def get(self, site_id=None):
-    if site_id:
-      site_id = int(site_id)
-      if site_id:
-        site = ndb.Key(ndb_models.NewSite, site_id).get()
-    return _SiteListInternal(self.request, site)
+class SiteList(StaffHandler):
+  def get(self, id=None):
+    if id:
+      id = int(id)
+      site = ndb.Key(ndb_models.NewSite, id).get()
+    d = dict(
+      map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
+    )
+    entries = [site]
+    d['site_list_detail'] = True
+    d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
+    d['entries'] = entries
+    order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
+    d['order_sheets'] = order_sheets
+    return common.Respond(self.request, 'site_list_one', d)
 
 
 def _SiteListInternal(request, site=None, new_order_form=None):
   """Request / -- show all canned orders."""
-  d = dict(
-    map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
-  )
-  template = 'site_list_one'
-  site.new_order_form = "site.new_order_form placeholder"
-  entries = [site]
-  d['site_list_detail'] = True
-  d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
-  d['entries'] = entries
-  order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
-  d['order_sheets'] = order_sheets
-  return common.Respond(request, template, d)
+
+
+class EditView(StaffHandler):
+  model_class = None
+  template_value = None
+  template_file = None
+
+  def get(self, id=None):
+    d = dict()
+    if id:
+      id = int(id)
+      d[self.template_value] = ndb.Key(self.model_class, id).get()
+    return common.Respond(self.request, self.template_file, d)
+
+class Supplier(EditView):
+  model_class = ndb_models.Supplier
+  template_value = 'supplier'
+  template_file = 'supplier'
+
+
+class Site(EditView):
+  model_class = ndb_models.NewSite
+  template_value = 'site'
+  template_file = 'site'
+
+

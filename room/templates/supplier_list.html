@@ -13,7 +13,7 @@ $(document).ready(function(){
 {%block about_this_page%}
 <h2>List of Suppliers</h2>
 <p>
-  <a href="{{ webapp2.uri_for('Supplier', supplier_id='') }}" alt="new supplier">Add a new Supplier</a>
+  <a href="{{ webapp2.uri_for('Supplier', id='') }}" alt="new supplier">Add a new Supplier</a>
 </p>
 {%endblock%}
 {%block body%}
@@ -38,7 +38,7 @@ $(document).ready(function(){
 	{{ person.visibility|escape }}
       </td><td>
 	<span class="sortorder">{{ person.name }}</span>
-	<a href="{{ webapp2.uri_for('Supplier', supplier_id=person.key.integer_id()) }}">
+	<a href="{{ webapp2.uri_for('Supplier', id=person.key.integer_id()) }}">
 	  {{person.name|escape}}
 	</a>
       </td><td>

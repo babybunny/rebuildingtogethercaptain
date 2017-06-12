@@ -97,7 +97,7 @@ function sendToSiteView() {
   $('#site_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host +
-                '{{ webapp2.uri_for('SiteView', site_id=99999) }}';
+                '{{ webapp2.uri_for('SiteView', id=99999) }}';
   new_loc = new_loc.replace('99999', id);
   window.location = new_loc;
 }
@@ -201,7 +201,7 @@ $(function() {
 	<a href="{{ webapp2.uri_for('SupplierList') }}">View a list</a>
 	of all Suppliers.
 	<br>
-	<a href="{{ webapp2.uri_for('Supplier', supplier_id='') }}">Add a new Supplier</a>
+	<a href="{{ webapp2.uri_for('Supplier', id='') }}">Add a new Supplier</a>
 	.
       </div>
 

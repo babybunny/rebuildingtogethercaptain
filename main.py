@@ -76,17 +76,17 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/site_list',
                   MainPage,
                   name='SiteList'),  # TODO
-    webapp2.Route(r'/site_edit/<site_id:\d+>',
+    webapp2.Route(r'/site/edit/<id:\d+>/',
                   staff.Site,
                   name='SiteEdit'),  # TODO
-    webapp2.Route(r'/site_expenses/<site_id:\d+>',
+    webapp2.Route(r'/site_expenses/<id:\d+>',
                   staff.Site,
                   name='SiteExpenses'),  # TODO
-    webapp2.Route(r'/site_summary/<site_id:\d+>',
+    webapp2.Route(r'/site_summary/<id:\d+>',
                   staff.Site,
                   name='SiteSummary'),  # TODO
-    webapp2.Route(r'/site/list/<site_id:\d+>/',  # back compat
-                  staff.Site,
+    webapp2.Route(r'/site/list/<id:\d+>/',  # back compat
+                  staff.SiteList,
                   name='SiteView'),
     webapp2.Route(r'/help',
                   MainPage,
@@ -142,7 +142,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/supplier',
                   staff.SupplierList,
                   name='SupplierList'),  # TODO
-    webapp2.Route(r'/supplier/<supplier_id:\d*>',
+    webapp2.Route(r'/supplier/<id:\d*>',
                   staff.Supplier,
                   name='Supplier'),  # TODO
     webapp2.Route(r'/help',
