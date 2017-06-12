@@ -44,13 +44,13 @@ class StaffHandler(webapp2.RequestHandler):
   - user matches an existing Staff record
   - Staff record has a selected Program
   """
-  def dispatch(self):
+  def dispatch(self, *a, **k):
     user, status = common.GetUser()
     if user and user.staff:    
       if not user.staff.program_selected:
         logging.info(self.request)
         return webapp2.redirect_to('SelectProgram')
-      super(StaffHandler, self).dispatch()
+      super(StaffHandler, self).dispatch(*a, **k)
     else:
       return webapp2.redirect_to('Start')
 
@@ -83,7 +83,7 @@ class AutocompleteHandler(StaffHandler):
     matches = {}
     for i in items.iter():
       label = i.Label()
-      matches[label] = i.key.urlsafe()
+      matches[label] = str(i.key.integer_id())
 
     logging.info(matches)
     self.response.content_type='application/json'
@@ -144,14 +144,27 @@ class Supplier(StaffHandler):
         d['supplier'] = ndb.Key(ndb_models.Supplier, supplier_id).get()
     return common.Respond(self.request, 'supplier', d)
 
-  
-class SiteJump(StaffHandler):
-  def get(self):
-    user, _ = common.GetUser()
-    d = {'user': user}
-    number = request.get('number')
-    site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
-    if site is None:
-      return webapp2.redirect_to('StaffHome')
-    else:
-      return webapp2.redirect_to('SiteView', site.key.integer_id())
+
+class Site(StaffHandler):
+  def get(self, site_id=None):
+    if site_id:
+      site_id = int(site_id)
+      if site_id:
+        site = ndb.Key(ndb_models.NewSite, site_id).get()
+    return _SiteListInternal(self.request, site)
+
+
+def _SiteListInternal(request, site=None, new_order_form=None):
+  """Request / -- show all canned orders."""
+  d = dict(
+    map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
+  )
+  template = 'site_list_one'
+  site.new_order_form = "site.new_order_form placeholder"
+  entries = [site]
+  d['site_list_detail'] = True
+  d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
+  d['entries'] = entries
+  order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
+  d['order_sheets'] = order_sheets
+  return common.Respond(request, template, d)

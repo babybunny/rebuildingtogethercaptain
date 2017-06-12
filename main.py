@@ -13,6 +13,10 @@ from room import captain
 
 from google.appengine.api import users
 
+
+EXPENSE_KINDS = ('CheckRequest', 'VendorReceipt', 'InKindDonation', 'StaffTime')
+
+
 class MainPage(webapp2.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
     
@@ -66,24 +70,39 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/scoreboard/all',
                   MainPage,
                   name='AllProgramsScoreboard'),  # TODO
-    webapp2.Route(r'/site_list',
-                  MainPage,
-                  name='SiteList'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='SiteNew'),  # TODO
-    webapp2.Route(r'/site_view/<site_key:\w+>',
-                  MainPage, # views.SiteView,
+    webapp2.Route(r'/site_list',
+                  MainPage,
+                  name='SiteList'),  # TODO
+    webapp2.Route(r'/site_edit/<site_id:\d+>',
+                  staff.Site,
+                  name='SiteEdit'),  # TODO
+    webapp2.Route(r'/site_expenses/<site_id:\d+>',
+                  staff.Site,
+                  name='SiteExpenses'),  # TODO
+    webapp2.Route(r'/site_summary/<site_id:\d+>',
+                  staff.Site,
+                  name='SiteSummary'),  # TODO
+    webapp2.Route(r'/site_view/<site_id:\d+>',
+                  staff.Site,
                   name='SiteView'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='SiteBudget'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
+                  name='SiteAnnouncement'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
                   name='SitesWithoutOrder'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='OrderEdit'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
+                  name='OrderFulfill'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='OrderList'),  # TODO
@@ -134,6 +153,9 @@ app = webapp2.WSGIApplication([
                   name='CheckRequestView'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
+                  name='CheckRequestEdit'),  # TODO
+    webapp2.Route(r'/help',
+                  MainPage,
                   name='CheckRequestNew'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
@@ -162,4 +184,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/help',
                   MainPage,
                   name='StaffTimeNew'),  # TODO
-], debug=True)
+] + [webapp2.Route(r'/help',
+                   MainPage,
+                   name='%sEdit' % kind) for kind in EXPENSE_KINDS
+    ], debug=True)
+

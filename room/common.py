@@ -75,6 +75,13 @@ EMAIL_LOG_LINK = ('https://groups.google.com/forum/#!forum/'
 # Placeholder Captain record which represents RTP Staff.
 STAFF_CAPTAIN_EMAIL = 'rebuildingtogether.rooms@gmail.com'
 
+# for site views
+MAP_WIDTH = 300
+MAP_HEIGHT = 200
+
+# CLEANUP this can probably be removed.
+START_NEW_ORDER_SUBMIT = 'Start New Order'
+
 
 def NotifyAdminViaMail(subject, template, template_dict):
   base_uri = GetBaseUri()

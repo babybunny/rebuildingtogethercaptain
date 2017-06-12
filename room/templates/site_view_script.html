@@ -21,6 +21,7 @@ var tables = [
 $(function() {
   {% if user.staff %}
   {% for site in entries %}
+  {# can't make this work ... bug is in the uri_for 
   $('.jeditable[name="{{ site.key.integer_id() }}"]').editable(
      "{{ webapp2.uri_for('SiteAnnouncement', site.key.integer_id()) }}", {
          cancel    : 'Cancel',
@@ -30,8 +31,8 @@ $(function() {
          cssclass  : 'inherit',
          }
   ).hover(
-    function(){$(this).css('background-color', '#FBFFAB')},
-    function(){$(this).css('background-color', 'inherit')}
+    function(){ $(this).css('background-color', '#FBFFAB')},
+    function(){ $(this).css('background-color', 'inherit')}
   );
   $('.jeditable-text[name="{{ site.key.integer_id() }}"]').editable(
      "{{ webapp2.uri_for('SiteAnnouncement', site.key.integer_id()) }}", {
@@ -42,9 +43,10 @@ $(function() {
          tooltip   : 'Staff, Click to edit...',
          }
   ).css('white-space', 'pre-wrap').hover(
-    function(){$(this).css('background-color', '#FBFFAB')},
-    function(){$(this).css('background-color', 'inherit')}
+    function(){ $(this).css('background-color', '#FBFFAB')},
+    function(){ $(this).css('background-color', 'inherit')}
   );
+  #}
   {% endfor %}
   {% endif %}
   $("table.budget a").button();

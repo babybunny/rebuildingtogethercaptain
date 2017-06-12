@@ -97,8 +97,8 @@ function sendToSiteView() {
   $('#site_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host +
-                '{{ webapp2.uri_for('SiteView', site_key='site_id_placeholder') }}';
-  new_loc = new_loc.replace('site_id_placeholder', id);
+                '{{ webapp2.uri_for('SiteView', site_id=99999) }}';
+  new_loc = new_loc.replace('99999', id);
   window.location = new_loc;
 }
 

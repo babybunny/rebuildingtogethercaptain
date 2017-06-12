@@ -6,25 +6,25 @@
   | View a Site
 {% endblock %}
 {%block about_this_page %}
-<h2>Here's site # {{ entries.0.number }}</h2>
+<h2>Here's site # {{ entries[0].number }}</h2>
 <p>
-  <i>{{ entries.0.program }}</i>
+  <i>{{ entries[0].program }}</i>
 </p>
-<a name="{{ site.number }}" href="{% url room.views.SiteEdit entries.0.key.id %}">
+<a href="{{ webapp2.uri_for('SiteEdit', site_id=entries[0].key.integer_id()) }}">
   Edit Site Info
 </a>
 |
-<a href="{% url room.views.SiteExpenses entries.0.key.id %}">
+<a href="{{ webapp2.uri_for('SiteExpenses', site_id=entries[0].key.integer_id()) }}">
   View all Site Expenses
 </a>
 |
-<a href="{% url room.views.SiteSummary entries.0.key.id %}">
+<a href="{{ webapp2.uri_for('SiteSummary', site_id=entries[0].key.integer_id()) }}">
   Reporting Summary
 </a>
 {% if user.captain %}
 <p>
 If you just made an order, please confirm that it's correct and check your budget.  
-<br><a href="{% url room.views.CaptainHome %}">Click here to go back to your Captain's Page</a>.
+<br><a href="{{ webapp2.uri_for('CaptainHome') }}">Click here to go back to your Captain's Page</a>.
 </p>
 {% endif %}
 {% endblock %}

@@ -3,10 +3,6 @@ import webapp2
 import common
 import ndb_models
 
-MAP_WIDTH = 300
-MAP_HEIGHT = 200
-START_NEW_ORDER_SUBMIT = 'Start New Order'
-
 
 def _AnnotateSitesWithEditability(entries, captain, staff):
   for site in entries:
@@ -51,8 +47,8 @@ def CaptainHome(request, captain_id=None):
                          'captain_form': captain_form,
                          'captain_contact_submit':
                          'Save changes to personal info',
-                         'map_width': MAP_WIDTH, 'map_height': MAP_HEIGHT,
+                         'map_width': common.MAP_WIDTH, 'map_height': common.MAP_HEIGHT,
                          'site_list_detail': True,
-                         'start_new_order_submit': START_NEW_ORDER_SUBMIT,
+                         'start_new_order_submit': common.START_NEW_ORDER_SUBMIT,
                          })
 
