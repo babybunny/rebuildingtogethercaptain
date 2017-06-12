@@ -4,8 +4,13 @@ Many of these are similar to models in models.py, which are Django models.  We
 need these ndb versions for use with runtime: python27, which is required by 
 endpoints.
 """
+import collections
 import logging
+import math
 from google.appengine.ext import ndb
+
+# TODO: move to global config
+SALES_TAX_RATE = 0.0925
 
 
 class _ActiveItems(object):
