@@ -1,4 +1,4 @@
-service: service
+service: website
 runtime: python27
 threadsafe: no
 api_version: 1
