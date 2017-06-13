@@ -28,13 +28,16 @@ handlers:
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
+  secure: always
 
 # WSGI protorpc service handler
 - url: /wsgi_service.*
   script: room.wsgi_service.application
+  secure: always
 
 - url: /.*
   script: main.app
+  secure: always
 
 builtins:
 - remote_api: on
@@ -45,3 +48,12 @@ libraries:
   version: "2.5.2"
 - name: jinja2
   version: "2.6"
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- ^test.*$
+- ^node_modules.*$
