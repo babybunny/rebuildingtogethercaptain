@@ -527,7 +527,7 @@ class Order(ndb.Model):
   def __unicode__(self):
     return ' '.join((self.site.get().number, self.site.get().name,
                      self.order_sheet.get().name,
-                     '%d items' % self.OrderItems.Count(),
+                     '%d items' % self.OrderItems.count(),
                      '$%0.2f' % self.GrandTotal()))
 
   def CanMakeChanges(self):
