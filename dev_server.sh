@@ -1,4 +1,7 @@
-#!/bin/bash -x
+#!/bin/bash -x -e
+
+# clean up
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 # This starts the dev appserver, clears the datastore, and inserts some test data.
 
@@ -11,3 +14,4 @@ python dev_utilities.py
 
 echo "check out the local server at http://localhost:9084"
 
+wait
