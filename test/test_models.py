@@ -8,6 +8,7 @@ Also, these models may be used in unit tests.
 
 import datetime
 import logging
+import unittest2
 from room import ndb_models
 
 KEYS = dict()
@@ -270,3 +271,12 @@ def DeleteAll():
     logging.info('deleting {}', name)
     key.delete()
   KEYS = dict()
+
+
+class ModelsTest(unittest2.TestCase):
+  def testCreate(self):
+    self.assertFalse(KEYS)
+    self.assertIsNone(CreateAll())
+    self.assertTrue(KEYS)
+    self.assertIsNone(DeleteAll())
+    self.assertFalse(KEYS)
