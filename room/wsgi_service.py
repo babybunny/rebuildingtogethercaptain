@@ -66,25 +66,23 @@ class RoomApi(remote.Service):
     """Simply call this to ensure that the user has a Staff record.
 
     Raises:
-      Exception if the user is not Staff.
+      remote.ApplicationError if the user is not Staff.
     """
     user, status = common.GetUser(self.rs)
     if user and user.staff:
       return
-    raise Exception(
-        'Must be staff to use this API.')
+    raise remote.ApplicationError('Must be staff to use this API.')
 
   def _authorize_user(self):
     """Simply call this to ensure that the user has a ROOMS record.
 
     Raises:
-      Exception if the user is not Staff or Captain.
+      remote.ApplicationError if the user is not Staff or Captain.
     """
     user, status = common.GetUser(self.rs)
     if user and ( user.staff or user.captain ):
       return
-    raise Exception(
-      'Must be a ROOMS user to use this API.')
+    raise remote.ApplicationError('Must be a ROOMS user to use this API.')
 
   @remote.method(message_types.VoidMessage,
                  message_types.VoidMessage)
@@ -176,6 +174,9 @@ class RoomApi(remote.Service):
   @remote.method(Supplier, Supplier)
   def supplier_create(self, request):
     self._authorize_staff()
+    if request.id:
+      raise remote.ApplicationError(
+        'Must not include id with create requests')
     mdl = ndb_models.Supplier()
     self._SupplierMessageToModel(request, mdl)
     mdl.put()
@@ -185,16 +186,15 @@ class RoomApi(remote.Service):
   def supplier_update(self, request):
     self._authorize_staff()
     if not request.id:
-      raise Exception('id is required')
+      raise remote.ApplicationError('id is required')
     mdl = ndb.Key(ndb_models.Supplier, request.id).get()
     if not mdl:
-      raise Exception(
+      raise remote.ApplicationError(
         'No Supplier found with key %s' % request.id)
 
     self._SupplierMessageToModel(request, mdl)
     mdl.put()
     return self._SupplierModelToMessage(mdl)
-
 
   @classmethod
   def _StaffModelToMessage(unused_cls, mdl):
