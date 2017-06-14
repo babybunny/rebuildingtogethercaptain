@@ -234,6 +234,9 @@ class RoomApi(remote.Service):
   @remote.method(Staff, Staff)
   def staff_create(self, request):
     self._authorize_staff()
+    if request.id:
+      raise remote.ApplicationError(
+        'Must not include id with create requests')
     mdl = ndb_models.Staff()
     self._StaffMessageToModel(request, mdl)
     mdl.put()

@@ -71,4 +71,35 @@ class RoomApiTest(unittest2.TestCase):
                                  status=400,
                                  headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('400 Bad Request', response.status)
+
         
+
+def makeTestMethods(name, fields):
+        
+    def tstCreateOK(self):
+        post_json_body = {}
+        post_json_body.update(fields)
+        response = app.post_json('/wsgi_service.{}_create'.format(name.lower()),
+                                 post_json_body,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn(post_json_body['name'], response)
+
+    def tstCreateBadHasId(self):
+        post_json_body = {'id': test_models.KEYS[name.upper()].integer_id()}
+        post_json_body.update(fields)
+        response = app.post_json('/wsgi_service.{}_create'.format(name.lower()),
+                                 post_json_body,
+                                 status=400,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('400 Bad Request', response.status)
+
+    return tstCreateOK, tstCreateBadHasId
+
+
+for name, fields in (
+        ('Supplier', {'name': 'House'}),
+        ('Staff', {'name': 'Stef Staff', 'email': 'steff@example.com'})):
+    tstCreateOK, tstCreateBadHasId = makeTestMethods(name, fields)
+    setattr(RoomApiTest, 'test{}GenericCreateOK'.format(name), tstCreateOK)
+    setattr(RoomApiTest, 'test{}GenericCreateBadHasId'.format(name), tstCreateBadHasId)
