@@ -120,9 +120,14 @@ def GetUser(request):
     status = 'User not available with users.get_current_user'
 
   if not user and IsDev():
-    email = request.headers.get('X-ROOMS_DEV_SIGNIN_EMAIL')
+    if type(request.headers) is list:
+      headers = {k: v for (k, v) in request.headers}
+    else:
+      headers = request.headers
+
+    email = headers.get('x-rooms-dev-signin-email')
     if email:
-      status = 'DEV, using user from X-ROOMS_DEV_SIGNIN_EMAIL header %s' % email
+      status = 'DEV, using user from x-rooms-dev-signin-email header %s' % email
     else:
       email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
       if email:

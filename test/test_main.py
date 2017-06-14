@@ -22,7 +22,7 @@ class WelcomeTest(unittest2.TestCase):
         self.assertIn('rebuildingtogether.nobody@gmail.com', str(response))
 
     def testRootXHeader(self):
-        response = app.get('/', headers={'X-ROOMS_DEV_SIGNIN_EMAIL': 'rebuildingtogether.staff@gmail.com'})
+        response = app.get('/', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('200 OK', response.status)
         self.assertIn('rebuildingtogether.staff@gmail.com', str(response))
 
@@ -32,14 +32,14 @@ class StatefulTest(unittest2.TestCase):
         test_models.CreateAll()        
                 
     def testRootXHeaderStaff(self):
-        response = app.get('/', headers={'X-ROOMS_DEV_SIGNIN_EMAIL': 'rebuildingtogether.staff@gmail.com'})
+        response = app.get('/', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('302 Moved Temporarily', response.status)
         self.assertIn('Location', response.headers)
         self.assertIn('/staff_home', response.headers['Location'])
         self.assertIn('rebuildingtogether.staff@gmail.com', str(response))
         
     def testRootXHeaderCaptain(self):
-        response = app.get('/', headers={'X-ROOMS_DEV_SIGNIN_EMAIL': 'rebuildingtogether.capn@gmail.com'})
+        response = app.get('/', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.capn@gmail.com'})
         self.assertEquals('302 Moved Temporarily', response.status)
         self.assertIn('Location', response.headers)
         self.assertIn('/captain_home', response.headers['Location'])

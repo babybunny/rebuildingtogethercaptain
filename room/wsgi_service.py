@@ -19,7 +19,7 @@ class GenericResponse(messages.Message):
   message = messages.StringField(1)
   
 class SimpleId(messages.Message):
-  id = messages.IntegerField(1)
+  id = messages.IntegerField(1, required=True)
 
 class StaffPosition(messages.Message):
   key = messages.IntegerField(1)
@@ -167,11 +167,9 @@ class RoomApi(remote.Service):
   @remote.method(SimpleId, Supplier)
   def supplier_read(self, request):
     self._authorize_user()
-    if not request.id:
-      raise Exception('id is required')
     mdl = ndb.Key(ndb_models.Supplier, request.id).get()
     if not mdl:
-      raise Exception(
+      raise remote.ApplicationError(
         'No Supplier found with key %s' % request.id)    
     return self._SupplierModelToMessage(mdl)
   
