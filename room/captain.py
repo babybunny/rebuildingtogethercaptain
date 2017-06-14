@@ -14,7 +14,7 @@ def _AnnotateSitesWithEditability(entries, captain, staff):
 
 
 def CaptainHome(request, captain_id=None):
-  user, _ = common.GetUser()
+  user, _ = common.GetUser(self.request)
   if user is None or user.captain is None:
     return webapp2.redirect_to('Start')
   captain = user.captain

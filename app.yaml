@@ -4,8 +4,8 @@ threadsafe: no
 api_version: 1
 
 env_variables:
-#  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.nobody@gmail.com
-  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.staff@gmail.com
+  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.nobody@gmail.com
+#  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.staff@gmail.com
 #  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.capn@gmail.com
 
 handlers:

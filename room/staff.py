@@ -22,7 +22,7 @@ class SelectProgram(webapp2.RequestHandler):
   """
 
   def get(self):
-    user, _ = common.GetUser()
+    user, _ = common.GetUser(self.request)
     if not user and not user.staff:
       return webapp2.redirect_to('Start')
     program = self.request.get('program')
@@ -45,7 +45,7 @@ class StaffHandler(webapp2.RequestHandler):
   - Staff record has a selected Program
   """
   def dispatch(self, *a, **k):
-    user, status = common.GetUser()
+    user, status = common.GetUser(self.request)
     if user and user.staff:    
       if not user.staff.program_selected:
         logging.info(self.request)
@@ -78,7 +78,7 @@ class AutocompleteHandler(StaffHandler):
     items = self.model_class.query()
     # items.filter(model_class.search_prefixes == prefix)
     if self.program_filter:
-      user, _ = common.GetUser()
+      user, _ = common.GetUser(self.request)
     #  items.filter(model_class.program == user.program_selected)
     matches = {}
     for i in items.iter():

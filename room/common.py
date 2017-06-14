@@ -150,14 +150,43 @@ def GetBaseUri():
   return 'http://%s.appspot.com/' % os.environ.get('APPLICATION_ID')
 
 
-def GetUser():
+def GetUser(request):
+  """Determines the current user and loads some state. 
+
+  In production, gets user from appengine.api.users.get_current_user(). So,
+  it should be used in App Engine handlers with login: required.
+
+  Special handling for development server (dev_appserver.py): 
+
+  First, try to get user from the request, expecting an email address as 
+  the value of the X-ROOMS_DEV_SIGNIN_EMAIL header.
+
+  Fall back to pre-configured identify from environment, meaning it was
+  probably set in app.yaml or unit test initialization like nose2-gae config.
+
+  Args:
+    request: the current WSGI request. 
+
+  Returns:
+    user: appengine.api.users.User object, or None if user can not be determined
+    status: string describing how user was determined, for logging and debugging
+  """
+  user = None
   if IsDev():
-    user = users.User(email=os.environ.get('ROOMS_DEV_SIGNIN_EMAIL'))
-    status = 'DEV, using configured user %s' % user.email()
+    email = request.headers.get('X-ROOMS_DEV_SIGNIN_EMAIL')
+    if email:
+      status = 'DEV, using user from X-ROOMS_DEV_SIGNIN_EMAIL header %s' % email
+    else:
+      email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
+      if email:
+        status = 'DEV, using configured user from env var ROOMS_DEV_SIGNIN_EMAIL %s' % email
+
+    if email:
+      user = users.User(email=email)
   else:
     user = users.get_current_user()
     if user and user.email():
-      status = 'User signed in as %s' % user.email()
+      status = 'User from get_current_user %s' % user.email()
     else:
       status = 'User not available with users.get_current_user'
 
@@ -175,6 +204,8 @@ def GetUser():
     else:
       user.programs = []
       user.program_selected = None
+
+  request.registry['user'], request.registry['status'] = user, status
   return user, status
 
 
@@ -191,7 +222,7 @@ jinja_environment = jinja2.Environment(
 def Respond(request_handler, template_name, params=None):
   """Helper to render a response, passing standard stuff to the response.
   Args:
-    request: The webapp2.RequestHandler instance that is handling this request.
+    request_handler: The webapp2.RequestHandler instance that is handling this request.
     template_name: The template name; '.html' is appended automatically.
     params: A dict giving the template parameters; modified in-place.
   Returns:
@@ -202,8 +233,8 @@ def Respond(request_handler, template_name, params=None):
   if params is None:
     params = {}
   params['webapp2'] = webapp2
-  params['user'], params['user_status'] = GetUser()
-  params['logout_url'] = users.create_logout_url('/')
+  params['logout_url'] = users.create_logout_url('/')  
+  params.update(request_handler.registry)
   params['help_contact'] = HELP_CONTACT
   params['help_phone'] = HELP_PHONE
   params['help_person'] = HELP_PERSON
