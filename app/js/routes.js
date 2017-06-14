@@ -11,11 +11,10 @@ define(
                 self.app = app;
             },
             routes: {
-                '': 'welcome',                
-                'supplier/': 'supplier_new',
-                'supplier/:id': 'supplier',
-                'staff/': 'staff_new',
-                'staff/:id': 'staff'
+                'room/supplier/': 'supplier_new',
+                'room/supplier/:id': 'supplier',
+                'room/staff/': 'staff_new',
+                'room/staff/:id': 'staff'
             },
             welcome: function() {
                 console.log('welcome page');                

@@ -26,17 +26,6 @@ class StaffPosition(messages.Message):
   position_name = messages.StringField(2)
   hourly_rate = messages.FloatField(3)
   
-class OauthUser(messages.Message):
-  email = messages.StringField(1)
-
-class User(messages.Message):
-  name = messages.StringField(1)
-  status = messages.StringField(2)
-  oauth_email = messages.StringField(3)
-  server_email = messages.StringField(4)
-  staff_key = messages.StringField(5)
-  captain_key = messages.StringField(6)
-  
 class Program(messages.Message):
   year = messages.IntegerField(1)
   name = messages.StringField(2)
@@ -68,31 +57,34 @@ class Staff(messages.Message):
   since = messages.StringField(7)
 
   
-def _authorize_staff():
-  """Simply call this to ensure that the user has a Staff record.
-  
-  Raises:
-    Exception if the user is not Staff.
-  """
-  user, status = common.GetUser()
-  if user and user.staff:
-    return
-  raise Exception(
-      'Must be staff to use this API.')
-
-def _authorize_user():
-  """Simply call this to ensure that the user has a ROOMS record.
-  
-  Raises:
-    Exception if the user is not Staff or Captain.
-  """
-  user, status = common.GetUser()
-  if user and ( user.staff or user.captain ):
-    return
-  raise Exception(
-    'Must be a ROOMS user to use this API.')
-
 class RoomApi(remote.Service):
+
+  def initialize_request_state(self, request_state):
+    self.rs = request_state
+    
+  def _authorize_staff(self):
+    """Simply call this to ensure that the user has a Staff record.
+
+    Raises:
+      Exception if the user is not Staff.
+    """
+    user, status = common.GetUser(self.rs)
+    if user and user.staff:
+      return
+    raise Exception(
+        'Must be staff to use this API.')
+
+  def _authorize_user(self):
+    """Simply call this to ensure that the user has a ROOMS record.
+
+    Raises:
+      Exception if the user is not Staff or Captain.
+    """
+    user, status = common.GetUser(self.rs)
+    if user and ( user.staff or user.captain ):
+      return
+    raise Exception(
+      'Must be a ROOMS user to use this API.')
 
   @remote.method(message_types.VoidMessage,
                  message_types.VoidMessage)
@@ -100,28 +92,12 @@ class RoomApi(remote.Service):
     logging.info('ehlo')
     return message_types.VoidMessage()
     
-  @remote.method(message_types.VoidMessage,
-                 User)
-  def current_user_get(self, request):
-    res = User()
-    e_u, status = common.GetUser()
-    if not e_u:
-      return res
-    res.oauth_email = e_u.email()
-    if e_u.staff:
-      res.staff_key = e_u.staff.key.urlsafe()
-    if e_u.captain:
-      res.captain_key = e_u.captain.key.urlsafe()
-      
-    return res
-
-
   # This needs an update for the new encoding for StaffPosition rates.  Per issue 238.
   # If it's used at all...
   @remote.method(StaffPosition,
                  GenericResponse)
   def staffposition_put(self, request):
-    _authorize_staff()
+    self._authorize_staff()
     sp = ndb_models.StaffPosition(position_name=request.position_name,
                                   hourly_rate=request.hourly_rate)
     if request.key:
@@ -132,7 +108,7 @@ class RoomApi(remote.Service):
   @remote.method(Program,
                  GenericResponse)  
   def program_put(self, request):
-    _authorize_staff()
+    self._authorize_staff()
     resp = GenericResponse()
     try:
       sp = ndb_models.Program(name=request.name,
@@ -190,7 +166,7 @@ class RoomApi(remote.Service):
     
   @remote.method(SimpleId, Supplier)
   def supplier_read(self, request):
-    _authorize_user()
+    self._authorize_user()
     if not request.id:
       raise Exception('id is required')
     mdl = ndb.Key(ndb_models.Supplier, request.id).get()
@@ -201,7 +177,7 @@ class RoomApi(remote.Service):
   
   @remote.method(Supplier, Supplier)
   def supplier_create(self, request):
-    _authorize_staff()
+    self._authorize_staff()
     mdl = ndb_models.Supplier()
     self._SupplierMessageToModel(request, mdl)
     mdl.put()
@@ -209,7 +185,7 @@ class RoomApi(remote.Service):
 
   @remote.method(Supplier, Supplier)
   def supplier_update(self, request):
-    _authorize_staff()
+    self._authorize_staff()
     if not request.id:
       raise Exception('id is required')
     mdl = ndb.Key(ndb_models.Supplier, request.id).get()
@@ -248,7 +224,7 @@ class RoomApi(remote.Service):
 
   @remote.method(SimpleId, Staff)
   def staff_read(self, request):
-    _authorize_user()
+    self._authorize_user()
     if not request.id:
       raise Exception('id is required')
     mdl = ndb.Key(ndb_models.Staff, request.id).get()
@@ -259,7 +235,7 @@ class RoomApi(remote.Service):
   
   @remote.method(Staff, Staff)
   def staff_create(self, request):
-    _authorize_staff()
+    self._authorize_staff()
     mdl = ndb_models.Staff()
     self._StaffMessageToModel(request, mdl)
     mdl.put()
@@ -267,7 +243,7 @@ class RoomApi(remote.Service):
 
   @remote.method(Staff, Staff)
   def staff_update(self, request):
-    _authorize_staff()
+    self._authorize_staff()
     if not request.id:
       raise Exception('id is required')
     mdl = ndb.Key(ndb_models.Staff, request.id).get()

@@ -108,6 +108,11 @@ def GetUser(request):
     user: appengine.api.users.User object, or None if user can not be determined
     status: string describing how user was determined, for logging and debugging
   """
+  if not hasattr(request, 'registry'):
+    request.registry = {}
+  if 'user' in request.registry:
+    return request.registry.get('user'), request.registry.get('status')
+
   user = users.get_current_user()
   if user and user.email():
     status = 'User from get_current_user %s' % user.email()
@@ -125,7 +130,7 @@ def GetUser(request):
 
     if email:
       user = users.User(email=email)
-
+      
   logging.info(status)
 
   if user and user.email():
