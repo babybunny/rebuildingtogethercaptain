@@ -223,6 +223,7 @@ def Respond(request_handler, template_name, params=None):
   """Helper to render a response, passing standard stuff to the response.
   Args:
     request_handler: The webapp2.RequestHandler instance that is handling this request.
+        The request.registry dict is automatically added to params.
     template_name: The template name; '.html' is appended automatically.
     params: A dict giving the template parameters; modified in-place.
   Returns:
