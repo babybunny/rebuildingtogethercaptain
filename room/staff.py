@@ -76,16 +76,15 @@ class AutocompleteHandler(StaffHandler):
     prefix = str(self.request.get('term').lower())
     logging.info(prefix)
     items = self.model_class.query()
-    # items.filter(model_class.search_prefixes == prefix)
+    items.filter(model_class.search_prefixes == prefix)
     if self.program_filter:
       user, _ = common.GetUser(self.request)
-    #  items.filter(model_class.program == user.program_selected)
+    items.filter(model_class.program == user.program_selected)
     matches = {}
     for i in items.iter():
       label = i.Label()
       matches[label] = str(i.key.integer_id())
 
-    logging.info(matches)
     self.response.content_type='application/json'
     self.response.write(json.dumps(matches))
 
