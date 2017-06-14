@@ -108,8 +108,13 @@ def GetUser(request):
     user: appengine.api.users.User object, or None if user can not be determined
     status: string describing how user was determined, for logging and debugging
   """
-  user = None
-  if IsDev():
+  user = users.get_current_user()
+  if user and user.email():
+    status = 'User from get_current_user %s' % user.email()
+  else:
+    status = 'User not available with users.get_current_user'
+
+  if not user and IsDev():
     email = request.headers.get('X-ROOMS_DEV_SIGNIN_EMAIL')
     if email:
       status = 'DEV, using user from X-ROOMS_DEV_SIGNIN_EMAIL header %s' % email
@@ -120,12 +125,6 @@ def GetUser(request):
 
     if email:
       user = users.User(email=email)
-  else:
-    user = users.get_current_user()
-    if user and user.email():
-      status = 'User from get_current_user %s' % user.email()
-    else:
-      status = 'User not available with users.get_current_user'
 
   logging.info(status)
 

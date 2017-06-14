@@ -33,8 +33,15 @@ handlers:
 # WSGI protorpc service handler
 - url: /wsgi_service.*
   script: room.wsgi_service.application
+  login: required
   secure: always
 
+- url: /room/.*
+  script: main.app
+  login: required
+  secure: always
+
+# Welcome screen.
 - url: /.*
   script: main.app
   secure: always

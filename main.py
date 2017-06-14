@@ -4,6 +4,7 @@ import os
 
 import jinja2
 import webapp2
+from webapp2_extras import routes
 
 from room import common
 from room import ndb_models
@@ -49,6 +50,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/help',
                   Placeholder,
                   name='Help'),  # TODO
+    routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/staff_home',
                   staff.StaffHome,
                   name='StaffHome'),
@@ -193,5 +195,5 @@ app = webapp2.WSGIApplication([
 ] + [webapp2.Route(r'/help',
                    MainPage,
                    name='%sEdit' % kind) for kind in EXPENSE_KINDS
-    ], debug=True)
+    ])], debug=True)
 
