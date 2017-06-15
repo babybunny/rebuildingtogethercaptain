@@ -35,6 +35,38 @@ class Program(messages.Message):
 class Programs(messages.Message):
   program = messages.MessageField(Program, 1, repeated=True)
 
+############
+# Supplier #
+############
+
+def _SupplierModelToMessage(mdl):
+  s = Supplier(
+    name=mdl.name,
+    email=mdl.email,
+    address=mdl.address,
+    phone1=mdl.phone1,
+    phone2=mdl.phone2,
+    notes=mdl.notes,
+    active=mdl.active,            
+    visibility=mdl.visibility,
+    id=mdl.key.integer_id(),
+  )
+  if mdl.since:
+    s.since = mdl.since.isoformat()  # datetime, for display only
+  return s
+
+def _SupplierMessageToModel(msg, mdl):
+  mdl.name = msg.name
+  mdl.email = msg.email
+  mdl.address = msg.address
+  mdl.phone1 = msg.phone1
+  mdl.phone2 = msg.phone2
+  mdl.notes = msg.notes
+  mdl.active = msg.active
+  mdl.visibility = msg.visibility
+  # can't set "since", it's automatic
+  return mdl
+
 class Supplier(messages.Message):
   name = messages.StringField(1)
   email = messages.StringField(2)
@@ -127,40 +159,6 @@ class RoomApi(remote.Service):
     for p in ndb_models.Program.query():
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
-
-  ############
-  # Supplier #
-  ############
-  
-  @classmethod
-  def _SupplierModelToMessage(unused_cls, mdl):
-    s = Supplier(
-      name=mdl.name,
-      email=mdl.email,
-      address=mdl.address,
-      phone1=mdl.phone1,
-      phone2=mdl.phone2,
-      notes=mdl.notes,
-      active=mdl.active,            
-      visibility=mdl.visibility,
-      id=mdl.key.integer_id(),
-    )
-    if mdl.since:
-      s.since = mdl.since.isoformat()  # datetime, for display only
-    return s
-
-  @classmethod
-  def _SupplierMessageToModel(unused_cls, msg, mdl):
-    mdl.name = msg.name
-    mdl.email = msg.email
-    mdl.address = msg.address
-    mdl.phone1 = msg.phone1
-    mdl.phone2 = msg.phone2
-    mdl.notes = msg.notes
-    mdl.active = msg.active
-    mdl.visibility = msg.visibility
-    # can't set "since", it's automatic
-    return mdl
     
   @remote.method(SimpleId, Supplier)
   def supplier_read(self, request):
@@ -169,7 +167,7 @@ class RoomApi(remote.Service):
     if not mdl:
       raise remote.ApplicationError(
         'No Supplier found with key %s' % request.id)    
-    return self._SupplierModelToMessage(mdl)
+    return _SupplierModelToMessage(mdl)
   
   @remote.method(Supplier, Supplier)
   def supplier_create(self, request):
@@ -178,9 +176,9 @@ class RoomApi(remote.Service):
       raise remote.ApplicationError(
         'Must not include id with create requests')
     mdl = ndb_models.Supplier()
-    self._SupplierMessageToModel(request, mdl)
+    _SupplierMessageToModel(request, mdl)
     mdl.put()
-    return self._SupplierModelToMessage(mdl)
+    return _SupplierModelToMessage(mdl)
 
   @remote.method(Supplier, Supplier)
   def supplier_update(self, request):
@@ -192,9 +190,9 @@ class RoomApi(remote.Service):
       raise remote.ApplicationError(
         'No Supplier found with key %s' % request.id)
 
-    self._SupplierMessageToModel(request, mdl)
+    _SupplierMessageToModel(request, mdl)
     mdl.put()
-    return self._SupplierModelToMessage(mdl)
+    return _SupplierModelToMessage(mdl)
 
   @classmethod
   def _StaffModelToMessage(unused_cls, mdl):
