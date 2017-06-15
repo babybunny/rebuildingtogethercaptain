@@ -195,16 +195,41 @@ class Supplier(messages.Message):
 basic_crud_config = (
   (Jurisdiction, ndb_models.Jurisdiction,
    _JurisdictionMessageToModel, _JurisdictionModelToMessage),
+  (Staff, ndb_models.Staff,
+   _StaffMessageToModel, _StaffModelToMessage),
   (Captain, ndb_models.Captain,
    _CaptainMessageToModel, _CaptainModelToMessage),
+  (Supplier, ndb_models.Supplier,
+   _SupplierMessageToModel, _SupplierModelToMessage),
   )
 
-class _GeneratedCrudApi(remote._ServiceClass):
-  """metaclass for adding CRUD methods to a service, based on a config"""
+class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metaclass so we have to as well.
+  """Metaclass for adding CRUD methods to a service, based on a config."""
 
   def __new__(mcs, name, bases, dct):
-    def makeBasicCrud(msg_name, msg_cls, mdl_cls, g2d, d2g):
+    """Set up mcs dict so it will have methods wrapped by remote.method.
 
+    This is necessary to get the protorpc service to notice the methods, since
+    it does so in remote._Service metaclass.
+    """
+
+    def makeBasicCrud(msg_name, msg_cls, mdl_cls, g2d, d2g):
+      """Create functions for three basic CRU operations on a model.
+
+      CRU == Create, Read, Update.  
+
+      We don't do Delete because it may leave dangling references.
+
+      Args:
+        msg_name: name of the Message
+        msg_cls: class of the message, defined above
+        mdl_cls: class of the ndb model
+        g2d: function to copy a message into a model.  g2d(msg, mdl)
+        d2g: function to copy a model into a new message.  msg = d2g(mdl)
+
+      Returns:
+        three CRU functions, each usable as a Protorpc remote method
+      """
       def mdl_read(self, request):
         self._authorize_staff()
         if not request.id:
@@ -239,6 +264,9 @@ class _GeneratedCrudApi(remote._ServiceClass):
 
       return mdl_create, mdl_read, mdl_update
 
+    # Create the CRU methods for each model and stick them in the class dict,
+    # where the protorpc service will find them.
+    # See remote._ServiceClass.__new__ and look for __remote_methods.
     for msg, mdl, g2d, d2g in basic_crud_config:
       msg_name = msg.__name__
       mdl_create, mdl_read, mdl_update = makeBasicCrud(msg_name, msg, mdl, g2d, d2g)
@@ -258,11 +286,13 @@ class _GeneratedCrudApi(remote._ServiceClass):
       mdl_update.__name__ = func_name
       dct[func_name] = msg_x2_wrapper(mdl_update)
 
-      return type.__new__(mcs, name, bases, dct)
+    return type.__new__(mcs, name, bases, dct)
 
 
 class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
-
+  """Protorpc service implementing a CRUD API for ROOM models"""
+  
+  # Stash the request state so we can get at the HTTP headers later.
   def initialize_request_state(self, request_state):
     self.rs = request_state
     
@@ -332,113 +362,6 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
     
-  @remote.method(SimpleId, Supplier)
-  def supplier_read(self, request):
-    self._authorize_user()
-    mdl = ndb.Key(ndb_models.Supplier, request.id).get()
-    if not mdl:
-      raise remote.ApplicationError(
-        'No Supplier found with key %s' % request.id)    
-    return _SupplierModelToMessage(mdl)
-  
-  @remote.method(Supplier, Supplier)
-  def supplier_create(self, request):
-    self._authorize_staff()
-    if request.id:
-      raise remote.ApplicationError(
-        'Must not include id with create requests')
-    mdl = ndb_models.Supplier()
-    _SupplierMessageToModel(request, mdl)
-    mdl.put()
-    return _SupplierModelToMessage(mdl)
-
-  @remote.method(Supplier, Supplier)
-  def supplier_update(self, request):
-    self._authorize_staff()
-    if not request.id:
-      raise remote.ApplicationError('id is required')
-    mdl = ndb.Key(ndb_models.Supplier, request.id).get()
-    if not mdl:
-      raise remote.ApplicationError(
-        'No Supplier found with key %s' % request.id)
-
-    _SupplierMessageToModel(request, mdl)
-    mdl.put()
-    return _SupplierModelToMessage(mdl)
-
-  @remote.method(SimpleId, Staff)
-  def staff_read(self, request):
-    self._authorize_staff()
-    if not request.id:
-      raise remote.ApplicationError('id is required')
-    mdl = ndb.Key(ndb_models.Staff, request.id).get()
-    if not mdl:
-      raise remote.ApplicationError(
-        'No Staff found with key %s' % request.id)    
-    return _StaffModelToMessage(mdl)
-  
-  @remote.method(Staff, Staff)
-  def staff_create(self, request):
-    self._authorize_staff()
-    if request.id:
-      raise remote.ApplicationError(
-        'Must not include id with create requests')
-    mdl = ndb_models.Staff()
-    _StaffMessageToModel(request, mdl)
-    mdl.put()
-    return _StaffModelToMessage(mdl)
-
-  @remote.method(Staff, Staff)
-  def staff_update(self, request):
-    self._authorize_staff()
-    if not request.id:
-      raise remote.ApplicationError('id is required')
-    mdl = ndb.Key(ndb_models.Staff, request.id).get()
-    if not mdl:
-      raise remote.ApplicationError(
-        'No Staff found with key %s' % request.id)
-
-    _StaffMessageToModel(request, mdl)
-    mdl.put()
-    return _StaffModelToMessage(mdl)
-
-  @remote.method(SimpleId, Captain)
-  def captain_read(self, request):
-    self._authorize_staff()
-    if not request.id:
-      raise remote.ApplicationError('id is required')
-    mdl = ndb.Key(ndb_models.Captain, request.id).get()
-    if not mdl:
-      raise remote.ApplicationError(
-        'No Captain found with key %s' % request.id)    
-    return _CaptainModelToMessage(mdl)
-  
-  @remote.method(Captain, Captain)
-  def captain_create(self, request):
-    self._authorize_staff()
-    if request.id:
-      raise remote.ApplicationError(
-        'Must not include id with create requests')
-    mdl = ndb_models.Captain()
-    _CaptainMessageToModel(request, mdl)
-    mdl.put()
-    return _CaptainModelToMessage(mdl)
-
-  @remote.method(Captain, Captain)
-  def captain_update(self, request):
-    self._authorize_staff()
-    if not request.id:
-      raise remote.ApplicationError('id is required')
-    mdl = ndb.Key(ndb_models.Captain, request.id).get()
-    if not mdl:
-      raise remote.ApplicationError(
-        'No Captain found with key %s' % request.id)
-
-    _CaptainMessageToModel(request, mdl)
-    mdl.put()
-    return _CaptainModelToMessage(mdl)
-
   
 application = service.service_mapping(RoomApi, r'/wsgi_service')
-print RoomApi.all_remote_methods()
-print RoomApi.__dict__
+
