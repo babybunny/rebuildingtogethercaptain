@@ -12,9 +12,10 @@ app = TestApp(wsgi_service.application)
 # List of pairs: (model name, fields dict)
 # Include required messages in fields.
 models_and_data = (
-    ('Supplier', {'name': 'House'}),
+    ('Jurisdiction', {'name': 'Smallville'}),
     ('Staff', {'name': 'Stef Staff', 'email': 'steff@example.com'}),
     ('Captain', {'name': 'Cary Captain', 'email': 'cary@example.com'}),
+    ('Supplier', {'name': 'House'}),
 )
 
 

@@ -1,5 +1,6 @@
 import logging
 import os
+import six
 
 from protorpc import messages
 from protorpc import message_types
@@ -35,49 +36,24 @@ class Program(messages.Message):
 class Programs(messages.Message):
   program = messages.MessageField(Program, 1, repeated=True)
 
-############
-# Supplier #
-############
+################
+# Jurisdiction #
+################
 
-def _SupplierModelToMessage(mdl):
-  s = Supplier(
+def _JurisdictionModelToMessage(mdl):
+  s = Jurisdiction(
     name=mdl.name,
-    email=mdl.email,
-    address=mdl.address,
-    phone1=mdl.phone1,
-    phone2=mdl.phone2,
-    notes=mdl.notes,
-    active=mdl.active,            
-    visibility=mdl.visibility,
     id=mdl.key.integer_id(),
   )
-  if mdl.since:
-    s.since = mdl.since.isoformat()  # datetime, for display only
   return s
 
-def _SupplierMessageToModel(msg, mdl):
+def _JurisdictionMessageToModel(msg, mdl):
   mdl.name = msg.name
-  mdl.email = msg.email
-  mdl.address = msg.address
-  mdl.phone1 = msg.phone1
-  mdl.phone2 = msg.phone2
-  mdl.notes = msg.notes
-  mdl.active = msg.active
-  mdl.visibility = msg.visibility
-  # can't set "since", it's automatic
   return mdl
 
-class Supplier(messages.Message):
-  name = messages.StringField(1)
-  email = messages.StringField(2)
-  address = messages.StringField(3)
-  phone1 = messages.StringField(4)
-  phone2 = messages.StringField(5)
-  notes = messages.StringField(6)
-  since = messages.StringField(7)
-  active = messages.StringField(8)
-  visibility = messages.StringField(9)
-  id = messages.IntegerField(10)
+class Jurisdiction(messages.Message):
+  id = messages.IntegerField(1)
+  name = messages.StringField(2)
 
 #########
 # Staff #
@@ -114,9 +90,9 @@ class Staff(messages.Message):
   notes = messages.StringField(6)
   since = messages.StringField(7)
 
-#########
+###########
 # Captain #
-#########
+###########
 
 def _CaptainModelToMessage(mdl):
   s = Captain(
@@ -170,7 +146,122 @@ class Captain(messages.Message):
   last_editor = messages.StringField(14)
   # search_prefixes is internal only
 
-class RoomApi(remote.Service):
+############
+# Supplier #
+############
+
+def _SupplierModelToMessage(mdl):
+  s = Supplier(
+    name=mdl.name,
+    email=mdl.email,
+    address=mdl.address,
+    phone1=mdl.phone1,
+    phone2=mdl.phone2,
+    notes=mdl.notes,
+    active=mdl.active,            
+    visibility=mdl.visibility,
+    id=mdl.key.integer_id(),
+  )
+  if mdl.since:
+    s.since = mdl.since.isoformat()  # datetime, for display only
+  return s
+
+def _SupplierMessageToModel(msg, mdl):
+  mdl.name = msg.name
+  mdl.email = msg.email
+  mdl.address = msg.address
+  mdl.phone1 = msg.phone1
+  mdl.phone2 = msg.phone2
+  mdl.notes = msg.notes
+  mdl.active = msg.active
+  mdl.visibility = msg.visibility
+  # can't set "since", it's automatic
+  return mdl
+
+class Supplier(messages.Message):
+  name = messages.StringField(1)
+  email = messages.StringField(2)
+  address = messages.StringField(3)
+  phone1 = messages.StringField(4)
+  phone2 = messages.StringField(5)
+  notes = messages.StringField(6)
+  since = messages.StringField(7)
+  active = messages.StringField(8)
+  visibility = messages.StringField(9)
+  id = messages.IntegerField(10)
+
+
+  
+basic_crud_config = (
+  (Jurisdiction, ndb_models.Jurisdiction,
+   _JurisdictionMessageToModel, _JurisdictionModelToMessage),
+  (Captain, ndb_models.Captain,
+   _CaptainMessageToModel, _CaptainModelToMessage),
+  )
+
+class _GeneratedCrudApi(remote._ServiceClass):
+  """metaclass for adding CRUD methods to a service, based on a config"""
+
+  def __new__(mcs, name, bases, dct):
+    def makeBasicCrud(msg_name, msg_cls, mdl_cls, g2d, d2g):
+
+      def mdl_read(self, request):
+        self._authorize_staff()
+        if not request.id:
+          raise remote.ApplicationError('id is required')
+        mdl = ndb.Key(mdl_cls, request.id).get()
+        if not mdl:
+          raise remote.ApplicationError(
+            'No {} found with key {}'.format(msg_name, request.id))
+        return d2g(mdl)
+
+      def mdl_create(self, request):
+        self._authorize_staff()
+        if request.id:
+          raise remote.ApplicationError(
+            'Must not include id with create requests')
+        mdl = mdl_cls()
+        g2d(request, mdl)
+        mdl.put()
+        return d2g(mdl)
+
+      def mdl_update(self, request):
+        self._authorize_staff()
+        if not request.id:
+          raise remote.ApplicationError('id is required')
+        mdl = ndb.Key(mdl_cls, request.id).get()
+        if not mdl:
+          raise remote.ApplicationError(
+            'No {} found with key {}'.format(msg_name, request.id))
+        g2d(request, mdl)
+        mdl.put()
+        return d2g(mdl)
+
+      return mdl_create, mdl_read, mdl_update
+
+    for msg, mdl, g2d, d2g in basic_crud_config:
+      msg_name = msg.__name__
+      mdl_create, mdl_read, mdl_update = makeBasicCrud(msg_name, msg, mdl, g2d, d2g)
+
+      msg_x2_wrapper = remote.method(msg, msg)
+      id_msg_wrapper = remote.method(SimpleId, msg)
+
+      func_name = '{}_create'.format(msg_name.lower())
+      mdl_create.__name__ = func_name
+      dct[func_name] = msg_x2_wrapper(mdl_create)
+
+      func_name = '{}_read'.format(msg_name.lower())
+      mdl_read.__name__ = func_name
+      dct[func_name] = id_msg_wrapper(mdl_read)
+
+      func_name = '{}_update'.format(msg_name.lower())
+      mdl_update.__name__ = func_name
+      dct[func_name] = msg_x2_wrapper(mdl_update)
+
+      return type.__new__(mcs, name, bases, dct)
+
+
+class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
 
   def initialize_request_state(self, request_state):
     self.rs = request_state
@@ -348,6 +439,6 @@ class RoomApi(remote.Service):
     return _CaptainModelToMessage(mdl)
 
   
-
 application = service.service_mapping(RoomApi, r'/wsgi_service')
-logging.info(RoomApi.all_remote_methods())
+print RoomApi.all_remote_methods()
+print RoomApi.__dict__
