@@ -79,6 +79,32 @@ class Supplier(messages.Message):
   visibility = messages.StringField(9)
   id = messages.IntegerField(10)
 
+#########
+# Staff #
+#########
+
+def _StaffModelToMessage(mdl):
+  s = Staff(
+    name=mdl.name,
+    email=mdl.email,
+    last_welcome=mdl.last_welcome,
+    program_selected=mdl.program_selected,
+    notes=mdl.notes,
+    id=mdl.key.integer_id(),
+  )
+  if mdl.since:
+    s.since = mdl.since.isoformat()  # datetime, for display only
+  return s
+
+def _StaffMessageToModel(msg, mdl):
+  mdl.name = msg.name
+  mdl.email = msg.email
+  mdl.last_welcome = msg.last_welcome
+  mdl.program_selected = msg.program_selected
+  mdl.notes = msg.notes
+  # can't set "since", it's automatic
+  return mdl
+
 class Staff(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
@@ -194,30 +220,6 @@ class RoomApi(remote.Service):
     mdl.put()
     return _SupplierModelToMessage(mdl)
 
-  @classmethod
-  def _StaffModelToMessage(unused_cls, mdl):
-    s = Staff(
-      name=mdl.name,
-      email=mdl.email,
-      last_welcome=mdl.last_welcome,
-      program_selected=mdl.program_selected,
-      notes=mdl.notes,
-      id=mdl.key.integer_id(),
-    )
-    if mdl.since:
-      s.since = mdl.since.isoformat()  # datetime, for display only
-    return s
-
-  @classmethod
-  def _StaffMessageToModel(unused_cls, msg, mdl):
-    mdl.name = msg.name
-    mdl.email = msg.email
-    mdl.last_welcome = msg.last_welcome
-    mdl.program_selected = msg.program_selected
-    mdl.notes = msg.notes
-    # can't set "since", it's automatic
-    return mdl
-
   @remote.method(SimpleId, Staff)
   def staff_read(self, request):
     self._authorize_user()
@@ -227,7 +229,7 @@ class RoomApi(remote.Service):
     if not mdl:
       raise Exception(
         'No Staff found with key %s' % request.id)    
-    return self._StaffModelToMessage(mdl)
+    return _StaffModelToMessage(mdl)
   
   @remote.method(Staff, Staff)
   def staff_create(self, request):
@@ -236,9 +238,9 @@ class RoomApi(remote.Service):
       raise remote.ApplicationError(
         'Must not include id with create requests')
     mdl = ndb_models.Staff()
-    self._StaffMessageToModel(request, mdl)
+    _StaffMessageToModel(request, mdl)
     mdl.put()
-    return self._StaffModelToMessage(mdl)
+    return _StaffModelToMessage(mdl)
 
   @remote.method(Staff, Staff)
   def staff_update(self, request):
@@ -250,9 +252,9 @@ class RoomApi(remote.Service):
       raise Exception(
         'No Staff found with key %s' % request.id)
 
-    self._StaffMessageToModel(request, mdl)
+    _StaffMessageToModel(request, mdl)
     mdl.put()
-    return self._StaffModelToMessage(mdl)
+    return _StaffModelToMessage(mdl)
 
 application = service.service_mapping(RoomApi, r'/wsgi_service')
 logging.info(RoomApi.all_remote_methods())
