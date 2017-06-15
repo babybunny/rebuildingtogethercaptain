@@ -7,75 +7,25 @@ from test import test_models
 
 app = TestApp(wsgi_service.application)
 
-class RoomApiTest(unittest2.TestCase):
+
+# Configuration for basic CRUD tests.
+# List of pairs: (model name, fields dict)
+# Include required messages in fields.
+models_and_data = (
+    ('Supplier', {'name': 'House'}),
+    ('Staff', {'name': 'Stef Staff', 'email': 'steff@example.com'}),
+    ('Captain', {'name': 'Cary Captain', 'email': 'cary@example.com'}),
+)
+
+
+class BasicCrudTest(unittest2.TestCase):
     def setUp(self):
         test_models.CreateAll()
-
-    def testSupplierReadBadWrongMethod(self):
-        response = app.get('/wsgi_service.supplier_read', status=400)
-        self.assertEquals('400 Bad Request', response.status)
-
-    def testSupplierReadBadNoContent(self):
-        response = app.post_json('/wsgi_service.supplier_read', {}, status=400,
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('400 Bad Request', response.status)
-
-    def testSupplierReadBadWrongId(self):
-        response = app.post_json('/wsgi_service.supplier_read',
-                                 {'id': 999},
-                                 status=400,
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('400 Bad Request', response.status)
-
-    def testSupplierReadOK(self):
-        response = app.post_json('/wsgi_service.supplier_read',
-                                 {'id': test_models.KEYS['SUPPLIER'].integer_id()},
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('200 OK', response.status)
-        self.assertIn('House of Supply', response)
-
-    def testSupplierUpdateOK(self):
-        response = app.post_json('/wsgi_service.supplier_update',
-                                 {'id': test_models.KEYS['SUPPLIER'].integer_id(),
-                                  'name': 'Home of Supply'},
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('200 OK', response.status)
-        self.assertIn('Home of Supply', response)
-        
-    def testSupplierUpdateBadMissingId(self):
-        response = app.post_json('/wsgi_service.supplier_update',
-                                 {'name': 'Hovel of Supply'},
-                                 status=400,
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('400 Bad Request', response.status)
-        
-    def testSupplierUpdateBadWrongId(self):
-        response = app.post_json('/wsgi_service.supplier_update',
-                                 {'id': 999,
-                                  'name': 'Hovel of Supply'},
-                                 status=400,
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('400 Bad Request', response.status)
-        
-    def testSupplierCreateOK(self):
-        response = app.post_json('/wsgi_service.supplier_create',
-                                 {'name': 'Hovel of Supply'},
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('200 OK', response.status)
-        self.assertIn('Hovel of Supply', response)
-
-    def testSupplierCreateBadHasId(self):
-        response = app.post_json('/wsgi_service.supplier_create',
-                                 {'id': test_models.KEYS['SUPPLIER'].integer_id(),
-                                  'name': 'Hovel of Supply'},
-                                 status=400,
-                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-        self.assertEquals('400 Bad Request', response.status)
-
         
 
 def makeTestMethods(name, fields):
-        
+    """Returns a list of generic test methods for CRUD operations."""
+    
     def tstCreateOK(self):
         post_json_body = {}
         post_json_body.update(fields)
@@ -94,12 +44,97 @@ def makeTestMethods(name, fields):
                                  headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('400 Bad Request', response.status)
 
-    return tstCreateOK, tstCreateBadHasId
+    def tstReadBadWrongMethod(self):
+        response = app.get('/wsgi_service.{}_read'.format(name.lower()),
+                           status=400)
+        self.assertEquals('400 Bad Request', response.status)
+
+    def tstReadBadNoContent(self):
+        response = app.post_json('/wsgi_service.{}_read'.format(name.lower()),
+                                 {},
+                                 status=400,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('400 Bad Request', response.status)
+
+    def tstReadBadWrongId(self):
+        response = app.post_json('/wsgi_service.{}_read'.format(name.lower()),
+                                 {'id': 999},
+                                 status=400,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('400 Bad Request', response.status)
+
+    def tstReadOK(self):
+        response = app.post_json('/wsgi_service.{}_read'.format(name.lower()),
+                                 {'id': test_models.KEYS[name.upper()].integer_id()},
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn('id', response)
+
+    def tstUpdateOK(self):
+        post_json_body = {'id': test_models.KEYS[name.upper()].integer_id()}
+        post_json_body.update(fields)
+        response = app.post_json('/wsgi_service.{}_update'.format(name.lower()),
+                                 post_json_body,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn('id', response)
+        self.assertIn(fields.keys().pop(), response)
+        
+    def tstUpdateBadMissingId(self):
+        post_json_body = {}
+        post_json_body.update(fields)
+        response = app.post_json('/wsgi_service.{}_update'.format(name.lower()),
+                                 post_json_body,
+                                 status=400,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('400 Bad Request', response.status)
+        
+    def tstUpdateBadWrongId(self):
+        post_json_body = {'id': 999}
+        post_json_body.update(fields)
+        response = app.post_json('/wsgi_service.{}_update'.format(name.lower()),
+                                 post_json_body,
+                                 status=400,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('400 Bad Request', response.status)
+
+    return (tstCreateOK,
+            tstCreateBadHasId,
+            tstReadBadWrongMethod,
+            tstReadBadNoContent,
+            tstReadBadWrongId,
+            tstReadOK,
+            tstUpdateOK,
+            tstUpdateBadMissingId,
+            tstUpdateBadWrongId)
 
 
-for name, fields in (
-        ('Supplier', {'name': 'House'}),
-        ('Staff', {'name': 'Stef Staff', 'email': 'steff@example.com'})):
-    tstCreateOK, tstCreateBadHasId = makeTestMethods(name, fields)
-    setattr(RoomApiTest, 'test{}GenericCreateOK'.format(name), tstCreateOK)
-    setattr(RoomApiTest, 'test{}GenericCreateBadHasId'.format(name), tstCreateBadHasId)
+for name, fields in models_and_data:
+    (tstCreateOK,
+     tstCreateBadHasId,
+     tstReadBadWrongMethod,
+     tstReadBadNoContent,
+     tstReadBadWrongId,
+     tstReadOK,
+     tstUpdateOK,
+     tstUpdateBadMissingId,
+     tstUpdateBadWrongId) = makeTestMethods(name, fields)
+    setattr(BasicCrudTest, 'test{}CreateOK'.format(name), tstCreateOK)
+    setattr(BasicCrudTest, 'test{}CreateBadHasId'.format(name), tstCreateBadHasId)
+    setattr(BasicCrudTest, 'test{}ReadBadWrongMethod'.format(name), tstReadBadWrongMethod)
+    setattr(BasicCrudTest, 'test{}ReadBadNoContent'.format(name), tstReadBadNoContent)
+    setattr(BasicCrudTest, 'test{}ReadBadWrongId'.format(name), tstReadBadWrongId)
+    setattr(BasicCrudTest, 'test{}ReadOK'.format(name), tstReadOK)
+    setattr(BasicCrudTest, 'test{}UpdateOK'.format(name), tstUpdateOK)
+    setattr(BasicCrudTest, 'test{}UpdateBadMissingId'.format(name), tstUpdateBadMissingId)
+    setattr(BasicCrudTest, 'test{}UpdateBadWrongId'.format(name), tstUpdateBadWrongId)
+    
+    
+    
+    
+    
+    
+    
+    
+
+

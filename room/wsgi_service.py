@@ -114,7 +114,62 @@ class Staff(messages.Message):
   notes = messages.StringField(6)
   since = messages.StringField(7)
 
-  
+#########
+# Captain #
+#########
+
+def _CaptainModelToMessage(mdl):
+  s = Captain(
+    name=mdl.name,
+    email=mdl.email,
+    rooms_id=mdl.rooms_id,
+    phone_mobile=mdl.phone_mobile,
+    phone_work=mdl.phone_work,
+    phone_home=mdl.phone_home,
+    phone_fax=mdl.phone_fax,
+    phone_other=mdl.phone_other,
+    tshirt_size=mdl.tshirt_size,
+    notes=mdl.notes,
+    last_editor=mdl.last_editor,
+    id=mdl.key.integer_id(),
+  )
+  if mdl.last_welcome:
+    s.last_welcome = mdl.last_welcome.isoformat()  # datetime, fo  if mdl.modified:
+    s.modified = mdl.modified.isoformat()  # datetime, for display only
+  return s
+
+def _CaptainMessageToModel(msg, mdl):
+  mdl.name = msg.name
+  mdl.email = msg.email
+  mdl.rooms_id = msg.rooms_id
+  mdl.phone_mobile = msg.phone_mobile
+  mdl.phone_work = msg.phone_work
+  mdl.phone_home = msg.phone_home
+  mdl.phone_fax = msg.phone_fax
+  mdl.phone_other = msg.phone_other
+  mdl.tshirt_size = msg.tshirt_size
+  mdl.notes = msg.notes
+  # can't set automatic fields
+  # last_welcome modified last_editor
+  return mdl
+
+class Captain(messages.Message):
+  id = messages.IntegerField(1)
+  name = messages.StringField(2)
+  email = messages.StringField(3)
+  rooms_id = messages.StringField(4)
+  phone_mobile = messages.StringField(5)
+  phone_work = messages.StringField(6)
+  phone_home = messages.StringField(7)
+  phone_fax = messages.StringField(8)
+  phone_other = messages.StringField(9)
+  tshirt_size = messages.StringField(10)
+  notes = messages.StringField(11)
+  last_welcome = messages.StringField(12)
+  modified = messages.StringField(13)
+  last_editor = messages.StringField(14)
+  # search_prefixes is internal only
+
 class RoomApi(remote.Service):
 
   def initialize_request_state(self, request_state):
@@ -222,12 +277,12 @@ class RoomApi(remote.Service):
 
   @remote.method(SimpleId, Staff)
   def staff_read(self, request):
-    self._authorize_user()
+    self._authorize_staff()
     if not request.id:
-      raise Exception('id is required')
+      raise remote.ApplicationError('id is required')
     mdl = ndb.Key(ndb_models.Staff, request.id).get()
     if not mdl:
-      raise Exception(
+      raise remote.ApplicationError(
         'No Staff found with key %s' % request.id)    
     return _StaffModelToMessage(mdl)
   
@@ -246,15 +301,53 @@ class RoomApi(remote.Service):
   def staff_update(self, request):
     self._authorize_staff()
     if not request.id:
-      raise Exception('id is required')
+      raise remote.ApplicationError('id is required')
     mdl = ndb.Key(ndb_models.Staff, request.id).get()
     if not mdl:
-      raise Exception(
+      raise remote.ApplicationError(
         'No Staff found with key %s' % request.id)
 
     _StaffMessageToModel(request, mdl)
     mdl.put()
     return _StaffModelToMessage(mdl)
+
+  @remote.method(SimpleId, Captain)
+  def captain_read(self, request):
+    self._authorize_staff()
+    if not request.id:
+      raise remote.ApplicationError('id is required')
+    mdl = ndb.Key(ndb_models.Captain, request.id).get()
+    if not mdl:
+      raise remote.ApplicationError(
+        'No Captain found with key %s' % request.id)    
+    return _CaptainModelToMessage(mdl)
+  
+  @remote.method(Captain, Captain)
+  def captain_create(self, request):
+    self._authorize_staff()
+    if request.id:
+      raise remote.ApplicationError(
+        'Must not include id with create requests')
+    mdl = ndb_models.Captain()
+    _CaptainMessageToModel(request, mdl)
+    mdl.put()
+    return _CaptainModelToMessage(mdl)
+
+  @remote.method(Captain, Captain)
+  def captain_update(self, request):
+    self._authorize_staff()
+    if not request.id:
+      raise remote.ApplicationError('id is required')
+    mdl = ndb.Key(ndb_models.Captain, request.id).get()
+    if not mdl:
+      raise remote.ApplicationError(
+        'No Captain found with key %s' % request.id)
+
+    _CaptainMessageToModel(request, mdl)
+    mdl.put()
+    return _CaptainModelToMessage(mdl)
+
+  
 
 application = service.service_mapping(RoomApi, r'/wsgi_service')
 logging.info(RoomApi.all_remote_methods())
