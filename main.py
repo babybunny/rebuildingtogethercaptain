@@ -116,7 +116,7 @@ app = webapp2.WSGIApplication([
                   name='OrderPreview'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
-                  name='CaptainList'),  # TODO
+                  name='CaptainExport'),  # TODO
     webapp2.Route(r'/help',
                   MainPage,
                   name='CaptainNew'),  # TODO
@@ -139,19 +139,26 @@ app = webapp2.WSGIApplication([
                   MainPage,
                   name='StaffNew'),  # TODO
 
-    webapp2.Route(r'/supplier',
-                  staff.SupplierList,
-                  name='SupplierList'),  # TODO
-    webapp2.Route(r'/supplier/<id:\d*>',
-                  staff.Supplier,
-                  name='Supplier'),  # TODO
-
     webapp2.Route(r'/staff',
                   staff.StaffList,
                   name='StaffList'),  # TODO
     webapp2.Route(r'/staff/<id:\d*>',
                   staff.Staff,
                   name='Staff'),  # TODO
+
+    webapp2.Route(r'/captain',
+                  staff.CaptainList,
+                  name='CaptainList'),  # TODO
+    webapp2.Route(r'/captain/<id:\d*>',
+                  staff.Captain,
+                  name='Captain'),  # TODO
+
+    webapp2.Route(r'/supplier',
+                  staff.SupplierList,
+                  name='SupplierList'),  # TODO
+    webapp2.Route(r'/supplier/<id:\d*>',
+                  staff.Supplier,
+                  name='Supplier'),  # TODO
 
     webapp2.Route(r'/help',
                   MainPage,

@@ -23,7 +23,7 @@ define(
         }];
 
         var SupplierView = Backbone.View.extend({
-            el: '#supplier-view',
+            el: '#simple-form-view',
             template: _.template(template),
             
             events: {

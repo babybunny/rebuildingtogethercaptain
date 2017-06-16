@@ -16,12 +16,12 @@ $(function(){
 <h2>All Captains</h2>
 {% if user.staff %}
 <p>
-  <a href="{% url room.views.CaptainExport %}">
+  <a href="{{ webapp2.uri_for('CaptainExport') }}">
     Click here to export all Captain data as CSV.
   </a>
 </p>
 <p>
-  <a href="{% url room.views.CaptainNew %}">
+  <a href="{{ webapp2.uri_for('Captain', id='') }}">
     Click here to add a new Captain.
   </a>
 </p>
@@ -49,21 +49,21 @@ $(function(){
     <tr>
       <td>
 	<span name="{{captain.name|escape}}"></span>
-	<a name="{{ captain.key.id }}">
+	<a name="{{ captain.key.integer_id() }}">
 	{{ captain.name|escape }}
 	</a>
       </td>
       <td>
 	{% if user.staff %}
-	<a href="{% url room.views.CaptainEdit captain.key.id %}">
+	<a href="{{ webapp2.uri_for('Captain', id=captain.key.integer_id()) }}">
 	edit
 	</a>
 	- 
-	<a href="{% url room.views.CaptainDeleteConfirm captain.key.id %}">
+	<a href="#TODO">
 	delete
 	</a>
   -
-	<a href="{% url room.views.CaptainHome captain.key.id %}">
+	<a href="#TODO">
 	home
 	</a>
 	{% endif %}
@@ -81,7 +81,7 @@ $(function(){
 	{% for sitecaptain in captain.sitecaptains %}
 	<a 
 	   sortorder="{{ sitecaptain.site.number }}"
-	   href="{% url room.views.SiteView sitecaptain.site.key.id %}">	
+	   href="{{ webapp2.uri_for('SiteView', id=sitecaptain.site.integer_id()) }}">	
 	  {{ sitecaptain.site.number }}
 	</a>
 	<br>
@@ -98,12 +98,12 @@ $(function(){
       </td>
       <td>
 	{% if captain.last_welcome %}
-	{{ captain.last_welcome|timesince }} ago
-	{% endif %}	
+	{{ captain.last_welcome }}
+	{% endif %}
       </td>
       <td class="notes">
 	{% if captain.notes %}
-	{{ captain.notes|linebreaksbr }}
+	{{ captain.notes }} TODO nl2br
 	{% endif %}
       </td>
     </tr>

@@ -138,6 +138,11 @@ class StaffList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Staff, 'staff_list')
 
+
+class CaptainList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Captain, 'captain_list')
+
   
 class SiteList(StaffHandler):
   def get(self, id=None):
@@ -174,17 +179,25 @@ class EditView(StaffHandler):
     return common.Respond(self.request, self.template_file, d)
 
   
-class Supplier(EditView):
-  model_class = ndb_models.Supplier
-  list_view = 'SupplierList'
-  template_value = 'supplier'
-  template_file = 'simple_form'
-
 
 class Staff(EditView):
   model_class = ndb_models.Staff
   list_view = 'StaffList'
   template_value = 'staff'
+  template_file = 'simple_form'
+
+
+class Captain(EditView):
+  model_class = ndb_models.Captain
+  list_view = 'CaptainList'
+  template_value = 'captain'
+  template_file = 'simple_form'
+
+
+class Supplier(EditView):
+  model_class = ndb_models.Supplier
+  list_view = 'SupplierList'
+  template_value = 'supplier'
   template_file = 'simple_form'
 
 

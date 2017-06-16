@@ -106,7 +106,7 @@ def _CaptainModelToMessage(mdl):
     phone_other=mdl.phone_other,
     tshirt_size=mdl.tshirt_size,
     notes=mdl.notes,
-    last_editor=mdl.last_editor,
+    last_editor=unicode(mdl.last_editor),
     id=mdl.key.integer_id(),
   )
   if mdl.last_welcome:

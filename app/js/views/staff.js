@@ -33,7 +33,7 @@ define(
         }];
 
         var StaffView = Backbone.View.extend({
-            el: '#staff-view',
+            el: '#simple-form-view',
             template: _.template(template),
             
             events: {
