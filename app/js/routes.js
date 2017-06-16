@@ -22,31 +22,19 @@ define(
                 self.app = app;
             },
             routes: {
-                'room/supplier/': 'supplier_new',
-                'room/supplier/:id': 'supplier',
-                'room/staff/': 'staff_new',
-                'room/staff/:id': 'staff'
+                'room/:type/': 'new',
+                'room/:type/:id': 'edit',
             },
-            staff_new: function() {
-                requirejs(['app/models/staff', 'app/views/staff'],
+            new: function(type) {
+                requirejs(['app/models/' + type, 'app/views/' + type],
                           function(Model, View) {
-                              newPage(self.app, Model, View, 'staff')});
+                              newPage(self.app, Model, View, type)});
             },
-            staff: function(id) {
-                requirejs(['app/models/staff', 'app/views/staff'],
+            edit: function(type, id) {
+                requirejs(['app/models/' + type, 'app/views/' + type],
                           function(Model, View) {
-                              editPage(self.app, Model, View, 'staff', id)});
+                              editPage(self.app, Model, View, type, id)});
             },
-            supplier_new: function() {
-                requirejs(['app/models/supplier', 'app/views/supplier'],
-                          function(Model, View) {
-                              newPage(self.app, Model, View, 'supplier')});
-            },
-            supplier: function(id) {
-                requirejs(['app/models/supplier', 'app/views/supplier'],
-                          function(Model, View) {
-                              editPage(self.app, Model, View, 'supplier', id)});
-            }
         });
     }
 );
