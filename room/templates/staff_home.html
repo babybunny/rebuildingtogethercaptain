@@ -79,7 +79,7 @@ function sendToCaptainEdit() {
   $('#captain_term').hide();
   var loc = window.location;
   var new_loc = loc.protocol + '//' + loc.host +
-                '{{ webapp2.uri_for('CaptainEdit', id) }}';
+                '{{ webapp2.uri_for('Captain', id=999) }}';
   new_loc = new_loc.replace('999', id);
   window.location = new_loc;
 }
@@ -182,7 +182,7 @@ $(function() {
 	<a href="{{ webapp2.uri_for('CaptainList') }}">View a list</a>
 	of all Captains.
 	<br>
-	<a href="{{ webapp2.uri_for('CaptainNew') }}">Add a new Captain</a>
+	<a href="{{ webapp2.uri_for('Captain', id='') }}">Add a new Captain</a>
 	.
 	</p>
       </div>
@@ -192,7 +192,7 @@ $(function() {
 	<a href="{{ webapp2.uri_for('StaffList') }}">View a list</a>
 	of all Staff.
 	<br>
-	<a href="{{ webapp2.uri_for('StaffNew') }}">Add a new Staff</a>
+	<a href="{{ webapp2.uri_for('Staff', id='') }}">Add a new Staff</a>
 	.
       </div>
 

@@ -79,7 +79,7 @@ class AutocompleteHandler(StaffHandler):
     items.filter(self.model_class.search_prefixes == prefix)
     if self.program_filter:
       user, _ = common.GetUser(self.request)
-    items.filter(self.model_class.program == user.program_selected)
+      items.filter(self.model_class.program == user.program_selected)
     matches = {}
     for i in items.iter():
       label = i.Label()
@@ -98,7 +98,7 @@ class SiteAutocomplete(AutocompleteHandler):
 class CaptainAutocomplete(AutocompleteHandler):
   """Return JSON to autocomplete a Captain."""
   model_class = ndb_models.Captain
-  program_filter = True
+  program_filter = False
 
     
 def _EntryList(request, model_cls, template, params=None, query=None):
