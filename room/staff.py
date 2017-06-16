@@ -166,7 +166,8 @@ class EditView(StaffHandler):
   template_file = None
 
   def get(self, id=None):
-    d = dict()
+    d = dict(list_uri=webapp2.uri_for(self.list_view),
+             type=self.template_value)
     if id:
       id = int(id)
       d[self.template_value] = ndb.Key(self.model_class, id).get()
@@ -175,14 +176,16 @@ class EditView(StaffHandler):
   
 class Supplier(EditView):
   model_class = ndb_models.Supplier
+  list_view = 'SupplierList'
   template_value = 'supplier'
-  template_file = 'supplier'
+  template_file = 'simple_form'
 
 
 class Staff(EditView):
   model_class = ndb_models.Staff
+  list_view = 'StaffList'
   template_value = 'staff'
-  template_file = 'staff'
+  template_file = 'simple_form'
 
 
 # TODO: not so easy :)
