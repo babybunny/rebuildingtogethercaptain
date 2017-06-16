@@ -34,9 +34,9 @@ define(
             label: "Save changes"
         }];
         
-        var CaptainView = function(app, loading) {
+        var ViewFactory = function(app, loading) {
             return new SimpleFormView(fields, 'captain', template, app.models.captain, loading)
         }
-        return CaptainView;
+        return ViewFactory;
     }
 )
