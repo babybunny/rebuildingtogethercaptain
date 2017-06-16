@@ -11,38 +11,10 @@ requirejs.config({
 require(
     [
         'backbone',
+        'app/common',
         'app/routes', 
-        'app/models/staff',
-        'app/views/staff'
     ], 
-    function(Backbone, Routes, Staff, StaffView) { 
-        Backbone.sync = function(method, model, options) {
-            console.log('Backbone sync: ' + method + ' options: ' + JSON.stringify(options));
-
-                var settings = {
-                    url: this.urlRoot + method,
-                    method: "POST",
-                    contentType: "application/json",
-                    success: function(data, status, xhr) {
-                        console.log('staff ' + method + ' success: ' + JSON.stringify(data));
-                        options.success(data);
-                    }
-                };
-                
-                switch (method) {
-                case 'read':
-                    Backbone.$.ajax(_.extend(settings, {
-                        data: JSON.stringify({"id": model.id})
-                    }))
-                    break;
-                case 'create':
-                case 'update':
-                    Backbone.$.ajax(_.extend(settings, {
-                        data: JSON.stringify(model.attributes),
-                    }))
-                    break;
-                }
-            }
+    function(Backbone, common, Routes) { 
         var Rooms = function() {
             var self = this;
             this.routes = new Routes(this);
