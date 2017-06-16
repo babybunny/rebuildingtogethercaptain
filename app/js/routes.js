@@ -1,10 +1,22 @@
 define(
-    ['backbone',
-     'app/models/supplier', 'app/views/supplier',
-    ],
-    function(Backbone,
-             Supplier, SupplierView,
-             Staff, StaffView) {
+    ['backbone'],
+    function(Backbone) {
+
+        var editPage = function(App, Model, View, name, id) {
+            console.log(name + ' by id page');
+            self.app.models[name] = new Model({id: id});
+            self.app.models[name].fetch();
+            self.app.views[name] = new View(App, true);
+            self.app.views[name].render();
+        };
+
+        var newPage = function(App, Model, View, name) {
+            console.log(name + ' new page');
+            self.app.models[name] = new Model();
+            self.app.views[name] = new View(App, false);
+            self.app.views[name].render();
+        }
+
         return Backbone.Router.extend({
             initialize: function(app) {
                 self.app = app;
@@ -15,40 +27,25 @@ define(
                 'room/staff/': 'staff_new',
                 'room/staff/:id': 'staff'
             },
-            welcome: function() {
-                console.log('welcome page');                
-            },
-            supplier_new: function(id) {
-                console.log('supplier new page');
-                self.app.models.supplier = new Supplier();
-                self.app.views.supplier = new SupplierView(self.app, false);
-                self.app.views.supplier.render();
-            },
-            supplier: function(id) {
-                console.log('supplier by id page');
-                self.app.models.supplier = new Supplier({id: id});
-                self.app.models.supplier.fetch({data: {id: id}});
-                self.app.views.supplier = new SupplierView(self.app, true);
-                self.app.views.supplier.render();
-            },
             staff_new: function() {
                 requirejs(['app/models/staff', 'app/views/staff'],
                           function(Model, View) {
-                              console.log('staff new page');
-                              self.app.models.staff = new Model();
-                              self.app.views.staff = new View(self.app, false);
-                              self.app.views.staff.render();
-                          });
+                              newPage(self.app, Model, View, 'staff')});
             },
             staff: function(id) {
                 requirejs(['app/models/staff', 'app/views/staff'],
                           function(Model, View) {
-                              console.log('staff by id page');
-                              self.app.models.staff = new Model({id: id});
-                              self.app.models.staff.fetch({data: {id: id}});
-                              self.app.views.staff = new View(self.app, true);
-                              self.app.views.staff.render();
-                          });
+                              editPage(self.app, Model, View, 'staff', id)});
+            },
+            supplier_new: function() {
+                requirejs(['app/models/supplier', 'app/views/supplier'],
+                          function(Model, View) {
+                              newPage(self.app, Model, View, 'supplier')});
+            },
+            supplier: function(id) {
+                requirejs(['app/models/supplier', 'app/views/supplier'],
+                          function(Model, View) {
+                              editPage(self.app, Model, View, 'supplier', id)});
             }
         });
     }
