@@ -10,12 +10,14 @@ from test import route_lister
 
 app = TestApp(main.app)
 
+
 class LoggedInTest(unittest2.TestCase):
     def testStaffHome(self):
         response = app.get('/room/staff_home')
         self.assertEquals('302 Moved Temporarily', response.status)
         # TODO: this could be more robust.  no guarantee that it's localhost?
         self.assertEquals('http://localhost/', response.headers['Location'])
+
         
 class StatefulTestNoProgram(unittest2.TestCase):
     def setUp(self):
@@ -26,7 +28,23 @@ class StatefulTestNoProgram(unittest2.TestCase):
         self.assertEquals('302 Moved Temporarily', response.status)
         self.assertEquals('http://localhost/room/select_program', response.headers['Location'])
         
-class StatefulTestWithProgram(unittest2.TestCase):
+
+class StatefulTestCaptain(unittest2.TestCase):
+    def setUp(self):
+        test_models.CreateAll()        
+        s = test_models.KEYS['STAFF'].get()
+        s.program_selected = '2011 Test'
+        s.put()
+
+    def _get(self, path):
+        return app.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.capn@gmail.com'})
+
+    def testCaptainHome(self):
+        response = self._get('/room/captain_home')
+        self.assertIn('Ahoy Captain!', response.body)
+        
+    
+class StatefulTestStaffWithProgram(unittest2.TestCase):
     def setUp(self):
         test_models.CreateAll()        
         s = test_models.KEYS['STAFF'].get()
@@ -37,7 +55,7 @@ class StatefulTestWithProgram(unittest2.TestCase):
         return app.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         
     
-class StatefulTestWithProgramAuto(StatefulTestWithProgram):
+class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
     """Automatically test all routes to ensure they don't crash."""
     _multiprocess_can_split_ = True
 
@@ -55,12 +73,10 @@ for r in routes:
         continue  # TODO: figure out how to test paths with id segments.
     testFunc = _makerOfTestFunction(r['template'])
     testFunc.__name__ = 'test{}'.format(r['name'])
-    setattr(StatefulTestWithProgramAuto, testFunc.__name__, testFunc)
-
-
+    setattr(StatefulTestStaffWithProgramAuto, testFunc.__name__, testFunc)
         
 
-class StatefulTestWithProgramCustom(StatefulTestWithProgram):
+class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     """Test specific routes with a certain degree of intelligence."""
     def testStaffHome(self):
         response = self._get('/room/staff_home')

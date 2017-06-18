@@ -50,7 +50,7 @@ class CaptainHome(CaptainHandler):
         ndb_models.SiteCaptain.site == site.key)
 
     captain_form = 'captain_form placeholder'
-    return common.Respond(request, 'captain_home',
+    return common.Respond(self.request, 'captain_home',
                           {'order_sheets': order_sheets,
                            'entries': sites,
                            'captain': captain,
