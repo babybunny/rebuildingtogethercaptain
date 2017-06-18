@@ -43,14 +43,9 @@ class Placeholder(webapp2.RequestHandler):
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
-app = webapp2.WSGIApplication([
-    webapp2.Route(r'/',
-                  MainPage,
-                  name='Start'),
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='Help'),  # TODO
-    routes.PathPrefixRoute('/room', [
+
+# Be sure to also configure the /room path with login: required in app.yaml.
+login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/staff_home',
                   staff.StaffHome,
                   name='StaffHome'),
@@ -67,17 +62,62 @@ app = webapp2.WSGIApplication([
                   captain.CaptainHome,
                   name='CaptainHome'),
     webapp2.Route(r'/scoreboard',
-                  MainPage,
+                  Placeholder,
                   name='Scoreboard'),  # TODO
     webapp2.Route(r'/scoreboard/all',
-                  MainPage,
+                  Placeholder,
                   name='AllProgramsScoreboard'),  # TODO
+
+    webapp2.Route(r'/staff',
+                  staff.StaffList,
+                  name='StaffList'),
+    webapp2.Route(r'/staff/<id:\d*>',
+                  staff.Staff,
+                  name='Staff'),
+    
+    webapp2.Route(r'/captain',
+                  staff.CaptainList,
+                  name='CaptainList'),
+    webapp2.Route(r'/captain/<id:\d*>',
+                  staff.Captain,
+                  name='Captain'),
+    
+    webapp2.Route(r'/supplier',
+                  staff.SupplierList,
+                  name='SupplierList'),
+    webapp2.Route(r'/supplier/<id:\d*>',
+                  staff.Supplier,
+                  name='Supplier'),
+    
+    
+    # webapp2.Route(r'/example',
+    #               staff.ExampleList,
+    #               name='ExampleList'),
+    # webapp2.Route(r'/example/<id:\d*>',
+    #               staff.Example,
+    #               name='Example'),
+
+    
+    webapp2.Route(r'/site/<id:\d+>/',
+                  staff.SiteView,
+                  name='SiteView'),
+    webapp2.Route(r'/site/list/<id:\d+>/',  # back compat
+                  staff.SiteView,
+                  name='SiteViewBackCompat'),
+    
+    webapp2.Route(r'/sites_and_captains',
+                  staff.SitesAndCaptains,
+                  name='SitesAndCaptains'),
+    
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='SiteNew'),  # TODO
     webapp2.Route(r'/site_list',
-                  MainPage,
+                  Placeholder,
                   name='SiteList'),  # TODO
+    webapp2.Route(r'/help',
+                  Placeholder,
+                  name='SiteExport'),  # TODO
     webapp2.Route(r'/site/edit/<id:\d+>/',
                   staff.Site,
                   name='SiteEdit'),  # TODO
@@ -87,120 +127,107 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/site_summary/<id:\d+>',
                   staff.Site,
                   name='SiteSummary'),  # TODO
-    webapp2.Route(r'/site/list/<id:\d+>/',  # back compat
-                  staff.SiteList,
-                  name='SiteView'),
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='SiteBudget'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='SiteAnnouncement'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='SitesWithoutOrder'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='OrderEdit'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='OrderFulfill'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='OrderList'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='OrderNew'),  # TODO
     webapp2.Route(r'/help/<site:\d+>',
-                  MainPage,
+                  Placeholder,
                   name='OrderPreview'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='CaptainExport'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='CaptainNew'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='CaptainEdit'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='ItemList'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='ItemNew'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='OrderSheetList'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='OrderSheetNew'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='StaffNew'),  # TODO
-
-    webapp2.Route(r'/staff',
-                  staff.StaffList,
-                  name='StaffList'),  # TODO
-    webapp2.Route(r'/staff/<id:\d*>',
-                  staff.Staff,
-                  name='Staff'),  # TODO
-
-    webapp2.Route(r'/captain',
-                  staff.CaptainList,
-                  name='CaptainList'),  # TODO
-    webapp2.Route(r'/captain/<id:\d*>',
-                  staff.Captain,
-                  name='Captain'),  # TODO
-
-    webapp2.Route(r'/supplier',
-                  staff.SupplierList,
-                  name='SupplierList'),  # TODO
-    webapp2.Route(r'/supplier/<id:\d*>',
-                  staff.Supplier,
-                  name='Supplier'),  # TODO
-
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='CheckRequestList'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='CheckRequestView'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='CheckRequestEdit'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='CheckRequestNew'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='InKindDonationList'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='InKindDonationView'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='InKindDonationNew'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='VendorReceiptList'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='VendorReceiptView'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='VendorReceiptNew'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='StaffTimeList'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='StaffTimeView'),  # TODO
     webapp2.Route(r'/help',
-                  MainPage,
+                  Placeholder,
                   name='StaffTimeNew'),  # TODO
 ] + [webapp2.Route(r'/help',
-                   MainPage,
+                   Placeholder,
                    name='%sEdit' % kind) for kind in EXPENSE_KINDS
-    ])], debug=True)
+])
+
+app = webapp2.WSGIApplication(
+    [
+        webapp2.Route(r'/',
+                      MainPage,
+                      name='Start'),
+        webapp2.Route(r'/help',
+                      Placeholder,
+                      name='Help'),  # TODO
+        login_required,
+    ], 
+    debug=True)
 

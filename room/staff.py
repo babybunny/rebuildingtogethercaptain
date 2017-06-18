@@ -129,11 +129,6 @@ def _EntryList(request, model_cls, template, params=None, query=None):
   return common.Respond(request, template, d)
 
 
-class SupplierList(StaffHandler):
-  def get(self):
-    return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
-
-  
 class StaffList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Staff, 'staff_list')
@@ -144,7 +139,18 @@ class CaptainList(StaffHandler):
     return _EntryList(self.request, ndb_models.Captain, 'captain_list')
 
   
-class SiteList(StaffHandler):
+class SupplierList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
+
+  
+"""
+class ExampleList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Example, 'example_list')
+"""
+  
+class SiteView(StaffHandler):
   def get(self, id=None):
     if id:
       id = int(id)
@@ -161,8 +167,27 @@ class SiteList(StaffHandler):
     return common.Respond(self.request, 'site_list_one', d)
 
 
-def _SiteListInternal(request, site=None, new_order_form=None):
-  """Request / -- show all canned orders."""
+class SitesAndCaptains(StaffHandler):
+  """Show all Sites and their associated captains in a big list"""
+  def get(self):
+    user, _ = common.GetUser(self.request)
+    if not user.program_selected:
+      webapp2.abort(400)
+    query = ndb_models.NewSite.query(ndb_models.NewSite.program == user.program_selected)
+    query.order(ndb_models.NewSite.number)
+    entries = list(query)
+    sitecaptains_by_site = {}
+    # TODO: this is fetching too many - we only need those for the current
+    # program.  use ancestor?
+    for sc in ndb_models.SiteCaptain.query():
+      sitecaptains_by_site.setdefault(sc.site.integer_id(), []).append(sc)
+    for s in entries:
+      k = s.key.integer_id()
+      if k in sitecaptains_by_site:
+        s.sitecaptains = sitecaptains_by_site[k]
+    d = {'entries': entries, 'num_entries': len(entries), 'user': user,
+         'sitecaptains_by_site': sitecaptains_by_site}
+    return common.Respond(self.request, 'site_list', d)
 
 
 class EditView(StaffHandler):
@@ -200,8 +225,15 @@ class Supplier(EditView):
   template_value = 'supplier'
   template_file = 'simple_form'
 
-
-# TODO: not so easy :)
+"""
+class Example(EditView):
+  model_class = ndb_models.Example
+  list_view = 'ExampleList'
+  template_value = 'example'
+  template_file = 'simple_form'
+"""
+  
+  # TODO: not so easy :)
 class Site(EditView):
   model_class = ndb_models.Staff
   template_value = 'staff'
