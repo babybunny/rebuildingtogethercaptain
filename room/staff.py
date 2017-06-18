@@ -225,6 +225,12 @@ class Supplier(EditView):
   template_value = 'supplier'
   template_file = 'simple_form'
 
+class Site(EditView):
+  model_class = ndb_models.NewSite
+  list_view = 'SitesAndCaptains'
+  template_value = 'site'
+  template_file = 'simple_form'
+
 """
 class Example(EditView):
   model_class = ndb_models.Example
@@ -233,10 +239,5 @@ class Example(EditView):
   template_file = 'simple_form'
 """
   
-  # TODO: not so easy :)
-class Site(EditView):
-  model_class = ndb_models.Staff
-  template_value = 'staff'
-  template_file = 'staff'
 
 

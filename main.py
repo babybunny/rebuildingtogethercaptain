@@ -61,12 +61,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/captain_home',
                   captain.CaptainHome,
                   name='CaptainHome'),
-    webapp2.Route(r'/scoreboard',
-                  Placeholder,
-                  name='Scoreboard'),  # TODO
-    webapp2.Route(r'/scoreboard/all',
-                  Placeholder,
-                  name='AllProgramsScoreboard'),  # TODO
 
     webapp2.Route(r'/staff',
                   staff.StaffList,
@@ -98,17 +92,26 @@ login_required = routes.PathPrefixRoute('/room', [
     #               name='Example'),
 
     
-    webapp2.Route(r'/site/<id:\d+>/',
+    webapp2.Route(r'/site/view/<id:\d+>/',
                   staff.SiteView,
                   name='SiteView'),
     webapp2.Route(r'/site/list/<id:\d+>/',  # back compat
                   staff.SiteView,
                   name='SiteViewBackCompat'),
+    webapp2.Route(r'/site/<id:\d*>',
+                  staff.Site,
+                  name='Site'),
     
     webapp2.Route(r'/sites_and_captains',
                   staff.SitesAndCaptains,
                   name='SitesAndCaptains'),
     
+    webapp2.Route(r'/scoreboard',
+                  Placeholder,
+                  name='Scoreboard'),  # TODO
+    webapp2.Route(r'/scoreboard/all',
+                  Placeholder,
+                  name='AllProgramsScoreboard'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='SiteNew'),  # TODO
@@ -118,9 +121,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='SiteExport'),  # TODO
-    webapp2.Route(r'/site/edit/<id:\d+>/',
-                  staff.Site,
-                  name='SiteEdit'),  # TODO
     webapp2.Route(r'/site_expenses/<id:\d+>',
                   staff.Site,
                   name='SiteExpenses'),  # TODO

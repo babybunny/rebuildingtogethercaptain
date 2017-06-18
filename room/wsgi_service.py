@@ -191,6 +191,29 @@ class Supplier(messages.Message):
   id = messages.IntegerField(10)
 
 
+############
+# Site #
+############
+
+def _SiteModelToMessage(mdl):
+  s = Site(
+    id=mdl.key.integer_id(),
+    number=mdl.number,
+  )
+  # Any special handling, like for user objects or datetimes
+  return s
+
+def _SiteMessageToModel(msg, mdl):
+  mdl.number = msg.number
+  # can't set automatic fields:
+  # TODO
+  return mdl
+
+class Site(messages.Message):
+  id = messages.IntegerField(1)
+  number = messages.StringField(2) 
+
+  
 # Use the multi-line string below as a template for adding models.
 """
 ############
@@ -213,7 +236,7 @@ def _ExampleMessageToModel(msg, mdl):
 
 class Example(messages.Message):
   id = messages.IntegerField(1)
-  name = messages.StringField(2)  // etc
+  name = messages.StringField(2)
 
 """
   
@@ -226,6 +249,8 @@ basic_crud_config = (
    _CaptainMessageToModel, _CaptainModelToMessage),
   (Supplier, ndb_models.Supplier,
    _SupplierMessageToModel, _SupplierModelToMessage),
+  (Site, ndb_models.NewSite,
+   _SiteMessageToModel, _SiteModelToMessage),
 #  (Example, ndb_models.Example,
 # _ExampleMessageToModel, _ExampleModelToMessage),
   )

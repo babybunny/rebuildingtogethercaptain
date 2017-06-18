@@ -6,9 +6,9 @@
 
 <h2>{{ what_you_are_doing }}</h2>
 {% if site.key.id %}
-<form action="{% url room.views.SiteEdit site.key.id %}" method="post">
+<form action="{{ webapp2.uri_for('SiteEdit'), site.key.integer_id()) }}" method="post">
 {% else %}
-<form action="{% url room.views.SiteNew %}" method="post">
+<form action="{{ webapp2.uri_for('SiteNew') }}" method="post">
 {% endif %}
 
 <table>
