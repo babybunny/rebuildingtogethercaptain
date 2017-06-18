@@ -417,6 +417,10 @@ class NewSite(ndb.Model):
   def NeedsAttention(self):
     return self.announcement_subject is not None
   
+  @property
+  def sitecaptain_set(self):
+    return SiteCaptain.query(SiteCaptain.site == self.key)
+
   def OrderTotal(self):
     """Only works if self has been saved."""
     cost = sum(order.GrandTotal() for order in self.Orders)

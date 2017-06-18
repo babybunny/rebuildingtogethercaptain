@@ -70,9 +70,9 @@ $(function() {
 	{% endfor %}
       </td>
       <td>
-	Orders: ${{ site.OrderTotal }}
-	<br>{{ site.BudgetStatement }}
-	{% if site.NeedsAttention %}
+	Orders: ${{ site.OrderTotal() }}
+	<br>{{ site.BudgetStatement() }}
+	{% if site.NeedsAttention() %}
 	<br>Needs Attention
 	{% endif %}
       </td>

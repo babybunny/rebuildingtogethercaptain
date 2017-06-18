@@ -97,3 +97,9 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
         self.assertIn('2011 Test', str(response))
         self.assertIn('Miss Captain', str(response))
         
+    def testSiteView(self):
+        response = self._get('/room/site/view/{:d}/'.format(test_models.KEYS['SITE'].integer_id()))
+        self.assertEquals('200 OK', response.status)
+        self.assertIn('2011 Test', response.body)
+        self.assertIn('110TEST', response.body)
+        self.assertIn('Miss Captain', response.body)
