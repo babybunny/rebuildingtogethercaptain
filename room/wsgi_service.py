@@ -191,6 +191,31 @@ class Supplier(messages.Message):
   id = messages.IntegerField(10)
 
 
+# Use the multi-line string below as a template for adding models.
+"""
+############
+# Example #
+############
+
+def _ExampleModelToMessage(mdl):
+  s = Example(
+    id=mdl.key.integer_id(),
+    name=mdl.name,
+  )
+  # any special handling, like for user objects or datetimes
+  return s
+
+def _ExampleMessageToModel(msg, mdl):
+  mdl.name = msg.name
+  # can't set automatic fields:
+  # TODO
+  return mdl
+
+class Example(messages.Message):
+  id = messages.IntegerField(1)
+  name = messages.StringField(2)  // etc
+
+"""
   
 basic_crud_config = (
   (Jurisdiction, ndb_models.Jurisdiction,
@@ -201,6 +226,8 @@ basic_crud_config = (
    _CaptainMessageToModel, _CaptainModelToMessage),
   (Supplier, ndb_models.Supplier,
    _SupplierMessageToModel, _SupplierModelToMessage),
+#  (Example, ndb_models.Example,
+# _ExampleMessageToModel, _ExampleModelToMessage),
   )
 
 class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metaclass so we have to as well.
