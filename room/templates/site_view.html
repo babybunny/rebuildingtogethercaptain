@@ -68,12 +68,12 @@
         </p>
         {% endif %}
             
-        {% if not site.sitecaptain_set %}
+        {% if not site.sitecaptains %}
         <p>
 	        No captains assigned yet!
         </p>
         {% else %}
-        {% for sitecaptain in site.sitecaptain_set %}
+        {% for sitecaptain in site.sitecaptains %}
         {% set captain = sitecaptain.captain.get() %}
         <p>
 	        <strong>{{ captain.name }}</strong>
