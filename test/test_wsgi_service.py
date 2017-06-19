@@ -131,11 +131,16 @@ for name, fields in models_and_data:
     setattr(BasicCrudTest, 'test{}UpdateBadWrongId'.format(name), tstUpdateBadWrongId)
     
     
-    
-    
-    
-    
-    
-    
+class ChoicesTest(unittest2.TestCase):
+    def setUp(self):
+        test_models.CreateAll()
 
-
+    def testSupplier(self):
+        post_json_body = {}
+        response = app.post_json('/wsgi_service.supplier_choices',
+                                 post_json_body,
+                                 status=200,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertDictEqual({u'choice': [{u'id': 7, u'label': u'House of Supply'}]}, response.json)
+        

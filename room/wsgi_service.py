@@ -22,6 +22,13 @@ class GenericResponse(messages.Message):
 class SimpleId(messages.Message):
   id = messages.IntegerField(1, required=True)
 
+class Choice(messages.Message):
+  id = messages.IntegerField(1, required=True)
+  label = messages.StringField(2)
+
+class Choices(messages.Message):
+  choice = messages.MessageField(Choice, 1, repeated=True)
+
 class StaffPosition(messages.Message):
   key = messages.IntegerField(1)
   position_name = messages.StringField(2)
@@ -458,6 +465,13 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
     
+  @remote.method(message_types.VoidMessage,
+                 Choices)  
+  def supplier_choices(self, request):
+    choices = Choices()
+    for mdl in ndb_models.Supplier.query():
+      choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
+    return choices
   
 application = service.service_mapping(RoomApi, r'/wsgi_service')
 
