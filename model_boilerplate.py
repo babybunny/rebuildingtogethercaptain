@@ -53,7 +53,15 @@ def js(clsname):
                         if (issubclass(type(cls), ndb_models.ndb.StringProperty)
                               or issubclass(type(cls), ndb_models.ndb.IntegerProperty)
                               or issubclass(type(cls), ndb_models.ndb.FloatProperty)):
-                            f.write('{0}control: "input",\n'.format(' '*(padding+4)))
+                            if cls._choices:
+                                f.write('{0}control: "select",\n'.format(' '*(padding+4)))
+                                f.write('{0}options: [\n'.format(' '*(padding+4)))
+                                for choice in cls._choices:
+                                    f.write('{0}{1}label: "{3}", value: "{3}"{2},\n'.format(' '*(padding+8), '{', '}', choice))
+                                f.write('{0}]\n'.format(' '*(padding+4)))
+                                    
+                            else:
+                                f.write('{0}control: "input",\n'.format(' '*(padding+4)))
                         elif issubclass(type(cls), ndb_models.ndb.TextProperty):
                             f.write('{0}control: "textarea",\n'.format(' '*(padding+4)))
                         elif issubclass(type(cls), ndb_models.ndb.BlobProperty):
@@ -72,15 +80,20 @@ def api(clsname):
     for field, cls in ndb_model_classes[clsname].__dict__.items():
         if not inspect.isclass(type(cls)): continue
         if not issubclass(type(cls), ndb_models.ndb.Property): continue
-        d2g.append('{0}=mdl.{0}'.format(field))
+        d2g.append('{0}=mdl.{0},'.format(field))
         g2d.append('mdl.{0} = msg.{0}'.format(field))
         if issubclass(type(cls), ndb_models.ndb.StringProperty):
             message_fields.append('{0} = messages.StringField({1})'.format(field, len(message_fields) + 2))
         elif issubclass(type(cls), ndb_models.ndb.FloatProperty):
             message_fields.append('{0} = messages.FloatField({1})'.format(field, len(message_fields) + 2))
-        elif (issubclass(type(cls), ndb_models.ndb.IntegerProperty)
-              or issubclass(type(cls), ndb_models.ndb.KeyProperty)):
+        elif issubclass(type(cls), ndb_models.ndb.IntegerProperty):
             message_fields.append('{0} = messages.IntegerField({1})'.format(field, len(message_fields) + 2))
+        elif issubclass(type(cls), ndb_models.ndb.KeyProperty):
+            message_fields.append('{0} = messages.IntegerField({1})'.format(field, len(message_fields) + 2))
+            d2g.pop()
+            d2g.append('{0}=mdl.{0}.integer_id(),'.format(field))
+            g2d.pop()
+            g2d.append('mdl.{0} = ndb.Key(ndb_models.{1}, msg.{0})'.format(field, cls._kind))
         else:
             d2g.pop()
             g2d.pop()
@@ -131,3 +144,13 @@ class {0}(EditView):
   template_file = 'simple_form'
 """.format(clsname, clsname.lower())
 
+
+def routes(clsname):
+    return """
+    webapp2.Route(r'/{1}',
+                  staff.{0}List,
+                  name='{0}List'),
+    webapp2.Route(r'/{1}/<id:\d*>',
+                  staff.{0},
+                  name='{0}'),
+""".format(clsname, clsname.lower())
