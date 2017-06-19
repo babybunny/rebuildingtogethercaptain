@@ -44,11 +44,6 @@ class CaptainHome(CaptainHandler):
       site.new_order_form = "site.new_order_form placeholder"
       sites.append(site)
 
-    for site in sites:
-      site.editable_by_current_user = True
-      site.sitecaptain_set = ndb_models.SiteCaptain.query(
-        ndb_models.SiteCaptain.site == site.key)
-
     captain_form = 'captain_form placeholder'
     return common.Respond(self.request, 'captain_home',
                           {'order_sheets': order_sheets,
