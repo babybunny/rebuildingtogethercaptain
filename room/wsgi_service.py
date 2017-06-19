@@ -152,6 +152,7 @@ class Captain(messages.Message):
 
 def _SupplierModelToMessage(mdl):
   s = Supplier(
+    id=mdl.key.integer_id(),
     name=mdl.name,
     email=mdl.email,
     address=mdl.address,
@@ -160,7 +161,6 @@ def _SupplierModelToMessage(mdl):
     notes=mdl.notes,
     active=mdl.active,            
     visibility=mdl.visibility,
-    id=mdl.key.integer_id(),
   )
   if mdl.since:
     s.since = mdl.since.isoformat()  # datetime, for display only

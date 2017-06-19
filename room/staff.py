@@ -100,56 +100,7 @@ class CaptainAutocomplete(AutocompleteHandler):
   model_class = ndb_models.Captain
   program_filter = False
 
-    
-def _EntryList(request, model_cls, template, params=None, query=None):
-  """Generic helper method to perform a list view.
 
-  This method does not enforce any authorization. It should be called after 
-  authorization is successful..
-
-  Template should iterate over a list called 'entries'.
-  Sorts entries on their 'name' attribute (which they must have).
-
-  Args:
-    request: the request object
-    model_cls: the class of model, like models.Captain
-    template: name of template file, like 'captain_list'
-    params: dict of more template parameters
-    query: db.Query object to use, if not model_cls.query()
-    """
-  if query is None:
-    query = model_cls.query()
-  entries = list(query)
-  entries.sort(key=lambda x: x.name)
-  d = {'entries': entries, 'num_entries': len(entries),
-       'cls': model_cls,
-       'model_cls_name': model_cls.__name__}
-  if params:
-    d.update(params)
-  return common.Respond(request, template, d)
-
-
-class StaffList(StaffHandler):
-  def get(self):
-    return _EntryList(self.request, ndb_models.Staff, 'staff_list')
-
-
-class CaptainList(StaffHandler):
-  def get(self):
-    return _EntryList(self.request, ndb_models.Captain, 'captain_list')
-
-  
-class SupplierList(StaffHandler):
-  def get(self):
-    return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
-
-  
-"""
-class ExampleList(StaffHandler):
-  def get(self):
-    return _EntryList(self.request, ndb_models.Example, 'example_list')
-"""
-  
 class SiteView(StaffHandler):
   def get(self, id=None):
     if id:
@@ -189,6 +140,34 @@ class SitesAndCaptains(StaffHandler):
          'sitecaptains_by_site': sitecaptains_by_site}
     return common.Respond(self.request, 'site_list', d)
 
+    
+def _EntryList(request, model_cls, template, params=None, query=None):
+  """Generic helper method to perform a list view.
+
+  This method does not enforce any authorization. It should be called after 
+  authorization is successful..
+
+  Template should iterate over a list called 'entries'.
+  Sorts entries on their 'name' attribute (which they must have).
+
+  Args:
+    request: the request object
+    model_cls: the class of model, like models.Captain
+    template: name of template file, like 'captain_list'
+    params: dict of more template parameters
+    query: db.Query object to use, if not model_cls.query()
+    """
+  if query is None:
+    query = model_cls.query()
+  entries = list(query)
+  entries.sort(key=lambda x: x.name)
+  d = {'entries': entries, 'num_entries': len(entries),
+       'cls': model_cls,
+       'model_cls_name': model_cls.__name__}
+  if params:
+    d.update(params)
+  return common.Respond(request, template, d)
+
 
 class EditView(StaffHandler):
   model_class = None
@@ -202,8 +181,11 @@ class EditView(StaffHandler):
       id = int(id)
       d[self.template_value] = ndb.Key(self.model_class, id).get()
     return common.Respond(self.request, self.template_file, d)
-
   
+
+class StaffList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Staff, 'staff_list')
 
 class Staff(EditView):
   model_class = ndb_models.Staff
@@ -212,12 +194,20 @@ class Staff(EditView):
   template_file = 'simple_form'
 
 
+class CaptainList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Captain, 'captain_list')
+
 class Captain(EditView):
   model_class = ndb_models.Captain
   list_view = 'CaptainList'
   template_value = 'captain'
   template_file = 'simple_form'
+  
 
+class SupplierList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
 
 class Supplier(EditView):
   model_class = ndb_models.Supplier
@@ -225,13 +215,21 @@ class Supplier(EditView):
   template_value = 'supplier'
   template_file = 'simple_form'
 
+  
+# SiteList is done by custom view SitesAndCaptains
+
 class Site(EditView):
   model_class = ndb_models.NewSite
   list_view = 'SitesAndCaptains'
   template_value = 'site'
   template_file = 'simple_form'
 
+  
 """
+class ExampleList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Example, 'example_list')
+
 class Example(EditView):
   model_class = ndb_models.Example
   list_view = 'ExampleList'
