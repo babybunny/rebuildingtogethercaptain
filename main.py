@@ -83,7 +83,14 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.Supplier,
                   name='Supplier'),
     
-    
+    webapp2.Route(r'/ordersheet',
+                  staff.OrderSheetList,
+                  name='OrderSheetList'),
+    webapp2.Route(r'/ordersheet/<id:\d*>',
+                  staff.OrderSheet,
+                  name='OrderSheet'),
+
+
     # webapp2.Route(r'/example',
     #               staff.ExampleList,
     #               name='ExampleList'),
@@ -105,6 +112,9 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/sites_and_captains',
                   staff.SitesAndCaptains,
                   name='SitesAndCaptains'),
+    webapp2.Route(r'/ordersheet_items',
+                  Placeholder,
+                  name='OrderSheetItemList'),
     
     webapp2.Route(r'/scoreboard',
                   Placeholder,
@@ -166,12 +176,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='ItemNew'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='OrderSheetList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='OrderSheetNew'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='StaffNew'),  # TODO

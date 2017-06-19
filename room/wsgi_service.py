@@ -213,7 +213,49 @@ class Site(messages.Message):
   id = messages.IntegerField(1)
   number = messages.StringField(2) 
 
+
+############
+# OrderSheet #
+############
+
+def _OrderSheetModelToMessage(mdl):
+  s = OrderSheet(
+    id=mdl.key.integer_id(),
+    code=mdl.code,
+    name=mdl.name,
+    delivery_options=mdl.delivery_options,
+    default_supplier=mdl.default_supplier.integer_id(),
+    visibility=mdl.visibility,
+    retrieval_options=mdl.retrieval_options,
+    pickup_options=mdl.pickup_options,
+  )
+  # any special handling, like for user objects or datetimes
+  return s
+
+def _OrderSheetMessageToModel(msg, mdl):
+  mdl.code = msg.code
+  mdl.name = msg.name
+  mdl.delivery_options = msg.delivery_options
+  mdl.default_supplier = ndb.Key(ndb_models.Supplier, msg.default_supplier)
+  mdl.visibility = msg.visibility
+  mdl.retrieval_options = msg.retrieval_options
+  mdl.pickup_options = msg.pickup_options
+  # can't set automatic fields:
+  # TODO
+  return mdl
+
+class OrderSheet(messages.Message):
+  id = messages.IntegerField(1)
+  code = messages.StringField(2)
+  name = messages.StringField(3)
+  delivery_options = messages.StringField(4)
+  default_supplier = messages.IntegerField(5)
+  visibility = messages.StringField(6)
+  retrieval_options = messages.StringField(7)
+  pickup_options = messages.StringField(8)
+
   
+
 # Use the multi-line string below as a template for adding models.
 """
 ############
@@ -251,6 +293,8 @@ basic_crud_config = (
    _SupplierMessageToModel, _SupplierModelToMessage),
   (Site, ndb_models.NewSite,
    _SiteMessageToModel, _SiteModelToMessage),
+  (OrderSheet, ndb_models.OrderSheet,
+   _OrderSheetMessageToModel, _OrderSheetModelToMessage),
 #  (Example, ndb_models.Example,
 # _ExampleMessageToModel, _ExampleModelToMessage),
   )

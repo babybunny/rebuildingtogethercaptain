@@ -225,6 +225,17 @@ class Site(EditView):
   template_file = 'simple_form'
 
   
+class OrderSheetList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.OrderSheet, 'ordersheet_list')
+
+class OrderSheet(EditView):
+  model_class = ndb_models.OrderSheet
+  list_view = 'OrderSheetList'
+  template_value = 'ordersheet'
+  template_file = 'simple_form'
+
+  
 """
 class ExampleList(StaffHandler):
   def get(self):
