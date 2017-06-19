@@ -182,6 +182,9 @@ class OrderSheet(ndb.Model):
             self.pickup_options == 'Yes' or
             self.retrieval_options == 'Yes')      
 
+  @property
+  def item_set(self):
+    return Item.query(Item.appears_on_order_form == self.key)
 
 class Item(ndb.Model):
   """Represents a type of thing that may in the inventory."""
