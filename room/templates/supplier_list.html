@@ -50,7 +50,7 @@ $(document).ready(function(){
       </td><td>
 	{{ entry.phone2|escape }}
       </td><td>
-	{{ entry.notes|escape }}{# TODO: was linebreaksbr #}
+	{{ entry.notes|escape }}{# TODO: was replace('\n', '<br>\n') #}
     </td></tr>
     {% endfor %}
   </tbody>

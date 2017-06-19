@@ -94,10 +94,10 @@ to add a new Order Form.
 	{{ order_sheet.default_supplier }}
       </td>
       <td>
-	{{ order_sheet.instructions|linebreaksbr|escape }}
+	{{ order_sheet.instructions|replace('\n', '<br>\n')|escape }}
       </td>
       <td>
-	{{ order_sheet.logistics_instructions|linebreaksbr|escape }}
+	{{ order_sheet.logistics_instructions|replace('\n', '<br>\n')|escape }}
       </td>
     </tr>
     {%endfor%}

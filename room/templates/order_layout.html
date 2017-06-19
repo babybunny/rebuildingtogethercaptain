@@ -111,7 +111,7 @@
 	      ({{ d.delivery.contact_phone }})
 	      {% endif %}
 	      {% if d.delivery.notes %}
-	      <br>{{ d.delivery.notes|linebreaksbr }}
+	      <br>{{ d.delivery.notes|replace('\n', '<br>\n') }}
 	      {% endif %}
 	    </td>
 	    {% endfor %}
@@ -129,7 +129,7 @@
 	      ({{ d.pickup.contact_phone }})
 	      {% endif %}
 	      {% if d.pickup.notes %}
-	      <br>{{ d.pickup.notes|linebreaksbr }}
+	      <br>{{ d.pickup.notes|replace('\n', '<br>\n') }}
 	      {% endif %}
 	    </td>
 	    {% endfor %}
@@ -147,7 +147,7 @@
 	      ({{ d.retrieval.contact_phone }})
 	      {% endif %}
 	      {% if d.retrieval.notes %}
-	      <br>{{ d.retrieval.notes|linebreaksbr }}
+	      <br>{{ d.retrieval.notes|replace('\n', '<br>\n') }}
 	      {% endif %}
 	    </td>
 	    {% endfor %}

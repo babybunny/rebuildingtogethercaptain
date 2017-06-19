@@ -89,7 +89,7 @@
     Address
   </td>
   <td>
-    {{ entity.address|escape|linebreaksbr }}
+    {{ entity.address|escape|replace('\n', '<br>\n') }}
   </td>
 </tr>
 <tr>
@@ -105,7 +105,7 @@
     Description
   </td>
   <td>
-    {{ entity.description|escape|linebreaksbr }}
+    {{ entity.description|escape|replace('\n', '<br>\n') }}
   </td>
 </tr>
 <tr>

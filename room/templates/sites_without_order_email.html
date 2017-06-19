@@ -12,7 +12,7 @@ Captain's email:
  {{ e }}
 {% endfor %}
 <p>
-{{ body|linebreaksbr }}
+{{ body|replace('\n', '<br>\n') }}
 </p>
 {% if is_dev %}
 <h3>DEVELOPMENT SERVER</h3>

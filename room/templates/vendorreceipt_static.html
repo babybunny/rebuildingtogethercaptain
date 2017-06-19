@@ -65,7 +65,7 @@
     Description
   </td>
   <td>
-    {{ entity.description|escape|linebreaksbr }}
+    {{ entity.description|escape|replace('\n', '<br>\n') }}
   </td>
 </tr>
 <tr>
