@@ -103,7 +103,7 @@ $(function(){
       </td>
       <td class="notes">
 	{% if captain.notes %}
-	{{ captain.notes }} TODO nl2br
+	{{ captain.notes|replace('\n', '<br/>\n') }}
 	{% endif %}
       </td>
     </tr>
