@@ -11,11 +11,11 @@ define(
                 control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
                 disabled: true // By default controls are editable. Here we disabled it.
             },
+            // boilerplate
             {
                 control: "button",
                 label: "Save changes"
-            },
-            # boilerplate
+            }
         ];
         
         var ViewFactory = function(app, loading) {
