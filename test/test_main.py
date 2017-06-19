@@ -1,6 +1,5 @@
 """Functional tests for main views."""
 
-import os
 import unittest2
 from webtest import TestApp
 import main
