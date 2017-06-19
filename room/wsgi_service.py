@@ -467,7 +467,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     
   @remote.method(message_types.VoidMessage,
                  Choices)  
-  def supplier_choices(self, request):
+  def supplier_choices_read(self, request):
     choices = Choices()
     for mdl in ndb_models.Supplier.query():
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))

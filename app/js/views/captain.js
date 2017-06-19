@@ -69,7 +69,7 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView(fields, 'captain', template, app.models.captain, loading)
+            return new SimpleFormView('captain', template, app.models.captain, loading, fields)
         }
         return ViewFactory;
     }

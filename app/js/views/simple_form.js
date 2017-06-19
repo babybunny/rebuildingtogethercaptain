@@ -7,12 +7,11 @@ define(
                 'click #simple-form-save': 'save'
             },
             
-            initialize: function(fields, name, template, model, loading) {
+            initialize: function(name, template, model, loading, fields) {
                 var self = this;
                 console.log('simple-form view init');
                 self.template = _.template(template),
                 self.model = model;
-                self.fields = fields;
                 self.name = name;
                 self.loading = loading;
                 self.saved = false;
@@ -22,9 +21,15 @@ define(
                                   self.loading = false;
                                   this.render();
                               });
-                self.form = new Backform.Form({
-                    model: self.model,
-                    fields: self.fields,
+                if (fields) {
+                    this.initialize_form(fields);
+                }
+            },
+
+            initialize_form: function(fields) {
+                this.form = new Backform.Form({
+                    model: this.model,
+                    fields: fields,
                     events: {
                         'submit': function(e) {
                             console.log(name + ' submit backform');
@@ -32,8 +37,8 @@ define(
                             res = this.model.save();
                             if (res) {
                                 res.done(function(result) {
-                                    self.saved = true;
-                                    self.render();
+                                    this.saved = true;
+                                    this.render();
                                 });
                                 res.fail(function(error) {
                                     alert(error);
@@ -66,8 +71,10 @@ define(
                     }
                     this.$('#simple-form-backform').show();
                 }
-                this.form.setElement(this.$el.find('#simple-form-backform'));
-                this.form.render();
+                if (this.form) {
+                    this.form.setElement(this.$el.find('#simple-form-backform'));
+                    this.form.render();
+                }
                 return this;
             },
             

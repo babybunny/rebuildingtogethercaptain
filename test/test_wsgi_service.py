@@ -137,7 +137,7 @@ class ChoicesTest(unittest2.TestCase):
 
     def testSupplier(self):
         post_json_body = {}
-        response = app.post_json('/wsgi_service.supplier_choices',
+        response = app.post_json('/wsgi_service.supplier_choices_read',
                                  post_json_body,
                                  status=200,
                                  headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})

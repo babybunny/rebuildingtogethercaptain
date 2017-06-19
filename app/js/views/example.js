@@ -19,7 +19,7 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView(fields, 'example', template, app.models.example, loading)
+            return new SimpleFormView('example', template, app.models.example, loading, fields)
         }
         return ViewFactory;
     }

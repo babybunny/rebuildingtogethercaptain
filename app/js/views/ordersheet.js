@@ -1,9 +1,10 @@
 define(
     [
         'app/views/simple_form',
+        'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(SimpleFormView, template) {
+    function(SimpleFormView, SupplierChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -45,12 +46,12 @@ define(
                     {label: "No", value: "No"},
                 ]
             },
-/*            {
+            {
                 name: "default_supplier",
                 label: "Default supplier",
-                // "default_supplier is a Key.  TODO",
+                control: "select",
             },
-*/
+
             {
                 name: "retrieval_options",
                 label: "Retrieval options",
@@ -60,7 +61,7 @@ define(
                     {label: "No", value: "No"},
                 ]
             },
-/*            {
+/* TODO     {
                 name: "supports_extra_name_on_order",
                 label: "Supports extra name on order",
                 // "supports_extra_name_on_order is a BooleanProperty('supports_extra_name_on_order', default=False).  TODO",
@@ -86,7 +87,16 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView(fields, 'ordersheet', template, app.models.ordersheet, loading)
+            var simpleform = new SimpleFormView('ordersheet', template, app.models.ordersheet, loading);
+            app.models.supplier_choices = app.models.supplier_choices || new SupplierChoices();
+            app.models.supplier_choices.on('change', function(m) {
+                stanza = _.find(fields, function(f) { return f.name == 'default_supplier' });
+                stanza.options = _.map(m.get('choice'), function(e) { return {'label': e.label, 'value': e.id}; });                
+                simpleform.initialize_form(fields);
+                simpleform.render();
+            });
+            app.models.supplier_choices.fetch();
+            return simpleform;
         }
         return ViewFactory;
     }

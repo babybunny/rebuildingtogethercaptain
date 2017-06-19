@@ -53,7 +53,7 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView(fields, 'staff', template, app.models.staff, loading)
+            return new SimpleFormView('staff', template, app.models.staff, loading, fields)
         }
         return ViewFactory;
     }
