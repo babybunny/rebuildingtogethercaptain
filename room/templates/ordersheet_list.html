@@ -1,0 +1,107 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(function(){
+  $("table.tablesorter").tablesorter({
+  });
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Order Forms
+{% endblock %}
+{%block about_this_page %}
+<h2>All Order Forms</h2>
+<a href="{{ webapp2.uri_for('OrderSheet', id='') }}">
+  Click here
+</a>
+to add a new Order Form.
+</form>
+{% endblock %}
+{%block body%}
+<table class="tablesorter">
+  <thead>
+    <tr>
+      <th>
+	Code
+      </th>
+      <th>
+	Name
+      </th>
+      <th>
+	Visible
+      </th>
+      <th>
+	Delivery
+      </th>
+      <th>
+	Pickup
+      </th>
+      <th>
+	Retrieval
+      </th>
+      <th>
+	Number of Items
+      </th>
+      <th>
+	Default Supplier
+      </th>
+      <th>
+	Special Instructions
+      </th>
+      <th>
+	Logistics Instructions
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for order_sheet in entries %}
+    <tr>
+      <td>
+	<strong>{{order_sheet.code|escape}}</strong>
+	<p>
+	  <a class="edit" 
+	     href="{{ webapp2.uri_for('OrderSheet', id=order_sheet.key.integer_id()) }}">
+	    edit sheet
+	  </a>
+	  <br/>
+	  <a class="edit" 
+	     href="{{ webapp2.uri_for('OrderSheetItemList', id=order_sheet.key.integer_id()) }}">
+	    edit items
+	  </a>
+	</p>
+      </td>
+      <td>
+	{{ order_sheet.name|escape }}
+      </td>
+      <td>
+	{{ order_sheet.visibility|escape }}
+      </td>
+      <td>
+	{{ order_sheet.delivery_options|escape }}
+      </td>
+      <td>
+	{{ order_sheet.pickup_options|escape }}
+      </td>
+      <td>
+	{{ order_sheet.retrieval_options|escape }}
+      </td>
+      <td>
+	{{ order_sheet.item_set.count() }}
+      </td>
+      <td>
+	{{ order_sheet.default_supplier.get().name }}
+      </td>
+      <td>
+	      {{ order_sheet.instructions|replace('\n', '<br/>')|escape }}
+      </td>
+      <td>
+	{{ order_sheet.logistics_instructions|replace('\n', '<br/>')|escape }}
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+
+{%endblock%}
