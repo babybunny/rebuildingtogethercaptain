@@ -573,7 +573,7 @@ class Order(ndb.Model):
   def UpdateSubTotal(self):
     """Recomputes sub_total by summing the cost of items and adding tax."""
     sub_total = 0.
-    order_items = OrderItem.all().filter('order = ', self)
+    order_items = OrderItem.query(OrderItem.order == self.key)
     for oi in order_items:
       quantity = oi.FloatQuantity()
       if oi.item.get().unit_cost is not None and quantity:
