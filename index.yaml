@@ -9,6 +9,11 @@ indexes:
   properties:
   - name: search_prefixes
 
+- kind: NewSite
+  properties:
+  - name: program
+  - name: search_prefixes
+
 - kind: CheckRequest
   properties:
   - name: __key__
