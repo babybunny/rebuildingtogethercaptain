@@ -9,6 +9,7 @@
     "backbone": "^1.3.3",
     "backform": "latest",
     "bootstrap": "latest",
+    "bootstrap-datepicker": "latest",
     "jquery": "latest",
     "jqueryui": "latest",
     "connect": "2.7.0"
