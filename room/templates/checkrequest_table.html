@@ -32,7 +32,7 @@
 	     id="state"
 	     name="{{ entity.key.integer_id() }}">{{ entity.state }}</div>
       </td><td>
-	{{ entity.captain.name|escape }}
+	{{ entity.captain.get().name|escape }}
       </td><td>
 	{{ entity.name|escape }}
       </td><td>
