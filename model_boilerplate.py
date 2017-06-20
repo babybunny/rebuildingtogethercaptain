@@ -10,6 +10,27 @@ staff.py
 Some of this repetition can be removed but at risk of getting too "meta" 
 and hard to follow. I find that having some level of repetition is acceptable 
 (DRY principle is not absolute) as long as there are tools to manage it.
+
+The way to use this module is to call the functions and then read / edit the output and 
+put it in the correct file. For example, the 'routes' function produces boilerplate text for
+the router in main.py.
+
+$ python
+>>> import model_boilerplate
+>>> print model_boilerplate.routes('CheckRequest')
+
+    webapp2.Route(r'/checkrequest',
+                  staff.CheckRequestList,
+                  name='CheckRequestList'),
+    webapp2.Route(r'/checkrequest/<id:\d*>',
+                  staff.CheckRequest,
+                  name='CheckRequest'),
+
+>>> 
+
+Then copy that text into main.py.  
+Search for 'example' to find the right place.
+
 """
 
 
@@ -30,7 +51,10 @@ def label(s):
 
 
 def js(clsname):
-    """Creates js files for model and view."""
+    """Creates js files for model and view.
+
+    Actually writes the files in place. So be careful about overwriting your customized version.
+    """
     wsgi_path_fragment = clsname.lower()
     with open('app/js/models/{}.js'.format(wsgi_path_fragment), 'w') as f, open('app/js/models/example.js', 'r') as examplef:
         for line in examplef:
