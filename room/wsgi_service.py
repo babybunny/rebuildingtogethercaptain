@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import six
@@ -260,10 +261,63 @@ class OrderSheet(messages.Message):
   visibility = messages.StringField(6)
   retrieval_options = messages.StringField(7)
   pickup_options = messages.StringField(8)
-
   
 
+############
+# StaffTime #
+############
+
+def _StaffTimeModelToMessage(mdl):
+  s = StaffTime(
+    id=mdl.key.integer_id(),
+    program=mdl.program,
+    description=mdl.description,
+    site=mdl.site.integer_id(),
+    hours=mdl.hours,
+    captain=mdl.captain.integer_id(),
+    state=mdl.state,
+    miles=mdl.miles,
+    position=mdl.position.integer_id(),
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.activity_date:
+    s.activity_date=mdl.activity_date.isoformat()
+  else:
+    s.activity_date = ''
+  return s
+
+def _StaffTimeMessageToModel(msg, mdl):
+  mdl.program = msg.program
+  mdl.description = msg.description
+  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.hours = msg.hours
+  mdl.state = msg.state
+  mdl.miles = msg.miles
+  mdl.position = ndb.Key(ndb_models.StaffPosition, msg.position)
+  # can't set automatic fields:
+  # captain.
+  try:
+    mdl.activity_date = datetime.date(*map(int, msg.activity_date.split('-')))
+  except Exception, e:
+    raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.activity_date))
+  return mdl
+
+class StaffTime(messages.Message):
+  id = messages.IntegerField(1)
+  program = messages.StringField(2)
+  description = messages.StringField(3)
+  site = messages.IntegerField(4)
+  hours = messages.FloatField(5)
+  captain = messages.IntegerField(6)
+  activity_date = messages.StringField(7)
+  state = messages.StringField(8)
+  miles = messages.FloatField(9)
+  position = messages.IntegerField(10)
+
+
+
 # Use the multi-line string below as a template for adding models.
+# Or use model_boilerplate.py
 """
 ############
 # Example #
@@ -302,6 +356,8 @@ basic_crud_config = (
    _SiteMessageToModel, _SiteModelToMessage),
   (OrderSheet, ndb_models.OrderSheet,
    _OrderSheetMessageToModel, _OrderSheetModelToMessage),
+  (StaffTime, ndb_models.StaffTime,
+   _StaffTimeMessageToModel, _StaffTimeModelToMessage),
 #  (Example, ndb_models.Example,
 # _ExampleMessageToModel, _ExampleModelToMessage),
   )
@@ -469,9 +525,17 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
                  Choices)  
   def supplier_choices_read(self, request):
     choices = Choices()
-    for mdl in ndb_models.Supplier.query():
+    for mdl in ndb_models.Supplier.query(ndb_models.Supplier.active == 'Active'):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
   
+  @remote.method(message_types.VoidMessage,
+                 Choices)  
+  def staffposition_choices_read(self, request):
+    choices = Choices()
+    for mdl in ndb_models.StaffPosition.query():
+      choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.position_name))
+    return choices
+
 application = service.service_mapping(RoomApi, r'/wsgi_service')
 

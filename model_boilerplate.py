@@ -86,6 +86,9 @@ def js(clsname):
                                     
                             else:
                                 f.write('{0}control: "input",\n'.format(' '*(padding+4)))
+                        elif issubclass(type(cls), ndb_models.ndb.DateProperty):
+                            f.write('{0}control: "datepicker",\n'.format(' '*(padding+4)))
+                            f.write('{0}options: {1}format: "yyyy-mm-dd"{2},\n'.format(' '*(padding+4), '{', '}'))
                         elif issubclass(type(cls), ndb_models.ndb.TextProperty):
                             f.write('{0}control: "textarea",\n'.format(' '*(padding+4)))
                         elif issubclass(type(cls), ndb_models.ndb.BlobProperty):
@@ -106,7 +109,9 @@ def api(clsname):
         if not issubclass(type(cls), ndb_models.ndb.Property): continue
         d2g.append('{0}=mdl.{0},'.format(field))
         g2d.append('mdl.{0} = msg.{0}'.format(field))
-        if issubclass(type(cls), ndb_models.ndb.StringProperty):
+        if (issubclass(type(cls), ndb_models.ndb.StringProperty)
+            or issubclass(type(cls), ndb_models.ndb.TextProperty)
+            or issubclass(type(cls), ndb_models.ndb.DateProperty)):
             message_fields.append('{0} = messages.StringField({1})'.format(field, len(message_fields) + 2))
         elif issubclass(type(cls), ndb_models.ndb.FloatProperty):
             message_fields.append('{0} = messages.FloatField({1})'.format(field, len(message_fields) + 2))

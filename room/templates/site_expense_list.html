@@ -9,28 +9,6 @@
 $(function(){
   $("table.tablesorter").tablesorter({
     });
-  {% for entity in entries %}
-  $('.jeditable-state[name="{{ entity.key.integer_id() }}"]').editable(
-     "{% url room.views.SiteExpenseState model_cls_name entity.key.integer_id() %}", {
-         cancel    : 'Cancel',
-         submit    : 'OK',
-         indicator : '<img src="/static/ajax-loader.gif">',
-         tooltip   : 'Click to edit...',
-         cssclass  : 'inherit',
-         type      : 'select',
-         data      : " { " + 
-         {% for state in cls.state.choices %}
-         {% ifnotequal state 'new' %}
-         " '{{ state }}': '{{state }}', " +
-         {% endifnotequal %}
-         {% endfor %}
-         "'selected': '{{ entity.state }}'}",
-         }
-  ).hover(
-    function(){$(this).css('background-color', '#FBFFAB')},
-    function(){$(this).css('background-color', 'inherit')}
-  );
-  {% endfor %}
 });
 </script>
 {% endblock %}

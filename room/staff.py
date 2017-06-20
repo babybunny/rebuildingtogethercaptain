@@ -222,6 +222,22 @@ class EditView(StaffHandler):
     return common.Respond(self.request, self.template_file, d)
   
 
+class SiteExpenseEditor(StaffHandler):
+  model_class = None
+  template_value = None
+  template_file = None
+
+  def get(self, site_id, id=None):
+    d = dict(list_uri=webapp2.uri_for(self.list_view, site_id=site_id),
+             type=self.template_value)
+    if id:
+      id = int(id)
+      d[self.template_value] = ndb.Key(self.model_class, id).get()
+    else:
+      d[self.template_value] = self.model_class(site=ndb.Key(ndb_models.NewSite, int(site_id)))
+    return common.Respond(self.request, self.template_file, d)
+
+
 class StaffList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Staff, 'staff_list')
@@ -274,6 +290,40 @@ class OrderSheet(EditView):
   template_value = 'ordersheet'
   template_file = 'simple_form'
 
+
+class StaffTimeList(StaffHandler):
+  def get(self, site_id=None):
+    query = ndb_models.StaffTime.query(ndb_models.StaffTime.state != 'new')
+    params = {'which_site': 'All',
+              'expense_type': 'Staff Time',
+              'model_cls_name': 'StaffTime',
+              'table_template': 'stafftime_table.html'}
+    if site_id is not None:
+      site_key = ndb.Key(ndb_models.NewSite, int(site_id))
+      site = site_key.get()
+      query = query.filter(ndb_models.StaffTime.site == site_key)
+      params['which_site'] = 'Site ' + site.number
+    else:
+      user, _ = common.GetUser(self.request)
+      if user.program_selected:
+        query = query.filter(ndb_models.StaffTime.program == user.program_selected)
+    return _EntryList(self.request, ndb_models.StaffTime, 'site_expense_list',
+                      params=params, query=query)
+
+
+class StaffTimeView(StaffHandler):
+  def get(self, id):
+    """Printable static view of an expense."""
+    entity = ndb.Key(ndb_models.StaffTime, int(id)).get()
+    return common.Respond(self.request, 'stafftime_view',
+                          {'entity': entity})
+
+  
+class StaffTime(SiteExpenseEditor):
+  model_class = ndb_models.StaffTime
+  list_view = 'StaffTimeBySite'
+  template_value = 'stafftime'
+  template_file = 'expense_form'
   
 """
 class ExampleList(StaffHandler):

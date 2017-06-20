@@ -268,7 +268,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{{ webapp2.uri_for('StaffTimeNew', args=[site.key.integer_id()]) }}">
+	                <a href="{{ webapp2.uri_for('StaffTime', id='', site_id=site.key.integer_id()) }}">
 		                Add Staff Time
 	                </a>
 	              </td>
@@ -498,7 +498,7 @@
         <a name="stafftime_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{{ webapp2.uri_for('StaffTimeList', args=[site.key.integer_id()]) }}">
+	          <a href="{{ webapp2.uri_for('StaffTimeBySite', site_id=site.key.integer_id()) }}">
 	            list all
 	          </a>
 	        </span>
@@ -520,7 +520,7 @@
 	            {% endif %}
 	            <tr>
 	              <td>
-		              {{ entity.position|escape }}
+		              {{ entity.position.get().position_name|escape }}
 	              </td>
 	              <td>
 		              {{ entity.hours|escape }}
@@ -538,12 +538,12 @@
 	                {{ entity.description }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('StaffTimeView', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('StaffTimeView', id=entity.key.integer_id()) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('StaffTimeEdit', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('StaffTime', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
 		                edit
 		              </a>
 		              {% endif %}

@@ -1,0 +1,21 @@
+{%extends "base.html"%}
+{%block breadcrumb%}
+  | Change a {{ type }}
+{%endblock%}
+{%block script%}
+    <link href="/css/lib/bootstrap-datepicker.css" rel="stylesheet">
+    <script type="text/javascript" data-main="/js/app/rooms" src="/js/lib/require.js"></script>
+{%endblock%}
+{%block about_this_page%}
+<h2>Add {{ type }}</h2>
+<p>
+  <a href='{{ list_uri }}'>see the entire {{ type }} list</a>
+</p>
+{%endblock%}
+{%block body%}
+
+<h2>{{ what_you_are_doing }}</h2>
+
+<div id='simple-form-view'>Loading {{ type }} module ...</div>
+
+{%endblock%}

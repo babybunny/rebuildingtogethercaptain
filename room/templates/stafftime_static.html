@@ -15,7 +15,7 @@
 </tr>
 <tr><td>Site</td>
   <td>
-    <a href="{{ webapp2.uri_for("SiteView", id=entity.site.key.integer_id()) }}">
+    <a href="{{ webapp2.uri_for("SiteView", id=entity.site.integer_id()) }}">
       {{ entity.site.get().number|escape }}
     </a>
   </td>
@@ -25,7 +25,7 @@
     Staff Position
   </td>
   <td>
-    {{ entity.position }}
+    {{ entity.position.get().position_name }}
   </td>
 </tr>
 <tr>
@@ -49,7 +49,7 @@
     Total
   </td>
   <td>
-    ${{ "%0.2f" % entity.Total }}
+    ${{ "%0.2f" % entity.Total() }}
   </td>
 </tr>
 <tr>

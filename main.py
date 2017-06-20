@@ -90,6 +90,18 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.OrderSheet,
                   name='OrderSheet'),
 
+    webapp2.Route(r'/stafftime_by_program',
+                  staff.StaffTimeList,
+                  name='StaffTimeByProgram'),
+    webapp2.Route(r'/stafftime_view/<id:\d+>',
+                  staff.StaffTimeView,
+                  name='StaffTimeView'),
+    webapp2.Route(r'/site/<site_id:\d+>/stafftime',
+                  staff.StaffTimeList,
+                  name='StaffTimeBySite'),
+    webapp2.Route(r'/site/<site_id:\d+>/stafftime/<id:\d*>',
+                  staff.StaffTime,
+                  name='StaffTime'),
 
     # webapp2.Route(r'/example',
     #               staff.ExampleList,
@@ -222,15 +234,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='VendorReceiptNew'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='StaffTimeList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='StaffTimeView'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='StaffTimeNew'),  # TODO
 ] + [webapp2.Route(r'/help',
                    Placeholder,
                    name='%sEdit' % kind) for kind in EXPENSE_KINDS
