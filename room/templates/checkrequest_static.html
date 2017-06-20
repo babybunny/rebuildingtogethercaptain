@@ -1,6 +1,6 @@
 <h2>
   Check Request # {{ entity.key.integer_id()}} 
-  for Site {{ entity.site.number }}
+  for Site {{ entity.site.get().number }}
 </h2>
 <hr>
 <table cellpadding=5><tr>
@@ -16,7 +16,7 @@
 <tr><td>Site</td>
   <td>
     <a href="{{ webapp2.uri_for("SiteView", id=entity.site.key.integer_id()) }}">
-      {{ entity.site.number|escape }}
+      {{ entity.site.get().number|escape }}
     </a>
   </td>
 </tr>

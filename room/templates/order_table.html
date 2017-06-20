@@ -75,13 +75,13 @@
 	{{ order.state }}	
       </td>
       <td>
-	<span class="sortorder">{{ order.site.number }}</span>
+	<span class="sortorder">{{ order.site.get().number }}</span>
 	<a href="{{ webapp2.uri_for('SiteView', id=order.site.integer_id()) }}">
-	{{ order.site.number|escape }}
+	{{ order.site.get().number|escape }}
 	</a>
       </td>
       <td>
-	{{ order.order_sheet.name|escape }}
+	{{ order.order_sheet.get().name|escape }}
       </td>
       <td class="dollar">
 	{{ "%0.2f" % order.GrandTotal() }}

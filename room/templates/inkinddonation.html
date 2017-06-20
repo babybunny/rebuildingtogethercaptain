@@ -17,7 +17,7 @@ $.datepicker.setDefaults({
 {% endblock %}
 {%block body%}
 
-<h2>Adding In-kind Donation for Site {{ entity.site.number }}</h2>
+<h2>Adding In-kind Donation for Site {{ entity.site.get().number }}</h2>
 
 <p>Fill as completely as possible.  - if the form is incomplete then we'll follow up if necessary to process the donation.</p>
 

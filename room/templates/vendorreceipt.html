@@ -60,7 +60,7 @@ $.datepicker.setDefaults({
 {% endblock %}
 {%block body%}
 
-<h2>Submitting Vendor Receipt for Site {{ entity.site.number }}</h2>
+<h2>Submitting Vendor Receipt for Site {{ entity.site.get().number }}</h2>
 
 <div>
   {% if user.staff and entity.site.cdbg %}

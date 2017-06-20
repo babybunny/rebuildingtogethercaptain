@@ -19,7 +19,7 @@ $.datepicker.setDefaults({
 {% endblock %}
 {%block body%}
 
-<h2>Adding Staff Time for Site {{ entity.site.number }}</h2>
+<h2>Adding Staff Time for Site {{ entity.site.get().number }}</h2>
 
 <form action="{% url room.views.StaffTimeEdit edit_id %}" method="post">
 
