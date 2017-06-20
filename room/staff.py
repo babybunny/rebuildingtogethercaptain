@@ -75,11 +75,10 @@ class AutocompleteHandler(StaffHandler):
   def get(self):
     prefix = str(self.request.get('term').lower())
     logging.info(prefix)
-    items = self.model_class.query()
-    items.filter(self.model_class.search_prefixes == prefix)
+    items = self.model_class.query(self.model_class.search_prefixes == prefix)
     if self.program_filter:
       user, _ = common.GetUser(self.request)
-      items.filter(self.model_class.program == user.program_selected)
+      items = items.filter(self.model_class.program == user.program_selected)
     matches = {}
     for i in items.iter():
       label = i.Label()
