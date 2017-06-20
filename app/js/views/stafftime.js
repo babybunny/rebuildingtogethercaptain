@@ -78,7 +78,7 @@ define(
             app.models.staffposition_choice = app.models.staffposition_choice || new StaffPositionChoice();
             app.models.staffposition_choice.on('change', function(m) {
                 stanza = _.find(fields, function(f) { return f.name == 'position' });
-                stanza.options = _.map(m.get('choice'), function(e) { return {'label': e.label, 'value': e.id + ""}; });
+                stanza.options = _.map(m.get('choice'), function(e) { return {'label': e.label, 'value': e.id}; });
                 if (stanza.options) {
                     // stanza.value = _.head(stanza.options).value;
                     console.log('popped ' + stanza.value);

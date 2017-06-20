@@ -280,7 +280,7 @@ def _StaffTimeModelToMessage(mdl):
   )
   # any special handling, like for user objects or datetimes
   if mdl.captain:
-    s.captain = mdl.captain.integer_id(),
+    s.captain = mdl.captain.integer_id()
   if mdl.activity_date:
     s.activity_date=mdl.activity_date.isoformat()
   else:
