@@ -318,7 +318,7 @@ class NewSite(ndb.Model):
 
     by_pos = collections.defaultdict(Pos)
     for s in self.StaffTimes:
-      name = str(s.position)
+      name = str(s.position.get())
       pos = by_pos[name]
       if pos.name is None:
         pos.name = name

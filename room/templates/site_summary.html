@@ -43,7 +43,7 @@ $(function(){
 <p/>
 Total Expenses: 
 <strong>
-  $ {{ "%0.2f" % site.Expenses }}
+  $ {{ "%0.2f" % site.Expenses() }}
 </strong>
 </p>
 <h3>Final Scope of Work</h3>
@@ -53,11 +53,11 @@ Total Expenses:
 	     name="scope_of_work">{{ site.ScopeOfWork }}</div>
 </div>
 
-{% with site.Orders as entries %}
+{% set entries = site.Orders %}
 {% if entries.Count %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ "%0.2f" % site.OrderTotal }}
+    Total: ${{ "%0.2f" % site.OrderTotal() }}
   </h3>
   <h3>Orders</h3>
   <table class="list printable tablesorter" id="order_list">
@@ -79,42 +79,41 @@ Total Expenses:
     </thead>
     <tbody>    
       {% for order in entries %}
-      {% ifnotequal order.GrandTotal 0 %}
+      {% if order.GrandTotal() != 0 %}
       <tr>
         <td>	
           {% if order.vendor %}
-	        {{ order.vendor.name }}	
+	        {{ order.vendor.get().name }}	
           {% else %}
           <i>Vendor is added when order is reconciled.</i>
           {% endif %}
         </td>
         <td>
-          {{ order.order_sheet.name|escape }}
+          {{ order.order_sheet.get().name|escape }}
         </td>
         <td>
           {% if order.invoice_date %}
-	        {{ order.invoice_date|date:"d M Y" }}	
+	        {{ order.invoice_date.strftime("%b %d %Y") }}	
           {% else %}
           <i>Invoice Date is added when order is reconciled.</i>
           {% endif %}
         </td>
         <td class="dollar">
-	        $ {{ "%0.2f" % order.GrandTotal }}
+	        $ {{ "%0.2f" % order.GrandTotal() }}
         </td>
       </tr>
-      {% endifnotequal %}
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>
 </div>
 {% endif %}
-{% endwith %}
 
-{% with site.CheckRequests as entries %}
+{% set entries = site.CheckRequests %}
 {% if entries.Count %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ "%0.2f" % site.CheckRequestTotal }}
+    Total: ${{ "%0.2f" % site.CheckRequestTotal() }}
   </h3>
   <h3>Check Requests</h3>
   <table class="list printable tablesorter" id="order_list">
@@ -136,34 +135,33 @@ Total Expenses:
     </thead>
     <tbody>    
       {% for cr in entries %}
-      {% ifnotequal cr.Total 0 %}
+      {% if cr.Total() != 0 %}
       <tr>
         <td>	
 	        {{ cr.name }}	
         </td>
         <td>
-	        {{ cr.payment_date|date:"d M Y" }}
+	        {{ cr.payment_date.strftime("%b %d %Y") }}
         </td>
         <td class="notes">
 	        {{ cr.description }}
         </td>
         <td class="dollar">
-	        $ {{ "%0.2f" % cr.Total }}
+	        $ {{ "%0.2f" % cr.Total() }}
         </td>
       </tr>
-      {% endifnotequal %}
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>
 </div>
 {% endif %}
-{% endwith %}
 
-{% with site.VendorReceipts as entries %}
+{% set entries = site.VendorReceipts %}
 {% if entries.Count %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ "%0.2f" % site.VendorReceiptTotal }}
+    Total: ${{ "%0.2f" % site.VendorReceiptTotal() }}
   </h3>
   <h3>Vendor Receipts</h3>
   <table class="list printable tablesorter" id="order_list">
@@ -185,34 +183,33 @@ Total Expenses:
     </thead>
     <tbody>    
       {% for vr in entries %}
-      {% ifnotequal vr.Total 0 %}
+      {% if vr.Total() != 0 %}
       <tr>
         <td>	
-	        {{ vr.supplier.name }}	
+	        {{ vr.supplier.get().name }}	
         </td>
         <td>
-	        {{ vr.purchase_date|date:"d M Y" }}
+	        {{ vr.purchase_date.strftime("%b %d %Y") }}
         </td>
         <td class="notes">
 	        {{ vr.description }}
         </td>
         <td class="dollar">
-	        $ {{ "%0.2f" % vr.Total }}
+	        $ {{ "%0.2f" % vr.Total() }}
         </td>
       </tr>
-      {% endifnotequal %}
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>
 </div>
 {% endif %}
-{% endwith %}
 
-{% with site.StaffTimesByPosition as by_pos %}
+{% set by_pos = site.StaffTimesByPosition  %}
 {% if by_pos %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ "%0.2f" % site.StaffTimeTotal }}
+    Total: ${{ "%0.2f" % site.StaffTimeTotal() }}
   </h3>
   <h3>Staff Time</h3>
   {% for pos in by_pos %}
@@ -250,10 +247,10 @@ Total Expenses:
     </thead>
     <tbody>    
       {% for st in pos.stafftimes %}
-      {% ifnotequal st.Total 0 %}
+      {% if st.Total() != 0 %}
       <tr>
         <td>	
-	        {{ st.position }}	
+	        {{ st.position.get().position_name }}	
         </td>
         <td>	
 	        {{ st.activity_date }}	
@@ -265,16 +262,15 @@ Total Expenses:
 	        {{ st.miles }}
         </td>
         <td class="dollar">
-	        $ {{ "%0.2f" % st.Total }}
+	        $ {{ "%0.2f" % st.Total() }}
         </td>
       </tr>
-      {% endifnotequal %}
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>
   {% endfor %}
 </div>
 {% endif %}
-{% endwith %}
 
 {%endblock%}

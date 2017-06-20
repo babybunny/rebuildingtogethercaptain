@@ -8,6 +8,7 @@ perl -pi -e 's/[ ](\S+)\|floatformat:2/ "%0.2f" % $1/' room/templates/order_tabl
 +             {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor 
 perl -pi -e 's/[ ](\S+)\|date:"m.d.Y"/ $1.strftime("%b %d %Y")/' room/templates/*
 
+perl -pi -e 's/[ ](\S+)\|date:"d M Y"/ $1.strftime("%b %d %Y")/' room/templates/*
 
 
 perl -pi -e 's/key.id/key.integer_id()/g' room/templates/*
