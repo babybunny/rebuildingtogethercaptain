@@ -1,0 +1,7 @@
+# perl one-liners to convert stuff
+
+# -    ${{ entity.Total|floatformat:2 }}
+# +    ${{ "%0.2f" % entity.Total }}
+perl -pi -e 's/[ ](\S+)\|floatformat:2/ "%0.2f" % $1/' room/templates/order_table.html
+
+

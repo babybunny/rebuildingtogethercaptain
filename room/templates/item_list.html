@@ -56,7 +56,7 @@ $(document).ready(function(){
       </td><td>
 	  {{item.name|escape}}
       </td>
-      <td>{{ item.unit_cost|floatformat:2 }}</td>
+      <td>{{ "%0.2f" % item.unit_cost }}</td>
       <td>{{ item.measure|escape }}</td>
       <td>
 	{% if item.supplier %}

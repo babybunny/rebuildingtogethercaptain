@@ -38,37 +38,37 @@
       {% if in_form %}
       <td>
 	<input type="checkbox" class="export_checkbox"
-	       name="{{ export_checkbox_prefix }}{{ order.key.id }}">
+	       name="{{ export_checkbox_prefix }}{{ order.key.integer_id() }}">
       </td>
       {% endif %}
       <td>	
 	<span class="sortorder">{{ order.state }}</span>
 	<span class="actions">
-	{% ifequal order.state 'Received' %}
+	{% if order.state == 'Received' %}
 	{% if order_sheet %}
-	<a href="{% url room.order.OrderFulfill order.key.id order_sheet.key.id %}">
+	<a href="{{ webapp2.uri_for('OrderFulfill', id=order.key.integer_id(), order_sheet_id=order_sheet.key.integer_id()) }}">
 	  Fulfill
 	</a>
 	{% else %}
-	<a href="{% url room.order.OrderFulfill order.key.id %}">
+	<a href="{{ webapp2.uri_for('OrderFulfill', id=order.key.integer_id()) }}">
 	  Fulfill
 	</a>	
 	{% endif %}
-	{% endifequal %}
-	{% ifnotequal order.state 'Deleted' %}
+	{% endif %}
+	{% if order.state != 'Deleted' %}
 	-
 	{% if order_sheet %}
-	<a href="{% url room.order.OrderDelete order.key.id order_sheet.key.id %}">
+	<a href="{{ webapp2.uri_for('OrderDelete', id=order.key.integer_id(), order_sheet_id=order_sheet.key.integer_id()) }}">
 	    Delete
 	</a>
 	{% else %}
-	<a href="{% url room.order.OrderDelete order.key.id %}">
+	<a href="{{ webapp2.uri_for('OrderDelete', id=order.key.integer_id()) }}">
 	    Delete
 	</a>
 	{% endif %}
-	{% endifnotequal %}
+	{% endif %}
 	-
-	<a href="{% url room.order.OrderEdit order.key.id %}">
+	<a href="{{ webapp2.uri_for('OrderEdit', id=order.key.integer_id()) }}">
 	  Edit
 	</a>
 	</span>
@@ -76,7 +76,7 @@
       </td>
       <td>
 	<span class="sortorder">{{ order.site.number }}</span>
-	<a href="{% url room.views.SiteView order.site.key.id %}">
+	<a href="{{ webapp2.uri_for('SiteView', id=order.site.key.integer_id()) }}">
 	{{ order.site.number|escape }}
 	</a>
       </td>
@@ -84,10 +84,10 @@
 	{{ order.order_sheet.name|escape }}
       </td>
       <td class="dollar">
-	{{ order.GrandTotal|floatformat:2 }}
+	{{ "%0.2f" % order.GrandTotal() }}
       </td>
       <td>
-	{{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
+        {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor }})	      
       </td>
       <td>
 	{{ order.logistics_start }}

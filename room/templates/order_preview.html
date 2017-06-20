@@ -87,7 +87,7 @@ text-align: left;
       {{ order.LogisticsStart }}
       -
       {% endif %}
-      ${{ order.Total|floatformat:2 }}
+      ${{ "%0.2f" % order.Total }}
       <a href="{% url room.order.OrderEdit order.key.id %}" target="_blank">
 	edit
       </a>

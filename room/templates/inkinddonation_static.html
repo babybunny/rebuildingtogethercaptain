@@ -73,7 +73,7 @@
     Labor Amount
   </td>
   <td>
-    ${{ entity.labor_amount|floatformat:2 }}
+    ${{ "%0.2f" % entity.labor_amount }}
   </td>
 </tr>
 <tr>
@@ -81,7 +81,7 @@
     Materials Amount
   </td>
   <td>
-    ${{ entity.materials_amount|floatformat:2 }}
+    ${{ "%0.2f" % entity.materials_amount }}
   </td>
 </tr>
 <tr>
@@ -89,7 +89,7 @@
     Total
   </td>
   <td>
-    ${{ entity.Total|floatformat:2 }}
+    ${{ "%0.2f" % entity.Total }}
   </td>
 </tr>
 <tr>

@@ -43,7 +43,7 @@ $(function(){
 <p/>
 Total Expenses: 
 <strong>
-  $ {{ site.Expenses|floatformat:2 }}
+  $ {{ "%0.2f" % site.Expenses }}
 </strong>
 </p>
 <h3>Final Scope of Work</h3>
@@ -57,7 +57,7 @@ Total Expenses:
 {% if entries.Count %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ site.OrderTotal|floatformat:2 }}
+    Total: ${{ "%0.2f" % site.OrderTotal }}
   </h3>
   <h3>Orders</h3>
   <table class="list printable tablesorter" id="order_list">
@@ -99,7 +99,7 @@ Total Expenses:
           {% endif %}
         </td>
         <td class="dollar">
-	        $ {{ order.GrandTotal|floatformat:2 }}
+	        $ {{ "%0.2f" % order.GrandTotal }}
         </td>
       </tr>
       {% endifnotequal %}
@@ -114,7 +114,7 @@ Total Expenses:
 {% if entries.Count %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ site.CheckRequestTotal|floatformat:2 }}
+    Total: ${{ "%0.2f" % site.CheckRequestTotal }}
   </h3>
   <h3>Check Requests</h3>
   <table class="list printable tablesorter" id="order_list">
@@ -148,7 +148,7 @@ Total Expenses:
 	        {{ cr.description }}
         </td>
         <td class="dollar">
-	        $ {{ cr.Total|floatformat:2 }}
+	        $ {{ "%0.2f" % cr.Total }}
         </td>
       </tr>
       {% endifnotequal %}
@@ -163,7 +163,7 @@ Total Expenses:
 {% if entries.Count %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ site.VendorReceiptTotal|floatformat:2 }}
+    Total: ${{ "%0.2f" % site.VendorReceiptTotal }}
   </h3>
   <h3>Vendor Receipts</h3>
   <table class="list printable tablesorter" id="order_list">
@@ -197,7 +197,7 @@ Total Expenses:
 	        {{ vr.description }}
         </td>
         <td class="dollar">
-	        $ {{ vr.Total|floatformat:2 }}
+	        $ {{ "%0.2f" % vr.Total }}
         </td>
       </tr>
       {% endifnotequal %}
@@ -212,19 +212,19 @@ Total Expenses:
 {% if by_pos %}
 <div class="expense">
   <h3 class="total">
-    Total: ${{ site.StaffTimeTotal|floatformat:2 }}
+    Total: ${{ "%0.2f" % site.StaffTimeTotal }}
   </h3>
   <h3>Staff Time</h3>
   {% for pos in by_pos %}
   <div class="expense-header">
     <h4 class="total">    
-      Hours: {{ pos.hours|floatformat:2 }} 
+      Hours: {{ "%0.2f" % pos.hours }} 
       <span class="pad"></span>
-      Hours Subtotal: ${{ pos.hours_subtotal|floatformat:2 }}
+      Hours Subtotal: ${{ "%0.2f" % pos.hours_subtotal }}
       <span class="pad"></span>
-      Miles: {{ pos.miles|floatformat:2 }} 
+      Miles: {{ "%0.2f" % pos.miles }} 
       <span class="pad"></span>
-      Mileage Subtotal: ${{ pos.mileage_subtotal|floatformat:2 }}
+      Mileage Subtotal: ${{ "%0.2f" % pos.mileage_subtotal }}
     </h4>
     <h4>{{ pos.name }}</h4>
   </div>
@@ -265,7 +265,7 @@ Total Expenses:
 	        {{ st.miles }}
         </td>
         <td class="dollar">
-	        $ {{ st.Total|floatformat:2 }}
+	        $ {{ "%0.2f" % st.Total }}
         </td>
       </tr>
       {% endifnotequal %}

@@ -226,7 +226,7 @@
 	      {% endif %}
 	    </td>
 	    <td class="dollar">
-	      {{ order_item.item.unit_cost|floatformat:2 }}
+	      {{ "%0.2f" % order_item.item.unit_cost }}
 	    </td>
 	    <td class="measure">
 	      {{ order_item.item.measure }} x
@@ -256,12 +256,12 @@
 	    <td colspan=4 class="form-summary subtotal">
 	      Subtotal 
 	      {% if form %}
-	      (does not include {{sales_tax_pct|floatformat:2 }}% sales tax)
+	      (does not include "%0.2f" % {{sales_tax_pct }}% sales tax)
 	      {% endif %}
 	    </td>
 	    <td class="dollar subtotal">
 	      <span id="sub_total">
-		{{ order.sub_total|floatformat:2 }}
+		{{ "%0.2f" % order.sub_total }}
 	      </span>
 	    </td>
 	  </tr>	  
@@ -281,10 +281,10 @@
 	    <td>
 	    </td>
 	    <td colspan=4 class="form-summary subtotal">
-	      {{sales_tax_pct|floatformat:2 }}% Sales Tax
+	      "%0.2f" % {{sales_tax_pct }}% Sales Tax
 	    </td>
 	    <td class="dollar subtotal">
-	      {{ order.SalesTax|floatformat:2 }}
+	      {{ "%0.2f" % order.SalesTax }}
 	    </td>
 	  </tr>	  
 	  <tr>
@@ -294,7 +294,7 @@
 	      Estimated Total
 	    </td>
 	    <td class="dollar subtotal">
-	      {{ order.EstimatedTotal|floatformat:2 }}
+	      {{ "%0.2f" % order.EstimatedTotal }}
 	    </td>
 	  </tr>	  
 	  {% if order.actual_total %}
@@ -305,7 +305,7 @@
 	      Actual (reconciled) Total
 	    </td>
 	    <td class="dollar subtotal">
-	      {{ order.actual_total|floatformat:2 }}
+	      {{ "%0.2f" % order.actual_total }}
 	    </td>
 	  </tr>	  	  
 	  {% endif %}

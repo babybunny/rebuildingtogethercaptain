@@ -39,7 +39,7 @@
 	{{ entity.payment_date|escape }}
       </td>
       <td class="dollar">
-	${{ entity.Total|floatformat:2 }}
+	${{ "%0.2f" % entity.Total }}
       </td><td>
 	{{ entity.description|escape }}
       </td><td>

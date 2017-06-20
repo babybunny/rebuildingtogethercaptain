@@ -65,7 +65,7 @@ $(function(){
 	<span class="sortorder">{{ entity.unit_cost }}</span>
 	<div class="jeditable-state" 
 	       id="unit_cost"
-	       name="{{ entity.key.id }}">{{ entity.unit_cost|floatformat:2 }}</div>
+	       name="{{ entity.key.id }}">{{ "%0.2f" % entity.unit_cost }}</div>
       </td>
     </tr>
     {% endfor %}

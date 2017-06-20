@@ -36,7 +36,7 @@ All
 {% endif %}
 Sites - Budget View</h2>
 <p>
-{{ entries|length }} sites, ${{ total_expenses|floatformat:2 }} total expenses.
+{{ entries|length }} sites, ${{ "%0.2f" % total_expenses }} total expenses.
 </p>
 {%endblock%}
 {%block body%}
@@ -89,7 +89,7 @@ Sites - Budget View</h2>
 	      {{ site.sponsor|truncatewords:5 }}	 
       </td>
       <td class="dollar">
-	      {{ site.budget|floatformat:2 }}
+	      {{ "%0.2f" % site.budget }}
       </td>
       <td class="dollar">
 	      <span
@@ -99,23 +99,23 @@ Sites - Budget View</h2>
 	         class="dollar" 
 	         {% endif %}
 	         >
-	        {{ site.BudgetRemaining|floatformat:2 }}
+	        {{ "%0.2f" % site.BudgetRemaining }}
 	      </span>
       </td>
       <td class="dollar">
-	      {{ site.Expenses|floatformat:2 }}
+	      {{ "%0.2f" % site.Expenses }}
       </td>
       <td class="dollar">
-	      {{ site.order_total|floatformat:2 }}
+	      {{ "%0.2f" % site.order_total }}
       </td>
       <td class="dollar">
-	      {{ site.CheckRequestTotal|floatformat:2 }}
+	      {{ "%0.2f" % site.CheckRequestTotal }}
       </td>
       <td class="dollar">
-	      {{ site.VendorReceiptTotal|floatformat:2 }}
+	      {{ "%0.2f" % site.VendorReceiptTotal }}
       </td>
       <td class="dollar">
-	      {{ site.InKindDonationTotal|floatformat:2 }}
+	      {{ "%0.2f" % site.InKindDonationTotal }}
       </td>
     </tr>
     {% endfor %}

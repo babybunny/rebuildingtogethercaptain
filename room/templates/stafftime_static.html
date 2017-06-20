@@ -33,7 +33,7 @@
     Hours
   </td>
   <td>
-    {{ entity.hours|floatformat:2 }}
+    {{ "%0.2f" % entity.hours }}
   </td>
 </tr>
 <tr>
@@ -41,7 +41,7 @@
     Miles
   </td>
   <td>
-    {{ entity.miles|floatformat:2 }}
+    {{ "%0.2f" % entity.miles }}
   </td>
 </tr>
 <tr>
@@ -49,7 +49,7 @@
     Total
   </td>
   <td>
-    ${{ entity.Total|floatformat:2 }}
+    ${{ "%0.2f" % entity.Total }}
   </td>
 </tr>
 <tr>

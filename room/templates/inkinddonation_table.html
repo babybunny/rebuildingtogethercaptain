@@ -43,10 +43,10 @@
 	{{ entity.donor_phone|escape }}
       </td>
       <td class="dollar">
-	${{ entity.labor_amount|floatformat:2 }}
+	${{ "%0.2f" % entity.labor_amount }}
       </td>
       <td class="dollar">
-	${{ entity.materials_amount|floatformat:2 }}
+	${{ "%0.2f" % entity.materials_amount }}
       </td><td>
 	{{ entity.donor_info|escape }}
       </td><td>
