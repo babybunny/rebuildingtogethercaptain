@@ -537,7 +537,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
                  Choices)  
   def staffposition_choices_read(self, request):
     choices = Choices()
-    for mdl in ndb_models.StaffPosition.query():
+    for mdl in ndb_models.StaffPosition.query().order(ndb_models.StaffPosition.position_name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.position_name))
     return choices
 

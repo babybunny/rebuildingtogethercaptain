@@ -21,6 +21,16 @@ def CreateAll():
     hourly_rate=19.19,
     mileage_rate_after_date=["2016-01-01 0.54"],
   ).put()
+  KEYS['STAFFPOSITION2'] = ndb_models.StaffPosition(
+    position_name="position two",
+    hourly_rate=19.19,
+    mileage_rate_after_date=["2016-01-05 0.54"],
+  ).put()
+  KEYS['STAFFPOSITION3'] = ndb_models.StaffPosition(
+    position_name="position three",
+    hourly_rate_after_date=["2016-01-01 10.00", "2017-01-10 20.00"],
+    mileage_rate_after_date=["2016-01-01 0.54", "2017-01-10 0.58"],
+  ).put()
 
   KEYS['STAFF'] = ndb_models.Staff(
     name="Mister Staff",
