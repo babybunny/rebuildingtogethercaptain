@@ -6,7 +6,7 @@
 
 <h2>{{ what_you_are_doing }}</h2>
 {% if captain.key.integer_id() %}
-<form action="{% url room.views.CaptainEdit captain.key.integer_id() %}" method="post">
+<form action="{{ webapp2.uri_for("CaptainEdit", id=captain.key.integer_id()) }}" method="post">
 {% else %}
 <form action="{% url room.views.CaptainNew %}" method="post">
 {% endif %}

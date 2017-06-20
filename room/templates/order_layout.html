@@ -15,7 +15,7 @@
 		{% else %}
 		<b>
 		  Site # 
-		  <a href="{% url room.views.SiteView order.site.key.integer_id() %}">
+		  <a href="{{ webapp2.uri_for("SiteView", id=order.site.key.integer_id()) }}">
 		    {{ order.site.number }}
 		  </a>
 		</b>

@@ -117,6 +117,46 @@ class SiteView(StaffHandler):
     return common.Respond(self.request, 'site_list_one', d)
 
 
+class SiteExpenses(StaffHandler):
+  def get(self, id=None):
+    id = int(id)
+    site = ndb.Key(ndb_models.NewSite, id).get()
+    return common.Respond(self.request, 'site_expenses', {'site': site})
+
+
+class SiteSummary(StaffHandler):
+  def get(self, id=None):
+    id = int(id)
+    site = ndb.Key(ndb_models.NewSite, id).get()
+    return common.Respond(self.request, 'site_summary', {'site': site})
+
+  
+SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
+    ndb_models.CheckRequest,
+    ndb_models.VendorReceipt,
+    ndb_models.InKindDonation,
+    ndb_models.StaffTime,
+))
+  
+class SiteExpenseState(StaffHandler):
+  def get(self, item_cls, item_id):
+    """Updates a site expense's state field."""
+    user, _ = common.GetUser(self.request)
+    if not user.staff:
+      return webapp2.abort(403)
+    if not request.POST:
+      return webapp2.abort(400)
+    cls = SITE_EXPENSE_TYPES[item_cls]
+    modl = ndb.Key(cls, int(item_id))
+    if not modl:
+      return webapp2.abort(404)
+    value = request.POST['value']
+    modl.state = value
+    modl.put()
+    return self.request
+
+  
+
 class SitesAndCaptains(StaffHandler):
   """Show all Sites and their associated captains in a big list"""
   def get(self):

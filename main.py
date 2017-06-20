@@ -109,6 +109,18 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.Site,
                   name='Site'),
     
+    webapp2.Route(r'/site_expenses/<id:\d+>',
+                  staff.SiteExpenses,
+                  name='SiteExpenses'),  # TODO
+
+    webapp2.Route(r'/site_summary/<id:\d+>',
+                  staff.SiteSummary,
+                  name='SiteSummary'),  # TODO
+
+    webapp2.Route(r'/site_expense_state/<:\w+>/<:\d+>',
+                  staff.SiteExpenseState,
+                  name='SiteExpenseState'),  # TODO
+
     webapp2.Route(r'/sites_and_captains',
                   staff.SitesAndCaptains,
                   name='SitesAndCaptains'),
@@ -131,12 +143,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='SiteExport'),  # TODO
-    webapp2.Route(r'/site_expenses/<id:\d+>',
-                  staff.Site,
-                  name='SiteExpenses'),  # TODO
-    webapp2.Route(r'/site_summary/<id:\d+>',
-                  staff.Site,
-                  name='SiteSummary'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='SiteBudget'),  # TODO
@@ -149,6 +155,9 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='OrderEdit'),  # TODO
+    webapp2.Route(r'/help',
+                  Placeholder,
+                  name='OrderDelete'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='OrderFulfill'),  # TODO

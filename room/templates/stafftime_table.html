@@ -16,12 +16,12 @@
     <tr>
       <td>
 	<a name="{{ entity.key.integer_id() }}"
-	   href="{% url room.views.StaffTimeEdit entity.key.integer_id() %}">
+	   href="{{ webapp2.uri_for("StaffTimeEdit", id=entity.key.integer_id()) }}">
 	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>
 	<span class="sortorder">{{ entity.site.number }}</span>
-	<a href="{% url room.views.SiteView entity.site.key.integer_id() %}">
+	<a href="{{ webapp2.uri_for("SiteView", id=entity.site.integer_id()) }}">
 	{{ entity.site.number|escape }}
 	</a>
       </td><td>
@@ -33,7 +33,7 @@
 	{{ "%0.2f" % entity.miles }}
       </td>
       <td class="dollar">
-	${{ "%0.2f" % entity.Total }}
+	${{ "%0.2f" % entity.Total() }}
       </td><td>
 	{{ entity.activity_date|escape }}
       </td><td>

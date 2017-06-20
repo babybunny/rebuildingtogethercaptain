@@ -14,11 +14,11 @@
 {%for invitem in invitems %}
 <tr>
 <td>
-  <a href="{% url room.views.ItemEdit invitem.item.key.integer_id() %}">
-    <img src="{% url room.views.ItemThumbnail invitem.item.key.integer_id() %}">
+  <a href="{{ webapp2.uri_for("ItemEdit", id=invitem.item.key.integer_id()) }}">
+    <img src="{{ webapp2.uri_for("ItemThumbnail", id=invitem.item.key.integer_id()) }}">
   </a>
 </td><td>
-  <a href="{% url room.views.ItemEdit invitem.item.key.integer_id() %}">{{invitem.item.name|escape}}</a>
+  <a href="{{ webapp2.uri_for("ItemEdit", id=invitem.item.key.integer_id()) }}">{{invitem.item.name|escape}}</a>
 </td><td>
 {{ invitem.item.measure|escape }}
 </td><td>

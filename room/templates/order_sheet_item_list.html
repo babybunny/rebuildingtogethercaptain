@@ -12,7 +12,7 @@ $(function(){
     });
   {% for entity in entries %}
   $('.jeditable-state[name="{{ entity.key.integer_id() }}"]').editable(
-     "{% url room.views.ItemPrice entity.key.integer_id() %}", {
+     "{{ webapp2.uri_for("ItemPrice", id=entity.key.integer_id()) }}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -52,7 +52,7 @@ $(function(){
     <tr>
       <td>
 	<a name="{{ entity.key.integer_id() }}"
-	   href="{% url room.views.ItemEdit entity.key.integer_id() %}">
+	   href="{{ webapp2.uri_for("ItemEdit", id=entity.key.integer_id()) }}">
 	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>

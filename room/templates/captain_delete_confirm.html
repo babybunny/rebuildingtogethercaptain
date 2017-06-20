@@ -5,7 +5,7 @@
 {%block body%}
 
 <h2>{{ what_you_are_doing }}</h2>
-<form action="{% url room.views.CaptainDelete captain.key.integer_id() %}" method="post">
+<form action="{{ webapp2.uri_for("CaptainDelete", id=captain.key.integer_id()) }}" method="post">
 
   <div class="right">
     {% for sitecaptain in sitecaptain_set %}

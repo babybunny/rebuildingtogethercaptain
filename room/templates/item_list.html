@@ -38,12 +38,12 @@ $(document).ready(function(){
     <tr>
       <td>
 	{% if item.thumbnail %}
-	<a href="{% url room.views.ItemEdit item.key.integer_id() %}">
-	  <img src="{% url room.views.ItemThumbnail item.key.integer_id() %}">
+	<a href="{{ webapp2.uri_for("ItemEdit", id=item.key.integer_id()) }}">
+	  <img src="{{ webapp2.uri_for("ItemThumbnail", id=item.key.integer_id()) }}">
 	</a>
 	{% endif %}
       </td><td>
-	<a href="{% url room.views.ItemEdit item.key.integer_id() %}">
+	<a href="{{ webapp2.uri_for("ItemEdit", id=item.key.integer_id()) }}">
 	  (edit)
 	</a>
 	{{ item.key.integer_id() }}

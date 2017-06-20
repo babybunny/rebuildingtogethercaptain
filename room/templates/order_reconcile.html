@@ -152,7 +152,7 @@ editable columns</span> and change the status to "Reconciled".
 	      </span>
 	      Site #
 	      <a target="_blank"
-	         href="{% url room.views.SiteView order.site.key.integer_id() %}">
+	         href="{{ webapp2.uri_for("SiteView", id=order.site.key.integer_id()) }}">
 	        {{ order.site.number|escape }}
 	      </a>
 	      Order ID # {{ order.key.integer_id() }}

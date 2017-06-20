@@ -8,14 +8,14 @@
   <td>Click to Edit</td>
   <td>
     <a name="{{ entity.key.integer_id() }}"
-       href="{% url room.views.CheckRequestEdit entity.key.integer_id() %}">
+       href="{{ webapp2.uri_for("CheckRequestEdit", id=entity.key.integer_id()) }}">
       {{entity.key.integer_id()|escape}}
     </a>
   </td>
 </tr>
 <tr><td>Site</td>
   <td>
-    <a href="{% url room.views.SiteView entity.site.key.integer_id() %}">
+    <a href="{{ webapp2.uri_for("SiteView", id=entity.site.key.integer_id()) }}">
       {{ entity.site.number|escape }}
     </a>
   </td>

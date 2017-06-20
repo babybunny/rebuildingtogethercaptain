@@ -8,3 +8,10 @@ perl -pi -e 's/[ ](\S+)\|floatformat:2/ "%0.2f" % $1/' room/templates/order_tabl
 +             {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor 
 perl -pi -e 's/[ ](\S+)\|date:"m.d.Y"/ $1.strftime("%b %d %Y")/' room/templates/*
 
+
+
+perl -pi -e 's/key.id/key.integer_id()/g' room/templates/*
+
+-          href="{% url room.views.CheckRequestEdit entity.key.integer_id() %}">
++          href="{% webapp2.uri_for("CheckRequestEdit", id=entity.key.integer_id()) %}">
+perl -pi -e 's/{% url room.views.(\w+) (\w+).key.integer_id\(\) %}/{{ webapp2.uri_for("$1", id=$2.key.integer_id()) }}/'

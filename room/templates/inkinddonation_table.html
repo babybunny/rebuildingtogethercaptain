@@ -20,16 +20,15 @@
     <tr>
       <td>
 	<a name="{{ entity.key.integer_id() }}"
-	   href="{% url room.views.InKindDonationEdit entity.key.integer_id() %}">
+	   href="{{ webapp2.uri_for("InKindDonationEdit", id=entity.key.integer_id()) }}">
 	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>
 	<span class="sortorder">{{ entity.site.number }}</span>
-	<a href="{% url room.views.SiteView entity.site.key.integer_id() %}">
+	<a href="{{ webapp2.uri_for("SiteView", id=entity.site.integer_id()) }}">
 	{{ entity.site.number|escape }}
 	</a>
-      </td><td class="editable">
-	<span class="sortorder">{{ entity.state }}</span>
+      </td><td class="editable">	<span class="sortorder">{{ entity.state }}</span>
 	<div class="jeditable-state" 
 	     id="state"
 	     name="{{ entity.key.integer_id() }}">{{ entity.state }}</div>
