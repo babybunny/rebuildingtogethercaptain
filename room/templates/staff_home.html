@@ -302,7 +302,7 @@ $(function() {
       <div class="panel">
       <h2>Staff time</h2>
       <a href="{{ webapp2.uri_for('StaffTimeByProgram') }}">
-	View a list of all Staff Time entries for {{ program }}
+	View a list of all Staff Time entries for {{ user.program_selected }}
       </a>
       <br>
       Add a new Staff Time entry from the site's page.

@@ -26,17 +26,17 @@ define(
                 control: "select",
                 value: "new",
                 options: [
-                    {label: "fulfilled", value: "fulfilled"},
                     {label: "new", value: "new"},
-                    {label: "deleted", value: "deleted"},
                     {label: "submitted", value: "submitted"},
+                    {label: "fulfilled", value: "fulfilled"},
+                    {label: "deleted", value: "deleted"},
                 ]
             },
             {
                 name: "position",
-                label: "Position",
+                label: "Staff Position",
                 control: "select",
-                // "position is a Key.  TODO",
+                // "position is a Key.  Will load dynamically",
             },
             {
                 name: "activity_date",
