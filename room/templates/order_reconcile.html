@@ -158,7 +158,7 @@ editable columns</span> and change the status to "Reconciled".
 	      Order ID # {{ order.key.id }}
       </td>
       <td>
-	      {{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
+	      {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor }})
       </td>
       <td class="dollar">
 	      {{ "%0.2f" % order.GrandTotal }}

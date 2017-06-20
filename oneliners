@@ -1,7 +1,10 @@
 # perl one-liners to convert stuff
 
-# -    ${{ entity.Total|floatformat:2 }}
-# +    ${{ "%0.2f" % entity.Total }}
+-    ${{ entity.Total|floatformat:2 }}
++    ${{ "%0.2f" % entity.Total }}
 perl -pi -e 's/[ ](\S+)\|floatformat:2/ "%0.2f" % $1/' room/templates/order_table.html
 
+-             {{ order.modified|date:"m/d/Y" }} (by {{ order.last_editor }})
++             {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor 
+perl -pi -e 's/[ ](\S+)\|date:"m.d.Y"/ $1.strftime("%b %d %Y")/' room/templates/*
 
