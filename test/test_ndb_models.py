@@ -5,7 +5,7 @@ from room import ndb_models
 import test_models
 
 
-class OrderTest(unittest2.TestCase):
+class ModelsTest(unittest2.TestCase):
     def setUp(self):
         test_models.CreateAll()
 
@@ -23,3 +23,6 @@ class OrderTest(unittest2.TestCase):
         o = test_models.KEYS['ORDER'].get()
         self.assertEquals(u'110TEST Fixme Center Some Supplies 1 items $10.11', unicode(o))
     
+    def testSiteBudget(self):
+        mdl = test_models.KEYS['SITE'].get()
+        self.assertEquals('$4818.88 unspent budget', mdl.BudgetStatement())

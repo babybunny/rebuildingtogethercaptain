@@ -941,9 +941,17 @@ class StaffTime(ndb.Model):
     return self.position
 
   def HoursTotal(self):
-    return self.hours * self.position.get().GetHourlyRate(self.activity_date)
+    if not self.position:
+      logging.warning('empty position %s', str(self))
+    if self.state in ('new', 'deleted'):
+      return 0.0
+    return self.hours * self.position.get().GetHourlyRate(self.activity_date)    
   
   def MileageTotal(self):
+    if not self.position:
+      logging.warning('empty position %s', str(self))
+    if self.state in ('new', 'deleted'):
+      return 0.0
     return self.miles * self.position.get().GetMileageRate(self.activity_date)
 
   def Total(self):

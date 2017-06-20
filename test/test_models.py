@@ -18,7 +18,8 @@ def CreateAll():
   """Creates all the models in this module."""
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
-    hourly_rate=19.19
+    hourly_rate=19.19,
+    mileage_rate_after_date=["2016-01-01 0.54"],
   ).put()
 
   KEYS['STAFF'] = ndb_models.Staff(
