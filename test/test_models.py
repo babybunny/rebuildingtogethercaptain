@@ -120,6 +120,11 @@ def CreateAll():
     state='submitted',
   ).put()
 
+  KEYS['CHECKREQUEST2'] = ndb_models.CheckRequest(
+    site=KEYS['SITE'],
+    state='new',
+  ).put()
+
   KEYS['VENDORRECEIPT'] = ndb_models.VendorReceipt(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],

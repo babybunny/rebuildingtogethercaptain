@@ -22,9 +22,9 @@ class _ActiveItems(object):
       ref: instance of a model that is referenced by another kind of model
       kind_cls: ndb kind to be selected, like in Key(kind=kind_cls)
     """
-    self._query = kind_cls.query(kind_cls.site == ref.key)
-    self._query.filter(kind_cls.state != 'new')
-    self._query.filter(kind_cls.state != 'deleted')
+    self._query = kind_cls.query(kind_cls.site == ref.key,
+                                 kind_cls.state != 'new',
+                                 kind_cls.state != 'deleted')
 
   def Count(self):
     return self._query.count()
