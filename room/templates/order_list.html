@@ -35,10 +35,10 @@ and use the normal Place Order links.
   or
   <input type="submit" name="submit" value="{{ mass_action.fulfill_many }}">
   {% if order_sheet %}
-  <input type="hidden" name="order_sheet_id" value="{{ order_sheet.key.id }}">
+  <input type="hidden" name="order_sheet_id" value="{{ order_sheet.key.integer_id() }}">
   {% endif %}
   {% if order_sheet %}
-  <br>Or <a href="{% url room.order.OrderReconcile order_sheet.key.id %}">
+  <br>Or <a href="{% url room.order.OrderReconcile order_sheet.key.integer_id() %}">
     reconcile {{ num_being_filled }} orders 
     </a>
   in "Being Filled" status.

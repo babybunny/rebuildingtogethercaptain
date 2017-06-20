@@ -5,7 +5,7 @@
 {%block body%}
 
 <h2>A Site with that number already exists!</h2>
-<a href="{% url room.views.SiteView site.key.id %}">
+<a href="{% url room.views.SiteView site.key.integer_id() %}">
   Click here to go to Site {{ site.number }}.
 </a>
 

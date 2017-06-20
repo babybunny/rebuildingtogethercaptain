@@ -5,7 +5,7 @@
 {%block body%}
 
 <h2>{{ what_you_are_doing }}</h2>
-{% if site.key.id %}
+{% if site.key.integer_id() %}
 <form action="{{ webapp2.uri_for('SiteEdit'), site.key.integer_id()) }}" method="post">
 {% else %}
 <form action="{{ webapp2.uri_for('SiteNew') }}" method="post">

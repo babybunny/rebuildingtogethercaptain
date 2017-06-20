@@ -10,8 +10,8 @@ $(function(){
   $("table.tablesorter").tablesorter({
     });
   {% for entity in entries %}
-  $('.jeditable-state[name="{{ entity.key.id }}"]').editable(
-     "{% url room.views.SiteExpenseState model_cls_name entity.key.id %}", {
+  $('.jeditable-state[name="{{ entity.key.integer_id() }}"]').editable(
+     "{% url room.views.SiteExpenseState model_cls_name entity.key.integer_id() %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',

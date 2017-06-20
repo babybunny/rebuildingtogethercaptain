@@ -62,12 +62,12 @@ to add a new Order Form.
 	<strong>{{order_sheet.code|escape}}</strong>
 	<p>
 	  <a class="edit" 
-	     href="{%url room.views.OrderSheetEdit order_sheet.key.id%}">
+	     href="{%url room.views.OrderSheetEdit order_sheet.key.integer_id()%}">
 	    edit sheet
 	  </a>
 	  <br/>
 	  <a class="edit" 
-	     href="{%url room.views.OrderSheetItemList order_sheet.key.id%}">
+	     href="{%url room.views.OrderSheetItemList order_sheet.key.integer_id()%}">
 	    edit items
 	  </a>
 	</p>

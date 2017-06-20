@@ -23,8 +23,8 @@ $(function() {
     sortList: [[0,0]],
   });
   {% for order in orders %}
-  $('.jeditable-amount[name="{{ order.key.id }}"]').editable(
-     "{% url room.order.ActualTotal order.key.id %}", {
+  $('.jeditable-amount[name="{{ order.key.integer_id() }}"]').editable(
+     "{% url room.order.ActualTotal order.key.integer_id() %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -35,8 +35,8 @@ $(function() {
     function(){$(this).css('background-color', '#FBFFAB')},
     function(){$(this).css('background-color', 'inherit')}
   );
-  $('.jeditable-notes[name="{{ order.key.id }}"]').editable(
-     "{% url room.order.ReconciliationNotes order.key.id %}", {
+  $('.jeditable-notes[name="{{ order.key.integer_id() }}"]').editable(
+     "{% url room.order.ReconciliationNotes order.key.integer_id() %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -47,8 +47,8 @@ $(function() {
     function(){$(this).css('background-color', '#FBFFAB')},
     function(){$(this).css('background-color', 'inherit')}
   );
-  $('.jeditable-invoice[name="{{ order.key.id }}"]').editable(
-     "{% url room.order.InvoiceDate order.key.id %}", {
+  $('.jeditable-invoice[name="{{ order.key.integer_id() }}"]').editable(
+     "{% url room.order.InvoiceDate order.key.integer_id() %}", {
          type      : 'datepicker',
          cancel    : 'Cancel',
          submit    : 'OK',
@@ -60,8 +60,8 @@ $(function() {
     function(){$(this).css('background-color', '#FBFFAB')},
     function(){$(this).css('background-color', 'inherit')}
   );
-  $('.jeditable-state[name="{{ order.key.id }}"]').editable(
-     "{% url room.order.State order.key.id %}", {
+  $('.jeditable-state[name="{{ order.key.integer_id() }}"]').editable(
+     "{% url room.order.State order.key.integer_id() %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -74,15 +74,15 @@ $(function() {
     function(){$(this).css('background-color', '#FBFFAB')},
     function(){$(this).css('background-color', 'inherit')}
   );
-  $('.jeditable-vendor[name="{{ order.key.id }}"]').editable(
-     "{% url room.order.Vendor order.key.id %}", {
+  $('.jeditable-vendor[name="{{ order.key.integer_id() }}"]').editable(
+     "{% url room.order.Vendor order.key.integer_id() %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
          tooltip   : 'Click to edit...',
          cssclass  : 'inherit',
          type      : 'select',
-         data      : " { {% for supplier in suppliers %}'{{ supplier.key.id }}': '{{ supplier.name }}', {% endfor %} " +
+         data      : " { {% for supplier in suppliers %}'{{ supplier.key.integer_id() }}': '{{ supplier.name }}', {% endfor %} " +
          " 'selected': '{{ order.vendor }}'}",
          }
   ).hover(
@@ -106,7 +106,7 @@ $(function() {
 editable columns</span> and change the status to "Reconciled".
 
 
-<p>Click <a href="{% url room.order.OrderList order_sheet.key.id %}">here</a>
+<p>Click <a href="{% url room.order.OrderList order_sheet.key.integer_id() %}">here</a>
   to go back to the list of all {{ order_sheet.name }} orders.
 {%endblock%}
 {%block body%}
@@ -146,16 +146,16 @@ editable columns</span> and change the status to "Reconciled".
 	      <span class="sortorder">{{ order.site.number }}</span>
 	      <span class="actions">
 	        <a target="_blank"
-	           href="{% url room.order.OrderView order.key.id %}">
+	           href="{% url room.order.OrderView order.key.integer_id() %}">
 	          Review
 	        </a>
 	      </span>
 	      Site #
 	      <a target="_blank"
-	         href="{% url room.views.SiteView order.site.key.id %}">
+	         href="{% url room.views.SiteView order.site.key.integer_id() %}">
 	        {{ order.site.number|escape }}
 	      </a>
-	      Order ID # {{ order.key.id }}
+	      Order ID # {{ order.key.integer_id() }}
       </td>
       <td>
 	      {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor }})
@@ -167,34 +167,34 @@ editable columns</span> and change the status to "Reconciled".
 	      <span class="sortorder">{{ order.actual_total }}</span>
 	      <div class="jeditable-amount"
 	           id="actual_total"
-	           name="{{ order.key.id }}"
+	           name="{{ order.key.integer_id() }}"
 	           >{{ "%0.2f" % order.actual_total }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.reconciliation_notes }}</span>
 	      <div class="jeditable-notes"
 	           id="reconciliation_notes"
-	           name="{{ order.key.id }}"
+	           name="{{ order.key.integer_id() }}"
 	           >{{ order.reconciliation_notes }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.invoice_date|date:"Y/m/d"  }}</span>
 	      <div class="jeditable-invoice"
 	           id="invoice_date"
-	           name="{{ order.key.id }}"
+	           name="{{ order.key.integer_id() }}"
 	           >{{ order.invoice_date|date:"Y/m/d" }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.vendor }}</span>
 	      <div class="jeditable-vendor"
 	           id="vendor"
-	           name="{{ order.key.id }}">{{ order.vendor }}</div>
+	           name="{{ order.key.integer_id() }}">{{ order.vendor }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.state }}</span>
 	      <div class="jeditable-state"
 	           id="state"
-	           name="{{ order.key.id }}">{{ order.state }}</div>
+	           name="{{ order.key.integer_id() }}">{{ order.state }}</div>
       </td>
     </tr>
     {%endfor%}

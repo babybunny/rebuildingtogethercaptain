@@ -17,20 +17,20 @@
     {% for entity in entries %}
     <tr>
       <td>
-	<a name="{{ entity.key.id }}"
-	   href="{%url room.views.CheckRequestEdit entity.key.id%}">
-	  {{entity.key.id|escape}}
+	<a name="{{ entity.key.integer_id() }}"
+	   href="{%url room.views.CheckRequestEdit entity.key.integer_id()%}">
+	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>
 	<span class="sortorder">{{ entity.site.number }}</span>
-	<a href="{% url room.views.SiteView entity.site.key.id %}">
+	<a href="{% url room.views.SiteView entity.site.key.integer_id() %}">
 	{{ entity.site.number|escape }}
 	</a>
       </td><td class="editable">
 	<span class="sortorder">{{ entity.state }}</span>
 	<div class="jeditable-state" 
 	     id="state"
-	     name="{{ entity.key.id }}">{{ entity.state }}</div>
+	     name="{{ entity.key.integer_id() }}">{{ entity.state }}</div>
       </td><td>
 	{{ entity.captain.name|escape }}
       </td><td>

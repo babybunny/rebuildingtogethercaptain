@@ -38,15 +38,15 @@ $(document).ready(function(){
     <tr>
       <td>
 	{% if item.thumbnail %}
-	<a href="{% url room.views.ItemEdit item.key.id %}">
-	  <img src="{% url room.views.ItemThumbnail item.key.id %}">
+	<a href="{% url room.views.ItemEdit item.key.integer_id() %}">
+	  <img src="{% url room.views.ItemThumbnail item.key.integer_id() %}">
 	</a>
 	{% endif %}
       </td><td>
-	<a href="{%url room.views.ItemEdit item.key.id%}">
+	<a href="{%url room.views.ItemEdit item.key.integer_id()%}">
 	  (edit)
 	</a>
-	{{ item.key.id }}
+	{{ item.key.integer_id() }}
       </td><td>
 	{{ item.appears_on_order_form.name|escape }}
       </td><td>

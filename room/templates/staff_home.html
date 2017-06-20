@@ -217,7 +217,7 @@ $(function() {
 	<br>
       <select class="order_sheet">
       {% for os in order_sheets %}
-      <option value="{{ os.key.id }}">
+      <option value="{{ os.key.integer_id() }}">
 	{{ os.name }}
       </option>
       {% endfor %}
@@ -245,7 +245,7 @@ $(function() {
       <select class="order_sheet">
 	<option value="">All Order Forms</option>
       {% for os in order_sheets %}
-      <option value="{{ os.key.id }}">
+      <option value="{{ os.key.integer_id() }}">
 	{{ os.name }}
       </option>
       {% endfor %}

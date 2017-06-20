@@ -119,11 +119,11 @@
       <td>
         <div class="big jeditable"
 	           id="announcement_subject"
-	           name="{{ site.key.id }}">{{ site.announcement_subject }}</div>
+	           name="{{ site.key.integer_id() }}">{{ site.announcement_subject }}</div>
         <div class="panel">
 	        <div class="padded jeditable-text"
 	             id="announcement_body"
-	             name="{{ site.key.id }}">{{ site.announcement_body }}</div>
+	             name="{{ site.key.integer_id() }}">{{ site.announcement_body }}</div>
         </div>
         {% if site_list_detail %}
         <p>{{ site.StreetAddress() }}
@@ -422,12 +422,12 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('CheckRequestView', args=[entity.key.integer_id()]) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('CheckRequestEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>
@@ -475,12 +475,12 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('VendorReceiptView', args=[entity.key.integer_id()]) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('VendorReceiptEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>
@@ -537,12 +537,12 @@
 	              <td>
 	                {{ entity.description }}
                   <br/>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('StaffTimeView', args=[entity.key.integer_id()]) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('StaffTimeEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>
@@ -591,13 +591,13 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('InKindDonationView', args=[entity.key.integer_id()]) }}">
 		                view
 		              </a>
 		              {% if user.staff %}
 		              <span> or </span>
-		              <a name="{{ entity.key.id }}"
+		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('InKindDonationEdit', args=[entity.key.integer_id()]) }}">
 		                edit
 		              </a>

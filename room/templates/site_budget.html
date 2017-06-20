@@ -70,15 +70,15 @@ Sites - Budget View</h2>
     <tr>
       <td>
 	      <input type="checkbox" class="export_checkbox"
-	             name="{{ export_checkbox_prefix }}{{ site.key.id }}">
+	             name="{{ export_checkbox_prefix }}{{ site.key.integer_id() }}">
       </td>
       <td>
 	      <span class="sortorder">{{ site.number }}</span>
-	      <a href="{% url room.views.SiteView site.key.id %}">
+	      <a href="{% url room.views.SiteView site.key.integer_id() %}">
 	        {{site.number|escape}}
 	      </a>
         &nbsp;
-	      <a href="{% url room.views.SiteSummary site.key.id %}">
+	      <a href="{% url room.views.SiteSummary site.key.integer_id() %}">
           summary
 	      </a>
       </td>

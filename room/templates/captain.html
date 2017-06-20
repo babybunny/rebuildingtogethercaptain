@@ -5,8 +5,8 @@
 {%block body%}
 
 <h2>{{ what_you_are_doing }}</h2>
-{% if captain.key.id %}
-<form action="{% url room.views.CaptainEdit captain.key.id %}" method="post">
+{% if captain.key.integer_id() %}
+<form action="{% url room.views.CaptainEdit captain.key.integer_id() %}" method="post">
 {% else %}
 <form action="{% url room.views.CaptainNew %}" method="post">
 {% endif %}

@@ -11,8 +11,8 @@ $(function(){
       sortList: [[1, 0], [2, 0]]
     });
   {% for entity in entries %}
-  $('.jeditable-state[name="{{ entity.key.id }}"]').editable(
-     "{% url room.views.ItemPrice entity.key.id %}", {
+  $('.jeditable-state[name="{{ entity.key.integer_id() }}"]').editable(
+     "{% url room.views.ItemPrice entity.key.integer_id() %}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -51,9 +51,9 @@ $(function(){
     {% for entity in entries %}
     <tr>
       <td>
-	<a name="{{ entity.key.id }}"
-	   href="{%url room.views.ItemEdit entity.key.id%}">
-	  {{entity.key.id|escape}}
+	<a name="{{ entity.key.integer_id() }}"
+	   href="{%url room.views.ItemEdit entity.key.integer_id()%}">
+	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>
 	{{ entity.order_form_section|escape }}
@@ -65,7 +65,7 @@ $(function(){
 	<span class="sortorder">{{ entity.unit_cost }}</span>
 	<div class="jeditable-state" 
 	       id="unit_cost"
-	       name="{{ entity.key.id }}">{{ "%0.2f" % entity.unit_cost }}</div>
+	       name="{{ entity.key.integer_id() }}">{{ "%0.2f" % entity.unit_cost }}</div>
       </td>
     </tr>
     {% endfor %}
