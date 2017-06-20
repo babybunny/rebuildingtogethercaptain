@@ -228,13 +228,15 @@ class SiteExpenseEditor(StaffHandler):
   template_file = None
 
   def get(self, site_id, id=None):
+    site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
     d = dict(list_uri=webapp2.uri_for(self.list_view, site_id=site_id),
+             site=site,
              type=self.template_value)
     if id:
       id = int(id)
       d[self.template_value] = ndb.Key(self.model_class, id).get()
     else:
-      d[self.template_value] = self.model_class(site=ndb.Key(ndb_models.NewSite, int(site_id)))
+      d[self.template_value] = self.model_class(site=site.key)
     return common.Respond(self.request, self.template_file, d)
 
 
@@ -322,7 +324,7 @@ class StaffTimeView(StaffHandler):
 class StaffTime(SiteExpenseEditor):
   model_class = ndb_models.StaffTime
   list_view = 'StaffTimeBySite'
-  template_value = 'stafftime'
+  template_value = 'Staff Time'
   template_file = 'expense_form'
   
 """

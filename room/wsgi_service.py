@@ -274,12 +274,13 @@ def _StaffTimeModelToMessage(mdl):
     description=mdl.description,
     site=mdl.site.integer_id(),
     hours=mdl.hours,
-    captain=mdl.captain.integer_id(),
     state=mdl.state,
     miles=mdl.miles,
     position=mdl.position.integer_id(),
   )
   # any special handling, like for user objects or datetimes
+  if mdl.captain:
+    s.captain = mdl.captain.integer_id(),
   if mdl.activity_date:
     s.activity_date=mdl.activity_date.isoformat()
   else:
@@ -296,6 +297,9 @@ def _StaffTimeMessageToModel(msg, mdl):
   mdl.position = ndb.Key(ndb_models.StaffPosition, msg.position)
   # can't set automatic fields:
   # captain.
+
+  if mdl.state == 'new':
+    mdl.state = 'submitted'
   try:
     mdl.activity_date = datetime.date(*map(int, msg.activity_date.split('-')))
   except Exception, e:
