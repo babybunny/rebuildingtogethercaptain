@@ -43,7 +43,7 @@ $(document).ready(function(){
 	</a>
 	{% endif %}
       </td><td>
-	<a href="{%url room.views.ItemEdit item.key.integer_id()%}">
+	<a href="{% url room.views.ItemEdit item.key.integer_id() %}">
 	  (edit)
 	</a>
 	{{ item.key.integer_id() }}
@@ -68,6 +68,6 @@ $(document).ready(function(){
   </tbody>
 </table>
 
-<form action="{%url room.views.ItemNew%}"><input type=submit value="Add a new item"></form>
+<form action="{% url room.views.ItemNew%}"><input type=submit value="Add a new item"></form>
 
 {%endblock%}

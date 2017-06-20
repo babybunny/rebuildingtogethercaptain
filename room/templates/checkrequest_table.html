@@ -18,7 +18,7 @@
     <tr>
       <td>
 	<a name="{{ entity.key.integer_id() }}"
-	   href="{%url room.views.CheckRequestEdit entity.key.integer_id()%}">
+	   href="{% url room.views.CheckRequestEdit entity.key.integer_id() %}">
 	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>
