@@ -91,7 +91,9 @@ to add a new Order Form.
 	{{ order_sheet.item_set.count() }}
       </td>
       <td>
+	{% if order_sheet.default_supplier %} 
 	{{ order_sheet.default_supplier.get().name }}
+	{% endif %}
       </td>
       <td>
 	      {{ order_sheet.instructions|replace('\n', '<br/>')|escape }}

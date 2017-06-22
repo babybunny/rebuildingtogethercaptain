@@ -198,6 +198,14 @@ def CreateAll():
     logistics_instructions="""Pick these up somewhere nice.""",
     delivery_options='Yes',
   ).put()
+  KEYS['ORDERSHEET2'] = ndb_models.OrderSheet(
+    # no default_supplier
+    name='Some Supplies',
+    code='SOM',
+    instructions='instructions value',
+    logistics_instructions="""Pick these up somewhere nice.""",
+    delivery_options='Yes',
+  ).put()
 
   KEYS['ITEM'] = ndb_models.Item(
     bar_code_number=1234,
