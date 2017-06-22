@@ -1,1 +1,3 @@
 virtualenv/
+build/
+node_modules/
