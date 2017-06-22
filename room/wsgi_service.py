@@ -71,22 +71,23 @@ def _StaffModelToMessage(mdl):
   s = Staff(
     name=mdl.name,
     email=mdl.email,
-    last_welcome=mdl.last_welcome,
     program_selected=mdl.program_selected,
+    last_welcome=mdl.last_welcome,
     notes=mdl.notes,
     id=mdl.key.integer_id(),
   )
   if mdl.since:
     s.since = mdl.since.isoformat()  # datetime, for display only
+#  if mdl.last_welcome:
+#    s.last_welcome = mdl.last_welcome.isoformat()  # datetime, for display only
   return s
 
 def _StaffMessageToModel(msg, mdl):
   mdl.name = msg.name
   mdl.email = msg.email
-  mdl.last_welcome = msg.last_welcome
   mdl.program_selected = msg.program_selected
   mdl.notes = msg.notes
-  # can't set "since", it's automatic
+  # can't set "since" or "last_welcome", they are automatic
   return mdl
 
 class Staff(messages.Message):

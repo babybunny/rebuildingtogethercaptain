@@ -11,11 +11,13 @@ import logging
 import unittest2
 from room import ndb_models
 
-KEYS = dict()
-
 
 def CreateAll():
-  """Creates all the models in this module."""
+  """Creates all the models in this module.
+
+  Returns: a dict of key name strings to ndb.Model instances. 
+  """
+  KEYS = dict()
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
     hourly_rate=19.19,
@@ -301,21 +303,20 @@ def CreateAll():
   """
 
   logging.info('added keys: {}', KEYS.keys())
-
+  return KEYS
   
-def DeleteAll():
-  global KEYS
+  
+def DeleteAll(KEYS):
   while KEYS:
     name, key = KEYS.popitem()
     logging.info('deleting {}', name)
     key.delete()
-  KEYS = dict()
 
 
 class ModelsTest(unittest2.TestCase):
   def testCreate(self):
-    self.assertFalse(KEYS)
-    self.assertIsNone(CreateAll())
+    KEYS = CreateAll()
     self.assertTrue(KEYS)
-    self.assertIsNone(DeleteAll())
+    self.assertIn('ORDERITEM', KEYS)
+    DeleteAll(KEYS)
     self.assertFalse(KEYS)

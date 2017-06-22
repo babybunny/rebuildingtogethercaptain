@@ -7,10 +7,13 @@ import test_models
 
 class ModelsTest(unittest2.TestCase):
     def setUp(self):
-        test_models.CreateAll()
+        self.keys = test_models.CreateAll()
 
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)
+        
     def testOrder(self):
-        o = test_models.KEYS['ORDER'].get()
+        o = self.keys['ORDER'].get()
         self.assertTrue(o)
         self.assertTrue(o.site)
         self.assertTrue(o.site.get())
@@ -20,9 +23,9 @@ class ModelsTest(unittest2.TestCase):
         self.assertEquals(o.program, o.site.get().program)
 
     def testOrderUnicode(self):
-        o = test_models.KEYS['ORDER'].get()
+        o = self.keys['ORDER'].get()
         self.assertEquals(u'110TEST Fixme Center Some Supplies 1 items $10.11', unicode(o))
     
     def testSiteBudget(self):
-        mdl = test_models.KEYS['SITE'].get()
+        mdl = self.keys['SITE'].get()
         self.assertEquals('$4818.88 unspent budget', mdl.BudgetStatement())

@@ -21,7 +21,10 @@ models_and_data = (
 
 class BasicCrudTest(unittest2.TestCase):
     def setUp(self):
-        test_models.CreateAll()
+        self.keys = test_models.CreateAll()
+
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)
         
 
 def makeTestMethods(name, fields):
@@ -37,7 +40,7 @@ def makeTestMethods(name, fields):
         self.assertIn(post_json_body['name'], response)
 
     def tstCreateBadHasId(self):
-        post_json_body = {'id': test_models.KEYS[name.upper()].integer_id()}
+        post_json_body = {'id': self.keys[name.upper()].integer_id()}
         post_json_body.update(fields)
         response = app.post_json('/wsgi_service.{}_create'.format(name.lower()),
                                  post_json_body,
@@ -66,13 +69,13 @@ def makeTestMethods(name, fields):
 
     def tstReadOK(self):
         response = app.post_json('/wsgi_service.{}_read'.format(name.lower()),
-                                 {'id': test_models.KEYS[name.upper()].integer_id()},
+                                 {'id': self.keys[name.upper()].integer_id()},
                                  headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('200 OK', response.status)
         self.assertIn('id', response)
 
     def tstUpdateOK(self):
-        post_json_body = {'id': test_models.KEYS[name.upper()].integer_id()}
+        post_json_body = {'id': self.keys[name.upper()].integer_id()}
         post_json_body.update(fields)
         response = app.post_json('/wsgi_service.{}_update'.format(name.lower()),
                                  post_json_body,
@@ -142,5 +145,7 @@ class ChoicesTest(unittest2.TestCase):
                                  status=200,
                                  headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('200 OK', response.status)
-        self.assertDictEqual({u'choice': [{u'id': 7, u'label': u'House of Supply'}]}, response.json)
+        self.assertIn(u'choice', response.json)
+        self.assertEquals(1, len(response.json['choice']))
+        self.assertDictContainsSubset({u'label': u'House of Supply'}, response.json['choice'][0])
         

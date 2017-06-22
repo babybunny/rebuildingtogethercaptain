@@ -21,8 +21,11 @@ class LoggedInTest(unittest2.TestCase):
         
 class StatefulTestNoProgram(unittest2.TestCase):
     def setUp(self):
-        test_models.CreateAll()        
+        self.keys = test_models.CreateAll()        
                 
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)
+        
     def testHomeXHeaderStaff(self):
         response = app.get('/room/staff_home', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('302 Moved Temporarily', response.status)
@@ -31,11 +34,14 @@ class StatefulTestNoProgram(unittest2.TestCase):
 
 class StatefulTestCaptain(unittest2.TestCase):
     def setUp(self):
-        test_models.CreateAll()        
-        s = test_models.KEYS['STAFF'].get()
+        self.keys = test_models.CreateAll()        
+        s = self.keys['STAFF'].get()
         s.program_selected = '2011 Test'
         s.put()
 
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)
+        
     def _get(self, path):
         return app.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.capn@gmail.com'})
 
@@ -46,10 +52,13 @@ class StatefulTestCaptain(unittest2.TestCase):
     
 class StatefulTestStaffWithProgram(unittest2.TestCase):
     def setUp(self):
-        test_models.CreateAll()        
-        s = test_models.KEYS['STAFF'].get()
+        self.keys = test_models.CreateAll()        
+        s = self.keys['STAFF'].get()
         s.program_selected = '2011 Test'
         s.put()
+
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)    
 
     def _get(self, path):
         return app.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
@@ -98,7 +107,7 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
         self.assertIn('Miss Captain', str(response))
         
     def testSiteView(self):
-        response = self._get('/room/site/view/{:d}/'.format(test_models.KEYS['SITE'].integer_id()))
+        response = self._get('/room/site/view/{:d}/'.format(self.keys['SITE'].integer_id()))
         self.assertEquals('200 OK', response.status)
         self.assertIn('2011 Test', response.body)
         self.assertIn('110TEST', response.body)
