@@ -96,7 +96,7 @@ def CreateAll():
     rrp_level='rrp level value',
     scope_of_work="""This is a big job. There is a lot to do.""",
     sponsor='Generous Group',
-    street_number='123 Main Street',
+    # no street_number
     city_state_zip='Acorn City, CA, 99999',
     budget=5000,
     announcement_subject='announcement value',

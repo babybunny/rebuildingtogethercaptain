@@ -414,6 +414,8 @@ class NewSite(ndb.Model):
     return 'Site #%s | %s' % (self.number, self.name)
 
   def StreetAddress(self):
+    if not self.street_number or not self.city_state_zip:
+      return "TODO - enter an address"
     return '%s, %s' % (' '.join(self.street_number.split()),
                        ' '.join(self.city_state_zip.split()))
   
