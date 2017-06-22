@@ -6,13 +6,10 @@ define(
             events: {
                 'click #simple-form-save': 'save'
             },
-
             initialize: function(name, template, model, loading, fields) {
                 var self = this;
-                var bus = _.extend({}, Backbone.Events);
-                self.bus = bus;
                 console.log('simple-form view init');
-                self.template = _.template(template),
+                self.template = _.template(template);
                 self.model = model;
                 self.name = name;
                 self.loading = loading;
@@ -29,7 +26,6 @@ define(
                     this.initialize_form(fields);
                 }
             },
-
             initialize_form: function(fields) {
                 this.form = new Backform.Form({
                     model: this.model,
@@ -53,7 +49,6 @@ define(
                     }
                 });
             },
-
             render: function() {
                 var t = this.template({name: this.name,
                                        s: this.model.attributes});
@@ -86,7 +81,6 @@ define(
             },
             getFirstField: function() {
                 var field_list = _.reject(this.form.fields.models, function(model) { return model.get('disabled'); });
-                this.bus.activeFields = field_list;
                 return field_list[0]._previousAttributes;
             },
             save: function() {
@@ -94,7 +88,6 @@ define(
                 this.model.save();
             }
         });
-
         return SimpleFormView;
     }
-)
+);
