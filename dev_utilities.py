@@ -36,7 +36,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--port', help='localhost port number', default=9086)
+    parser.add_argument('--port', help='localhost port number, matches API server port in dev_server.sh', default=8082)
     
     args = parser.parse_args()
     
