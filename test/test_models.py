@@ -36,7 +36,12 @@ def CreateAll():
 
   KEYS['STAFF'] = ndb_models.Staff(
     name="Mister Staff",
-    email="rebuildingtogether.staff@gmail.com"
+    email="rebuildingtogether.staff@gmail.com",
+    last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
+  ).put()
+  KEYS['STAFF2'] = ndb_models.Staff(
+    name="Mister Staff",
+    email="rebuildingtogether.staff2@gmail.com",
   ).put()
   
   KEYS['CAPTAIN'] = ndb_models.Captain(

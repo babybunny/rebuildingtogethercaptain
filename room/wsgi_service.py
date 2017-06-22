@@ -72,14 +72,13 @@ def _StaffModelToMessage(mdl):
     name=mdl.name,
     email=mdl.email,
     program_selected=mdl.program_selected,
-    last_welcome=mdl.last_welcome,
     notes=mdl.notes,
     id=mdl.key.integer_id(),
   )
   if mdl.since:
     s.since = mdl.since.isoformat()  # datetime, for display only
-#  if mdl.last_welcome:
-#    s.last_welcome = mdl.last_welcome.isoformat()  # datetime, for display only
+  if mdl.last_welcome:
+    s.last_welcome = mdl.last_welcome.isoformat()  # datetime, for display only
   return s
 
 def _StaffMessageToModel(msg, mdl):
@@ -119,7 +118,8 @@ def _CaptainModelToMessage(mdl):
     id=mdl.key.integer_id(),
   )
   if mdl.last_welcome:
-    s.last_welcome = mdl.last_welcome.isoformat()  # datetime, fo  if mdl.modified:
+    s.last_welcome = mdl.last_welcome.isoformat()  # datetime, fo
+  if mdl.modified:
     s.modified = mdl.modified.isoformat()  # datetime, for display only
   return s
 
