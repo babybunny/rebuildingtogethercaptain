@@ -246,27 +246,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='StaffNew'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='InKindDonationList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='InKindDonationView'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='InKindDonationNew'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='VendorReceiptList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='VendorReceiptView'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='VendorReceiptNew'),  # TODO
-] + [webapp2.Route(r'/help',
-                   Placeholder,
-                   name='%sEdit' % kind) for kind in EXPENSE_KINDS
 ])
 
 app = webapp2.WSGIApplication(
