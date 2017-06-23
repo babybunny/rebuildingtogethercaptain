@@ -20,7 +20,7 @@
     <tr>
       <td>
 	<a name="{{ entity.key.integer_id() }}"
-	   href="{{ webapp2.uri_for("InKindDonationEdit", id=entity.key.integer_id()) }}">
+	   href="{{ webapp2.uri_for("InKindDonation", site_id=entity.site.integer_id(), id=entity.key.integer_id()) }}">
 	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>
@@ -33,7 +33,9 @@
 	     id="state"
 	     name="{{ entity.key.integer_id() }}">{{ entity.state }}</div>
       </td><td>
+	{% if entity.captain %}
 	{{ entity.captain.get().name|escape }}
+	{% endif %}
       </td><td>
 	{{ entity.donation_date|escape }}
       </td><td>
@@ -41,11 +43,20 @@
       </td><td>
 	{{ entity.donor_phone|escape }}
       </td>
-      <td class="dollar">
+      <td class="dollar">	
+	{% if entity.labor_amount %}
 	${{ "%0.2f" % entity.labor_amount }}
+	{% endif %}
       </td>
       <td class="dollar">
+	{% if entity.materials_amount %}
 	${{ "%0.2f" % entity.materials_amount }}
+	{% endif %}
+      </td>
+      <td class="dollar">	
+	{% if entity.food_amount %}
+	${{ "%0.2f" % entity.food_amount }}
+	{% endif %}
       </td><td>
 	{{ entity.donor_info|escape }}
       </td><td>

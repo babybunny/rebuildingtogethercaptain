@@ -16,7 +16,7 @@
     <tr>
       <td>
 	<a name="{{ entity.key.integer_id() }}"
-	   href="{{ webapp2.uri_for("VendorReceiptEdit", id=entity.key.integer_id()) }}">
+	   href="{{ webapp2.uri_for("VendorReceipt", site_id=entity.site.integer_id(), id=entity.key.integer_id()) }}">
 	  {{entity.key.integer_id()|escape}}
 	</a>
       </td><td>
@@ -30,7 +30,9 @@
 	     id="state"
 	     name="{{ entity.key.integer_id() }}">{{ entity.state }}</div>
       </td><td>
+	{% if entity.captain %}
 	{{ entity.captain.get().name|escape }}
+	{% endif %}
       </td><td>
 	{{ entity.purchase_date|escape }}
       </td><td>

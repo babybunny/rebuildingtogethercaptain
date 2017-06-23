@@ -391,13 +391,13 @@ class VendorReceiptView(StaffHandler):
 class VendorReceipt(SiteExpenseEditor):
   model_class = ndb_models.VendorReceipt
   list_view = 'VendorReceiptBySite'
-  template_value = 'Staff Time'
+  template_value = 'Vendor Receipt'
   template_file = 'expense_form'
 
 
 class InKindDonationList(SiteExpenseList):
   model_class = 'InKindDonation'
-  expense_type = 'TODO'
+  expense_type = 'In-Kind Donation'
   table_template = 'inkinddonation_table.html'
 
 class InKindDonationView(StaffHandler):
@@ -411,7 +411,7 @@ class InKindDonationView(StaffHandler):
 class InKindDonation(SiteExpenseEditor):
   model_class = ndb_models.InKindDonation
   list_view = 'InKindDonationBySite'
-  template_value = 'Staff Time'
+  template_value = 'In-Kind Donation'
   template_file = 'expense_form'
 
   

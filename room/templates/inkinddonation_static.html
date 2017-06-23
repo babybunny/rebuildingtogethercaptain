@@ -8,14 +8,14 @@
   <td>Click to Edit</td>
   <td>
     <a name="{{ entity.key.integer_id() }}"
-       href="{{ webapp2.uri_for("InKindDonationEdit", id=entity.key.integer_id()) }}">
+       href="{{ webapp2.uri_for("InKindDonation", site_id=entity.site.integer_id(), id=entity.key.integer_id()) }}">
       {{entity.key.integer_id()|escape}}
     </a>
   </td>
 </tr>
 <tr><td>Site</td>
   <td>
-    <a href="{{ webapp2.uri_for("SiteView", id=entity.site.key.integer_id()) }}">
+    <a href="{{ webapp2.uri_for("SiteView", id=entity.site.integer_id()) }}">
       {{ entity.site.get().number|escape }}
     </a>
   </td>
@@ -33,7 +33,9 @@
     Captain
   </td>
   <td>
-    {{ entity.captain.name|escape }}
+    {% if entity.captain %}
+    {{ entity.captain.get().name|escape }}
+    {% endif %}
   </td>
 </tr>
 <tr>
@@ -89,7 +91,7 @@
     Total
   </td>
   <td>
-    ${{ "%0.2f" % entity.Total }}
+    ${{ "%0.2f" % entity.Total() }}
   </td>
 </tr>
 <tr>
