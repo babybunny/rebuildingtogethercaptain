@@ -201,6 +201,104 @@ class Supplier(messages.Message):
 
 
 ############
+# NewSite #
+############
+
+def _NewSiteModelToMessage(mdl):
+  s = NewSite(
+    id=mdl.key.integer_id(),
+    rating=mdl.rating,
+    applicant=mdl.applicant,
+    scope_of_work=mdl.scope_of_work,
+    number=mdl.number,
+    city_state_zip=mdl.city_state_zip,
+    sponsor=mdl.sponsor,
+    photo_link=mdl.photo_link,
+    search_prefixes=mdl.search_prefixes,
+    street_number=mdl.street_number,
+    program=mdl.program,
+    applicant_mobile_phone=mdl.applicant_mobile_phone,
+    rrp_level=mdl.rrp_level,
+    applicant_home_phone=mdl.applicant_home_phone,
+    rrp_test=mdl.rrp_test,
+    applicant_work_phone=mdl.applicant_work_phone,
+    roof=mdl.roof,
+    name=mdl.name,
+    announcement_subject=mdl.announcement_subject,
+    volunteer_signup_link=mdl.volunteer_signup_link,
+    announcement_body=mdl.announcement_body,
+    jurisdiction=mdl.jurisdiction,
+    budget=mdl.budget,
+    applicant_email=mdl.applicant_email,
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.jurisdiction_choice:
+    s.jurisdiction_choice = mdl.jurisdiction_choice.integer_id(),
+
+  return s
+
+def _NewSiteMessageToModel(msg, mdl):
+  mdl.rating = msg.rating
+  mdl.applicant = msg.applicant
+  mdl.scope_of_work = msg.scope_of_work
+  mdl.number = msg.number
+  mdl.city_state_zip = msg.city_state_zip
+  mdl.sponsor = msg.sponsor
+  mdl.photo_link = msg.photo_link
+  mdl.search_prefixes = msg.search_prefixes
+  mdl.street_number = msg.street_number
+  mdl.program = msg.program
+  mdl.applicant_mobile_phone = msg.applicant_mobile_phone
+  mdl.rrp_level = msg.rrp_level
+  mdl.applicant_home_phone = msg.applicant_home_phone
+  mdl.rrp_test = msg.rrp_test
+  mdl.applicant_work_phone = msg.applicant_work_phone
+  mdl.roof = msg.roof
+  mdl.name = msg.name
+  mdl.announcement_subject = msg.announcement_subject
+  mdl.volunteer_signup_link = msg.volunteer_signup_link
+  mdl.announcement_body = msg.announcement_body
+  mdl.jurisdiction = msg.jurisdiction
+  mdl.budget = msg.budget
+  mdl.applicant_email = msg.applicant_email
+  # can't set automatic fields:
+  # TODO
+
+  if msg.jurisdiction_choice:
+    mdl.jurisdiction_choice = ndb.Key(ndb_models.Jurisdiction, msg.jurisdiction_choice)
+
+  return mdl
+
+class NewSite(messages.Message):
+  id = messages.IntegerField(1)
+  rating = messages.StringField(2)
+  applicant = messages.StringField(3)
+  scope_of_work = messages.StringField(4)
+  number = messages.StringField(5)
+  city_state_zip = messages.StringField(6)
+  sponsor = messages.StringField(7)
+  photo_link = messages.StringField(8)
+  search_prefixes = messages.StringField(9)
+  street_number = messages.StringField(10)
+  program = messages.StringField(11)
+  applicant_mobile_phone = messages.StringField(12)
+  rrp_level = messages.StringField(13)
+  applicant_home_phone = messages.StringField(14)
+  rrp_test = messages.StringField(15)
+  applicant_work_phone = messages.StringField(16)
+  roof = messages.StringField(17)
+  name = messages.StringField(18)
+  announcement_subject = messages.StringField(19)
+  volunteer_signup_link = messages.StringField(20)
+  jurisdiction_choice = messages.IntegerField(21)
+  announcement_body = messages.StringField(22)
+  jurisdiction = messages.StringField(23)
+  budget = messages.IntegerField(24)
+  applicant_email = messages.StringField(25)
+
+
+
+############
 # Site #
 ############
 
@@ -357,6 +455,8 @@ basic_crud_config = (
    _CaptainMessageToModel, _CaptainModelToMessage),
   (Supplier, ndb_models.Supplier,
    _SupplierMessageToModel, _SupplierModelToMessage),
+  (NewSite, ndb_models.NewSite,
+   _NewSiteMessageToModel, _NewSiteModelToMessage),
   (Site, ndb_models.NewSite,
    _SiteMessageToModel, _SiteModelToMessage),
   (OrderSheet, ndb_models.OrderSheet,
