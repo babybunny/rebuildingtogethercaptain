@@ -35,6 +35,8 @@ Search for 'example' to find the right place.
 
 
 import inspect
+import dev_appserver
+dev_appserver.fix_sys_path()
 from room import ndb_models
 
 ALIAS = {'NewSite': 'Site'}  # using 'Site' from now on.
