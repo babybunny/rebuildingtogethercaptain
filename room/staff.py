@@ -237,24 +237,6 @@ class EditView(StaffHandler):
     return common.Respond(self.request, self.template_file, d)
   
 
-class SiteExpenseEditor(StaffHandler):
-  model_class = None
-  template_value = None
-  template_file = None
-
-  def get(self, site_id, id=None):
-    site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
-    d = dict(list_uri=webapp2.uri_for(self.list_view, site_id=site_id),
-             site=site,
-             type=self.template_value)
-    if id:
-      id = int(id)
-      d[self.template_value] = ndb.Key(self.model_class, id).get()
-    else:
-      d[self.template_value] = self.model_class(site=site.key)
-    return common.Respond(self.request, self.template_file, d)
-
-
 class StaffList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Staff, 'staff_list')
@@ -308,24 +290,53 @@ class OrderSheet(EditView):
   template_file = 'simple_form'
 
 
-class StaffTimeList(StaffHandler):
+class SiteExpenseList(StaffHandler):
+  model_class = None   # 'StaffTime'
+  expense_type = None  # 'Staff Time'
+  table_template = None # 'stafftime_table.html'
+  
   def get(self, site_id=None):
-    query = ndb_models.StaffTime.query(ndb_models.StaffTime.state != 'new')
+    mdl_cls = getattr(ndb_models, self.model_class)
+    query = mdl_cls.query(mdl_cls.state != 'new')
     params = {'which_site': 'All',
-              'expense_type': 'Staff Time',
-              'model_cls_name': 'StaffTime',
-              'table_template': 'stafftime_table.html'}
+              'expense_type': self.expense_type,
+              'model_cls_name': self.model_class,
+              'table_template': self.table_template}
     if site_id is not None:
       site_key = ndb.Key(ndb_models.NewSite, int(site_id))
       site = site_key.get()
-      query = query.filter(ndb_models.StaffTime.site == site_key)
+      query = query.filter(mdl_cls.site == site_key)
       params['which_site'] = 'Site ' + site.number
     else:
       user, _ = common.GetUser(self.request)
       if user.program_selected:
-        query = query.filter(ndb_models.StaffTime.program == user.program_selected)
-    return _EntryList(self.request, ndb_models.StaffTime, 'site_expense_list',
+        query = query.filter(mdl_cls.program == user.program_selected)
+    return _EntryList(self.request, mdl_cls, 'site_expense_list',
                       params=params, query=query)
+
+
+class SiteExpenseEditor(StaffHandler):
+  model_class = None
+  template_value = None
+  template_file = None
+
+  def get(self, site_id, id=None):
+    site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
+    d = dict(list_uri=webapp2.uri_for(self.list_view, site_id=site_id),
+             site=site,
+             type=self.template_value)
+    if id:
+      id = int(id)
+      d[self.template_value] = ndb.Key(self.model_class, id).get()
+    else:
+      d[self.template_value] = self.model_class(site=site.key)
+    return common.Respond(self.request, self.template_file, d)
+
+
+class StaffTimeList(SiteExpenseList):
+  model_class = 'StaffTime'
+  expense_type = 'Staff Time'
+  table_template = 'stafftime_table.html'
 
 
 class StaffTimeView(StaffHandler):
@@ -347,7 +358,7 @@ class CheckRequestList(StaffHandler):
   def get(self, site_id=None):
     query = ndb_models.CheckRequest.query(ndb_models.CheckRequest.state != 'new')
     params = {'which_site': 'All',
-              'expense_type': 'Staff Time',
+              'expense_type': 'Check Request',
               'model_cls_name': 'CheckRequest',
               'table_template': 'checkrequest_table.html'}
     if site_id is not None:
