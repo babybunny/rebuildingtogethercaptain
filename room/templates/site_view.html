@@ -241,7 +241,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{{ webapp2.uri_for('VendorReceiptNew', args=[site.key.integer_id()]) }}">
+	                <a href="{{ webapp2.uri_for('VendorReceipt', id='', site_id=site.key.integer_id()) }}">
 		                Add a Receipt
 	                </a>
 	              </td>
@@ -311,7 +311,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{{ webapp2.uri_for('InKindDonationNew', args=[site.key.integer_id()]) }}">
+	                <a href="{{ webapp2.uri_for('InKindDonation', id='', site_id=site.key.integer_id()) }}">
 		                Add a Donation
 	                </a>
 	              </td>
@@ -446,7 +446,7 @@
         <a name="vendorreceipts_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{{ webapp2.uri_for('VendorReceiptList', args=[site.key.integer_id()]) }}">
+	          <a href="{{ webapp2.uri_for('VendorReceiptBySite', site_id=site.key.integer_id()) }}">
 	            list all
 	          </a>
 	        </span>
@@ -478,12 +478,12 @@
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('VendorReceiptView', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('VendorReceiptView', id=entity.key.integer_id()) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('VendorReceiptEdit', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('VendorReceipt', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
 		                edit
 		              </a>
 		              {% endif %}
@@ -562,7 +562,7 @@
         <a name="inkinddonations_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{{ webapp2.uri_for('InKindDonationList', args=[site.key.integer_id()]) }}">
+	          <a href="{{ webapp2.uri_for('InKindDonationBySite', site_id=site.key.integer_id()) }}">
 	            list all
 	          </a>
 	        </span>
@@ -594,13 +594,13 @@
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('InKindDonationView', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('InKindDonationView', id=entity.key.integer_id()) }}">
 		                view
 		              </a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('InKindDonationEdit', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('InKindDonation', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
 		                edit
 		              </a>
 		              {% endif %}
