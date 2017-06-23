@@ -450,15 +450,17 @@ def _CheckRequestMessageToModel(msg, mdl):
   mdl.food_amount = msg.food_amount
   mdl.address = msg.address
   mdl.tax_id = msg.tax_id
-  mdl.payment_date = msg.payment_date
   mdl.name = msg.name
   mdl.state = msg.state
   mdl.form_of_business = msg.form_of_business
   # can't set automatic fields:
   # program
   if msg.captain:
-      mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+    mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+  if msg.payment_date:
+    mdl.payment_date = datetime.date(*map(int, msg.payment_date.split('-')))
 
+      
   return mdl
 
 class CheckRequest(messages.Message):

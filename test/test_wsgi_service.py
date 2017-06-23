@@ -136,7 +136,10 @@ for name, fields in models_and_data:
     
 class ChoicesTest(unittest2.TestCase):
     def setUp(self):
-        test_models.CreateAll()
+        self.keys = test_models.CreateAll()
+
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)
 
     def testSupplier(self):
         post_json_body = {}
@@ -149,3 +152,33 @@ class ChoicesTest(unittest2.TestCase):
         self.assertEquals(1, len(response.json['choice']))
         self.assertDictContainsSubset({u'label': u'House of Supply'}, response.json['choice'][0])
         
+
+class BugsTest(unittest2.TestCase):
+    def setUp(self):
+        self.keys = test_models.CreateAll()
+
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)
+
+    def testCheckRequest(self):
+        post_json_body = {
+            "site":self.keys['SITE'].integer_id(),
+            "labor_amount":45.67,
+            "form_of_business":"Corporation",
+            "description":"For Services Rendered",
+            "address":"123 checkrequest street",
+            "materials_amount":23.45,
+            "captain":self.keys['CAPTAIN'].integer_id(),
+            "state":"submitted",
+            "payment_date":"2011-02-03",
+            "name":"Mister Payable",
+            "tax_id":"123-456-8790",
+            "food_amount":12.34}
+        response = app.post_json('/wsgi_service.checkrequest_create',
+                                 
+                                 post_json_body,
+                                 status=200,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn(u'payment_date', response.json)
+        self.assertEquals('2011-02-03', response.json['payment_date'])
