@@ -354,24 +354,10 @@ class StaffTime(SiteExpenseEditor):
   template_file = 'expense_form'
 
 
-class CheckRequestList(StaffHandler):
-  def get(self, site_id=None):
-    query = ndb_models.CheckRequest.query(ndb_models.CheckRequest.state != 'new')
-    params = {'which_site': 'All',
-              'expense_type': 'Check Request',
-              'model_cls_name': 'CheckRequest',
-              'table_template': 'checkrequest_table.html'}
-    if site_id is not None:
-      site_key = ndb.Key(ndb_models.NewSite, int(site_id))
-      site = site_key.get()
-      query = query.filter(ndb_models.CheckRequest.site == site_key)
-      params['which_site'] = 'Site ' + site.number
-    else:
-      user, _ = common.GetUser(self.request)
-      if user.program_selected:
-        query = query.filter(ndb_models.CheckRequest.program == user.program_selected)
-    return _EntryList(self.request, ndb_models.CheckRequest, 'site_expense_list',
-                      params=params, query=query)
+class CheckRequestList(SiteExpenseList):
+  model_class = 'CheckRequest'
+  expense_type = 'Check Request'
+  table_template = 'checkrequest_table.html'
 
 
 class CheckRequestView(StaffHandler):
