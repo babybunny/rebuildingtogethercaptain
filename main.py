@@ -146,8 +146,8 @@ login_required = routes.PathPrefixRoute('/room', [
                   name='SiteSummary'),
 
     webapp2.Route(r'/site_scope_of_work/<id:\d+>',
-                  Placeholder,
-                  name='SiteScopeOfWork'),  # TODO
+                  staff.SiteScopeOfWork,
+                  name='SiteScopeOfWork'),
 
     webapp2.Route(r'/site_expense_state/<:\w+>/<:\d+>',
                   staff.SiteExpenseState,

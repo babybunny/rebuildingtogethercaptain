@@ -68,6 +68,21 @@ class StaffHome(StaffHandler):
     return common.Respond(self.request, 'staff_home', d)
 
 
+class SiteScopeOfWork(StaffHandler):
+  def post(self, id):
+    """Updates a Site's scope_of_work field."""
+    obj = ndb.Key(ndb_models.NewSite, int(id)).get()
+    if not obj:
+      webapp2.abort(404)
+    field = self.request.POST['id']
+    if not field:
+      return webapp2.abort(400)
+    value = self.request.POST['value']
+    setattr(obj, field, value)
+    obj.put()
+    self.response.write(value)
+
+  
 class AutocompleteHandler(StaffHandler):
   model_class = None
   program_filter = False

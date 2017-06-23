@@ -78,7 +78,8 @@ a.edit {
   white-space: nowrap;
 }
 div.notes {
-  white-space: pre-wrap;
+    white-space: pre-wrap;
+    min-height: 100px;
 }
 div.panel {
   padding-top: 0;
