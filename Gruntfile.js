@@ -21,6 +21,7 @@ module.exports = function(grunt) {
     grunt.file.copy('node_modules/jqueryui/jquery-ui.min.js', 'build/js/lib/jquery-ui.js');
     grunt.file.copy('node_modules/backform/src/backform.js', 'build/js/lib/backform.js');
     grunt.file.copy('node_modules/bootstrap/dist/css/bootstrap.css', 'build/css/bootstrap.css');
+    grunt.file.copy('node_modules/bootstrap/dist/css/bootstrap.css.map', 'build/css/bootstrap.css.map');
     grunt.file.copy('node_modules/bootstrap/dist/js/bootstrap.min.js', 'build/js/lib/bootstrap.js');
     grunt.file.copy('node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.css', 'build/css/bootstrap-datepicker.css');
     grunt.file.copy('node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', 'build/js/lib/bootstrap-datepicker.js');
