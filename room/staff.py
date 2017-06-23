@@ -374,6 +374,46 @@ class CheckRequest(SiteExpenseEditor):
   template_file = 'expense_form'
 
 
+class VendorReceiptList(SiteExpenseList):
+  model_class = 'VendorReceipt'
+  expense_type = 'Vendor Receipt'
+  table_template = 'vendorreceipt_table.html'
+
+  
+class VendorReceiptView(StaffHandler):
+  def get(self, id):
+    entity = ndb.Key(ndb_models.VendorReceipt, int(id)).get()
+    return common.Respond(self.request, 'vendorreceipt_view',
+        {'entity': entity}
+)
+
+  
+class VendorReceipt(SiteExpenseEditor):
+  model_class = ndb_models.VendorReceipt
+  list_view = 'VendorReceiptBySite'
+  template_value = 'Staff Time'
+  template_file = 'expense_form'
+
+
+class InKindDonationList(SiteExpenseList):
+  model_class = 'InKindDonation'
+  expense_type = 'TODO'
+  table_template = 'inkinddonation_table.html'
+
+class InKindDonationView(StaffHandler):
+  def get(self, id):
+    entity = ndb.Key(ndb_models.InKindDonation, int(id)).get()
+    return common.Respond(self.request, 'inkinddonation_view',
+        {'entity': entity}
+)
+
+  
+class InKindDonation(SiteExpenseEditor):
+  model_class = ndb_models.InKindDonation
+  list_view = 'InKindDonationBySite'
+  template_value = 'Staff Time'
+  template_file = 'expense_form'
+
   
 """
 class ExampleList(StaffHandler):

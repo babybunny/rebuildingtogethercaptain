@@ -170,24 +170,11 @@ EXPENSE_TYPES = ('CheckRequest', 'VendorReceipt', 'InKindDonation', 'StaffTime')
 def views(clsname):
     if clsname in EXPENSE_TYPES:
         return """
-class {0}List(StaffHandler):
-  def get(self, site_id=None):
-    query = ndb_models.{0}.query(ndb_models.{0}.state != 'new')
-    params = {{'which_site': 'All',
-              'expense_type': 'Staff Time',
-              'model_cls_name': '{0}',
-              'table_template': '{1}_table.html'}}
-    if site_id is not None:
-      site_key = ndb.Key(ndb_models.NewSite, int(site_id))
-      site = site_key.get()
-      query = query.filter(ndb_models.{0}.site == site_key)
-      params['which_site'] = 'Site ' + site.number
-    else:
-      user, _ = common.GetUser(self.request)
-      if user.program_selected:
-        query = query.filter(ndb_models.{0}.program == user.program_selected)
-    return _EntryList(self.request, ndb_models.{0}, 'site_expense_list',
-                      params=params, query=query)
+
+class {0}List(SiteExpenseList):
+  model_class = '{0}'
+  expense_type = 'TODO'
+  table_template = '{1}_table.html'
 
 
 class {0}View(StaffHandler):

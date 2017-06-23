@@ -275,7 +275,7 @@ $(function() {
       <div class="panel">
       <h2>Check Requests</h2>
       <a href="{{ webapp2.uri_for('CheckRequestByProgram') }}">
-	View a list of all Check Request entries for {{ user.program_selected }}
+	View a list of all Check Request entries for {{ user.program_selected }}.
       </a>
       <br>
       Add a new Check Request from the site's page.
@@ -283,8 +283,8 @@ $(function() {
 
       <div class="panel">
       <h2>Vendor Receipts</h2>
-      <a href="{{ webapp2.uri_for('VendorReceiptList') }}">
-	View a list of all Vendor Receipts.
+      <a href="{{ webapp2.uri_for('VendorReceiptByProgram') }}">
+	View a list of all Vendor Receipts for {{ user.program_selected }}.
       </a>
       <br>
       Add a new Vendor Receipt from the site's page.
@@ -292,8 +292,8 @@ $(function() {
 
       <div class="panel">
       <h2>In-kind Donations</h2>
-      <a href="{{ webapp2.uri_for('InKindDonationList') }}">
-	View a list of all In-kind Donations.
+      <a href="{{ webapp2.uri_for('InKindDonationByProgram') }}">
+	View a list of all In-kind Donations for {{ user.program_selected }}.
       </a>
       <br>
       Add a new In-kind Donation from the site's page.
@@ -302,7 +302,7 @@ $(function() {
       <div class="panel">
       <h2>Staff time</h2>
       <a href="{{ webapp2.uri_for('StaffTimeByProgram') }}">
-	View a list of all Staff Time entries for {{ user.program_selected }}
+	View a list of all Staff Time entries for {{ user.program_selected }}.
       </a>
       <br>
       Add a new Staff Time entry from the site's page.

@@ -118,6 +118,32 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.CheckRequest,
                   name='CheckRequest'),
 
+    webapp2.Route(r'/vendorreceipt_by_program',
+                  staff.VendorReceiptList,
+                  name='VendorReceiptByProgram'),
+    webapp2.Route(r'/vendorreceipt_view/<id:\d+>',
+                  staff.VendorReceiptView,
+                  name='VendorReceiptView'),
+    webapp2.Route(r'/site/<site_id:\d+>/vendorreceipt',
+                  staff.VendorReceiptList,
+                  name='VendorReceiptBySite'),
+    webapp2.Route(r'/site/<site_id:\d+>/vendorreceipt/<id:\d*>',
+                  staff.VendorReceipt,
+                  name='VendorReceipt'),
+
+    webapp2.Route(r'/inkinddonation_by_program',
+                  staff.InKindDonationList,
+                  name='InKindDonationByProgram'),
+    webapp2.Route(r'/inkinddonation_view/<id:\d+>',
+                  staff.InKindDonationView,
+                  name='InKindDonationView'),
+    webapp2.Route(r'/site/<site_id:\d+>/inkinddonation',
+                  staff.InKindDonationList,
+                  name='InKindDonationBySite'),
+    webapp2.Route(r'/site/<site_id:\d+>/inkinddonation/<id:\d*>',
+                  staff.InKindDonation,
+                  name='InKindDonation'),
+
 
     # webapp2.Route(r'/example',
     #               staff.ExampleList,
@@ -220,27 +246,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='StaffNew'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='InKindDonationList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='InKindDonationView'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='InKindDonationNew'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='VendorReceiptList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='VendorReceiptView'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='VendorReceiptNew'),  # TODO
-] + [webapp2.Route(r'/help',
-                   Placeholder,
-                   name='%sEdit' % kind) for kind in EXPENSE_KINDS
 ])
 
 app = webapp2.WSGIApplication(
