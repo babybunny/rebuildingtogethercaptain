@@ -436,16 +436,18 @@ def _CheckRequestModelToMessage(mdl):
     form_of_business=mdl.form_of_business,
   )
   # any special handling, like for user objects or datetimes
-  if mdl.payment_date:    
-    s.payment_date = mdl.payment_date.isoformat()
+  if mdl.payment_date:
+    s.payment_date=mdl.payment_date.isoformat()
+  else:
+    s.payment_date = ''
   if mdl.captain:
     s.captain = mdl.captain.integer_id()
   return s
 
 def _CheckRequestMessageToModel(msg, mdl):
-  mdl.labor_amount = msg.labor_amount
   mdl.description = msg.description
   mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.labor_amount = msg.labor_amount
   mdl.materials_amount = msg.materials_amount
   mdl.food_amount = msg.food_amount
   mdl.address = msg.address
@@ -457,10 +459,11 @@ def _CheckRequestMessageToModel(msg, mdl):
   # program
   if msg.captain:
     mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
-  if msg.payment_date:
+  try:
     mdl.payment_date = datetime.date(*map(int, msg.payment_date.split('-')))
-
-      
+  except Exception, e:
+    raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.payment_date))
+    
   return mdl
 
 class CheckRequest(messages.Message):
