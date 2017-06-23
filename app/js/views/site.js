@@ -1,9 +1,10 @@
 define(
     [
         'app/views/simple_form',
+        'app/models/jurisdiction_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(SimpleFormView, template) {
+    function(SimpleFormView, JurisdictionChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -13,8 +14,14 @@ define(
             },
             // boilerplate
             {
-                name: "rating",
-                label: "Rating",
+                name: "number",
+                label: "Number",
+                control: "input",
+		required: true,
+            },
+            {
+                name: "name",
+                label: "Name",
                 control: "input",
             },
             {
@@ -23,13 +30,8 @@ define(
                 control: "input",
             },
             {
-                name: "scope_of_work",
-                label: "Scope of work",
-                control: "textarea",
-            },
-            {
-                name: "number",
-                label: "Number",
+                name: "street_number",
+                label: "Street number",
                 control: "input",
             },
             {
@@ -38,28 +40,8 @@ define(
                 control: "input",
             },
             {
-                name: "sponsor",
-                label: "Sponsor",
-                control: "input",
-            },
-            {
-                name: "photo_link",
-                label: "Photo link",
-                control: "input",
-            },
-            {
-                name: "search_prefixes",
-                label: "Search prefixes",
-                control: "input",
-            },
-            {
-                name: "street_number",
-                label: "Street number",
-                control: "input",
-            },
-            {
-                name: "program",
-                label: "Program",
+                name: "applicant_email",
+                label: "Applicant email",
                 control: "input",
             },
             {
@@ -68,18 +50,8 @@ define(
                 control: "input",
             },
             {
-                name: "rrp_level",
-                label: "Rrp level",
-                control: "input",
-            },
-            {
                 name: "applicant_home_phone",
                 label: "Applicant home phone",
-                control: "input",
-            },
-            {
-                name: "rrp_test",
-                label: "Rrp test",
                 control: "input",
             },
             {
@@ -88,13 +60,38 @@ define(
                 control: "input",
             },
             {
-                name: "roof",
-                label: "Roof",
+                name: "sponsor",
+                label: "Sponsor",
                 control: "input",
             },
             {
-                name: "name",
-                label: "Name",
+                name: "scope_of_work",
+                label: "Scope of work",
+                control: "textarea",
+            },
+            {
+                name: "rating",
+                label: "Rating",
+                control: "input",
+            },
+            {
+                name: "rrp_level",
+                label: "Rrp level",
+                control: "input",
+            },
+            {
+                name: "photo_link",
+                label: "Photo link",
+                control: "input",
+            },
+            {
+                name: "rrp_test",
+                label: "Rrp test",
+                control: "input",
+            },
+            {
+                name: "roof",
+                label: "Roof",
                 control: "input",
             },
             {
@@ -119,18 +116,8 @@ define(
                 control: "textarea",
             },
             {
-                name: "jurisdiction",
-                label: "Jurisdiction",
-                control: "input",
-            },
-            {
                 name: "budget",
                 label: "Budget",
-                control: "input",
-            },
-            {
-                name: "applicant_email",
-                label: "Applicant email",
                 control: "input",
             },
             {
@@ -139,6 +126,29 @@ define(
             }
         ];
         
+        var ViewFactory = function(app, loading) {
+            var simpleform = new SimpleFormView('site', template, app.models.site, loading);
+            app.models.jurisdiction_choices = app.models.jurisdiction_choices || new JurisdictionChoices();
+            app.models.jurisdiction_choices.on('change', function(m) {
+                stanza = _.find(fields, function(f) { return f.name == 'jurisdiction_choice' });
+                stanza.options = _.map(m.get('choice'), function(e) { return {'label': e.label, 'value': e.id}; });                
+                if (stanza.options) {
+                    // stanza.value = _.head(stanza.options).value;
+                    console.log('popped ' + stanza.value);
+                }
+                _.each(fields, function(f) {
+                    if (!app.models.site.get(f.name)) {
+                        console.log(f.name, f.value)
+                        app.models.site.set(f.name, f.value);
+                    }
+                });
+                simpleform.initialize_form(fields);
+                simpleform.render();
+            });
+            app.models.jurisdiction_choices.fetch();
+            return simpleform;
+        }
+        return ViewFactory;
         var ViewFactory = function(app, loading) {
             return new SimpleFormView('site', template, app.models.site, loading, fields)
         }

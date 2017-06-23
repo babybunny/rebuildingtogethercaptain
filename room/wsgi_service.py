@@ -1,3 +1,4 @@
+
 import datetime
 import logging
 import os
@@ -214,7 +215,6 @@ def _NewSiteModelToMessage(mdl):
     city_state_zip=mdl.city_state_zip,
     sponsor=mdl.sponsor,
     photo_link=mdl.photo_link,
-    search_prefixes=mdl.search_prefixes,
     street_number=mdl.street_number,
     program=mdl.program,
     applicant_mobile_phone=mdl.applicant_mobile_phone,
@@ -232,6 +232,7 @@ def _NewSiteModelToMessage(mdl):
     applicant_email=mdl.applicant_email,
   )
   # any special handling, like for user objects or datetimes
+  # internal only: search_prefixes
   if mdl.jurisdiction_choice:
     s.jurisdiction_choice = mdl.jurisdiction_choice.integer_id(),
 
@@ -245,7 +246,6 @@ def _NewSiteMessageToModel(msg, mdl):
   mdl.city_state_zip = msg.city_state_zip
   mdl.sponsor = msg.sponsor
   mdl.photo_link = msg.photo_link
-  mdl.search_prefixes = msg.search_prefixes
   mdl.street_number = msg.street_number
   mdl.program = msg.program
   mdl.applicant_mobile_phone = msg.applicant_mobile_phone
@@ -262,7 +262,7 @@ def _NewSiteMessageToModel(msg, mdl):
   mdl.budget = msg.budget
   mdl.applicant_email = msg.applicant_email
   # can't set automatic fields:
-  # TODO
+  # search_prefixes
 
   if msg.jurisdiction_choice:
     mdl.jurisdiction_choice = ndb.Key(ndb_models.Jurisdiction, msg.jurisdiction_choice)
@@ -640,6 +640,14 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     choices = Choices()
     for mdl in ndb_models.StaffPosition.query().order(ndb_models.StaffPosition.position_name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.position_name))
+    return choices
+
+  @remote.method(message_types.VoidMessage,
+                 Choices)  
+  def jurisdiction_choices_read(self, request):
+    choices = Choices()
+    for mdl in ndb_models.Jurisdiction.query().order(ndb_models.Jurisdiction.name):
+      choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
 application = service.service_mapping(RoomApi, r'/wsgi_service')

@@ -478,8 +478,10 @@ class NewSite(ndb.Model):
   def BudgetStatement(self):
     if self.BudgetRemaining() > 0:
       return '$%0.2f unspent budget' % self.BudgetRemaining()
-    else:
+    elif self.BudgetRemaining() < 0:
       return '$%0.2f over budget' % (-1 * self.BudgetRemaining())
+    else:
+      return ''
     
   
 class SiteCaptain(ndb.Model):
