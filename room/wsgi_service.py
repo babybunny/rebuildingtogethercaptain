@@ -234,7 +234,7 @@ def _NewSiteModelToMessage(mdl):
   # any special handling, like for user objects or datetimes
   # internal only: search_prefixes
   if mdl.jurisdiction_choice:
-    s.jurisdiction_choice = mdl.jurisdiction_choice.integer_id(),
+    s.jurisdiction_choice = mdl.jurisdiction_choice.integer_id()
 
   return s
 
@@ -258,7 +258,6 @@ def _NewSiteMessageToModel(msg, mdl):
   mdl.announcement_subject = msg.announcement_subject
   mdl.volunteer_signup_link = msg.volunteer_signup_link
   mdl.announcement_body = msg.announcement_body
-  mdl.jurisdiction = msg.jurisdiction
   mdl.budget = msg.budget
   mdl.applicant_email = msg.applicant_email
   # can't set automatic fields:
