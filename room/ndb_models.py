@@ -327,7 +327,7 @@ class NewSite(ndb.Model):
       pos.hours_subtotal += s.HoursTotal()
       pos.miles += s.miles
       pos.mileage_subtotal += s.MileageTotal()
-    return by_pos.itervalues()
+    return list(by_pos.itervalues())
   
   
   @property
