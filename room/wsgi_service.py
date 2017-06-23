@@ -457,6 +457,8 @@ def _CheckRequestMessageToModel(msg, mdl):
   mdl.form_of_business = msg.form_of_business
   # can't set automatic fields:
   # program
+  if mdl.state == 'new':
+    mdl.state = 'submitted'
   if msg.captain:
     mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
   try:
@@ -482,6 +484,128 @@ class CheckRequest(messages.Message):
   form_of_business = messages.StringField(14)
 
       
+
+############
+# VendorReceipt #
+############
+
+def _VendorReceiptModelToMessage(mdl):
+  s = VendorReceipt(
+    id=mdl.key.integer_id(),
+    vendor=mdl.vendor,
+    description=mdl.description,
+    site=mdl.site.integer_id(),
+    amount=mdl.amount,
+    state=mdl.state
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.purchase_date:
+    s.purchase_date=mdl.purchase_date.isoformat()
+  else:
+    s.purchase_date = ''
+  if mdl.captain:
+    s.captain = mdl.captain.integer_id()
+  if mdl.supplier:
+    s.supplier = mdl.supplier.integer_id()
+
+  return s
+
+def _VendorReceiptMessageToModel(msg, mdl):
+  mdl.vendor = msg.vendor
+  mdl.description = msg.description
+  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.amount = msg.amount
+  mdl.state = msg.state
+  # can't set automatic fields
+  # NONE
+  if mdl.state == 'new':
+    mdl.state = 'submitted'
+  if msg.captain:
+    mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+  if msg.supplier:
+    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
+  try:
+    mdl.purchase_date = datetime.date(*map(int, msg.purchase_date.split('-')))
+  except Exception, e:
+    raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.purchase_date))
+  return mdl
+
+class VendorReceipt(messages.Message):
+  id = messages.IntegerField(1)
+  vendor = messages.StringField(2)
+  description = messages.StringField(3)
+  site = messages.IntegerField(4)
+  captain = messages.IntegerField(5)
+  amount = messages.FloatField(6)
+  state = messages.StringField(7)
+  purchase_date = messages.StringField(9)
+  supplier = messages.IntegerField(10)
+  # don't use program, it's automatic
+
+
+############
+# InKindDonation #
+############
+
+def _InKindDonationModelToMessage(mdl):
+  s = InKindDonation(
+    id=mdl.key.integer_id(),
+    labor_amount=mdl.labor_amount,
+    donor_phone=mdl.donor_phone,
+    description=mdl.description,
+    donor_info=mdl.donor_info,
+    site=mdl.site.integer_id(),
+    materials_amount=mdl.materials_amount,
+    state=mdl.state,
+    budget=mdl.budget,
+    donor=mdl.donor,
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.donation_date:
+    s.donation_date=mdl.donation_date.isoformat()
+  else:
+    s.donation_date = ''
+  if mdl.captain:
+    s.captain = mdl.captain.integer_id()
+  return s
+
+def _InKindDonationMessageToModel(msg, mdl):
+  mdl.labor_amount = msg.labor_amount
+  mdl.donor_phone = msg.donor_phone
+  mdl.description = msg.description
+  mdl.donor_info = msg.donor_info
+  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.materials_amount = msg.materials_amount
+  mdl.state = msg.state
+  mdl.budget = msg.budget
+  mdl.donor = msg.donor
+  # can't set automatic fields:
+  # program
+  if mdl.state == 'new':
+    mdl.state = 'submitted'
+  if msg.captain:
+    mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+  try:
+    mdl.donation_date = datetime.date(*map(int, msg.donation_date.split('-')))
+  except Exception, e:
+    raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.donation_date))
+  return mdl
+
+class InKindDonation(messages.Message):
+  id = messages.IntegerField(1)
+  labor_amount = messages.FloatField(2)
+  donor_phone = messages.StringField(3)
+  description = messages.StringField(4)
+  donor_info = messages.StringField(5)
+  site = messages.IntegerField(6)
+  materials_amount = messages.FloatField(7)
+  donation_date = messages.StringField(8)
+  captain = messages.IntegerField(9)
+  state = messages.StringField(10)
+  budget = messages.StringField(12)
+  donor = messages.StringField(13)
+    
+
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
 """
@@ -520,7 +644,7 @@ basic_crud_config = (
    _SupplierMessageToModel, _SupplierModelToMessage),
   (NewSite, ndb_models.NewSite,
    _NewSiteMessageToModel, _NewSiteModelToMessage),
-  (Site, ndb_models.NewSite,
+  (Site, ndb_models.NewSite,  # TODO: remove
    _SiteMessageToModel, _SiteModelToMessage),
   (OrderSheet, ndb_models.OrderSheet,
    _OrderSheetMessageToModel, _OrderSheetModelToMessage),
@@ -528,6 +652,11 @@ basic_crud_config = (
    _StaffTimeMessageToModel, _StaffTimeModelToMessage),
   (CheckRequest, ndb_models.CheckRequest,
    _CheckRequestMessageToModel, _CheckRequestModelToMessage),
+  (VendorReceipt, ndb_models.VendorReceipt,
+   _VendorReceiptMessageToModel, _VendorReceiptModelToMessage),
+  (InKindDonation, ndb_models.InKindDonation,
+   _InKindDonationMessageToModel, _InKindDonationModelToMessage),
+
 
   #  (Example, ndb_models.Example,
   # _ExampleMessageToModel, _ExampleModelToMessage),

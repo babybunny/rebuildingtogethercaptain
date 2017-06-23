@@ -413,7 +413,9 @@
 	            {% endif %}
 	            <tr>
 	              <td>
-		              {{ entity.captain.get().name|escape }}
+			{% if entity.captain %}
+			{{ entity.captain.get().name|escape }}
+			{% endif %}
 	              </td>
 	              <td>
 		              {{ entity.name|escape }}
@@ -466,7 +468,9 @@
 	            {% endif %}
 	            <tr>
 	              <td>
-		              {{ entity.captain.get().name|escape }}
+			{% if entity.captain %}
+			{{ entity.captain.get().name|escape }}
+			{% endif %}
 	              </td>
 	              <td>
 		              {{ entity.name|escape }}
@@ -582,7 +586,9 @@
 	            {% endif %}
 	            <tr>
 	              <td>
-		              {{ entity.captain.get().name|escape }}
+			{% if entity.captain %}
+			{{ entity.captain.get().name|escape }}
+			{% endif %}
 	              </td>
 	              <td>
 		              {{ entity.donor|escape }}
