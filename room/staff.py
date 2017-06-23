@@ -326,6 +326,42 @@ class StaffTime(SiteExpenseEditor):
   list_view = 'StaffTimeBySite'
   template_value = 'Staff Time'
   template_file = 'expense_form'
+
+
+class CheckRequestList(StaffHandler):
+  def get(self, site_id=None):
+    query = ndb_models.CheckRequest.query(ndb_models.CheckRequest.state != 'new')
+    params = {'which_site': 'All',
+              'expense_type': 'Staff Time',
+              'model_cls_name': 'CheckRequest',
+              'table_template': 'checkrequest_table.html'}
+    if site_id is not None:
+      site_key = ndb.Key(ndb_models.NewSite, int(site_id))
+      site = site_key.get()
+      query = query.filter(ndb_models.CheckRequest.site == site_key)
+      params['which_site'] = 'Site ' + site.number
+    else:
+      user, _ = common.GetUser(self.request)
+      if user.program_selected:
+        query = query.filter(ndb_models.CheckRequest.program == user.program_selected)
+    return _EntryList(self.request, ndb_models.CheckRequest, 'site_expense_list',
+                      params=params, query=query)
+
+
+class CheckRequestView(StaffHandler):
+  def get(self, id):
+    entity = ndb.Key(ndb_models.CheckRequest, int(id)).get()
+    return common.Respond(self.request, 'checkrequest_view',
+        {'entity': entity})
+
+  
+class CheckRequest(SiteExpenseEditor):
+  model_class = ndb_models.CheckRequest
+  list_view = 'CheckRequestBySite'
+  template_value = 'Check Request'
+  template_file = 'expense_form'
+
+
   
 """
 class ExampleList(StaffHandler):

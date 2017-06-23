@@ -15,7 +15,9 @@ from room import captain
 from google.appengine.api import users
 
 
-EXPENSE_KINDS = ('CheckRequest', 'VendorReceipt', 'InKindDonation', 'StaffTime')
+EXPENSE_KINDS = (
+    # 'CheckRequest',
+    'VendorReceipt', 'InKindDonation', 'StaffTime')
 
 
 class MainPage(webapp2.RequestHandler):
@@ -101,7 +103,21 @@ login_required = routes.PathPrefixRoute('/room', [
                   name='StaffTimeBySite'),
     webapp2.Route(r'/site/<site_id:\d+>/stafftime/<id:\d*>',
                   staff.StaffTime,
-                  name='StaffTime'),
+                  name='StaffTime'),    
+
+    webapp2.Route(r'/checkrequest_by_program',
+                  staff.CheckRequestList,
+                  name='CheckRequestByProgram'),
+    webapp2.Route(r'/checkrequest_view/<id:\d+>',
+                  staff.CheckRequestView,
+                  name='CheckRequestView'),
+    webapp2.Route(r'/site/<site_id:\d+>/checkrequest',
+                  staff.CheckRequestList,
+                  name='CheckRequestBySite'),
+    webapp2.Route(r'/site/<site_id:\d+>/checkrequest/<id:\d*>',
+                  staff.CheckRequest,
+                  name='CheckRequest'),
+
 
     # webapp2.Route(r'/example',
     #               staff.ExampleList,
@@ -204,18 +220,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='StaffNew'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='CheckRequestList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='CheckRequestView'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='CheckRequestEdit'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='CheckRequestNew'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='InKindDonationList'),  # TODO

@@ -213,7 +213,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{{ webapp2.uri_for('CheckRequestNew', args=[site.key.integer_id()]) }}">
+	                <a href="{{ webapp2.uri_for('CheckRequest', id='', site_id=site.key.integer_id()) }}">
 		                Submit a Request
 	                </a>
 	              </td>
@@ -393,7 +393,7 @@
         <a name="checkrequests_panel"></a>
         <div class="panel">
 	        <span class="actions">
-	          <a href="{{ webapp2.uri_for('CheckRequestList', args=[site.key.integer_id()]) }}">
+	          <a href="{{ webapp2.uri_for('CheckRequestBySite', site_id=site.key.integer_id()) }}">
 	            list all
 	          </a>
 	        </span>
@@ -425,12 +425,12 @@
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('CheckRequestView', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('CheckRequestView', id=entity.key.integer_id()) }}">
 		                view</a>
 		              {% if user.staff %}
 		              <span> or </span>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('CheckRequestEdit', args=[entity.key.integer_id()]) }}">
+		                 href="{{ webapp2.uri_for('CheckRequest', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
 		                edit
 		              </a>
 		              {% endif %}

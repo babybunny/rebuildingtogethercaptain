@@ -418,7 +418,66 @@ class StaffTime(messages.Message):
   position = messages.IntegerField(10)
 
 
+############
+# CheckRequest #
+############
 
+def _CheckRequestModelToMessage(mdl):
+  s = CheckRequest(
+    id=mdl.key.integer_id(),
+    labor_amount=mdl.labor_amount,
+    description=mdl.description,
+    site=mdl.site.integer_id(),
+    materials_amount=mdl.materials_amount,
+    food_amount=mdl.food_amount,
+    address=mdl.address,
+    tax_id=mdl.tax_id,
+    name=mdl.name,
+    state=mdl.state,
+    form_of_business=mdl.form_of_business,
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.payment_date:    
+    s.payment_date = mdl.payment_date.isoformat()
+  if mdl.captain:
+    s.captain = mdl.captain.integer_id()
+  return s
+
+def _CheckRequestMessageToModel(msg, mdl):
+  mdl.labor_amount = msg.labor_amount
+  mdl.description = msg.description
+  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.materials_amount = msg.materials_amount
+  mdl.food_amount = msg.food_amount
+  mdl.address = msg.address
+  mdl.tax_id = msg.tax_id
+  mdl.payment_date = msg.payment_date
+  mdl.name = msg.name
+  mdl.state = msg.state
+  mdl.form_of_business = msg.form_of_business
+  # can't set automatic fields:
+  # program
+  if msg.captain:
+      mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+
+  return mdl
+
+class CheckRequest(messages.Message):
+  id = messages.IntegerField(1)
+  labor_amount = messages.FloatField(2)
+  description = messages.StringField(3)
+  site = messages.IntegerField(4)
+  materials_amount = messages.FloatField(5)
+  food_amount = messages.FloatField(6)
+  address = messages.StringField(7)
+  tax_id = messages.StringField(8)
+  payment_date = messages.StringField(9)
+  captain = messages.IntegerField(10)
+  name = messages.StringField(11)
+  state = messages.StringField(12)
+  form_of_business = messages.StringField(14)
+
+      
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
 """
@@ -463,8 +522,11 @@ basic_crud_config = (
    _OrderSheetMessageToModel, _OrderSheetModelToMessage),
   (StaffTime, ndb_models.StaffTime,
    _StaffTimeMessageToModel, _StaffTimeModelToMessage),
-#  (Example, ndb_models.Example,
-# _ExampleMessageToModel, _ExampleModelToMessage),
+  (CheckRequest, ndb_models.CheckRequest,
+   _CheckRequestMessageToModel, _CheckRequestModelToMessage),
+
+  #  (Example, ndb_models.Example,
+  # _ExampleMessageToModel, _ExampleModelToMessage),
   )
 
 class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metaclass so we have to as well.

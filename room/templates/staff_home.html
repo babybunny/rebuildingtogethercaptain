@@ -274,8 +274,8 @@ $(function() {
 
       <div class="panel">
       <h2>Check Requests</h2>
-      <a href="{{ webapp2.uri_for('CheckRequestList') }}">
-	View a list of all Check Requests.
+      <a href="{{ webapp2.uri_for('CheckRequestByProgram') }}">
+	View a list of all Check Request entries for {{ user.program_selected }}
       </a>
       <br>
       Add a new Check Request from the site's page.
