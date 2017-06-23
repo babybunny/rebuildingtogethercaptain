@@ -34,6 +34,7 @@ define(
                 name: "name",
                 label: "Name",
                 control: "input",
+                required: true
             },
             {
                 name: "email",
@@ -72,7 +73,7 @@ define(
                 label: "Save changes"
             }
         ];
-        
+
         var ViewFactory = function(app, loading) {
             return new SimpleFormView('supplier', template, app.models.supplier, loading, fields)
         }

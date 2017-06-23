@@ -4,8 +4,12 @@ define(
         var Model = Backbone.Model.extend({
             // matches first part of method name in @remote.method
             urlRoot: '/wsgi_service.supplier_',
+            defaults: {
+                active: "Active",
+                visibility: "Everyone"
+            }
         });
-        
+
         return Model;
     }
 );
