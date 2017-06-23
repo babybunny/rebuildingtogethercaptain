@@ -26,7 +26,11 @@ $ python
                   staff.CheckRequest,
                   name='CheckRequest'),
 
->>> 
+
+Or do this so the whitespace doesn't get messed up:
+
+>>> with open('/tmp/v', 'w') as f: f.write(model_boilerplate.views('CheckRequest'))
+
 
 Then copy that text into main.py.  
 Search for 'example' to find the right place.
@@ -161,8 +165,47 @@ class {0}(messages.Message):
                '\n    '.join(d2g),
                '\n  '.join(g2d))
 
+EXPENSE_TYPES = ('CheckRequest', 'VendorReceipt', 'InKindDonation', 'StaffTime')
 
 def views(clsname):
+    if clsname in EXPENSE_TYPES:
+        return """
+class {0}List(StaffHandler):
+  def get(self, site_id=None):
+    query = ndb_models.{0}.query(ndb_models.{0}.state != 'new')
+    params = {{'which_site': 'All',
+              'expense_type': 'Staff Time',
+              'model_cls_name': '{0}',
+              'table_template': '{1}_table.html'}}
+    if site_id is not None:
+      site_key = ndb.Key(ndb_models.NewSite, int(site_id))
+      site = site_key.get()
+      query = query.filter(ndb_models.{0}.site == site_key)
+      params['which_site'] = 'Site ' + site.number
+    else:
+      user, _ = common.GetUser(self.request)
+      if user.program_selected:
+        query = query.filter(ndb_models.{0}.program == user.program_selected)
+    return _EntryList(self.request, ndb_models.{0}, 'site_expense_list',
+                      params=params, query=query)
+
+
+class {0}View(StaffHandler):
+  def get(self, id):
+    entity = ndb.Key(ndb_models.{0}, int(id)).get()
+    return common.Respond(self.request, '{1}_view',
+        {{'entity': entity}}
+)
+
+  
+class {0}(SiteExpenseEditor):
+  model_class = ndb_models.{0}
+  list_view = '{0}BySite'
+  template_value = 'Staff Time'
+  template_file = 'expense_form'
+
+""".format(clsname, clsname.lower())
+
     return """
 class {0}List(StaffHandler):
   def get(self):
@@ -177,6 +220,23 @@ class {0}(EditView):
 
 
 def routes(clsname):
+    if clsname in EXPENSE_TYPES:
+        return """
+
+    webapp2.Route(r'/{1}_by_program',
+                  staff.{0}List,
+                  name='{0}ByProgram'),
+    webapp2.Route(r'/{1}_view/<id:\d+>',
+                  staff.{0}View,
+                  name='{0}View'),
+    webapp2.Route(r'/site/<site_id:\d+>/{1}',
+                  staff.{0}List,
+                  name='{0}BySite'),
+    webapp2.Route(r'/site/<site_id:\d+>/{1}/<id:\d*>',
+                  staff.{0},
+                  name='{0}'),
+
+""".format(clsname, clsname.lower())
     return """
     webapp2.Route(r'/{1}',
                   staff.{0}List,
