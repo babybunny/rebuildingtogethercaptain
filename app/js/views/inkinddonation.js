@@ -1,10 +1,12 @@
 define(
     [
 	'bootstrap-datepicker',
-        'app/views/simple_form',
+        'app/views/rooms_form',
+	'app/views/model_select_control',
+        'app/models/captain_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(bsdp, SimpleFormView, template) {
+    function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -34,8 +36,8 @@ define(
             {
                 name: "captain",
                 label: "Captain",
-		control: "select",
-                // "captain is a Key.  TODO",
+		control: ModelSelectControl,
+		room_model_module: CaptainChoices,
             },
             {
                 name: "donation_date",
@@ -91,7 +93,13 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView('inkinddonation', template, app.models.inkinddonation, loading, fields)
+            return new RoomFormView({
+		name: 'inkinddonation',
+		template: template,
+		model: app.models.inkinddonation,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }

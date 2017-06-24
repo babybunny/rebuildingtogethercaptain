@@ -1,10 +1,13 @@
 define(
     [
 	'bootstrap-datepicker',
-        'app/views/simple_form',
+        'app/views/rooms_form',
+	'app/views/model_select_control',
+        'app/models/captain_choices',
+        'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(bsdp, SimpleFormView, template) {
+    function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, SupplierChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -34,8 +37,8 @@ define(
             {
                 name: "captain",
                 label: "Captain",
-                control: "select",
-                // "captain is a Key.  TODO",
+		control: ModelSelectControl,
+		room_model_module: CaptainChoices,
             },
             {
                 name: "purchase_date",
@@ -56,8 +59,8 @@ define(
             {
                 name: "supplier",
                 label: "Supplier",
-                control: "select",
-                // "supplier is a Key.  TODO",
+		control: ModelSelectControl,
+		room_model_module: SupplierChoices,
             },
             {
                 name: "description",
@@ -71,7 +74,13 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView('vendorreceipt', template, app.models.vendorreceipt, loading, fields)
+            return new RoomFormView({
+		name: 'vendorreceipt',
+		template: template,
+		model: app.models.vendorreceipt,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }

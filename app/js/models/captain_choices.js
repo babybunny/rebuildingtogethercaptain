@@ -3,9 +3,7 @@ define(
     function(Backbone) {
         var Model = Backbone.Model.extend({
             // matches first part of method name in @remote.method
-            urlRoot: '/wsgi_service.ordersheet_',
-	    visibility: 'Everyone',
-	    default_supplier: '',
+            urlRoot: '/wsgi_service.captain_choices_',
         });
         
         return Model;

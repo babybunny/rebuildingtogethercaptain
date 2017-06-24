@@ -5,7 +5,7 @@ define(
         'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(SimpleFormView, ModelSelectControl, SupplierChoices, template) {
+    function(RoomFormView, ModelSelectControl, SupplierChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -28,6 +28,7 @@ define(
                 name: "visibility",
                 label: "Visibility",
                 control: "select",
+		default: "Everyone",
                 options: [
                     {label: "Everyone", value: "Everyone"},
                     {label: "Staff Only", value: "Staff Only"},
@@ -42,22 +43,17 @@ define(
                 name: "delivery_options",
                 label: "Delivery options",
                 control: "select",
+		default: "No",
                 options: [
                     {label: "Yes", value: "Yes"},
                     {label: "No", value: "No"},
-                ]
+                ],
             },
-            {
-                name: "default_supplier",
-                label: "Default supplier",
-                control: ModelSelectControl,
-		room_model_module: SupplierChoices,
-            },
-
             {
                 name: "retrieval_options",
                 label: "Retrieval options",
                 control: "select",
+		default: "No",
                 options: [
                     {label: "Yes", value: "Yes"},
                     {label: "No", value: "No"},
@@ -72,10 +68,17 @@ define(
                 name: "pickup_options",
                 label: "Pickup options",
                 control: "select",
+		default: "No",
                 options: [
                     {label: "Yes", value: "Yes"},
                     {label: "No", value: "No"},
                 ]
+            },
+            {
+                name: "default_supplier",
+                label: "Defaultsupplier",
+                control: ModelSelectControl,
+		room_model_module: SupplierChoices,
             },
             {
                 name: "instructions",
@@ -89,14 +92,13 @@ define(
         ];
 	
         var ViewFactory = function(app, loading) {
-            var simpleform = new SimpleFormView({
+            return new RoomFormView({
 		name: 'ordersheet',
 		template: template,
 		model: app.models.ordersheet,
 		loading: loading,
 		fields: fields,
 	    });
-            return simpleform;
         }
         return ViewFactory;
     }

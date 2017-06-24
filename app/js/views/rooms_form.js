@@ -72,7 +72,6 @@ define(
                     this.$('#simple-form-backform').show();
                 }
                 if (this.form) {
-                    this.form.fields.toJSON();
                     this.firstfield = this.getFirstField();
                     this.form.setElement(this.$el.find('#simple-form-backform'));
                     this.form.render();

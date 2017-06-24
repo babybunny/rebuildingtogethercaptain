@@ -1,11 +1,12 @@
 define(
     [
         'bootstrap-datepicker',
-        'app/views/simple_form',
-        'app/models/staffposition_choice',
+        'app/views/rooms_form',
+	'app/views/model_select_control',
+        'app/models/captain_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(bsdp, SimpleFormView, CaptainChoice, template) {
+    function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -33,9 +34,23 @@ define(
                 ]
             },
             {
+                name: "captain",
+                label: "Captain",
+		control: ModelSelectControl,
+		room_model_module: CaptainChoices,
+            },
+            {
+                name: "payment_date",
+                label: "Payment date",
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd"},
+		required: true
+            },
+            {
                 name: "name",
                 label: "Name",
                 control: "input",
+		required: true
             },
             {
                 name: "address",
@@ -57,18 +72,6 @@ define(
                     {label: "Partnership", value: "Partnership"},
                     {label: "Don't Know", value: "Don't Know"},
                 ]
-            },
-            {
-                name: "payment_date",
-                label: "Payment date",
-                control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
-            },
-            {
-                name: "captain",
-                label: "Captain",
-                control: "select",
-                // "captain is a Key.  TODO",
             },
             {
                 name: "materials_amount",
@@ -97,7 +100,13 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView('checkrequest', template, app.models.checkrequest, loading, fields)
+            return new RoomFormView({
+		name: 'checkrequest',
+		template: template,
+		model: app.models.checkrequest,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }

@@ -823,6 +823,20 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
     
+
+# # # # # # # # # #
+#     Choices     #
+# # # # # # # # # #
+
+
+  @remote.method(message_types.VoidMessage,
+                 Choices)  
+  def captain_choices_read(self, request):
+    choices = Choices()
+    for mdl in ndb_models.Captain.query():
+      choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
+    return choices
+
   @remote.method(message_types.VoidMessage,
                  Choices)  
   def supplier_choices_read(self, request):
