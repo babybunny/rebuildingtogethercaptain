@@ -1,10 +1,11 @@
 define(
     [
-        'app/views/simple_form',
+        'app/views/rooms_form',
+	'app/views/model_select_control',
         'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(SimpleFormView, SupplierChoices, template) {
+    function(SimpleFormView, ModelSelectControl, SupplierChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -49,7 +50,8 @@ define(
             {
                 name: "default_supplier",
                 label: "Default supplier",
-                control: "select",
+                control: ModelSelectControl,
+		room_model_module: SupplierChoices,
             },
 
             {
@@ -85,17 +87,15 @@ define(
                 label: "Save changes"
             }
         ];
-        
+	
         var ViewFactory = function(app, loading) {
-            var simpleform = new SimpleFormView('ordersheet', template, app.models.ordersheet, loading);
-            app.models.supplier_choices = app.models.supplier_choices || new SupplierChoices();
-            app.models.supplier_choices.on('change', function(m) {
-                stanza = _.find(fields, function(f) { return f.name == 'default_supplier' });
-                stanza.options = _.map(m.get('choice'), function(e) { return {'label': e.label, 'value': e.id}; });                
-                simpleform.initialize_form(fields);
-                simpleform.render();
-            });
-            app.models.supplier_choices.fetch();
+            var simpleform = new SimpleFormView({
+		name: 'ordersheet',
+		template: template,
+		model: app.models.ordersheet,
+		loading: loading,
+		fields: fields,
+	    });
             return simpleform;
         }
         return ViewFactory;
