@@ -52,7 +52,9 @@ to add a new Item.
 	</a>
 	{{ item.key.integer_id() }}
       </td><td>
+	{% if item.appears_on_order_form %}
 	{{ item.appears_on_order_form.get().name|escape }}
+	{% endif %}
       </td><td>
 	{% if item.order_form_section %}
 	{{ item.order_form_section|escape }}
@@ -60,7 +62,11 @@ to add a new Item.
       </td><td>
 	  {{item.name|escape}}
       </td>
-      <td>{{ "%0.2f" % item.unit_cost }}</td>
+      <td>
+	{% if item.unit_cost %}
+	{{ "%0.2f" % item.unit_cost }}
+	{% endif %}
+      </td>
       <td>{{ item.measure|escape }}</td>
       <td>
 	{% if item.supplier %}
