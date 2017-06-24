@@ -330,24 +330,26 @@ def _OrderSheetModelToMessage(mdl):
     code=mdl.code,
     name=mdl.name,
     delivery_options=mdl.delivery_options,
-    default_supplier=mdl.default_supplier.integer_id(),
     visibility=mdl.visibility,
     retrieval_options=mdl.retrieval_options,
     pickup_options=mdl.pickup_options,
   )
   # any special handling, like for user objects or datetimes
+  if mdl.default_supplier:
+    s.default_supplier = mdl.default_supplier.integer_id()
   return s
 
 def _OrderSheetMessageToModel(msg, mdl):
   mdl.code = msg.code
   mdl.name = msg.name
   mdl.delivery_options = msg.delivery_options
-  mdl.default_supplier = ndb.Key(ndb_models.Supplier, msg.default_supplier)
   mdl.visibility = msg.visibility
   mdl.retrieval_options = msg.retrieval_options
   mdl.pickup_options = msg.pickup_options
   # can't set automatic fields:
   # TODO
+  if msg.default_supplier:
+    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.default_supplier)
   return mdl
 
 class OrderSheet(messages.Message):
