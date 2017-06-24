@@ -608,6 +608,63 @@ class InKindDonation(messages.Message):
   donor = messages.StringField(13)
     
 
+############
+# Item #
+############
+
+def _ItemModelToMessage(mdl):
+  s = Item(
+    id=mdl.key.integer_id(),
+    description=mdl.description,
+    bar_code_number=mdl.bar_code_number,
+    unit_cost=mdl.unit_cost,
+    must_be_returned=mdl.must_be_returned,
+    measure=mdl.measure,
+    name=mdl.name,
+    supplier_part_number=mdl.supplier_part_number,
+    url=mdl.url,
+    order_form_section=mdl.order_form_section,
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.appears_on_order_form:
+    s.appears_on_order_form = mdl.appears_on_order_form.integer_id()
+  if mdl.supplier:
+    s.supplier = mdl.supplier.integer_id()
+  return s
+
+def _ItemMessageToModel(msg, mdl):
+  mdl.description = msg.description
+  mdl.bar_code_number = msg.bar_code_number
+  mdl.unit_cost = msg.unit_cost
+  mdl.must_be_returned = msg.must_be_returned
+  mdl.measure = msg.measure
+  mdl.name = msg.name
+  mdl.supplier_part_number = msg.supplier_part_number
+  mdl.url = msg.url
+  mdl.order_form_section = msg.order_form_section
+  # can't set automatic fields:
+  if msg.appears_on_order_form:
+    mdl.appears_on_order_form = ndb.Key(ndb_models.OrderSheet, msg.appears_on_order_form)
+  if msg.supplier:
+    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
+  return mdl
+
+class Item(messages.Message):
+  id = messages.IntegerField(1)
+  description = messages.StringField(2)
+  bar_code_number = messages.IntegerField(3)
+  unit_cost = messages.FloatField(4)
+  appears_on_order_form = messages.IntegerField(5)
+  must_be_returned = messages.StringField(6)
+  measure = messages.StringField(7)
+  name = messages.StringField(8)
+  supplier_part_number = messages.StringField(9)
+  url = messages.StringField(10)
+  order_form_section = messages.StringField(11)
+  supplier = messages.IntegerField(12)
+
+
+    
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
 """
@@ -658,6 +715,8 @@ basic_crud_config = (
    _VendorReceiptMessageToModel, _VendorReceiptModelToMessage),
   (InKindDonation, ndb_models.InKindDonation,
    _InKindDonationMessageToModel, _InKindDonationModelToMessage),
+  (Item, ndb_models.Item,
+   _ItemMessageToModel, _ItemModelToMessage),
 
 
   #  (Example, ndb_models.Example,
@@ -858,6 +917,14 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   def jurisdiction_choices_read(self, request):
     choices = Choices()
     for mdl in ndb_models.Jurisdiction.query().order(ndb_models.Jurisdiction.name):
+      choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
+    return choices
+
+  @remote.method(message_types.VoidMessage,
+                 Choices)  
+  def ordersheet_choices_read(self, request):
+    choices = Choices()
+    for mdl in ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 

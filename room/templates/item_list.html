@@ -18,6 +18,10 @@ $(document).ready(function(){
 {% endblock %}
 {%block about_this_page %}
 <h2>All Items</h2>
+<a href="{{ webapp2.uri_for('Item', id='') }}">
+  Click here
+</a>
+to add a new Item.
 {%endblock%}
 {%block body%}
 <table class="list tablesorter" id="item_list">
@@ -38,17 +42,17 @@ $(document).ready(function(){
     <tr>
       <td>
 	{% if item.thumbnail %}
-	<a href="{{ webapp2.uri_for("ItemEdit", id=item.key.integer_id()) }}">
+	<a href="{{ webapp2.uri_for("Item", id=item.key.integer_id()) }}">
 	  <img src="{{ webapp2.uri_for("ItemThumbnail", id=item.key.integer_id()) }}">
 	</a>
 	{% endif %}
       </td><td>
-	<a href="{{ webapp2.uri_for("ItemEdit", id=item.key.integer_id()) }}">
+	<a href="{{ webapp2.uri_for("Item", id=item.key.integer_id()) }}">
 	  (edit)
 	</a>
 	{{ item.key.integer_id() }}
       </td><td>
-	{{ item.appears_on_order_form.name|escape }}
+	{{ item.appears_on_order_form.get().name|escape }}
       </td><td>
 	{% if item.order_form_section %}
 	{{ item.order_form_section|escape }}
@@ -60,14 +64,12 @@ $(document).ready(function(){
       <td>{{ item.measure|escape }}</td>
       <td>
 	{% if item.supplier %}
-	{{ item.supplier|escape }}
+	{{ item.supplier.get().name|escape }}
 	{% endif %}
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-
-<form action="{% url room.views.ItemNew%}"><input type=submit value="Add a new item"></form>
 
 {%endblock%}

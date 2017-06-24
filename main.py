@@ -145,6 +145,13 @@ login_required = routes.PathPrefixRoute('/room', [
                   name='InKindDonation'),
 
 
+    webapp2.Route(r'/item',
+                  staff.ItemList,
+                  name='ItemList'),
+    webapp2.Route(r'/item/<id:\d*>',
+                  staff.Item,
+                  name='Item'),
+
     # webapp2.Route(r'/example',
     #               staff.ExampleList,
     #               name='ExampleList'),
@@ -237,12 +244,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='CaptainEdit'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='ItemList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='ItemNew'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='StaffNew'),  # TODO

@@ -414,6 +414,18 @@ class InKindDonation(SiteExpenseEditor):
   template_value = 'In-Kind Donation'
   template_file = 'expense_form'
 
+
+
+class ItemList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Item, 'item_list')
+
+class Item(EditView):
+  model_class = ndb_models.Item
+  list_view = 'ItemList'
+  template_value = 'item'
+  template_file = 'simple_form'
+
   
 """
 class ExampleList(StaffHandler):

@@ -1,9 +1,12 @@
 define(
     [
-        'app/views/simple_form',
+        'app/views/rooms_form',
+	'app/views/model_select_control',
+        'app/models/supplier_choices',
+        'app/models/ordersheet_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(SimpleFormView, template) {
+    function(RoomFormView, ModelSelectControl, SupplierChoices, OrderSheetChoices, template) {
         var fields = [
             {
                 name: "id", // The key of the model attribute
@@ -11,100 +14,110 @@ define(
                 control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
                 disabled: true // By default controls are editable. Here we disabled it.
             },
-            {
-                control: "button",
-                label: "Save changes"
-            },
-            # boilerplate
-            {
-                name: "picture",
-                label: "Picture",
-            # "picture is a BlobProperty, skipping",
-            }
-            {
-                name: "description",
-                label: "Description",
-                control: "input",
-            }
-            {
-                name: "bar_code_number",
-                label: "Bar code number",
-                control: "input",
-            }
-            {
-                name: "unit_cost",
-                label: "Unit cost",
-                control: "input",
-            }
-            {
-                name: "appears_on_order_form",
-                label: "Appears on order form",
-                # "appears_on_order_form is a Key.  TODO",
-            }
-            {
-                name: "must_be_returned",
-                label: "Must be returned",
-                control: "input",
-            }
-            {
-                name: "measure",
-                label: "Measure",
-                control: "input",
-            }
-            {
-                name: "last_editor",
-                label: "Last editor",
-                # "last_editor is a UserProperty('last_editor').  TODO",
-            }
+            // boilerplate
             {
                 name: "name",
                 label: "Name",
                 control: "input",
-            }
+            },
             {
-                name: "created",
-                label: "Created",
-                # "created is a DateTimeProperty('created', auto_now_add=True).  TODO",
-            }
-            {
-                name: "supplier_part_number",
-                label: "Supplier part number",
+                name: "bar_code_number",
+                label: "Bar code number",
                 control: "input",
-            }
+            },
             {
-                name: "modified",
-                label: "Modified",
-                # "modified is a DateTimeProperty('modified', auto_now=True).  TODO",
-            }
+                name: "unit_cost",
+                label: "Unit cost",
+                control: "input",
+            },
+            {
+                name: "measure",
+                label: "Measure",
+                control: "select",
+                options: [
+                    {label: "Box", value: "Box"},
+                    {label: "", value: ""},
+                    {label: "Yard", value: "Yard"},
+                    {label: "Cartridge", value: "Cartridge"},
+                    {label: "Sq. Yds.", value: "Sq. Yds."},
+                    {label: "Tube", value: "Tube"},
+                    {label: "Bundle", value: "Bundle"},
+                    {label: "Drop-off", value: "Drop-off"},
+                    {label: "Bag", value: "Bag"},
+                    {label: "Gallon", value: "Gallon"},
+                    {label: "Ton", value: "Ton"},
+                    {label: "Board", value: "Board"},
+                    {label: "Bottle", value: "Bottle"},
+                    {label: "Each", value: "Each"},
+                    {label: "Pair", value: "Pair"},
+                    {label: "Sheet", value: "Sheet"},
+                    {label: "Tub", value: "Tub"},
+                    {label: "Home", value: "Home"},
+                    {label: "Other", value: "Other"},
+                    {label: "Roll", value: "Roll"},
+                    {label: "Section", value: "Section"},
+                ]
+            },
+            {
+                name: "must_be_returned",
+                label: "Must be returned",
+                control: "select",
+                options: [
+                    {label: "Yes", value: "Yes"},
+                    {label: "No", value: "No"},
+                ]
+            },
             {
                 name: "url",
                 label: "Url",
                 control: "input",
-            }
+            },
             {
                 name: "supports_extra_name_on_order",
                 label: "Supports extra name on order",
-                # "supports_extra_name_on_order is a BooleanProperty('supports_extra_name_on_order', default=False).  TODO",
-            }
+		control: "checkbox",
+            },
+            {
+                name: "appears_on_order_form",
+                label: "Appears on order form",
+		control: ModelSelectControl,
+		room_model_module: OrderSheetChoices,
+            },
             {
                 name: "order_form_section",
                 label: "Order form section",
                 control: "input",
-            }
+            },
             {
                 name: "supplier",
                 label: "Supplier",
-                # "supplier is a Key.  TODO",
-            }
+		control: ModelSelectControl,
+		room_model_module: SupplierChoices,
+            },
             {
-                name: "thumbnail",
-                label: "Thumbnail",
-            # "thumbnail is a BlobProperty, skipping",
+                name: "supplier_part_number",
+                label: "Supplier part number",
+                control: "input",
+            },
+            {
+                name: "description",
+                label: "Description",
+                control: "input",
+            },
+            {
+                control: "button",
+                label: "Save changes"
             }
         ];
         
         var ViewFactory = function(app, loading) {
-            return new SimpleFormView(fields, 'item', template, app.models.item, loading)
+            return new RoomFormView({
+		name: 'item',
+		template: template,
+		model: app.models.item,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }
