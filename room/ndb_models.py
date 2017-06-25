@@ -505,7 +505,7 @@ class Order(ndb.Model):
   state = ndb.StringProperty()
   actual_total = ndb.FloatProperty()
   reconciliation_notes = ndb.TextProperty(default='')
-  invoice_date = ndb.DateTimeProperty()
+  invoice_date = ndb.DateProperty()
   vendor = ndb.KeyProperty(kind=Supplier)
   logistics_start = ndb.StringProperty()
   logistics_end = ndb.StringProperty()
