@@ -516,6 +516,10 @@ class Order(ndb.Model):
   last_editor = ndb.UserProperty(auto_current_user=True)
 
   @property
+  def name(self):
+    return '%s %s' % (self.site.get().number, self.order_sheet.get().name)
+
+  @property
   def OrderItems(self):
     return OrderItem.query(OrderItem.order == self.key)
 

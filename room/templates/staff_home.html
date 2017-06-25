@@ -273,6 +273,15 @@ $(function() {
       </div>
 
       <div class="panel">
+      <h2>Orders</h2>
+      <a href="{{ webapp2.uri_for('OrderByProgram') }}">
+	View a list of all Orders for {{ user.program_selected }}.  May take a while.
+      </a>
+      <br>
+      Add a new Order from the site's page.
+      </div>
+
+      <div class="panel">
       <h2>Check Requests</h2>
       <a href="{{ webapp2.uri_for('CheckRequestByProgram') }}">
 	View a list of all Check Request entries for {{ user.program_selected }}.

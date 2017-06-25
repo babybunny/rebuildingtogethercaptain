@@ -28,4 +28,4 @@ class ModelsTest(unittest2.TestCase):
     
     def testSiteBudget(self):
         mdl = self.keys['SITE'].get()
-        self.assertEquals('$4818.88 unspent budget', mdl.BudgetStatement())
+        self.assertEquals('$4827.98 unspent budget', mdl.BudgetStatement())
