@@ -33,18 +33,16 @@ define(
                     fields: fields,
                     events: {
                         'submit': function(e) {
-                            console.log(name + ' submit backform');
+                            console.log(this.name + ' submit backform');
                             e.preventDefault();
-                            res = this.model.save();
-                            if (res) {
-                                res.done(function(result) {
-                                    this.saved = true;
-                                    this.render();
-                                });
-                                res.fail(function(error) {
-                                    alert(error);
-                                });
-                            }
+                            this.model.save({
+                                nerd: true,
+                                error: function(model, response, options) {
+                                    console.log('save error');
+                                    console.log(response);
+                                },
+                                dork: true
+                            });
                             return false;
                         }
                     }
