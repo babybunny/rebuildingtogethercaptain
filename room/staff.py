@@ -181,11 +181,13 @@ class SitesAndCaptains(StaffHandler):
     query = ndb_models.NewSite.query(ndb_models.NewSite.program == user.program_selected)
     query.order(ndb_models.NewSite.number)
     entries = list(query)
+    logging.info('loaded %d sites for %s', len(entries), user.program_selected)
     sitecaptains_by_site = {}
     # TODO: this is fetching too many - we only need those for the current
     # program.  use ancestor?
     for sc in ndb_models.SiteCaptain.query():
       sitecaptains_by_site.setdefault(sc.site.integer_id(), []).append(sc)
+    logging.info('loaded sitecaptains')
     for s in entries:
       k = s.key.integer_id()
       if k in sitecaptains_by_site:
