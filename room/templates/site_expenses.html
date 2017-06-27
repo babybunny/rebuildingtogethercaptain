@@ -50,8 +50,8 @@ $(function(){
 {% endblock %}
 {%block body%}
 
-{% set orders = site.Orders %}
-{% if orders.Count %}
+{% set entries = site.Orders %}
+{% if entries.Count %}
 <h3>Orders</h3>
 {% include "order_table.html" %}
 {% endif %}
