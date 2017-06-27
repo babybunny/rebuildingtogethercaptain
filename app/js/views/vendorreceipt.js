@@ -1,8 +1,8 @@
 define(
     [
-	'bootstrap-datepicker',
+	      'bootstrap-datepicker',
         'app/views/rooms_form',
-	'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/captain_choices',
         'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
@@ -37,8 +37,8 @@ define(
             {
                 name: "captain",
                 label: "Captain",
-		control: ModelSelectControl,
-		room_model_module: CaptainChoices,
+		            control: ModelSelectControl,
+		            room_model_module: CaptainChoices,
             },
             {
                 name: "purchase_date",
@@ -52,15 +52,10 @@ define(
                 control: "input",
             },
             {
-                name: "vendor",
-                label: "Vendor",
-                control: "input",
-            },
-            {
                 name: "supplier",
                 label: "Supplier",
-		control: ModelSelectControl,
-		room_model_module: SupplierChoices,
+		            control: ModelSelectControl,
+		            room_model_module: SupplierChoices,
             },
             {
                 name: "description",
@@ -75,12 +70,12 @@ define(
         
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		name: 'vendorreceipt',
-		template: template,
-		model: app.models.vendorreceipt,
-		loading: loading,
-		fields: fields,
-	    });
+		            name: 'vendorreceipt',
+		            template: template,
+		            model: app.models.vendorreceipt,
+		            loading: loading,
+		            fields: fields,
+	          });
         }
         return ViewFactory;
     }
