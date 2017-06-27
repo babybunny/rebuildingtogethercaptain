@@ -70,10 +70,8 @@ $(function() {
 	{% endfor %}
       </td>
       <td>
-	{# This is killing 2017 Safe 
 	Orders: ${{ site.OrderTotal() }}
 	<br>{{ site.BudgetStatement() }}
-	#}
 	{% if site.NeedsAttention() %}
 	<br>Needs Attention
 	{% endif %}
