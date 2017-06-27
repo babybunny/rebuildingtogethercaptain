@@ -215,6 +215,9 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='SiteNew'),  # TODO
+    webapp2.Route(r'/item_thumbnail',
+                  Placeholder,
+                  name='ItemThumbnail'),  # TODO
     webapp2.Route(r'/site_list',
                   Placeholder,
                   name='SiteList'),  # TODO
