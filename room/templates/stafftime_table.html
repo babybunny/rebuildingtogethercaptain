@@ -25,19 +25,22 @@
 	{{ entity.site.get().number|escape }}
 	</a>
       </td><td>
-	{{ entity.position.get().position_name|escape }}
+	      {{ entity.position.get().position_name|escape }}
       </td><td>
-	{{ "%0.2f" % entity.hours }}
-      </td>
+        {% if entity.hours %}
+	      {{ "%0.2f" % entity.hours }}
+        {% endif %}
       </td><td>
-	{{ "%0.2f" % entity.miles }}
+        {% if entity.miles %}
+	      {{ "%0.2f" % entity.miles }}
+        {% endif %}
       </td>
       <td class="dollar">
-	${{ "%0.2f" % entity.Total() }}
+	      ${{ "%0.2f" % entity.Total() }}
       </td><td>
-	{{ entity.activity_date|escape }}
+	      {{ entity.activity_date|escape }}
       </td><td>
-	{{ entity.description|escape }}
+	      {{ entity.description|escape }}
       </td>
     </tr>
     {% endfor %}
