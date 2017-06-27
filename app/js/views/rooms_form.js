@@ -3,7 +3,7 @@ define(
     function(Backbone, Backform, bootstrap) {
 
 	// options: name, template, model, loading, fields
-	var SimpleFormView = Backbone.View.extend({
+	var RoomFormView = Backbone.View.extend({
             el: '#simple-form-view',
             events: {
                 'click #simple-form-save': 'save'
@@ -36,12 +36,10 @@ define(
                             console.log(this.name + ' submit backform');
                             e.preventDefault();
                             this.model.save({
-                                nerd: true,
                                 error: function(model, response, options) {
                                     console.log('save error');
                                     console.log(response);
                                 },
-                                dork: true
                             });
                             return false;
                         }
@@ -86,6 +84,6 @@ define(
                 this.model.save();
             }
         });
-        return SimpleFormView;
+        return RoomFormView;
     }
 );
