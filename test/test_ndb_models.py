@@ -24,8 +24,12 @@ class ModelsTest(unittest2.TestCase):
 
     def testOrderUnicode(self):
         o = self.keys['ORDER'].get()
-        self.assertEquals(u'110TEST Fixme Center Some Supplies 1 items $10.11', unicode(o))
+        self.assertEquals(u'110TEST Fixme Center Some Supplies 1 items $10.92', unicode(o))
     
+    def testOrder2Unicode(self):
+        o = self.keys['ORDER2'].get()
+        self.assertEquals(u'110TEST Fixme Center Some Supplies 0 items $9.10', unicode(o))
+
     def testSiteBudget(self):
         mdl = self.keys['SITE'].get()
-        self.assertEquals('$4827.98 unspent budget', mdl.BudgetStatement())
+        self.assertEquals('$4838.09 unspent budget', mdl.BudgetStatement())

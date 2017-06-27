@@ -236,7 +236,6 @@ def CreateAll():
     sub_total=9.99,
     notes='''These are very very nice order notes.''',
     state='Submitted',
-    actual_total=10.11,
     reconciliation_notes='''These are the reconciliation notes from the very nice staff''',
     invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 3),
     vendor=KEYS['SUPPLIER'],

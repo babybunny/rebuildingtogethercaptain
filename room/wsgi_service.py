@@ -45,6 +45,7 @@ class Program(messages.Message):
 class Programs(messages.Message):
   program = messages.MessageField(Program, 1, repeated=True)
 
+  
 ################
 # Jurisdiction #
 ################
@@ -680,6 +681,7 @@ def _OrderModelToMessage(mdl):
     logistics_start=mdl.logistics_start,
     state=mdl.state,
     notes=mdl.notes,
+    actual_total=mdl.actual_total,
   )
   # any special handling, like for user objects or datetimes
   if mdl.vendor:
@@ -700,6 +702,7 @@ def _OrderMessageToModel(msg, mdl):
   mdl.logistics_end = msg.logistics_end
   mdl.logistics_instructions = msg.logistics_instructions
   mdl.logistics_start = msg.logistics_start
+  mdl.actual_total = msg.actual_total
 
   if msg.vendor:
     mdl.vendor = ndb.Key(ndb_models.Supplier, msg.vendor)
@@ -722,7 +725,7 @@ class Order(messages.Message):
   invoice_date = messages.StringField(9)
   state = messages.StringField(10)
   vendor = messages.IntegerField(11)
-
+  actual_total = messages.FloatField(12)
 
         
 # Use the multi-line string below as a template for adding models.
@@ -948,7 +951,8 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
 # # # # # # # # # #
 #     Choices     #
 # # # # # # # # # #
-
+# These APIs exist to populate drop-down selections in UI.
+# Used for models that have foreign keys.
 
   @remote.method(message_types.VoidMessage,
                  Choices)  

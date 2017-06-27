@@ -70,6 +70,12 @@ define(
                 control: "textarea",
             },
             {
+                name: "actual_total",
+                label: "Actual total",
+                control: "input",
+                helpMessage: "Use this is in the rare case when the order's actual total can't be automatically computed correctly."
+            },
+            {
                 control: "button",
                 label: "Save changes"
             }
