@@ -205,6 +205,61 @@ Total Expenses:
 </div>
 {% endif %}
 
+
+{% set entries = site.InKindDonations %}
+{% if entries.Count() %}
+<div class="expense">
+  <h3 class="total">
+    Total: ${{ "%0.2f" % site.InKindDonationTotal() }}
+  </h3>
+  <h3>In-kind Donations</h3>
+  <table class="list printable tablesorter" id="order_list">
+    <thead>
+      <tr>
+        <th>
+	        Donor
+        </th>
+        <th>
+	        $ Labor Amount
+        </th>
+        <th>
+	        $ Materials Amount
+        </th>
+        <th>
+	        Description
+        </th>
+        <th>
+	        $ Total
+        </th>
+      </tr>
+    </thead>
+    <tbody>    
+      {% for ik in entries %}
+      {% if ik.Total() != 0 %}
+      <tr>
+        <td>	
+	        {{ ik.donor }}	
+        </td>
+        <td>
+	        {{ "%0.2f" % ik.labor_amount}}
+        </td>
+        <td>
+	        {{ "%0.2f" % ik.materials_amount}}
+        </td>
+        <td class="notes">
+	        {{ ik.description }}
+        </td>
+        <td class="dollar">
+	        $ {{ "%0.2f" % ik.Total() }}
+        </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
 {% set by_pos = site.StaffTimesByPosition %}
 {% if by_pos %}
 <div class="expense">
