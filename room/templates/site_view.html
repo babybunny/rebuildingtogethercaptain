@@ -330,6 +330,11 @@
         {% if site.Orders.Count() %}
         <a name="order_panel"></a>
         <div class="panel">
+	        <span class="actions">
+	          <a href="{{ webapp2.uri_for('OrderBySite', site_id=site.key.integer_id()) }}">
+	            list all
+	          </a>
+	        </span>
           <h3>Orders in progress</h3>
           <table id="orders" class="list tablesorter">
 	          <thead>

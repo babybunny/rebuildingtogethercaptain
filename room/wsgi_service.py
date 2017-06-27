@@ -664,7 +664,67 @@ class Item(messages.Message):
   supplier = messages.IntegerField(12)
 
 
-    
+
+############
+# Order #
+############
+
+def _OrderModelToMessage(mdl):
+  s = Order(
+    id=mdl.key.integer_id(),
+    site=mdl.site.integer_id(),
+    reconciliation_notes=mdl.reconciliation_notes,
+    logistics_end=mdl.logistics_end,
+    logistics_instructions=mdl.logistics_instructions,
+    order_sheet=mdl.order_sheet.integer_id(),
+    logistics_start=mdl.logistics_start,
+    state=mdl.state,
+    notes=mdl.notes,
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.vendor:
+    s.vendor = mdl.vendor.integer_id()
+  if mdl.invoice_date:
+    s.invoice_date=mdl.invoice_date.isoformat()
+  else:
+    s.donation_date = ''
+
+  return s
+
+def _OrderMessageToModel(msg, mdl):
+  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.order_sheet = ndb.Key(ndb_models.OrderSheet, msg.order_sheet)
+  mdl.state = msg.state
+  mdl.notes = msg.notes
+  mdl.reconciliation_notes = msg.reconciliation_notes
+  mdl.logistics_end = msg.logistics_end
+  mdl.logistics_instructions = msg.logistics_instructions
+  mdl.logistics_start = msg.logistics_start
+
+  if msg.vendor:
+    mdl.vendor = ndb.Key(ndb_models.Supplier, msg.vendor)
+  try:
+    mdl.invoice_date = datetime.date(*map(int, msg.invoice_date[:10].split('-')))
+  except Exception, e:
+    raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {} {}'.format(msg.invoice_date, e))
+
+  return mdl
+
+class Order(messages.Message):
+  id = messages.IntegerField(1)
+  site = messages.IntegerField(2)
+  order_sheet = messages.IntegerField(3)
+  reconciliation_notes = messages.StringField(4)
+  logistics_end = messages.StringField(5)
+  logistics_instructions = messages.StringField(6)
+  logistics_start = messages.StringField(7)
+  notes = messages.StringField(8)
+  invoice_date = messages.StringField(9)
+  state = messages.StringField(10)
+  vendor = messages.IntegerField(11)
+
+
+        
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
 """
@@ -717,6 +777,8 @@ basic_crud_config = (
    _InKindDonationMessageToModel, _InKindDonationModelToMessage),
   (Item, ndb_models.Item,
    _ItemMessageToModel, _ItemModelToMessage),
+  (Order, ndb_models.Order,
+   _OrderMessageToModel, _OrderModelToMessage),
 
 
   #  (Example, ndb_models.Example,

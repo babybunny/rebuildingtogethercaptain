@@ -33,7 +33,7 @@
     </tr>
   </thead>
   <tbody>    
-    {% for order in orders %}
+    {% for order in entries %}
     <tr>
       {% if in_form %}
       <td>
@@ -68,7 +68,7 @@
 	{% endif %}
 	{% endif %}
 	-
-	<a href="{{ webapp2.uri_for('OrderEdit', id=order.key.integer_id()) }}">
+	<a href="{{ webapp2.uri_for('Order', site_id=order.site.integer_id(), id=order.key.integer_id()) }}">
 	  Edit
 	</a>
 	</span>

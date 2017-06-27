@@ -513,7 +513,7 @@ class Order(ndb.Model):
   state = ndb.StringProperty()
   actual_total = ndb.FloatProperty()
   reconciliation_notes = ndb.TextProperty(default='')
-  invoice_date = ndb.DateTimeProperty()
+  invoice_date = ndb.DateProperty()
   vendor = ndb.KeyProperty(kind=Supplier)
   logistics_start = ndb.StringProperty()
   logistics_end = ndb.StringProperty()
@@ -522,6 +522,10 @@ class Order(ndb.Model):
   created_by = ndb.UserProperty(auto_current_user_add=True)
   modified = ndb.DateTimeProperty(auto_now=True)
   last_editor = ndb.UserProperty(auto_current_user=True)
+
+  @property
+  def name(self):
+    return '%s %s' % (self.site.get().number, self.order_sheet.get().name)
 
   @property
   def OrderItems(self):

@@ -313,6 +313,7 @@ class SiteExpenseList(StaffHandler):
       user, _ = common.GetUser(self.request)
       if user.program_selected:
         query = query.filter(mdl_cls.program == user.program_selected)
+    logging.info('found %d orders for %s', query.count(), query)
     return _EntryList(self.request, mdl_cls, 'site_expense_list',
                       params=params, query=query)
 
@@ -409,7 +410,6 @@ class InKindDonationView(StaffHandler):
         {'entity': entity}
 )
 
-  
 class InKindDonation(SiteExpenseEditor):
   model_class = ndb_models.InKindDonation
   list_view = 'InKindDonationBySite'
@@ -417,6 +417,30 @@ class InKindDonation(SiteExpenseEditor):
   template_file = 'expense_form'
 
 
+class OrderList(SiteExpenseList):
+  model_class = 'Order'
+  expense_type = 'Order'
+  table_template = 'order_table.html'
+
+class OrderView(StaffHandler):
+  def get(self, order_id):
+    order = models.Order.get_by_id(int(order_id))
+    q = models.OrderItem.all().filter('order = ', order)
+    order_items = [oi for oi in q if oi.FloatQuantity()]
+    _SortOrderItemsWithSections(order_items)
+    d = {'orders': [{'order': order,
+                     'order_items': order_items}],
+         'action_verb': 'Review',
+         'show_logistics_details': True,
+    }
+    return common.Respond(request, 'order_fulfill', d)
+
+class Order(SiteExpenseEditor):
+  model_class = ndb_models.Order
+  list_view = 'OrderBySite'
+  template_value = 'Order'
+  template_file = 'expense_form'
+            
 
 class ItemList(StaffHandler):
   def get(self):
