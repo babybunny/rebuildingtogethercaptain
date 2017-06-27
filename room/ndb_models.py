@@ -273,7 +273,8 @@ class NewSite(ndb.Model):
   photo_link.help_text = "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
   volunteer_signup_link = ndb.StringProperty()
   volunteer_signup_link.help_text = "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
-
+  latest_computed_expenses = ndb.FloatProperty()
+  
   @property
   def IsCDBG(self):
     return 'CDBG' in self.jurisdiction
@@ -402,7 +403,6 @@ class NewSite(ndb.Model):
     self.search_prefixes = [p.lower() for p in prefixes]
     logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
     k = super(NewSite, self).put(*a, **k)
-    self.SaveTheChildren()
     return k
   
   def Label(self):
@@ -452,12 +452,20 @@ class NewSite(ndb.Model):
   def StaffTimeTotal(self):
     """Only works if self has been saved."""
     return sum(cr.Total() or 0 for cr in self.StaffTimes)
-  
+
+  def RecomputeExpenses(self):
+    logging.info('Recomputing expenses for %s', self.number)
+    self.latest_computed_expenses = (
+      self.order_total +
+      self.CheckRequestTotal() +
+      self.StaffTimeTotal() +
+      self.VendorReceiptTotal())
+    self.put()
+
   def Expenses(self):
-    return (self.order_total +
-            self.CheckRequestTotal() +
-            self.StaffTimeTotal() +
-            self.VendorReceiptTotal())
+    if self.latest_computed_expenses is None:
+      self.RecomputeExpenses()
+    return self.latest_computed_expenses
   
   def BudgetRemaining(self):
     if self.budget:
@@ -537,7 +545,9 @@ class Order(ndb.Model):
 
   def put(self, *a, **k):
     self.program = self.site.get().program
-    return super(Order, self).put(*a, **k)
+    me = super(Order, self).put(*a, **k)
+    self.site.get().RecomputeExpenses()
+    return me
 
   def __unicode__(self):
     return ' '.join((self.site.get().number, self.site.get().name,
@@ -849,8 +859,10 @@ class CheckRequest(ndb.Model):
 
   def put(self, *a, **k):
     self.program = self.site.get().program
-    return super(CheckRequest, self).put(*a, **k)
-
+    me = super(CheckRequest, self).put(*a, **k)
+    self.site.get().RecomputeExpenses()
+    return me
+    
   def Total(self):
     return self.labor_amount + self.materials_amount + self.food_amount
 
@@ -880,8 +892,10 @@ class VendorReceipt(ndb.Model):
 
   def put(self, *a, **k):
     self.program = self.site.get().program
-    return super(VendorReceipt, self).put(*a, **k)
-
+    me = super(VendorReceipt, self).put(*a, **k)
+    self.site.get().RecomputeExpenses()
+    return me
+    
   def Total(self):
     return self.amount or 0
 
@@ -916,8 +930,10 @@ class InKindDonation(ndb.Model):
 
   def put(self, *a, **k):
     self.program = self.site.get().program
-    return super(InKindDonation, self).put(*a, **k)
-
+    me = super(InKindDonation, self).put(*a, **k)
+    self.site.get().RecomputeExpenses()
+    return me
+    
   def Total(self):
     return self.labor_amount + self.materials_amount
 
@@ -942,8 +958,10 @@ class StaffTime(ndb.Model):
 
   def put(self, *a, **k):
     self.program = self.site.get().program
-    return super(StaffTime, self).put(*a, **k)
-
+    me = super(StaffTime, self).put(*a, **k)
+    self.site.get().RecomputeExpenses()
+    return me
+    
   @property
   def name(self):
     return self.position

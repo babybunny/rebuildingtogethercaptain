@@ -954,7 +954,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
                  Choices)  
   def captain_choices_read(self, request):
     choices = Choices()
-    for mdl in ndb_models.Captain.query():
+    for mdl in ndb_models.Captain.query().order(ndb_models.Supplier.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
@@ -962,7 +962,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
                  Choices)  
   def supplier_choices_read(self, request):
     choices = Choices()
-    for mdl in ndb_models.Supplier.query(ndb_models.Supplier.active == 'Active'):
+    for mdl in ndb_models.Supplier.query(ndb_models.Supplier.active == 'Active').order(ndb_models.Supplier.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
   
