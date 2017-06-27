@@ -1,23 +1,24 @@
 define(
     [
-        'app/views/simple_form',
+        'app/views/rooms_form',
+	      'app/views/model_select_control',
         'app/models/jurisdiction_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(SimpleFormView, JurisdictionChoices, template) {
+    function(RoomFormView, ModelSelectControl, JurisdictionChoices, template) {
         var fields = [
             {
-                name: "id", // The key of the model attribute
-                label: "ID", // The label to display next to the control
-                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
-                disabled: true // By default controls are editable. Here we disabled it.
+                name: "id",
+                label: "ID",
+                control: "input",
+                disabled: true
             },
             // boilerplate
             {
                 name: "number",
                 label: "Number",
                 control: "input",
-		required: true,
+		            required: true,
             },
             {
                 name: "name",
@@ -107,8 +108,8 @@ define(
             {
                 name: "jurisdiction_choice",
                 label: "Jurisdiction choice",
-                control: "select",
-                // "jurisdiction_choice is a Key.  TODO",
+		            control: ModelSelectControl,
+		            room_model_module: JurisdictionChoices,
             },
             {
                 name: "announcement_body",
@@ -127,30 +128,13 @@ define(
         ];
         
         var ViewFactory = function(app, loading) {
-            var simpleform = new SimpleFormView('site', template, app.models.site, loading);
-            app.models.jurisdiction_choices = app.models.jurisdiction_choices || new JurisdictionChoices();
-            app.models.jurisdiction_choices.on('change', function(m) {
-                stanza = _.find(fields, function(f) { return f.name == 'jurisdiction_choice' });
-                stanza.options = _.map(m.get('choice'), function(e) { return {'label': e.label, 'value': e.id}; });                
-                if (stanza.options) {
-                    // stanza.value = _.head(stanza.options).value;
-                    console.log('popped ' + stanza.value);
-                }
-                _.each(fields, function(f) {
-                    if (!app.models.site.get(f.name)) {
-                        console.log(f.name, f.value)
-                        app.models.site.set(f.name, f.value);
-                    }
-                });
-                simpleform.initialize_form(fields);
-                simpleform.render();
-            });
-            app.models.jurisdiction_choices.fetch();
-            return simpleform;
-        }
-        return ViewFactory;
-        var ViewFactory = function(app, loading) {
-            return new SimpleFormView('site', template, app.models.site, loading, fields)
+            return new RoomFormView({
+		            name: 'site',
+		            template: template,
+		            model: app.models.site,
+		            loading: loading,
+		            fields: fields,
+	          });
         }
         return ViewFactory;
     }

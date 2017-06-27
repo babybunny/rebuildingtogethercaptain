@@ -1,17 +1,17 @@
 define(
     [
         'app/views/rooms_form',
-	'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
     ],
     function(RoomFormView, ModelSelectControl, SupplierChoices, template) {
         var fields = [
             {
-                name: "id", // The key of the model attribute
-                label: "ID", // The label to display next to the control
-                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
-                disabled: true // By default controls are editable. Here we disabled it.
+                name: "id",
+                label: "ID",
+                control: "input",
+                disabled: true
             },
             // boilerplate
             {
@@ -28,7 +28,7 @@ define(
                 name: "visibility",
                 label: "Visibility",
                 control: "select",
-		default: "Everyone",
+		            default: "Everyone",
                 options: [
                     {label: "Everyone", value: "Everyone"},
                     {label: "Staff Only", value: "Staff Only"},
@@ -43,7 +43,7 @@ define(
                 name: "delivery_options",
                 label: "Delivery options",
                 control: "select",
-		default: "No",
+		            default: "No",
                 options: [
                     {label: "Yes", value: "Yes"},
                     {label: "No", value: "No"},
@@ -53,22 +53,23 @@ define(
                 name: "retrieval_options",
                 label: "Retrieval options",
                 control: "select",
-		default: "No",
+		            default: "No",
                 options: [
                     {label: "Yes", value: "Yes"},
                     {label: "No", value: "No"},
                 ]
             },
-/* TODO     {
-                name: "supports_extra_name_on_order",
-                label: "Supports extra name on order",
-                // "supports_extra_name_on_order is a BooleanProperty('supports_extra_name_on_order', default=False).  TODO",
-            },
-*/            {
+            /* TODO     {
+               name: "supports_extra_name_on_order",
+               label: "Supports extra name on order",
+               // "supports_extra_name_on_order is a BooleanProperty('supports_extra_name_on_order', default=False).  TODO",
+               },
+            */
+            {
                 name: "pickup_options",
                 label: "Pickup options",
                 control: "select",
-		default: "No",
+		            default: "No",
                 options: [
                     {label: "Yes", value: "Yes"},
                     {label: "No", value: "No"},
@@ -78,7 +79,7 @@ define(
                 name: "default_supplier",
                 label: "Defaultsupplier",
                 control: ModelSelectControl,
-		room_model_module: SupplierChoices,
+		            room_model_module: SupplierChoices,
             },
             {
                 name: "instructions",
@@ -90,15 +91,15 @@ define(
                 label: "Save changes"
             }
         ];
-	
+	      
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		name: 'ordersheet',
-		template: template,
-		model: app.models.ordersheet,
-		loading: loading,
-		fields: fields,
-	    });
+		            name: 'ordersheet',
+		            template: template,
+		            model: app.models.ordersheet,
+		            loading: loading,
+		            fields: fields,
+	          });
         }
         return ViewFactory;
     }

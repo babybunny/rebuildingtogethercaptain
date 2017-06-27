@@ -2,24 +2,24 @@ define(
     [
         'bootstrap-datepicker',
         'app/views/rooms_form',
-	'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/staffposition_choice',
         'text!app/templates/simple_form.html'
     ],
     function(bsdp, RoomFormView, ModelSelectControl, StaffPositionChoice, template) {
         var fields = [
             {
-                name: "id", // The key of the model attribute
-                label: "ID", // The label to display next to the control
-                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
-                disabled: true // By default controls are editable. Here we disabled it.
+                name: "id",
+                label: "ID",
+                control: "input",
+                disabled: true
             },
             // boilerplate
             {
                 name: "site",
                 label: "Site",
-                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
-                disabled: true // By default controls are editable. Here we disabled it.
+                control: "input",
+                disabled: true
             },
             {
                 name: "state",
@@ -36,20 +36,15 @@ define(
             {
                 name: "position",
                 label: "Staff Position",
-                control: "select",
-                // "position is a Key.  Will load dynamically",
+		            control: ModelSelectControl,
+		            room_model_module: StaffPositionChoice,
             },
             {
                 name: "activity_date",
                 label: "Activity date",
-                control: "input",
                 required: true,
-                value: "",
-                helpMessage: "yyyy-mm-dd format",
-                /* too flakey. 
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
-                */
             },
             {
                 name: "hours",
@@ -76,12 +71,12 @@ define(
         
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		name: 'stafftime',
-		template: template,
-		model: app.models.stafftime,
-		loading: loading,
-		fields: fields,
-	    });
+		            name: 'stafftime',
+		            template: template,
+		            model: app.models.stafftime,
+		            loading: loading,
+		            fields: fields,
+	          });
         }
         return ViewFactory;
     }

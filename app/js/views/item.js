@@ -1,18 +1,19 @@
 define(
     [
         'app/views/rooms_form',
-	'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/supplier_choices',
         'app/models/ordersheet_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(RoomFormView, ModelSelectControl, SupplierChoices, OrderSheetChoices, template) {
+    function(RoomFormView, ModelSelectControl,
+             SupplierChoices, OrderSheetChoices, template) {
         var fields = [
             {
-                name: "id", // The key of the model attribute
-                label: "ID", // The label to display next to the control
-                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
-                disabled: true // By default controls are editable. Here we disabled it.
+                name: "id",
+                label: "ID",
+                control: "input",
+                disabled: true
             },
             // boilerplate
             {
@@ -75,13 +76,13 @@ define(
             {
                 name: "supports_extra_name_on_order",
                 label: "Supports extra name on order",
-		control: "checkbox",
+		            control: "checkbox",
             },
             {
                 name: "appears_on_order_form",
                 label: "Appears on order form",
-		control: ModelSelectControl,
-		room_model_module: OrderSheetChoices,
+		            control: ModelSelectControl,
+		            room_model_module: OrderSheetChoices,
             },
             {
                 name: "order_form_section",
@@ -91,8 +92,8 @@ define(
             {
                 name: "supplier",
                 label: "Supplier",
-		control: ModelSelectControl,
-		room_model_module: SupplierChoices,
+		            control: ModelSelectControl,
+		            room_model_module: SupplierChoices,
             },
             {
                 name: "supplier_part_number",
@@ -112,12 +113,12 @@ define(
         
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		name: 'item',
-		template: template,
-		model: app.models.item,
-		loading: loading,
-		fields: fields,
-	    });
+		            name: 'item',
+		            template: template,
+		            model: app.models.item,
+		            loading: loading,
+		            fields: fields,
+	          });
         }
         return ViewFactory;
     }

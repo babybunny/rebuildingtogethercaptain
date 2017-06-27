@@ -9,10 +9,10 @@ define(
     function(bsdp, RoomFormView, ModelSelectControl, SupplierChoices, template) {
         var fields = [
             {
-                name: "id", // The key of the model attribute
-                label: "ID", // The label to display next to the control
-                control: "input", // This will be converted to InputControl and instantiated from the proper class under the Backform namespace
-                disabled: true // By default controls are editable. Here we disabled it.
+                name: "id",
+                label: "ID",
+                control: "input",
+                disabled: true
             },
             // boilerplate
             {
