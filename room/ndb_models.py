@@ -971,6 +971,8 @@ class StaffTime(ndb.Model):
       logging.warning('empty position %s', str(self))
     if self.state in ('new', 'deleted'):
       return 0.0
+    if self.hours is None:
+      self.hours = 0.0
     return self.hours * self.position.get().GetHourlyRate(self.activity_date)    
   
   def MileageTotal(self):
@@ -978,6 +980,8 @@ class StaffTime(ndb.Model):
       logging.warning('empty position %s', str(self))
     if self.state in ('new', 'deleted'):
       return 0.0
+    if self.miles is None:
+      self.miles = 0.0
     return self.miles * self.position.get().GetMileageRate(self.activity_date)
 
   def Total(self):
