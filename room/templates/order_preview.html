@@ -80,8 +80,10 @@ text-align: left;
       Clicking the button on the left will create a new order.
       {% for order in sheet.existing_orders %}
       <br>
-      changed {{ order.modified|escape }}
+      changed {{ order.modified.strftime("%d %b") }}
+      {% if order.last_editor %}
       by {{ order.last_editor }}
+      {% endif %}
       -
       {% if order.LogisticsStart() %}
       {{ order.LogisticsStart() }}
