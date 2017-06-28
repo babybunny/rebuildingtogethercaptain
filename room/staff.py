@@ -416,6 +416,44 @@ class InKindDonation(SiteExpenseEditor):
   template_value = 'In-Kind Donation'
   template_file = 'expense_form'
 
+def _SortOrderItemsWithSections(order_items):
+  order_items.sort(
+      key=lambda x: (x.item.get().order_form_section or None, x.item.get().name))
+  prev_section = None
+  for o in order_items:
+    new_section = o.item.get().order_form_section or None
+    if prev_section != new_section:
+      o.first_in_section = True
+    prev_section = new_section
+
+    
+class OrderChooseForm(StaffHandler):
+  def get(self, site_id):
+    site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
+    existing_orders = {}
+    query = site.Orders.Items()
+    for order in query:
+      os = order.order_sheet.get()
+      if os.code not in existing_orders:
+        existing_orders[os.code] = []
+        existing_orders[os.code].append(order)
+
+    order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
+    order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
+    for os in order_sheets:
+      order_items = [ndb_models.OrderItem(item=i.key) for i in os.item_set]
+      _SortOrderItemsWithSections(order_items)
+      os.sorted_items = order_items[:]
+      os.num_existing_orders = 0
+      if os.code in existing_orders:
+        os.existing_orders = existing_orders[os.code]
+        os.num_existing_orders = len(existing_orders[os.code])
+
+    t = {'order_sheets': order_sheets,
+         'site': site}
+    return common.Respond(self.request, 'order_preview', t)
+
+
 
 class OrderList(SiteExpenseList):
   model_class = 'Order'

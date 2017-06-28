@@ -200,8 +200,8 @@ def CreateAll():
   ).put()
   KEYS['ORDERSHEET2'] = ndb_models.OrderSheet(
     # no default_supplier
-    name='Some Supplies',
-    code='SOM',
+    name='Some More Supplies',
+    code='SMS',
     instructions='instructions value',
     logistics_instructions="""Pick these up somewhere nice.""",
     delivery_options='Yes',
@@ -218,6 +218,34 @@ def CreateAll():
     supplier=KEYS['SUPPLIER'],
     supplier_part_number='part1234',
     url='http://example.com/item',
+    supports_extra_name_on_order=False,
+  ).put()
+
+  KEYS['ITEM2'] = ndb_models.Item(
+    bar_code_number=1234,
+    name='My Second Item',
+    appears_on_order_form=KEYS['ORDERSHEET'],
+    order_form_section='The Second Section',
+    description="""A delicious item.""",
+    measure='Box',
+    unit_cost=4.99,
+    supplier=KEYS['SUPPLIER'],
+    supplier_part_number='part1244',
+    url='http://example.com/item2',
+    supports_extra_name_on_order=True,
+  ).put()
+
+  KEYS['ITEM3'] = ndb_models.Item(
+    bar_code_number=1255,
+    name='My Third Item',
+    appears_on_order_form=KEYS['ORDERSHEET'],
+    order_form_section='The Second Section',
+    description="""A magnificent item.""",
+    measure='Roll',
+    unit_cost=3.99,
+    supplier=KEYS['SUPPLIER'],
+    supplier_part_number='part1233',
+    url='http://example.com/item3',
     supports_extra_name_on_order=False,
   ).put()
 

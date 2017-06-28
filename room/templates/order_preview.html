@@ -80,15 +80,15 @@ text-align: left;
       Clicking the button on the left will create a new order.
       {% for order in sheet.existing_orders %}
       <br>
-      changed {{ order.modified|date:"d M" }}
+      changed {{ order.modified|escape }}
       by {{ order.last_editor }}
       -
-      {% if order.LogisticsStart %}
-      {{ order.LogisticsStart }}
+      {% if order.LogisticsStart() %}
+      {{ order.LogisticsStart() }}
       -
       {% endif %}
-      ${{ "%0.2f" % order.Total }}
-      <a href="{% url room.order.OrderEdit order.key.integer_id() %}" target="_blank">
+      ${{ "%0.2f" % order.Total() }}
+      <a href="TODO" target="_blank">
 	edit
       </a>
       {% endfor %}
@@ -101,10 +101,11 @@ text-align: left;
     </strong>
     <br/>
     {% for oi in sheet.sorted_items %}
-    {% if oi.item.VisibleOrderFormSection %}
-    {{ oi.item.VisibleOrderFormSection }} :
+    {% set item = oi.item.get() %}
+    {% if item.VisibleOrderFormSection() %}
+    {{ item.VisibleOrderFormSection() }} :
     {% endif %}
-    {{ oi.item.VisibleName }}<br/>
+    {{ item.VisibleName() }}<br/>
     {% endfor %}
     {% else %}
     Sorry, no items available on the {{ sheet.name }} form.
@@ -117,7 +118,7 @@ text-align: left;
     {% for sheet in order_sheets %}
     <div class="order_sheet">
       <a id="{{ sheet.code }}"
-	 href="{% url room.order.OrderNew site.key.integer_id() sheet.code %}">
+	 href="TODO">
 	{{ sheet.name }}
       </a>
       <span></span>
