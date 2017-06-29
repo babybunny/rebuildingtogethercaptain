@@ -35,12 +35,18 @@ define(
                         'submit': function(e) {
                             console.log(this.name + ' submit backform');
                             e.preventDefault();
-                            this.model.save({
-                                error: function(model, response, options) {
-                                    console.log('save error');
-                                    console.log(response);
-                                },
-                            });
+                            if (this.model.isValid()) {
+                                this.model.save({model: JSON.stringify(this.model)},{
+                                    success: function(model, response, option) {
+                                        console.log('SAVE SUCCESS', response);
+                                        $('span.status').css({'margin': '5px','color': '#409b27'
+                                        }).html('Saved!').show().fadeOut( 1000 );
+                                    },
+                                    error: function(model, response, options) {
+                                        console.log('SAVE ERROR', response);
+                                    },
+                                });
+                            }
                             return false;
                         }
                     }
@@ -72,6 +78,14 @@ define(
                     this.form.setElement(this.$el.find('#simple-form-backform'));
                     this.form.render();
                     this.$(this.firstfield.control + '[name=' + this.firstfield.name +']').focus();
+
+                    this.$('button').on('mousedown', function() {
+                        $(this).css('color', 'white');
+                    });
+                    this.$('button').on('mouseup', function() {
+                        $(this).css('color', 'inherit');
+                    });
+
                 }
                 return this;
             },
