@@ -33,26 +33,20 @@ define(
                     fields: fields,
                     events: {
                         'submit': function(e) {
+                            console.log(this.name + ' submit backform');
                             e.preventDefault();
-                            // console.log(this.name + ' submit backform');
-                            if (this.model.isValid()) {
-                                this.model.save({model: JSON.stringify(this.model)},{
-                                    success: function(model, response, option) {
-                                        // console.log('SAVE SUCCESS', response);
-                                        $('span.status').css({'margin': '5px','color': '#409b27'}).html('Saved!').show().fadeOut( 1000 );
-                                        self.saved = true;
-                                    },
-                                    error: function(model, response, options) {
-                                        // console.log('SAVE ERROR', response);
-                                        self.saved = false;
-                                    },
-                                });
-                                 return false;
-                            }
+                            this.model.save({
+                                error: function(model, response, options) {
+                                    console.log('save error');
+                                    console.log(response);
+                                },
+                            });
+                            return false;
                         }
                     }
                 });
             },
+
             render: function() {
                 var t = this.template({name: this.name,
                                        s: this.model.attributes});
@@ -85,6 +79,7 @@ define(
                     });
                     this.$('button').on('mouseup', function() {
                         $(this).css('color', 'inherit');
+                        $('span.status').text('Saved').show().fadeOut(1000);
                     });
 
                 }
