@@ -2,8 +2,8 @@ define(
     ['backbone', 'backform', 'bootstrap'],
     function(Backbone, Backform, bootstrap) {
 
-	// options: name, template, model, loading, fields
-	var RoomFormView = Backbone.View.extend({
+    // options: name, template, model, loading, fields
+    var RoomFormView = Backbone.View.extend({
             el: '#simple-form-view',
             events: {
                 'click #simple-form-save': 'save'
@@ -11,7 +11,7 @@ define(
             initialize: function(options) {
                 var self = this;
                 console.log('simple-form view init');
-		this.options = options;
+        this.options = options;
                 self.template = _.template(options.template);
                 self.model = options.model;
                 self.name = options.name;
@@ -25,7 +25,7 @@ define(
                                     this.render();
                                 }
                               });
-		this.initialize_form(options.fields);
+        this.initialize_form(options.fields);
             },
             initialize_form: function(fields) {
                 this.form = new Backform.Form({
@@ -33,21 +33,22 @@ define(
                     fields: fields,
                     events: {
                         'submit': function(e) {
-                            console.log(this.name + ' submit backform');
                             e.preventDefault();
+                            // console.log(this.name + ' submit backform');
                             if (this.model.isValid()) {
                                 this.model.save({model: JSON.stringify(this.model)},{
                                     success: function(model, response, option) {
-                                        console.log('SAVE SUCCESS', response);
-                                        $('span.status').css({'margin': '5px','color': '#409b27'
-                                        }).html('Saved!').show().fadeOut( 1000 );
+                                        // console.log('SAVE SUCCESS', response);
+                                        $('span.status').css({'margin': '5px','color': '#409b27'}).html('Saved!').show().fadeOut( 1000 );
+                                        self.saved = true;
                                     },
                                     error: function(model, response, options) {
-                                        console.log('SAVE ERROR', response);
+                                        // console.log('SAVE ERROR', response);
+                                        self.saved = false;
                                     },
                                 });
+                                 return false;
                             }
-                            return false;
                         }
                     }
                 });
