@@ -20,15 +20,13 @@ define(
 
                 this.listenTo(this.model, 'change',
                               function(model) {
-                                  console.log(this.name + ' generic change');
                                   if ( self.loading ) {
-                                      console.log('model is loading', self.loading);
                                       self.loading = false;
                                       this.render();
                                   }
                               });
                 var onSave = function() {
-                    self.model.save(self.model.toJSON(),{
+                    self.model.save(null, {
                         'success': function(model, attrs, response) {
                             response.xhr.statusText = 'SAVED';
                             $('span.status').css('color', '#409b27').text('Saved, Luke').show().fadeOut(
@@ -39,10 +37,7 @@ define(
                                  } });
                             
                         },
-                        'error': function(model, response, error) {
-                            console.log(response);
-                            console.log(error);
-                            
+                        'error': function(model, response, error) {                            
                             $('span.status').css('color', 'red').text('Error: ' + response.responseText).show();
                         },
                     });              
