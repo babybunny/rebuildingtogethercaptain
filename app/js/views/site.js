@@ -122,6 +122,7 @@ define(
                 control: "input",
             },
             {
+                id: "submit",
                 control: "button",
                 label: "Save changes"
             }

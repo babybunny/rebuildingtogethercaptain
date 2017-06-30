@@ -47,6 +47,7 @@ define(
                 // "since is a DateProperty('since', auto_now_add=True).  TODO",
             },
             {
+                id: "submit",
                 control: "button",
                 label: "Save changes"
             }

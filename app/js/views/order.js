@@ -76,6 +76,7 @@ define(
                 helpMessage: "Use this is in the rare case when the order's actual total can't be automatically computed correctly."
             },
             {
+                id: "submit",
                 control: "button",
                 label: "Save changes"
             }

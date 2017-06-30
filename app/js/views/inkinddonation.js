@@ -87,6 +87,7 @@ define(
                 control: "textarea",
             },
             {
+                id: "submit",
                 control: "button",
                 label: "Save changes"
             }

@@ -13,6 +13,7 @@ define(
             },
             // boilerplate
             {
+                id: "submit",
                 control: "button",
                 label: "Save changes"
             }
