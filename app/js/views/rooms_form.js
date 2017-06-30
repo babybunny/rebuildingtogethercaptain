@@ -40,7 +40,10 @@ define(
                             
                         },
                         'error': function(model, response, error) {
-                            $('span.status').css('color', 'red').text(e.statusText).show().fadeOut(1000);
+                            console.log(response);
+                            console.log(error);
+                            
+                            $('span.status').css('color', 'red').text('Error: ' + response.responseText).show();
                         },
                     });              
                 };
