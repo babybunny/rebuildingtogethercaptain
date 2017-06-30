@@ -373,8 +373,8 @@ class CheckRequestView(StaffHandler):
 class CheckRequest(SiteExpenseEditor):
   model_class = ndb_models.CheckRequest
   list_view = 'CheckRequestBySite'
-  template_value = 'Check Request'
-  template_file = 'expense_form'
+  template_value = 'checkrequest'
+  template_file = 'checkrequest'
 
 
 class VendorReceiptList(SiteExpenseList):

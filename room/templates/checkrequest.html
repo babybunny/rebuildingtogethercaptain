@@ -1,23 +1,22 @@
 {%extends "base.html"%}
 {% block script %}
-{% include "datepicker_script.html" %}
-<script type="text/javascript">
-$(function() {
-  $("#id_payment_date").datepicker();
-});
-$.datepicker.setDefaults({
-   showOn: 'both',
-   buttonImageOnly: true,
-   buttonImage: '/static/calendar.gif',
-   buttonText: 'Calendar' });
-</script>
+    <link href="/css/lib/bootstrap-datepicker.css" rel="stylesheet">
+    <script type="text/javascript" data-main="/js/app/rooms" src="/js/lib/require.js"></script>
 {%endblock%}
 {% block breadcrumb %}
   | Make a Check Request
 {% endblock %}
+{%block about_this_page%}
+<h2>Create or edit a {{ type }}</h2>
+<p>
+  <a id="rooms-form-after-save" href="{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}">Back to Site #{{ site.number }}</a>
+  |
+  <a href='{{ list_uri }}'>See the entire {{ type }} list for program {{ user.program_selected }}.</a>
+</p>
+{%endblock%}
 {%block body%}
 
-<h2>Adding Check Request for Site {{ entity.site.get().number }}</h2>
+<h2>Adding Check Request for Site {{ checkrequest.site.get().number }}</h2>
 
 <h3>Note!  The check request cannot be processed without submitting the receipt(s).  Receipts can be submitted in person or by mail, fax, or email.  Please specify your name and the site number when submitting receipts.</h3>
 
@@ -60,18 +59,7 @@ info@RebuildingTogetherPeninsula.org
 </table>
 
 <hr>
-<form action="{% url room.views.CheckRequestEdit edit_id %}" method="post">
 
-<table>  
-{{form}}
-<tr>
-  <td>
-  </td>
-  <td>
-    <input type="submit" value="Save changes to this Check Request">
-  </td>
-</tr>
-</table>
-</form>
+<div id='simple-form-view'>Loading {{ type }} module ...</div>
 
 {%endblock%}
