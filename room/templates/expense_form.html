@@ -9,7 +9,7 @@
 {%block about_this_page%}
 <h2>Add {{ type }}</h2>
 <p>
-  <a href='{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}'>Back to site #{{ site.number }}</a>
+  <a id='rooms-form-after-save' href='{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}'>Back to Site #{{ site.number }}</a>
   |
   <a href='{{ list_uri }}'>See other {{ type }} records</a>
 </p>
