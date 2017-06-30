@@ -11,79 +11,55 @@ define(
             initialize: function(options) {
                 console.log('simple-form view init');
                 var self = this;
-            this.options = options;
+                this.options = options;
                 self.template = _.template(options.template);
                 self.model = options.model;
                 self.name = options.name;
                 self.loading = options.loading;
                 self.saved = false;
 
-                this.model.on('sync', function(model, attrs, options) {
-                    console.log('SYNC status', options.xhr.statusText, '- VALID', model.isValid());
-                    console.log('model ',attrs.id,' has options here!', options);
-
-                    if (options.xhr.statusText == 'SAVED') {
-                        self.saved = true;
-                        console.log('MODEL SAVED', self.saved);
-                    }
-                });
-
                 this.listenTo(this.model, 'change',
                               function(model) {
-                                    console.log(this.name + ' generic change');
-                                    if ( self.loading ) {
-                                        console.log('model is loading', self.loading);
-                                        self.loading = false;
-                                        this.render();
-                                    }
+                                  console.log(this.name + ' generic change');
+                                  if ( self.loading ) {
+                                      console.log('model is loading', self.loading);
+                                      self.loading = false;
+                                      this.render();
+                                  }
                               });
-        this.initialize_form(options.fields);
-            },
-            initialize_form: function(fields) {
+                var onSave = function() {
+                    self.model.save(self.model.toJSON(),{
+                        'success': function(model, attrs, response) {
+                            response.xhr.statusText = 'SAVED';
+                            $('span.status').css('color', '#409b27').text('Saved, Luke').show().fadeOut(
+                                {duration: 1000,
+                                 complete: function() {
+                                     // redirect to the "back to site" URL
+                                     window.location = $('#rooms-form-after-save').attr('href');
+                                 } });
+                            
+                        },
+                        'error': function(model, response, error) {
+                            $('span.status').css('color', 'red').text(e.statusText).show().fadeOut(1000);
+                        },
+                    });              
+                };
+
                 this.form = new Backform.Form({
                     model: this.model,
-                    fields: fields,
+                    fields: options.fields,
                     events: {
                         'submit': function(e) {
                             e.preventDefault();
                             this.statusText = e.statusText;
                             console.log( self.name,' submit backform');
-                            this.model.save(this.model.toJSON(),{
-                                'success': function(model, attrs, response) {
-                                    response.xhr.statusText = 'SAVED';
-                                    e.statusText = response.xhr.statusText;
-                                    console.clear();
-                                    console.log('success model', model);
-                                    console.log('success attrs', attrs);
-                                    console.log('success response', response);
-                                    console.log('statusText ', response.xhr.statusText);
-                                    $('span.status').css('color', '#409b27').text(e.statusText).show().fadeOut(
-                                        {duration: 1000,
-                                         complete: function() {
-                                             // redirect to the "back to site" URL
-                                             window.location = $('#rooms-form-after-save').attr('href');
-                                         } });
-                                    
-                                },
-                                'error': function(model, response, error) {
-                                    e.statusText = response.statusText;
-                                    console.clear();
-                                    console.log('error model', model);
-                                    console.log('error response Text,', response.responseText);
-                                    console.log('error status Text,', response.statusText);
-                                    console.log('error', error);
-                                    $('span.status').css('color', 'red').text(e.statusText).show().fadeOut(1000);
-                                },
-                            });
-                            console.log(this.statusText);
+                            onSave();
                         },
-
+                        
                     },
-
+                    
                 });
-
             },
-
             render: function() {
                 var t = this.template({name: this.name,
                                        s: this.model.attributes});
