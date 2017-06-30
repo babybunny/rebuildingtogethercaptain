@@ -6,19 +6,19 @@ define(
         var Model = Backbone.Model.extend({
             // matches first part of method name in @remote.method
             // Derived class must implement.
-	    // urlRoot: '/wsgi_service.checkrequest_',
-
-	    // List of attributes that must be floating point numbers.
-	    // Empty string becomes zero.
-	    // must_be_floats: ['food_amount', 'materials_amount', 'labor_amount'],
-	    must_be_floats: [],
-
-	    // Validation method, as described by Backforms.
-	    // Derived class may implement this to do more model-specific validation.
-	    // But be sure to call validate_protorpc().
-	    validate: function(attrs, options) {
-		      this.validate_protorpc(attrs, options);
-	    },
+	          // urlRoot: '/wsgi_service.checkrequest_',
+            
+	          // List of attributes that must be floating point numbers.
+	          // Empty string becomes zero.
+	          // must_be_floats: ['food_amount', 'materials_amount', 'labor_amount'],
+	          must_be_floats: [],
+            
+	          // Validation method, as described by Backforms.
+	          // Derived class may implement this to do more model-specific validation.
+	          // But be sure to call validate_protorpc().
+	          validate: function(attrs, options) {
+		            this.validate_protorpc(attrs, options);
+	          },
             
 	          // Make sure stuff that model values are compatible
             // with their protorpc definitions.
@@ -29,7 +29,7 @@ define(
 		            // Don't allow empty string for floats.
 		            _.each(this.must_be_floats,
 		                   function(f) {
-			                     if (! self.get(f) ) {
+ 	                         if (! self.get(f) ) {
 			                         self.set(f, 0);
 			                     }
 		                   });
