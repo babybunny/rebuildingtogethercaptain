@@ -17,22 +17,23 @@ define(
 	    // Derived class may implement this to do more model-specific validation.
 	    // But be sure to call validate_protorpc().
 	    validate: function(attrs, options) {
-		this.validate_protorpc(attrs, options);
+		      this.validate_protorpc(attrs, options);
 	    },
-
-	    // Make sure stuff that model values are compatible with their protorpc definitions.
-	    // Add general stuff here.
-	    validate_protorpc: function(attrs, options) {
-		var self = this;
-
-		// Don't allow empty string for floats.
-		_.each(this.must_be_floats,
-		       function(f) {
-			   if (! self.get(f) ) {
-			       self.set(f, 0);
-			   }
-		       });
-	    }
+            
+	          // Make sure stuff that model values are compatible
+            // with their protorpc definitions.
+	          // Add general stuff here.
+	          validate_protorpc: function(attrs, options) {
+		            var self = this;
+                
+		            // Don't allow empty string for floats.
+		            _.each(this.must_be_floats,
+		                   function(f) {
+			                     if (! self.get(f) ) {
+			                         self.set(f, 0);
+			                     }
+		                   });
+	          }
         });
         
         return Model;
