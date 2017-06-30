@@ -8,7 +8,7 @@
 {%block about_this_page%}
 <h2>Create or edit a {{ type }}</h2>
 <p>
-  <a href="{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}">Back to Site #{{ site.number }}</a>
+  <a id="rooms-form-after-save" href="{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}">Back to Site #{{ site.number }}</a>
   |
   <a href='{{ list_uri }}'>See the entire {{ type }} list for program {{ user.program_selected }}.</a>
 </p>

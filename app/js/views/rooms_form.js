@@ -57,7 +57,13 @@ define(
                                     console.log('success attrs', attrs);
                                     console.log('success response', response);
                                     console.log('statusText ', response.xhr.statusText);
-                                    $('span.status').css('color', '#409b27').text(e.statusText).show().fadeOut(1000);
+                                    $('span.status').css('color', '#409b27').text(e.statusText).show().fadeOut(
+                                        {duration: 1000,
+                                         complete: function() {
+                                             // redirect to the "back to site" URL
+                                             window.location = $('#rooms-form-after-save').attr('href');
+                                         } });
+                                    
                                 },
                                 'error': function(model, response, error) {
                                     e.statusText = response.statusText;
