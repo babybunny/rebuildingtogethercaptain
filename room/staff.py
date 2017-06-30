@@ -278,7 +278,7 @@ class Site(EditView):
   model_class = ndb_models.NewSite
   list_view = 'SitesAndCaptains'
   template_value = 'site'
-  template_file = 'simple_form'
+  template_file = 'site'
 
   
 class OrderSheetList(StaffHandler):
