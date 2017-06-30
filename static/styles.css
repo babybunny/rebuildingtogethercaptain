@@ -17,19 +17,19 @@ body {
 }
 .program a {
   font-weight: normal;
-  font-size: smaller;  
+  font-size: smaller;
 }
-.userinfo { 
+.userinfo {
   float: right;
   display: inline;
 }
-.breadcrumm { 
+.breadcrumm {
   display: inline;
 }
-.tiny { 
+.tiny {
   font-size: 8pt;
 }
-.listpic { 
+.listpic {
   text-align: right;
 }
 .big {
@@ -190,51 +190,51 @@ table.printable {
 table.printable td {
   border: 1px solid black;
 }
-table.site tbody { 
+table.site tbody {
   margin-right: 10px;
 }
-table.site td { 
-  padding: 5px 15px 5px 0px; 
-  margin: 0px; 
+table.site td {
+  padding: 5px 15px 5px 0px;
+  margin: 0px;
   vertical-align: top;
 }
 td.vertical-separator {
-  border-left: 1px solid #999;		      
+  border-left: 1px solid #999;
 }
-table.tightform td { 
-  padding: 0; 
-  margin: 0; 
+table.tightform td {
+  padding: 0;
+  margin: 0;
   vertical-align: top;
 }
-table.order_form_header td, 
+table.order_form_header td,
 table.order_item_list td,
-table.order_item_list td { 
-  padding-left: 10px; 
+table.order_item_list td {
+  padding-left: 10px;
   padding-top: 2px;
   vertical-align: top;
 }
-table.order_item_list th { 
+table.order_item_list th {
   font-family: sans-serif;
-  text-align: left;		      
-  padding-left: 0px; 
+  text-align: left;
+  padding-left: 0px;
 }
-table.order_item_list td.form-summary { 
+table.order_item_list td.form-summary {
   text-align: right;
 }
-table.order_item_list td.subtotal { 
-  border-top: 1px solid #999;		      
+table.order_item_list td.subtotal {
+  border-top: 1px solid #999;
 }
-table.order_item_list td.quantity { 
+table.order_item_list td.quantity {
   text-align: right;
-  padding-left: 0px; 
+  padding-left: 0px;
   padding-top: 0px;
 }
 input {
   font-family: Times;
   font-size: 16px;
 }
-table.order_item_list td.quantity input { 
-  padding: 0; margin:0;		      
+table.order_item_list td.quantity input {
+  padding: 0; margin:0;
 }
 td.hr, td.hr-invis {
   border-bottom: 1px solid #333;
@@ -245,7 +245,7 @@ td.hr {
   border-top: 1px solid #333;
 }
 td.about_this_page {
-  width: 80%; 		  
+  width: 80%;
   text-align: center;
   padding-left: 20px;
   padding-right: 20px;
@@ -266,7 +266,7 @@ table.scoreboard td {
   white-space: nowrap;
   border-top: 1px solid black;
   border-bottom: 1px solid black;
-  padding: 0px 5px 0px 5px; 
+  padding: 0px 5px 0px 5px;
   margin: 0;
 }
 table.scoreboard td.name {
@@ -275,7 +275,7 @@ table.scoreboard td.name {
 table.scoreboard th,
 table.recent-login th {
   border-bottom: 2px solid black;
-  padding: 0px 5px 0px 5px; 
+  padding: 0px 5px 0px 5px;
   margin: 0;
 }
 table.budget {
@@ -304,7 +304,7 @@ table.budget td.action .ui-button {
 table.budget td.value {
   white-space: nowrap;
   text-align: right;
-}  
+}
 table.budget tr.inkinddonation td {
   border-top: 1px solid #999;
   border-collapse: collapse;
@@ -327,7 +327,7 @@ td.order_form_section_header {
 }
 
 table.order_form_header span {
-  padding-right: 30px;			
+  padding-right: 30px;
 }
 #login_div {
     float: right;
@@ -359,4 +359,7 @@ body .ui-widget {
 #main-content {
   width: 100%;
   height: 100%;
+}
+button.btn.white{
+  color: white;
 }

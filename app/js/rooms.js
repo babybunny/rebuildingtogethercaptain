@@ -1,7 +1,7 @@
 requirejs.config({
     shim: {
         // because bootstrap doesn't use AMD to declare its dependency on jquery
-        "bootstrap" : { "deps" :['jquery'] }  
+        "bootstrap" : { "deps" :['jquery'] }
     },
     baseUrl: '/js/lib',
     paths: {
@@ -12,10 +12,11 @@ requirejs.config({
 require(
     [
         'backbone',
-        'app/routes', 
-    ], 
-    function(Backbone, Routes) { 
+        'app/routes',
+    ],
+    function(Backbone, Routes) {
         Backbone.sync = function(method, model, options) {
+            console.log('ROOMS - SYNCCC!!!');
             var url = this.urlRoot + method;  // Example: '/wsgi_service.captain_' + 'create'
             console.log('Backbone sync ' + method + ' start: ' + url);
             console.log(options);
@@ -32,19 +33,19 @@ require(
                 success: function(data, status, xhr) {
                     console.log('Backbone sync ' + method
                                 + ' success: ' + JSON.stringify(data));
-                    options.success(data);
+                    xhr.statusText = method;
+                    options.success(data, method, xhr);
                 }
             };
 
             var error = options.error;
             settings.error = function(xhr, textStatus, errorThrown) {
-                console.log('Backbone sync ' + method
-                            + ' error: ' + JSON.stringify('response: ' + xhr.responseText));
+                console.log('Backbone sync ' + method + ' error: ' + JSON.stringify('response: ' + xhr.responseText));
                 options.textStatus = textStatus;
                 options.errorThrown = errorThrown;
                 if (error) error.call(options.context, xhr, textStatus, errorThrown);
             };
-            
+
             switch (method) {
             case 'read':
                 var xhr = options.xhr = Backbone.$.ajax(_.extend(settings, {
