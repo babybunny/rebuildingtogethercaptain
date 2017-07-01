@@ -37,7 +37,8 @@ def CreateAll():
   KEYS['STAFF'] = ndb_models.Staff(
     name="Mister Staff",
     email="rebuildingtogether.staff@gmail.com",
-    last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
+    last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3),
+    program_selected="2011 Test",
   ).put()
   KEYS['STAFF2'] = ndb_models.Staff(
     name="Mister Staff",
@@ -261,7 +262,6 @@ def CreateAll():
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
     program='2011 Test',
-    sub_total=9.99,
     notes='''These are very very nice order notes.''',
     state='Submitted',
     reconciliation_notes='''These are the reconciliation notes from the very nice staff''',
@@ -276,7 +276,7 @@ def CreateAll():
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
     program='2011 Test',
-    sub_total=8.88,
+    sub_total=8.00,  # a BS number
     notes='''These are very very nice order2 notes.''',
     state='new',
     actual_total=9.10,
@@ -331,11 +331,17 @@ def CreateAll():
     order=KEYS['ORDER'],
     item=KEYS['ITEM'],
     supplier=KEYS['SUPPLIER'],
-    quantity=0,
     quantity_float=1.1,
-    name='order item?',
   ).put()
 
+  KEYS['ORDERITEM2'] = ndb_models.OrderItem(
+    order=KEYS['ORDER'],
+    item=KEYS['ITEM2'],
+    supplier=KEYS['SUPPLIER'],
+    quantity_float=2.0,
+    name='extra name',
+  ).put()
+  
   """template
   KEYS['ORDER'] = ndb_models.Order(
 
