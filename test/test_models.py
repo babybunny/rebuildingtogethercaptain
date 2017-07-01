@@ -262,6 +262,7 @@ def CreateAll():
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
     program='2011 Test',
+    sub_total=9.99,
     notes='''These are very very nice order notes.''',
     state='Submitted',
     reconciliation_notes='''These are the reconciliation notes from the very nice staff''',

@@ -27,7 +27,7 @@ class StatefulTestNoProgram(unittest2.TestCase):
         test_models.DeleteAll(self.keys)
         
     def testHomeXHeaderStaff(self):
-        response = app.get('/room/staff_home', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        response = app.get('/room/staff_home', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff2@gmail.com'})
         self.assertEquals('302 Moved Temporarily', response.status)
         self.assertEquals('http://localhost/room/select_program', response.headers['Location'])
         
