@@ -460,18 +460,24 @@ class OrderList(SiteExpenseList):
   expense_type = 'Order'
   table_template = 'order_table.html'
 
+  
 class OrderView(StaffHandler):
-  def get(self, order_id):
-    order = models.Order.get_by_id(int(order_id))
-    q = models.OrderItem.all().filter('order = ', order)
+  def get(self, id):
+    order = ndb.Key(ndb_models.Order, int(id)).get()
+    order.UpdateSubTotal()
+    q = ndb_models.OrderItem.query(ndb_models.OrderItem.order == order.key)
     order_items = [oi for oi in q if oi.FloatQuantity()]
     _SortOrderItemsWithSections(order_items)
-    d = {'orders': [{'order': order,
-                     'order_items': order_items}],
+    d = {'order': order,
+         'order_items': order_items,
+         'site': order.site.get(),
+         'order_sheet': order.order_sheet.get(),
          'action_verb': 'Review',
+         'sales_tax_pct': ndb_models.SALES_TAX_RATE * 100.,
+         'show_instructions': True,
          'show_logistics_details': True,
     }
-    return common.Respond(request, 'order_fulfill', d)
+    return common.Respond(self.request, 'order_view', d)
 
 class Order(SiteExpenseEditor):
   model_class = ndb_models.Order
