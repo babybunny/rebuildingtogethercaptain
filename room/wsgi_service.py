@@ -689,7 +689,7 @@ def _OrderModelToMessage(mdl):
   if mdl.invoice_date:
     s.invoice_date=mdl.invoice_date.isoformat()
   else:
-    s.donation_date = ''
+    s.invoice_date = ''
 
   return s
 
