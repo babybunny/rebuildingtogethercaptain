@@ -108,6 +108,9 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/site/<site_id:\d+>/order/<id:\d*>',
                   staff.Order,
                   name='Order'),    
+    webapp2.Route(r'/site/<site_id:\d+>/order_flow/<id:\d*>',
+                  staff.OrderFlow,
+                  name='OrderFlow'),    
 
     webapp2.Route(r'/stafftime_by_program',
                   staff.StaffTimeList,

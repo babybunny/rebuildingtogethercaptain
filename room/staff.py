@@ -479,6 +479,12 @@ class OrderView(StaffHandler):
     }
     return common.Respond(self.request, 'order_view', d)
 
+class OrderFlow(StaffHandler):
+  def get(self, site_id, id=None):
+    site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
+    d = dict(site=site)
+    return common.Respond(self.request, 'order_flow', d)
+
 class Order(SiteExpenseEditor):
   model_class = ndb_models.Order
   list_view = 'OrderBySite'
