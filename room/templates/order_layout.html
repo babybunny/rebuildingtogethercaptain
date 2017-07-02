@@ -66,260 +66,260 @@
               #}
 	          </span>
 	          {% endif %}
+	          {% endif %}
+	          <span class="attr">
+		          Order ID # 
+		          {{ order.key.integer_id() }}
+	          </span>
+	          <span  class="attr">
+		          Status: {{ order.state }}
+	          </span>
+	          <br>
+	          {% if form %}
+	          <input name="submit" type="submit" 
+		               value="{{ submit_button_text }}">
+	          {% endif %}
+	        </td>
+	      </tr>
+	      {% if order.order_sheet.get().instructions and show_instructions %}	  
+	      <tr>
+	        <td class="order_form_section_header">
+	          Instructions to Captains
+	        </td>
+	      </tr>
+	      <tr>
+	        <td>
+	          {{ order.order_sheet.get().instructions|replace("\n", "<br/>") }}
+	        </td>
+	      </tr>
 	      {% endif %}
-	      <span class="attr">
-		      Order ID # 
-		      {{ order.key.integer_id() }}
-	      </span>
-	      <span  class="attr">
-		      Status: {{ order.state }}
-	      </span>
-	      <br>
-	      {% if form %}
-	      <input name="submit" type="submit" 
-		       value="{{ submit_button_text }}">
+	      {% if show_logistics_details and order.order_sheet.get().HasLogistics %}
+	      <tr>
+	        <td class="order_form_section_header">
+	          Logistics Details
+	        </td>
+	      </tr>
+	      <tr>
+	        {% for d in order.orderdelivery_set %}
+	        <td>
+	          <strong>Delivery</strong>
+	          <br>Delivery on {{ d.delivery.get().delivery_date }} 
+	          {% if d.delivery.contact %}
+	          <br>Contact: {{ d.delivery.get().contact }}
+	          {% endif %}
+	          {% if d.delivery.get().contact_phone %}
+	          ({{ d.delivery.get().contact_phone }})
+	          {% endif %}
+	          {% if d.delivery.get().notes %}
+	          <br>{{ d.delivery.get().notes|replace('\n', '<br>\n') }}
+	          {% endif %}
+	        </td>
+	        {% endfor %}
+	        {% for d in order.orderpickup_set %}
+	        <td>
+	          <strong>Pickup</strong>
+	          <br>Pickup on {{ d.pickup.get().pickup_date }} 
+	          {% if d.pickup.get().return_date %} 
+	          <br>Return durable items on {{ d.pickup.get().return_date }} 
+	          {% endif %}
+	          {% if d.pickup.get().contact %}
+	          <br>Contact: {{ d.pickup.get().contact }}
+	          {% endif %}
+	          {% if d.pickup.get().contact_phone %}
+	          ({{ d.pickup.get().contact_phone }})
+	          {% endif %}
+	          {% if d.pickup.get().notes %}
+	          <br>{{ d.pickup.get().notes|replace('\n', '<br>\n') }}
+	          {% endif %}
+	        </td>
+	        {% endfor %}
+	        {% for d in order.orderretrieval_set %}
+	        <td>
+	          <strong>Retrieval</strong>
+	          <br>Drop off on {{ d.retrieval.get().dropoff_date }} 
+	          {% if d.retrieval.get().retrieval_date %} 
+	          <br>Retrieval on {{ d.retrieval.get().retrieval_date }} 
+	          {% endif %}
+	          {% if d.retrieval.get().contact %}
+	          <br>Contact: {{ d.retrieval.get().contact }}
+	          {% endif %}
+	          {% if d.retrieval.get().contact_phone %}
+	          ({{ d.retrieval.get().contact_phone }})
+	          {% endif %}
+	          {% if d.retrieval.get().notes %}
+	          <br>{{ d.retrieval.get().notes|replace('\n', '<br>\n') }}
+	          {% endif %}
+	        </td>
+	        {% endfor %}
+	      </tr>
 	      {% endif %}
-	    </td>
-	  </tr>
-	  {% if order.order_sheet.get().instructions and show_instructions %}	  
-	  <tr>
-	    <td class="order_form_section_header">
-	      Instructions to Captains
-	    </td>
-	  </tr>
-	  <tr>
-	    <td>
-	      {{ order.order_sheet.get().instructions|replace("\n", "<br/>") }}
-	    </td>
-	  </tr>
-	  {% endif %}
-	  {% if show_logistics_details and order.order_sheet.get().HasLogistics %}
-	  <tr>
-	    <td class="order_form_section_header">
-	      Logistics Details
-	    </td>
-	  </tr>
-	  <tr>
-	    {% for d in order.orderdelivery_set %}
-	    <td>
-	      <strong>Delivery</strong>
-	      <br>Delivery on {{ d.delivery.get().delivery_date }} 
-	      {% if d.delivery.contact %}
-	      <br>Contact: {{ d.delivery.get().contact }}
+	      {% if form or order.notes %} 
+	      <tr>
+	        <td class="order_form_section_header">
+	          Captains' Notes
+	        </td>
+	      </tr>
+	      <tr>
+	        <td>
+	          {% if form %}
+	          {{ notes_field }}
+	          {% else %}
+	          {{ order.notes }}
+	          {% endif %}
+	        </td>
+	      </tr>
 	      {% endif %}
-	      {% if d.delivery.get().contact_phone %}
-	      ({{ d.delivery.get().contact_phone }})
+	    </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+	    <table class="order_item_list">
+	      {% if order_items %}
+	      <tr>
+	        <th>
+	        </th>
+	        <th>
+	          Items
+	        </th>
+	        <th>
+	          Unit Cost ($)
+	        </th>
+	        <th>
+	        </th>
+	        <th>
+	          Quantity
+	        </th>
+	        <th>
+	          Total ($)
+	        </th>
+	      </tr>
+	      {% for order_item in order_items %}
+	      {% if order_item.first_in_section %}
+	      <tr>
+	        <td class="order_form_section_header" colspan=20>
+	          <b>{{ order_item.item.VisibleOrderFormSection }}</b>
+	        </td>
+	      </tr>
 	      {% endif %}
-	      {% if d.delivery.get().notes %}
-	      <br>{{ d.delivery.get().notes|replace('\n', '<br>\n') }}
-	      {% endif %}
-	    </td>
-	    {% endfor %}
-	    {% for d in order.orderpickup_set %}
-	    <td>
-	      <strong>Pickup</strong>
-	      <br>Pickup on {{ d.pickup.get().pickup_date }} 
-	      {% if d.pickup.get().return_date %} 
-	      <br>Return durable items on {{ d.pickup.get().return_date }} 
-	      {% endif %}
-	      {% if d.pickup.get().contact %}
-	      <br>Contact: {{ d.pickup.get().contact }}
-	      {% endif %}
-	      {% if d.pickup.get().contact_phone %}
-	      ({{ d.pickup.get().contact_phone }})
-	      {% endif %}
-	      {% if d.pickup.get().notes %}
-	      <br>{{ d.pickup.get().notes|replace('\n', '<br>\n') }}
-	      {% endif %}
-	    </td>
-	    {% endfor %}
-	    {% for d in order.orderretrieval_set %}
-	    <td>
-	      <strong>Retrieval</strong>
-	      <br>Drop off on {{ d.retrieval.get().dropoff_date }} 
-	      {% if d.retrieval.get().retrieval_date %} 
-	      <br>Retrieval on {{ d.retrieval.get().retrieval_date }} 
-	      {% endif %}
-	      {% if d.retrieval.get().contact %}
-	      <br>Contact: {{ d.retrieval.get().contact }}
-	      {% endif %}
-	      {% if d.retrieval.get().contact_phone %}
-	      ({{ d.retrieval.get().contact_phone }})
-	      {% endif %}
-	      {% if d.retrieval.get().notes %}
-	      <br>{{ d.retrieval.get().notes|replace('\n', '<br>\n') }}
-	      {% endif %}
-	    </td>
-	    {% endfor %}
-	  </tr>
-	  {% endif %}
-	  {% if form or order.notes %} 
-	  <tr>
-	    <td class="order_form_section_header">
-	      Captains' Notes
-	    </td>
-	  </tr>
-	  <tr>
-	    <td>
-	      {% if form %}
-	      {{ notes_field }}
+	      <tr>
+	        <td class=listpic>
+            {% set item = order_item.item.get() %}
+	          {% if item.thumbnail %}
+	          <img src="{# url views.ItemThumbnail item.key.integer_id() #}">
+	          {% endif %}
+	        </td>
+	        <td>
+	          <b>{{ item.VisibleName }}</b>
+	          {% if item.description %} - {% endif %}
+	          {{ item.description }}
+	          {% if item.url %} - 
+	          <a target="empty" 
+		           href="{{ item.url }}">
+		          ... more details
+	          </a>
+	          {% endif %}
+	          {% if order_item.SupportsName %}
+	          -
+	          <span class="jeditable-order-item-name" 
+		              id="{{ order_item.key.integer_id() }}"
+		              >{{ order_item.name }}</span>
+	          {% endif %}
+	        </td>
+	        <td class="dollar">
+	          {{ "%0.2f" % item.unit_cost }}
+	        </td>
+	        <td class="measure">
+	          {{ item.measure }} x
+	        </td>
+	        <td class="quantity">
+	          {% if form %}
+	          <input type="text" name="item_{{ order_item.key }}" 
+		               value="{{ order_item.VisibleQuantity }}" size=5
+		               onChange="updateCost(this.value, 
+			                       {{ item.unit_cost }}, 
+			                       'total_{{ order_item.key }}');">
+	          =
+	          {% else %}
+	          {{ order_item.VisibleQuantity() }}
+	          {% endif %}
+	        </td>
+	        <td class="dollar">
+	          <span id="total_{{ order_item.key }}" name="item_total">
+		          {{ order_item.VisibleCost() }}
+	          </span>
+	        </td>
+	      </tr>
+	      {%endfor%}
+	      <tr>
+	        <td>
+	        </td>
+	        <td colspan=4 class="form-summary subtotal">
+	          Subtotal 
+	          {% if form %}
+	          (does not include "%0.2f" % {{sales_tax_pct }}% sales tax)
+	          {% endif %}
+	        </td>
+	        <td class="dollar subtotal">
+	          <span id="sub_total">
+		          {{ "%0.2f" % order.sub_total }}
+	          </span>
+	        </td>
+	      </tr>	  
+	      {% if form %}	  
+	      <tr>
+	        <td>
+	        </td>
+	        <td>
+	        </td>
+	        <td colspan=5 class="form-summary">
+	          <input name="submit" type="submit" 
+		               value="{{ submit_button_text }}">
+	        </td>
+	      </tr>
 	      {% else %}
-	      {{ order.notes }}
+	      <tr>
+	        <td>
+	        </td>
+	        <td colspan=4 class="form-summary subtotal">
+	          {{ sales_tax_pct }}% Sales Tax
+	        </td>
+	        <td class="dollar subtotal">
+	          {{ "%0.2f" % order.SalesTax() }}
+	        </td>
+	      </tr>	  
+	      <tr>
+	        <td>
+	        </td>
+	        <td colspan=4 class="form-summary subtotal">
+	          Estimated Total
+	        </td>
+	        <td class="dollar subtotal">
+	          {{ "%0.2f" % order.EstimatedTotal() }}
+	        </td>
+	      </tr>	  
+	      {% if order.actual_total %}
+	      <tr>
+	        <td>
+	        </td>
+	        <td colspan=4 class="form-summary subtotal">
+	          Actual (reconciled) Total
+	        </td>
+	        <td class="dollar subtotal">
+	          {{ "%0.2f" % order.actual_total }}
+	        </td>
+	      </tr>	  	  
 	      {% endif %}
-	    </td>
-	  </tr>
-	  {% endif %}
-	</table>
-      </td>
-    </tr>
-    <tr>
-      <td>
-	<table class="order_item_list">
-	  {% if order_items %}
-	  <tr>
-	    <th>
-	    </th>
-	    <th>
-	      Items
-	    </th>
-	    <th>
-	      Unit Cost ($)
-	    </th>
-	    <th>
-	    </th>
-	    <th>
-	      Quantity
-	    </th>
-	    <th>
-	      Total ($)
-	    </th>
-	  </tr>
-	  {% for order_item in order_items %}
-	  {% if order_item.first_in_section %}
-	  <tr>
-	    <td class="order_form_section_header" colspan=20>
-	      <b>{{ order_item.item.VisibleOrderFormSection }}</b>
-	    </td>
-	  </tr>
-	  {% endif %}
-	  <tr>
-	    <td class=listpic>
-        {% set item = order_item.item.get() %}
-	      {% if item.thumbnail %}
-	      <img src="{# url views.ItemThumbnail item.key.integer_id() #}">
 	      {% endif %}
-	    </td>
-	    <td>
-	      <b>{{ item.VisibleName }}</b>
-	      {% if item.description %} - {% endif %}
-	      {{ item.description }}
-	      {% if item.url %} - 
-	      <a target="empty" 
-		 href="{{ item.url }}">
-		... more details
-	      </a>
-	      {% endif %}
-	      {% if order_item.SupportsName %}
-	      -
-	      <span class="jeditable-order-item-name" 
-		    id="{{ order_item.key.integer_id() }}"
-		    >{{ order_item.name }}</span>
-	      {% endif %}
-	    </td>
-	    <td class="dollar">
-	      {{ "%0.2f" % item.unit_cost }}
-	    </td>
-	    <td class="measure">
-	      {{ item.measure }} x
-	    </td>
-	    <td class="quantity">
-	      {% if form %}
-	      <input type="text" name="item_{{ order_item.key }}" 
-		     value="{{ order_item.VisibleQuantity }}" size=5
-		     onChange="updateCost(this.value, 
-			       {{ item.unit_cost }}, 
-			       'total_{{ order_item.key }}');">
-	      =
 	      {% else %}
-	      {{ order_item.VisibleQuantity() }}
+	      <tr>
+	        <td>
+	          There are no items associated with this order sheet.  
+	          We're probably still entering the data about the items.
+	        </td>
+	      </tr>
 	      {% endif %}
-	    </td>
-	    <td class="dollar">
-	      <span id="total_{{ order_item.key }}" name="item_total">
-		{{ order_item.VisibleCost() }}
-	      </span>
-	    </td>
-	  </tr>
-	  {%endfor%}
-	  <tr>
-	    <td>
-	    </td>
-	    <td colspan=4 class="form-summary subtotal">
-	      Subtotal 
-	      {% if form %}
-	      (does not include "%0.2f" % {{sales_tax_pct }}% sales tax)
-	      {% endif %}
-	    </td>
-	    <td class="dollar subtotal">
-	      <span id="sub_total">
-		      {{ "%0.2f" % order.sub_total }}
-	      </span>
-	    </td>
-	  </tr>	  
-	  {% if form %}	  
-	  <tr>
-	    <td>
-	    </td>
-	    <td>
-	    </td>
-	    <td colspan=5 class="form-summary">
-	      <input name="submit" type="submit" 
-		     value="{{ submit_button_text }}">
-	    </td>
-	  </tr>
-	  {% else %}
-	  <tr>
-	    <td>
-	    </td>
-	    <td colspan=4 class="form-summary subtotal">
-	      {{ sales_tax_pct }}% Sales Tax
-	    </td>
-	    <td class="dollar subtotal">
-	      {{ "%0.2f" % order.SalesTax() }}
-	    </td>
-	  </tr>	  
-	  <tr>
-	    <td>
-	    </td>
-	    <td colspan=4 class="form-summary subtotal">
-	      Estimated Total
-	    </td>
-	    <td class="dollar subtotal">
-	      {{ "%0.2f" % order.EstimatedTotal() }}
-	    </td>
-	  </tr>	  
-	  {% if order.actual_total %}
-	  <tr>
-	    <td>
-	    </td>
-	    <td colspan=4 class="form-summary subtotal">
-	      Actual (reconciled) Total
-	    </td>
-	    <td class="dollar subtotal">
-	      {{ "%0.2f" % order.actual_total }}
-	    </td>
-	  </tr>	  	  
-	  {% endif %}
-	  {% endif %}
-	  {% else %}
-	  <tr>
-	    <td>
-	      There are no items associated with this order sheet.  
-	      We're probably still entering the data about the items.
-	    </td>
-	  </tr>
-	  {% endif %}
-	</table>
-      </td>
-    </tr>
-  </table>
+	    </table>
+    </td>
+  </tr>
+</table>
