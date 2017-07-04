@@ -1,5 +1,6 @@
 """Staff views"""
 
+import csv
 import datetime
 import json
 import logging
@@ -10,6 +11,8 @@ import ndb_models
 import common
 
 TEST_SITE_NUMBER = '11999ZZZ'
+EXPORT_CSV = 'Export CSV'
+POSTED_ID_PREFIX = 'export_'
 
 
 class SelectProgram(webapp2.RequestHandler):
@@ -196,7 +199,93 @@ class SitesAndCaptains(StaffHandler):
          'sitecaptains_by_site': sitecaptains_by_site}
     return common.Respond(self.request, 'site_list', d)
 
-    
+
+class SiteBudget(StaffHandler):
+  """List all Sites with a "Budget" view."""
+  def get(self):
+    user, _ = common.GetUser(self.request)
+    params = {
+        'export_csv': EXPORT_CSV,
+        'export_checkbox_prefix': POSTED_ID_PREFIX
+    }
+    query = ndb_models.NewSite.query(ndb_models.NewSite.program == user.staff.program_selected)
+    params['program'] = user.staff.program_selected
+
+    # this 'q' param is just for testing
+    if 'q' in self.request.GET:
+      query = query.filter(ndb_models.NewSite.search_prefixes == self.request.GET['q'].lower())
+      params['search'] = self.request.GET['q']
+
+    params['jurisdiction'] = self.request.GET.get('j')
+    if params['jurisdiction']:
+      query = query.filter(ndb_models.NewSite.jurisdiction == params['jurisdiction'])
+
+    entries = list(query)
+    total = 0
+    for site in entries:
+      total += site.Expenses()
+
+    params.update({'entries': entries, 'num_entries': len(entries), 'user': user,
+                   'total_expenses': total})
+    return common.Respond(self.request, 'site_budget', params)
+
+
+class SiteBudgetExport(StaffHandler):
+  def post(self):
+    """Export Site budget rows as CSV."""
+    user, _ = common.GetUser(self.request)
+    if self.request.POST['submit'] == EXPORT_CSV:
+      self.response.content_type = 'text/csv'
+      self.response.headers['Content-Disposition'] = (
+          'attachment; filename=%s_site_budget.csv' % user.email())
+      _SiteBudgetExportInternal(self.response, self.request.POST)
+      return self.response
+
+def PostedIds(post_vars):
+  """Extract IDs from post_vars."""
+  site_ids = []
+  for var in post_vars:
+    if var.startswith(POSTED_ID_PREFIX):
+      site_ids.append(int(var[len(POSTED_ID_PREFIX):]))
+  return site_ids
+  
+def _SiteBudgetExportInternal(writable, post_vars):
+  """Write site budget rows as CSV to a file-like object."""
+  site_ids = PostedIds(post_vars)
+  site_keys = list(ndb.Key(ndb_models.NewSite, id) for id in site_ids)
+  sites = list(site for site in ndb.get_multi(site_keys) if site)
+  sites.sort(key=lambda o: o.number)
+  writer = csv.writer(writable)
+  # These should be similar to the columns in the site_budget.html template.
+  writer.writerow(['Site Number',
+                   'Name',
+                   'Sponsor',
+                   '$ Budget',
+                   '$ Balance',
+                   '$ Total Expenses',
+                   '$ Orders',
+                   '$ Check Requests',
+                   '$ Vendor Receipts',
+                   '$ In-Kind Donations',
+                   '$ Staff Time',
+                   ])
+  for s in sites:
+    row = [s.number,
+           s.name,
+           s.sponsor,
+           s.budget,
+           s.BudgetRemaining(),
+           s.Expenses(),
+           s.order_total,
+           s.CheckRequestTotal(),
+           s.VendorReceiptTotal(),
+           s.InKindDonationTotal(),
+           s.StaffTimeTotal(),
+           ]
+    row = [unicode(f).encode('ascii', 'ignore') for f in row]
+    writer.writerow(row)
+
+
 def _EntryList(request, model_cls, template, params=None, query=None):
   """Generic helper method to perform a list view.
 

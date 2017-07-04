@@ -41,7 +41,7 @@ Sites - Budget View</h2>
 {%endblock%}
 {%block body%}
 {% if  num_entries %}
-<form method="POST" action="{% url room.views.SiteBudgetExport %}">
+<form method="POST" action="{{ webapp2.uri_for('SiteBudgetExport') }}">
   To export many sites, check their boxes and then click 
   <input type="submit" name="submit" value="{{ export_csv }}">
 <table class="list tablesorter" id="site_list">
@@ -63,6 +63,7 @@ Sites - Budget View</h2>
       <th>$ Check Requests</th>
       <th>$ Vendor Receipts</th>
       <th>$ In-Kind Donations</th>
+      <th>$ Staff Time</th>
     </tr>
   </thead>
   <tbody>
@@ -83,10 +84,10 @@ Sites - Budget View</h2>
 	      </a>
       </td>
       <td>
-	      {{ site.name|truncatewords:5 }}
+	      {{ site.name|truncate(20) }}
       </td>
       <td>
-	      {{ site.sponsor|truncatewords:5 }}	 
+	      {{ site.sponsor|truncate(20) }}	 
       </td>
       <td class="dollar">
 	      {{ "%0.2f" % site.budget }}
@@ -99,23 +100,26 @@ Sites - Budget View</h2>
 	         class="dollar" 
 	         {% endif %}
 	         >
-	        {{ "%0.2f" % site.BudgetRemaining }}
+	        {{ "%0.2f" % site.BudgetRemaining() }}
 	      </span>
       </td>
       <td class="dollar">
-	      {{ "%0.2f" % site.Expenses }}
+	      {{ "%0.2f" % site.Expenses() }}
       </td>
       <td class="dollar">
 	      {{ "%0.2f" % site.order_total }}
       </td>
       <td class="dollar">
-	      {{ "%0.2f" % site.CheckRequestTotal }}
+	      {{ "%0.2f" % site.CheckRequestTotal() }}
       </td>
       <td class="dollar">
-	      {{ "%0.2f" % site.VendorReceiptTotal }}
+	      {{ "%0.2f" % site.VendorReceiptTotal() }}
       </td>
       <td class="dollar">
-	      {{ "%0.2f" % site.InKindDonationTotal }}
+	      {{ "%0.2f" % site.InKindDonationTotal() }}
+      </td>
+      <td class="dollar">
+	      {{ "%0.2f" % site.StaffTimeTotal() }}
       </td>
     </tr>
     {% endfor %}
@@ -131,7 +135,7 @@ jurisdiction {{ jurisdiction }}
 in program {{ program }}.
 </p>
 <p>
-  Please go back to <a href="{% url room.staff.StaffHome %}">Staff Home</a> 
+  Please go back to <a href="{{ webapp2.uri_for('StaffHome') }}">Staff Home</a> 
   and select a different program or jurisdiction.
 </p>
 {% endif %}

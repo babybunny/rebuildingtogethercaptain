@@ -212,6 +212,13 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/ordersheet_items',
                   Placeholder,
                   name='OrderSheetItemList'),
+
+    webapp2.Route(r'/site_budget',
+                  staff.SiteBudget,
+                  name='SiteBudget'),
+    webapp2.Route(r'/site_budget_export',
+                  staff.SiteBudgetExport,
+                  name='SiteBudgetExport'),
     
     webapp2.Route(r'/scoreboard',
                   Placeholder,
@@ -231,9 +238,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='SiteExport'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='SiteBudget'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='SiteAnnouncement'),  # TODO
