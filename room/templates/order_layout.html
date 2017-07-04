@@ -210,9 +210,11 @@
 	          {% endif %}
 	        </td>
 	        <td>
-	          <b>{{ item.VisibleName }}</b>
-	          {% if item.description %} - {% endif %}
+	          <b>{{ item.VisibleName() }}</b>
+	          {% if item.description %}
+            - 
 	          {{ item.description }}
+            {% endif %}
 	          {% if item.url %} - 
 	          <a target="empty" 
 		           href="{{ item.url }}">

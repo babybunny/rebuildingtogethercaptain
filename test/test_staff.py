@@ -112,3 +112,10 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
         self.assertIn('2011 Test', response.body)
         self.assertIn('110TEST', response.body)
         self.assertIn('Miss Captain', response.body)
+
+    def testOrderView(self):
+        response = self._get('/room/order_view/{:d}'.format(self.keys['ORDER'].integer_id()))
+        self.assertEquals('200 OK', response.status)
+        self.assertIn('110TEST', response.body)
+        self.assertIn('My First Item', response.body)
+        self.assertIn('Acorn City', response.body)
