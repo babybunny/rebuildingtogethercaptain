@@ -590,21 +590,18 @@ class Order(ndb.Model):
   # TODO: seems incorrect to update fulfilled orders.
   def UpdateSubTotal(self):
     """Recomputes sub_total by summing the cost of items and adding tax."""
-    logging.error('UpdateSubTotal')
     sub_total = 0.
     order_items = OrderItem.query(OrderItem.order == self.key)
     for oi in order_items:
-      logging.error('oi:%s', oi)
       quantity = oi.FloatQuantity()
       if oi.item.get().unit_cost is not None and quantity:
         sub_total += quantity * oi.item.get().unit_cost
-    logging.error('UpdateSubTotal2: %s, %0.2f', self.sub_total, sub_total)
     if self.sub_total != sub_total:
       self.sub_total = sub_total
       self.put()
-      logging.error('Updated subtotal for order %d to %0.2f',
-                    self.key.integer_id(), sub_total)
-
+      logging.info('Updated subtotal for order %d to %0.2f',
+                   self.key.integer_id(), sub_total)
+      
   def LogisticsStart(self):
     for od in self.orderdelivery_set:
       return "%s (Delivery)" % od.delivery.get().delivery_date
