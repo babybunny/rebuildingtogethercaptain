@@ -84,10 +84,14 @@ Sites - Budget View</h2>
 	      </a>
       </td>
       <td>
+        {% if site.name %}
 	      {{ site.name|truncate(20) }}
+        {% endif %}
       </td>
       <td>
+        {% if site.sponsor %}
 	      {{ site.sponsor|truncate(20) }}	 
+        {% endif %}
       </td>
       <td class="dollar">
 	      {{ "%0.2f" % site.budget }}

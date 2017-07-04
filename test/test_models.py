@@ -71,6 +71,9 @@ def CreateAll():
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
   ).put()
+  KEYS['JURISDICTION2'] = ndb_models.Jurisdiction(
+    name="Unicorn Town"
+  ).put()
   
   KEYS['SUPPLIER'] = ndb_models.Supplier(
     name='House of Supply',
@@ -120,6 +123,29 @@ def CreateAll():
     rrp_level='rrp level value',
     scope_of_work="""This is a big job. There is a lot to do.""",
     sponsor='Generous Group',
+    street_number='123 Main Street',
+    city_state_zip='Acorn City, CA, 99999',
+    budget=0,
+    announcement_subject='announcement value',
+    volunteer_signup_link='volunteer signup link value',
+  ).put()
+
+  KEYS['SITE3'] = ndb_models.NewSite(
+    jurisdiction_choice=KEYS['JURISDICTION2'],
+    number='111TEST',
+    program='2011 Test',
+    name='Rainbows',
+    applicant='Jordy Carolina',
+    applicant_home_phone='650 1357205',
+    applicant_work_phone='650 555 8888',
+    # None applicant_mobile_phone='650 555 7777',
+    applicant_email='applicant@example.com',
+    rating='rating value',
+    roof='roof value',
+    rrp_test='rrp test value',
+    rrp_level='rrp level value',
+    scope_of_work="""This is a big job. There is a lot to do.""",
+    # None sponsor='Generous Group',
     street_number='123 Main Street',
     city_state_zip='Acorn City, CA, 99999',
     budget=0,
