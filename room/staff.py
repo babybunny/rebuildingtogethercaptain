@@ -216,6 +216,8 @@ def _EntryList(request, model_cls, template, params=None, query=None):
   if query is None:
     query = model_cls.query()
   entries = list(query)
+  if not entries:
+    webapp2.abort(404)
   entries.sort(key=lambda x: x.name)
   d = {'entries': entries, 'num_entries': len(entries),
        'cls': model_cls,
