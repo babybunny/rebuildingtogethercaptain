@@ -32,20 +32,22 @@
 	     id="state"
 	     name="{{ entity.key.integer_id() }}">{{ entity.state }}</div>
       </td><td>
-	{{ entity.captain.get().name|escape }}
+        {% if entity.captain %}
+	      {{ entity.captain.get().name|escape }}
+        {% endif %}
       </td><td>
-	{{ entity.name|escape }}
+	      {{ entity.name|escape }}
       </td><td>
-	{{ entity.payment_date|escape }}
+	      {{ entity.payment_date|escape }}
       </td>
       <td class="dollar">
-	${{ "%0.2f" % entity.Total() }}
+	      ${{ "%0.2f" % entity.Total() }}
       </td><td>
-	{{ entity.description|escape }}
+	      {{ entity.description|escape }}
       </td><td>
-	{{ entity.form_of_business|escape }}
+	      {{ entity.form_of_business|escape }}
       </td><td>
-	{{ entity.address|escape }}
+	      {{ entity.address|escape }}
       </td>
     </tr>
     {% endfor %}
