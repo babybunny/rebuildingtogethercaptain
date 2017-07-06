@@ -276,6 +276,20 @@ def CreateAll():
     supports_extra_name_on_order=False,
   ).put()
 
+  KEYS['ITEM4'] = ndb_models.Item(
+    bar_code_number=1256,
+    name='My Fourth Item',
+    appears_on_order_form=KEYS['ORDERSHEET'],
+    order_form_section='The Second Section',
+    description="""An item with no unit cost!.""",
+    measure='Roll',
+    # None unit_cost=3.99,
+    supplier=KEYS['SUPPLIER'],
+    supplier_part_number='part1235',
+    # None url='http://example.com/item4',
+    supports_extra_name_on_order=False,
+  ).put()
+
   KEYS['INVENTORYITEM'] = ndb_models.InventoryItem(
     item=KEYS['ITEM'],
     quantity=0,
@@ -369,6 +383,13 @@ def CreateAll():
     name='extra name',
   ).put()
   
+  KEYS['ORDERITEM4'] = ndb_models.OrderItem(
+    order=KEYS['ORDER'],
+    item=KEYS['ITEM4'],
+    supplier=KEYS['SUPPLIER'],
+    quantity_float=1.0,
+  ).put()
+
   """template
   KEYS['ORDER'] = ndb_models.Order(
 

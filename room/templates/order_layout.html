@@ -229,7 +229,9 @@
 	          {% endif %}
 	        </td>
 	        <td class="dollar">
+            {% if item.unit_cost %}
 	          {{ "%0.2f" % item.unit_cost }}
+            {% endif %}
 	        </td>
 	        <td class="measure">
 	          {{ item.measure }} x
