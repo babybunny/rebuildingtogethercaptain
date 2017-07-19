@@ -34,11 +34,13 @@ define(
                 name: "street_number",
                 label: "Street number",
                 control: "input",
+                helpMessage: "Full street address like 960 Main Street, Apt 4"
             },
             {
                 name: "city_state_zip",
                 label: "City state zip",
                 control: "input",
+                helpMessage: "City State Zip, like Menlo Park CA 94025"
             },
             {
                 name: "applicant_email",
@@ -84,6 +86,7 @@ define(
                 name: "photo_link",
                 label: "Photo link",
                 control: "input",
+                helpMessage: "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
             },
             {
                 name: "rrp_test",
@@ -104,6 +107,7 @@ define(
                 name: "volunteer_signup_link",
                 label: "Volunteer signup link",
                 control: "input",
+                helpMessage: "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
             },
             {
                 name: "jurisdiction_choice",
@@ -127,7 +131,7 @@ define(
                 label: "Save changes"
             }
         ];
-        
+
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
 		            name: 'site',
