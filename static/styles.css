@@ -329,6 +329,9 @@ td.order_form_section_header {
 table.order_form_header span {
   padding-right: 30px;
 }
+#order-form-buttons {
+    width: 400px;
+}
 #login_div {
     float: right;
     min-width: 300px;
