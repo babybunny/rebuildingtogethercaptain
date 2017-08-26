@@ -50,9 +50,10 @@ class ItemPreview(messages.Message):
   section = messages.StringField(2)
   
 class OrderForm(messages.Message):
-  name = messages.StringField(1)
-  code = messages.StringField(2)
-  sorted_items = messages.MessageField(ItemPreview, 3, repeated=True)
+  id = messages.IntegerField(1)
+  name = messages.StringField(2)
+  code = messages.StringField(3)
+  sorted_items = messages.MessageField(ItemPreview, 4, repeated=True)
   
 class OrderFormPreview(messages.Message):
   order_form = messages.MessageField(OrderForm, 1, repeated=True)
@@ -342,8 +343,9 @@ def _OrderSheetModelToMessage(mdl):
     id=mdl.key.integer_id(),
     code=mdl.code,
     name=mdl.name,
-    delivery_options=mdl.delivery_options,
     visibility=mdl.visibility,
+    instructions=mdl.instructions,
+    delivery_options=mdl.delivery_options,
     retrieval_options=mdl.retrieval_options,
     pickup_options=mdl.pickup_options,
   )
@@ -355,8 +357,9 @@ def _OrderSheetModelToMessage(mdl):
 def _OrderSheetMessageToModel(msg, mdl):
   mdl.code = msg.code
   mdl.name = msg.name
-  mdl.delivery_options = msg.delivery_options
   mdl.visibility = msg.visibility
+  mdl.instructions = msg.instructions
+  mdl.delivery_options = msg.delivery_options
   mdl.retrieval_options = msg.retrieval_options
   mdl.pickup_options = msg.pickup_options
   # can't set automatic fields:
@@ -369,11 +372,12 @@ class OrderSheet(messages.Message):
   id = messages.IntegerField(1)
   code = messages.StringField(2)
   name = messages.StringField(3)
-  delivery_options = messages.StringField(4)
-  default_supplier = messages.IntegerField(5)
-  visibility = messages.StringField(6)
-  retrieval_options = messages.StringField(7)
-  pickup_options = messages.StringField(8)
+  default_supplier = messages.IntegerField(4)
+  visibility = messages.StringField(5)
+  instructions = messages.StringField(6)
+  delivery_options = messages.StringField(7)
+  retrieval_options = messages.StringField(8)
+  pickup_options = messages.StringField(9)
   
 
 ############
@@ -964,7 +968,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   def order_form_overview(self, request):
     res = OrderFormPreview()
     for m in ndb_models.OrderSheet.query():
-      f = OrderForm(name=m.name, code=m.code)
+      f = OrderForm(name=m.name, code=m.code, id=m.key.integer_id())
       ims = list(ndb_models.Item.query(ndb_models.Item.appears_on_order_form == m.key))
       ndb_models._SortItemsWithSections(ims)
       for im in ims:

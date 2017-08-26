@@ -4,6 +4,240 @@
 
 <h3>Existing order?.</h3>
 
-<div id="order-form-buttons"></div>
+<table>
+  <tbody><tr>
+      <td class="layout">
+        <table class="order_form_header">
+          <tbody><tr>
+              <td colspan="20" class="order_form_section_header">
+                <%= order_form.get('name') %> Order Form
+              </td>
+            </tr>
+            <tr>
+              <td colspan="20">
+                <span class="attr">
+                  <b>
+                    Site #<%= site.get('number') %>
+                  </b>
+                </span>
+                <span class="attr">
+                  <b>
+                    841 Kaynyne Street
+                  </b>
+                </span>
+                <span class="attr">
+                  <b>
+                    Redwood City CA 94063
+                  </b>
+                </span>
+                <br>
+                <% if (order.has('id')) { %>
+                <span class="attr">
+                  Order ID #
+                  <%= order.get('id') %>
+                </span>
+                <span class="attr">
+                  Status: <%= order.get('status') %>
+                </span>
+                <br>
+                <% } else { %>
+                <span class="attr">
+                  New Order
+                </span>
+                <br>
+                <% } %>
+                <input name="submit" type="submit" value="Submit this order and proceed to delivery options">
+
+              </td>
+            </tr>
+
+            <tr>
+              <td class="order_form_section_header">
+                Instructions to Captains
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p><%= order_form.get('instructions') %></p>
+              </td>
+            </tr>
+
+
+
+            <tr>
+              <td class="order_form_section_header">
+                Captains' Notes
+              </td>
+            </tr>
+            <tr>
+              <td>
+
+                <textarea id="id_notes" rows="5" cols="120" name="notes"></textarea>
+
+              </td>
+            </tr>
+
+        </tbody></table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table class="order_item_list">
+
+          <tbody><tr>
+              <th>
+              </th>
+              <th>
+                Items
+              </th>
+              <th>
+                Unit Cost ($)
+              </th>
+              <th>
+              </th>
+              <th>
+                Quantity
+              </th>
+              <th>
+                Total ($)
+              </th>
+            </tr>
+
+
+            <tr>
+              <td class="order_form_section_header" colspan="20">
+                <b>Cleaning</b>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="listpic">
+
+              </td>
+              <td>
+                <b>Carpet Cleaning</b>
+                -
+                Limited number available free; first-come, first-served.
+
+
+              </td>
+              <td class="dollar">
+                75.00
+              </td>
+              <td class="measure">
+                Home x
+              </td>
+              <td class="quantity">
+
+                      <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM" value="" size="5" onchange="updateCost(this.value, 
+                                                                                                                                                                     75.0, 
+                                                                                                                                                                     &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM&#39;);">
+                      =
+
+              </td>
+              <td class="dollar">
+                <span id="total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM" name="item_total">
+
+                </span>
+              </td>
+            </tr>
+
+
+            <tr>
+              <td class="listpic">
+
+              </td>
+              <td>
+                <b>Pressure Wash (house of mobile home)</b>
+                -
+                Clear away walls prior to service, including large weeds.
+
+
+              </td>
+              <td class="dollar">
+                150.00
+              </td>
+              <td class="measure">
+                Home x
+              </td>
+              <td class="quantity">
+
+                      <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuLO2qgoM" value="" size="5" onchange="updateCost(this.value, 
+                                                                                                                                                                     150.0, 
+                                                                                                                                                                     &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuLO2qgoM&#39;);">
+                      =
+
+              </td>
+              <td class="dollar">
+                <span id="total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuLO2qgoM" name="item_total">
+
+                </span>
+              </td>
+            </tr>
+
+
+            <tr>
+              <td class="listpic">
+
+              </td>
+              <td>
+                <b>Sewer Clean-out</b>
+
+                None
+
+
+              </td>
+              <td class="dollar">
+                0.00
+              </td>
+              <td class="measure">
+                Each x
+              </td>
+              <td class="quantity">
+
+                      <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICA2I2hogoM" value="" size="5" onchange="updateCost(this.value, 
+                                                                                                                                                                     0.0, 
+                                                                                                                                                                     &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICA2I2hogoM&#39;);">
+                      =
+
+              </td>
+              <td class="dollar">
+                <span id="total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICA2I2hogoM" name="item_total">
+
+                </span>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+              </td>
+              <td colspan="4" class="form-summary subtotal">
+                Subtotal
+
+                (does not include 9.25% sales tax)
+
+              </td>
+              <td class="dollar subtotal">
+                <span id="sub_total">
+
+                </span>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td colspan="5" class="form-summary">
+                <input name="submit" type="submit" value="Submit this order and proceed to delivery options">
+              </td>
+            </tr>
+
+
+        </tbody></table>
+      </td>
+    </tr>
+</tbody></table>
 
 

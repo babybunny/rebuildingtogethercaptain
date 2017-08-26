@@ -233,6 +233,16 @@ def CreateAll():
     logistics_instructions="""Pick these up somewhere nice.""",
     delivery_options='Yes',
   ).put()
+  KEYS['ORDERSHEET3'] = ndb_models.OrderSheet(
+    # no default_supplier
+    name='Debris Box',
+    code='DEB',
+    instructions='Put trash in it. Do not climb on or around.',
+    logistics_instructions="""Put it on the curb.""",
+    delivery_options='Yes',
+    return_options='Yes',
+    pickup_options='No',
+  ).put()
 
   KEYS['ITEM'] = ndb_models.Item(
     bar_code_number=1234,
