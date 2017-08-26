@@ -24,7 +24,7 @@ class ModelsTest(unittest2.TestCase):
 
     def testOrderUnicode(self):
         o = self.keys['ORDER'].get()
-        self.assertEquals(u'110TEST Fixme Center Some Supplies 2 items $10.92', unicode(o))
+        self.assertEquals(u'110TEST Fixme Center Some Supplies 3 items $10.92', unicode(o))
     
     def testOrder2Unicode(self):
         o = self.keys['ORDER2'].get()
