@@ -45,20 +45,7 @@ class Program(messages.Message):
 class Programs(messages.Message):
   program = messages.MessageField(Program, 1, repeated=True)
 
-class ItemPreview(messages.Message):
-  name = messages.StringField(1)
-  section = messages.StringField(2)
   
-class OrderFormChoice(messages.Message):
-  id = messages.IntegerField(1)
-  name = messages.StringField(2)
-  code = messages.StringField(3)
-  sorted_items = messages.MessageField(ItemPreview, 4, repeated=True)
-  
-class OrderFormChoices(messages.Message):
-  order_form = messages.MessageField(OrderFormChoice, 1, repeated=True)
-
-
 ################
 # Jurisdiction #
 ################
@@ -647,8 +634,10 @@ def _ItemModelToMessage(mdl):
     s.appears_on_order_form = mdl.appears_on_order_form.integer_id()
   if mdl.supplier:
     s.supplier = mdl.supplier.integer_id()
+  s.visible_name = mdl.VisibleName()
+  s.visible_section = mdl.VisibleOrderFormSection()
   return s
-
+  
 def _ItemMessageToModel(msg, mdl):
   mdl.description = msg.description
   mdl.bar_code_number = msg.bar_code_number
@@ -679,6 +668,8 @@ class Item(messages.Message):
   url = messages.StringField(10)
   order_form_section = messages.StringField(11)
   supplier = messages.IntegerField(12)
+  visible_name = messages.StringField(13)
+  visible_section = messages.StringField(14)
 
 
 
@@ -744,6 +735,24 @@ class Order(messages.Message):
   actual_total = messages.FloatField(12)
 
         
+#######################################
+# Non-CRUD API and composite messages #
+#######################################
+
+class OrderFormChoice(messages.Message):
+  id = messages.IntegerField(1)
+  name = messages.StringField(2)
+  code = messages.StringField(3)
+  
+class OrderFormChoices(messages.Message):
+  order_form = messages.MessageField(OrderFormChoice, 1, repeated=True)
+
+class OrderFormDetail(messages.Message):
+  order_sheet = messages.MessageField(OrderSheet, 1)
+  sorted_items = messages.MessageField(Item, 2, repeated=True)
+
+
+
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
 """
@@ -969,15 +978,27 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     res = OrderFormChoices()
     for m in ndb_models.OrderSheet.query():
       f = OrderFormChoice(name=m.name, code=m.code, id=m.key.integer_id())
-      ims = list(ndb_models.Item.query(ndb_models.Item.appears_on_order_form == m.key))
-      ndb_models._SortItemsWithSections(ims)
-      for im in ims:
-        i = ItemPreview(name=im.VisibleName(),
-                        section=im.VisibleOrderFormSection())
-        f.sorted_items.append(i)
       res.order_form.append(f)
     return res
 
+  @remote.method(SimpleId, OrderFormDetail)
+  def order_form_detail(self, request):
+    res = OrderFormDetail()
+    if not request.id:
+      raise remote.ApplicationError('id is required')
+    key = ndb.Key(ndb_models.OrderSheet, request.id)
+    mdl = key.get()
+    if not mdl:
+      raise remote.ApplicationError(
+        'No OrderSheet found with key {}'.format(request.id))
+    res.order_sheet = _OrderSheetModelToMessage(mdl)
+    ims = list(ndb_models.Item.query(ndb_models.Item.appears_on_order_form == key))
+    ndb_models._SortItemsWithSections(ims)
+    for im in ims:
+      i = _ItemModelToMessage(im)
+      res.sorted_items.append(i)
+    return res
+  
 # # # # # # # # # #
 #     Choices     #
 # # # # # # # # # #

@@ -10,7 +10,7 @@
         <table class="order_form_header">
           <tbody><tr>
               <td colspan="20" class="order_form_section_header">
-                <%= order_form.get('name') %> Order Form
+                <%= order_form.name %> Order Form
               </td>
             </tr>
             <tr>
@@ -58,7 +58,7 @@
             </tr>
             <tr>
               <td>
-                <p><%= order_form.get('instructions') %></p>
+                <p><%= order_form.instructions %></p>
               </td>
             </tr>
 
@@ -72,7 +72,7 @@
             <tr>
               <td>
 
-                <textarea id="id_notes" rows="5" cols="120" name="notes"></textarea>
+                <textarea id="id_notes" rows="5" cols="120" name="notes">TODO</textarea>
 
               </td>
             </tr>
@@ -102,24 +102,20 @@
                 Total ($)
               </th>
             </tr>
-
-
+            <%  for (item of items) {  %>
             <tr>
               <td class="order_form_section_header" colspan="20">
-                <b>Cleaning</b>
+                <b><%= item.visible_section %></b>
               </td>
             </tr>
 
             <tr>
               <td class="listpic">
-
+                TODO pic
               </td>
               <td>
-                <b>Carpet Cleaning</b>
-                -
-                Limited number available free; first-come, first-served.
-
-
+                <b><%= item.visible_name %></b>
+                TODO notes
               </td>
               <td class="dollar">
                 75.00
@@ -141,7 +137,7 @@
                 </span>
               </td>
             </tr>
-
+            <% } %>
 
             <tr>
               <td class="listpic">

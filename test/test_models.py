@@ -240,7 +240,7 @@ def CreateAll():
     instructions='Put trash in it. Do not climb on or around.',
     logistics_instructions="""Put it on the curb.""",
     delivery_options='Yes',
-    return_options='Yes',
+    retrieval_options='Yes',
     pickup_options='No',
   ).put()
 

@@ -50,6 +50,7 @@ require(
 
             switch (method) {
             case 'read':
+                console.log(model);
                 var xhr = options.xhr = Backbone.$.ajax(_.extend(settings, {
                     data: JSON.stringify({"id": model.id})
                 }))

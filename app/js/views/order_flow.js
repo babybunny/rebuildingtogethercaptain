@@ -5,12 +5,13 @@ define(
 	      'app/views/model_select_control',
         'app/models/order_form_overview',
         'app/models/site',
-        'app/models/ordersheet',
+        'app/models/order_form_detail',
         'text!app/templates/order_choose_form.html',
         'text!app/templates/order_form_button.html',
         'text!app/templates/order_select_items.html',
     ],
-    function(bsdp, RoomFormView, ModelSelectControl, OrderFormOverview, Site, OrderForm,
+    function(bsdp, RoomFormView, ModelSelectControl,
+             OrderFormOverview, Site, OrderFormDetail,
              choose_form_template, button_template, select_items_template) {
         var OrderFlowView = Backbone.View.extend({
             initialize: function(app, loading) {
@@ -38,12 +39,17 @@ define(
                     console.log('order_flow.render waiting on site');
                     return this;
                 }
-                if (this.order_form) {
-                    if (!this.order_form.has('code')) {
+                if (this.order_form_detail) {
+                    if (!this.order_form_detail.has('sorted_items')) {  // to indicate it comes from server.
                         return this;
                     }
-                    console.log('has order form: ' + this.order_form.get('code'));
-                    var t = this.select_items_template({order: this.model, site: this.site, order_form: this.order_form});
+                    console.log('has order form: ' + this.order_form_detail.get('order_sheet').code);
+                    var t = this.select_items_template({
+                        order: this.model,
+                        site: this.site,
+                        order_form: this.order_form_detail.get('order_sheet'),
+                        items: this.order_form_detail.get('sorted_items')
+                    });
                     this.$el.html(t);
                     return this;
                 }
@@ -67,9 +73,9 @@ define(
                     var self = this;
                     $("#order-form-buttons button").click(function() {
                         console.log('click: ' + this.id);
-                        self.order_form = new OrderForm({id: parseInt(this.id)});
-                        self.listenTo(self.order_form, 'change', self.render);
-                        self.order_form.fetch();
+                        self.order_form_detail = new OrderFormDetail({id: parseInt(this.id)});
+                        self.listenTo(self.order_form_detail, 'change', self.render);
+                        self.order_form_detail.fetch();
                     });
 
                 }

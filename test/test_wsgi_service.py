@@ -182,3 +182,25 @@ class BugsTest(unittest2.TestCase):
         self.assertEquals('200 OK', response.status)
         self.assertIn(u'payment_date', response.json)
         self.assertEquals('2011-02-03', response.json['payment_date'])
+
+
+class CustomApiTest(unittest2.TestCase):
+    def setUp(self):
+        self.keys = test_models.CreateAll()
+        
+    def tearDown(self):
+        test_models.DeleteAll(self.keys)
+
+    def testOrderSheetDetails(self):
+        post_json_body = {
+            "id":self.keys['ORDERSHEET'].integer_id(),
+        }
+        response = app.post_json('/wsgi_service.order_form_detail',
+                                 post_json_body,
+                                 status=200,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn(u'order_sheet', response.json)
+        self.assertIn(u'sorted_items', response.json)
+        # TODO: more checks
+        
