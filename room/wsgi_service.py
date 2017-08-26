@@ -49,14 +49,14 @@ class ItemPreview(messages.Message):
   name = messages.StringField(1)
   section = messages.StringField(2)
   
-class OrderForm(messages.Message):
+class OrderFormChoice(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
   code = messages.StringField(3)
   sorted_items = messages.MessageField(ItemPreview, 4, repeated=True)
   
-class OrderFormPreview(messages.Message):
-  order_form = messages.MessageField(OrderForm, 1, repeated=True)
+class OrderFormChoices(messages.Message):
+  order_form = messages.MessageField(OrderFormChoice, 1, repeated=True)
 
 
 ################
@@ -964,11 +964,11 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     return programs
     
   @remote.method(message_types.VoidMessage,
-                 OrderFormPreview)  
-  def order_form_overview(self, request):
-    res = OrderFormPreview()
+                 OrderFormChoices)  
+  def order_form_choices(self, request):
+    res = OrderFormChoices()
     for m in ndb_models.OrderSheet.query():
-      f = OrderForm(name=m.name, code=m.code, id=m.key.integer_id())
+      f = OrderFormChoice(name=m.name, code=m.code, id=m.key.integer_id())
       ims = list(ndb_models.Item.query(ndb_models.Item.appears_on_order_form == m.key))
       ndb_models._SortItemsWithSections(ims)
       for im in ims:
