@@ -45,7 +45,19 @@ class Program(messages.Message):
 class Programs(messages.Message):
   program = messages.MessageField(Program, 1, repeated=True)
 
+class ItemPreview(messages.Message):
+  name = messages.StringField(1)
+  section = messages.StringField(2)
   
+class OrderForm(messages.Message):
+  name = messages.StringField(1)
+  code = messages.StringField(2)
+  sorted_items = messages.MessageField(ItemPreview, 3, repeated=True)
+  
+class OrderFormPreview(messages.Message):
+  order_form = messages.MessageField(OrderForm, 1, repeated=True)
+
+
 ################
 # Jurisdiction #
 ################
@@ -947,6 +959,20 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
     
+  @remote.method(message_types.VoidMessage,
+                 OrderFormPreview)  
+  def order_form_overview(self, request):
+    res = OrderFormPreview()
+    for m in ndb_models.OrderSheet.query():
+      f = OrderForm(name=m.name, code=m.code)
+      ims = list(ndb_models.Item.query(ndb_models.Item.appears_on_order_form == m.key))
+      ndb_models._SortItemsWithSections(ims)
+      for im in ims:
+        i = ItemPreview(name=im.VisibleName(),
+                        section=im.VisibleOrderFormSection())
+        f.sorted_items.append(i)
+      res.order_form.append(f)
+    return res
 
 # # # # # # # # # #
 #     Choices     #

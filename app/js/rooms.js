@@ -16,10 +16,12 @@ require(
     ],
     function(Backbone, Routes) {
         Backbone.sync = function(method, model, options) {
-            console.log('ROOMS - SYNCCC!!!');
-            var url = this.urlRoot + method;  // Example: '/wsgi_service.captain_' + 'create'
-            console.log('Backbone sync ' + method + ' start: ' + url);
-            console.log(options);
+            if (this.urlPinned) {
+                var url = this.urlPinned;
+            } else {
+                var url = this.urlRoot + method;  // Example: '/wsgi_service.captain_' + 'create'
+            }
+            console.log('Backbone sync ' + method + ' url: ' + url);
             // Template for a ROOMS API settings.
             var settings = {
                 url: url,

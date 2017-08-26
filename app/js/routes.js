@@ -61,7 +61,6 @@ define(
                               console.log('new order flow');
                               self.app.models['order'] = new Model({site: site_id});
                               self.app.views['order_flow'] = new View(self.app, false);
-                              self.app.views['order_flow'].render();
                           });
             },
             edit_order: function(site_id, id) {
@@ -71,7 +70,6 @@ define(
                                   {site: site_id, id: id});
                               self.app.models['order'].fetch();
                               self.app.views['order_flow'] = new View(self.app, true);
-                              self.app.views['order_flow'].render();
                           });
             },
         });

@@ -1,15 +1,12 @@
 define(
     ['backbone', 'backform', 'bootstrap'],
     function(Backbone, Backform, bootstrap) {
-
-    // options: name, template, model, loading, fields
-    var RoomFormView = Backbone.View.extend({
+        
+        // options: name, template, model, loading, fields
+        var RoomFormView = Backbone.View.extend({
             el: '#simple-form-view',
-            events: {
-                'click button:submit': 'submit'
-            },
+            events: {'click button:submit': 'submit'},
             initialize: function(options) {
-                console.log('simple-form view init');
                 var self = this;
                 this.options = options;
                 self.template = _.template(options.template);
@@ -17,7 +14,7 @@ define(
                 self.name = options.name;
                 self.loading = options.loading;
                 self.saved = false;
-
+                
                 this.listenTo(this.model, 'change',
                               function(model) {
                                   if ( self.loading ) {
@@ -29,20 +26,27 @@ define(
                     self.model.save(null, {
                         'success': function(model, attrs, response) {
                             response.xhr.statusText = 'SAVED';
-                            $('span.status').css('color', '#409b27').text('Saved, Luke').show().fadeOut(
-                                {duration: 1000,
-                                 complete: function() {
-                                     // redirect to the "back to site" URL
-                                     window.location = $('#rooms-form-after-save').attr('href');
-                                 } });
-                            
+                            $('span.status')
+                                .css('color', '#409b27')
+                                .text('Saved')
+                                .show()
+                                .fadeOut({
+                                    duration: 1000,
+                                    complete: function() {
+                                        // redirect to the "back to site" URL
+                                        window.location = $('#rooms-form-after-save').attr('href');
+                                    }
+                                });                            
                         },
-                        'error': function(model, response, error) {                            
-                            $('span.status').css('color', 'red').text('Error: ' + response.responseText).show();
+                        'error': function(model, response, error) {
+                            $('span.status')
+                                .css('color', 'red')
+                                .text('Error: ' + response.responseText)
+                                .show();
                         },
                     });              
                 };
-
+                
                 this.form = new Backform.Form({
                     model: this.model,
                     fields: options.fields,
@@ -54,13 +58,14 @@ define(
                             onSave();
                         },
                         
-                    },
-                    
+                    },                    
                 });
             },
             render: function() {
-                var t = this.template({name: this.name,
-                                       s: this.model.attributes});
+                var t = this.template({
+                    name: this.name,
+                    s: this.model.attributes
+                });
                 this.$el.html(t);
                 if (this.loading) {
                     this.$('#simple-form-loading').show();
@@ -83,19 +88,23 @@ define(
                     this.firstfield = this.getFirstField();
                     this.form.setElement(this.$el.find('#simple-form-backform'));
                     this.form.render();
-                    this.$(this.firstfield.control + '[name=' + this.firstfield.name +']').focus();
+                    this.$(this.firstfield.control + '[name=' + this.firstfield.name +']')
+                        .focus();
                     this.$('button').on('mousedown mouseup', function() {
                         $(this).toggleClass('white');
                     });
-
+                    
                 }
                 return this;
             },
             getFirstField: function() {
-                var field_list = _.reject(this.form.fields.models, function(model) { return model.get('disabled'); });
+                var field_list = _.reject(
+                    this.form.fields.models,
+                    function(model) { return model.get('disabled'); }
+                );
                 return field_list[0]._previousAttributes;
             },
-
+            
         });
         return RoomFormView;
     }

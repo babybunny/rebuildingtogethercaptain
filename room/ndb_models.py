@@ -186,6 +186,19 @@ class OrderSheet(ndb.Model):
   def item_set(self):
     return Item.query(Item.appears_on_order_form == self.key)
 
+  
+def _SortItemsWithSections(items):
+  """Sort a list of items so they look OK in the UI."""
+  items.sort(
+      key=lambda x: (x.order_form_section or None, x.name))
+  prev_section = None
+  for i in items:
+    new_section = i.order_form_section or None
+    if prev_section != new_section:
+      i.first_in_section = True
+    prev_section = new_section
+
+    
 class Item(ndb.Model):
   """Represents a type of thing that may in the inventory."""
   bar_code_number = ndb.IntegerProperty()
