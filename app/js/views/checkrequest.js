@@ -18,8 +18,8 @@ define(
             {
                 name: "site",
                 label: "Site",
-                control: "input", 
-                disabled: true 
+                control: "input",
+                disabled: true
             },
             {
                 name: "state",
@@ -61,6 +61,7 @@ define(
                 name: "tax_id",
                 label: "Tax id",
                 control: "input",
+                helpMessage: "we'll notify you if we still need this information to process the check"
             },
             {
                 name: "form_of_business",
@@ -99,7 +100,7 @@ define(
                 label: "Save changes"
             }
         ];
-        
+
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
 		            name: 'checkrequest',
