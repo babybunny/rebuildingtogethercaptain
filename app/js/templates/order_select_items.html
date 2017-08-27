@@ -102,13 +102,17 @@
                 Total ($)
               </th>
             </tr>
-            <%  for (item of items) {  %>
+            <%
+               var prev_section = "";
+               for (item of items) {
+                 if (item.visible_section !== prev_section) { %>
             <tr>
               <td class="order_form_section_header" colspan="20">
                 <b><%= item.visible_section %></b>
               </td>
             </tr>
-
+            <%   }
+                 prev_section = item.visible_section; %>
             <tr>
               <td class="listpic">
                 TODO pic
@@ -125,15 +129,15 @@
               </td>
               <td class="quantity">
 
-                      <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM" value="" size="5" onchange="updateCost(this.value, 
-                                                                                                                                                                     75.0, 
-                                                                                                                                                                     &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM&#39;);">
-                      =
-
+                <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM" value="" size="5" onchange="updateCost(this.value, 
+                                                                                                                                                        75.0, 
+                                                                                                                                                        &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM&#39;);">
+                =
+                
               </td>
               <td class="dollar">
                 <span id="total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM" name="item_total">
-
+                  
                 </span>
               </td>
             </tr>
