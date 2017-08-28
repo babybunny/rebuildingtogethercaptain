@@ -119,19 +119,16 @@
               </td>
               <td>
                 <b><%= item.visible_name %></b>
-                TODO notes
+                <%= item.description %>
               </td>
               <td class="dollar">
-                75.00
+                <%= item.unit_cost %>
               </td>
               <td class="measure">
-                Home x
+                <%= item.measure %>
               </td>
               <td class="quantity">
-
-                <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM" value="" size="5" onchange="updateCost(this.value, 
-                                                                                                                                                        75.0, 
-                                                                                                                                                        &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM&#39;);">
+                <input type="text" id="<%- item.id %>" value="TODO" size="5">
                 =
                 
               </td>
@@ -142,71 +139,6 @@
               </td>
             </tr>
             <% } %>
-
-            <tr>
-              <td class="listpic">
-
-              </td>
-              <td>
-                <b>Pressure Wash (house of mobile home)</b>
-                -
-                Clear away walls prior to service, including large weeds.
-
-
-              </td>
-              <td class="dollar">
-                150.00
-              </td>
-              <td class="measure">
-                Home x
-              </td>
-              <td class="quantity">
-
-                      <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuLO2qgoM" value="" size="5" onchange="updateCost(this.value, 
-                                                                                                                                                                     150.0, 
-                                                                                                                                                                     &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuLO2qgoM&#39;);">
-                      =
-
-              </td>
-              <td class="dollar">
-                <span id="total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuLO2qgoM" name="item_total">
-
-                </span>
-              </td>
-            </tr>
-
-
-            <tr>
-              <td class="listpic">
-
-              </td>
-              <td>
-                <b>Sewer Clean-out</b>
-
-                None
-
-
-              </td>
-              <td class="dollar">
-                0.00
-              </td>
-              <td class="measure">
-                Each x
-              </td>
-              <td class="quantity">
-
-                      <input type="text" name="item_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICA2I2hogoM" value="" size="5" onchange="updateCost(this.value, 
-                                                                                                                                                                     0.0, 
-                                                                                                                                                                     &#39;total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICA2I2hogoM&#39;);">
-                      =
-
-              </td>
-              <td class="dollar">
-                <span id="total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICA2I2hogoM" name="item_total">
-
-                </span>
-              </td>
-            </tr>
 
             <tr>
               <td>
