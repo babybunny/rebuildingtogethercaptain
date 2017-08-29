@@ -72,7 +72,7 @@
             <tr>
               <td>
 
-                <textarea id="id_notes" rows="5" cols="120" name="notes">TODO</textarea>
+                <textarea id="id_notes" rows="5" cols="120" name="notes"><%= order.get('notes') %></textarea>
 
               </td>
             </tr>
@@ -128,13 +128,13 @@
                 <%= item.measure %>
               </td>
               <td class="quantity">
-                <input type="text" id="<%- item.id %>" value="TODO" size="5">
+                <input type="text" class="item-quantity" name="<%- item.id %>" value="<%- quantityForItem(item, order_items) %>" size="5">
                 =
                 
               </td>
               <td class="dollar">
-                <span id="total_ah9zfnJlYnVpbGRpbmd0b2dldGhlcmNhcHRhaW4taHJkchYLEglPcmRlckl0ZW0YgICAuN7IugoM" name="item_total">
-                  
+                <span class="item-total" name="<%- item.id %>">
+                  <%= totalForItem(item, order_items) %>
                 </span>
               </td>
             </tr>
@@ -151,7 +151,7 @@
               </td>
               <td class="dollar subtotal">
                 <span id="sub_total">
-
+                  <%= subtotal() %>
                 </span>
               </td>
             </tr>
