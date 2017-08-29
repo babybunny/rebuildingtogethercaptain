@@ -11,7 +11,6 @@ define(
                 control: "input",
                 disabled: true
             },
-            // boilerplate
             {
                 name: "rooms_id",
                 label: "Rooms id",
@@ -21,20 +20,36 @@ define(
                 name: "name",
                 label: "Name",
                 control: "input",
+                required: true
             },
             {
                 name: "email",
                 label: "Email",
                 control: "input",
+                type: "email"
             },
             {
                 name: "tshirt_size",
                 label: "Tshirt size",
-                control: "input",
+                control: "select",
+                options: [
+                    {label: '--- please select one ---', value: null},
+                    {label: "Small", value: "Small"},
+                    {label: "Medium", value: "Medium"},
+                    {label: "Large", value: "Large"},
+                    {label: "X-Large", value: "X-Large"},
+                    {label: "2XL", value: "2XL"},
+                    {label: "3XL", value: "3XL"},
+                ]
             },
             {
                 name: "phone_mobile",
                 label: "Phone mobile",
+                control: "input",
+            },
+            {
+                name: "phone_work",
+                label: "Phone work",
                 control: "input",
             },
             {
@@ -45,11 +60,6 @@ define(
             {
                 name: "phone_fax",
                 label: "Phone fax",
-                control: "input",
-            },
-            {
-                name: "phone_work",
-                label: "Phone work",
                 control: "input",
             },
             {
@@ -68,7 +78,7 @@ define(
                 label: "Save changes"
             }
         ];
-        
+
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
 		            name: 'captain',
