@@ -4,6 +4,7 @@ define(
         'app/views/rooms_form',
 	      'app/views/model_select_control',
         'app/models/order_form_overview',
+        'app/models/order_items',
         'app/models/site',
         'app/models/order_form_detail',
         'text!app/templates/order_choose_form.html',
@@ -11,15 +12,15 @@ define(
         'text!app/templates/order_select_items.html',
     ],
     function(bsdp, RoomFormView, ModelSelectControl,
-             OrderFormOverview, Site, OrderFormDetail,
+             OrderFormOverview, OrderItems, Site, OrderFormDetail,
              choose_form_template, button_template, select_items_template) {
         var OrderFlowView = Backbone.View.extend({
             initialize: function(app, loading) {
-                console.log('initializing order_flow');
                 this.app = app;
                 this.model = this.app.models.order;
                 this.choose_form_template = _.template(choose_form_template);
                 this.order_forms = new OrderFormOverview();
+                this.order_items = new OrderItems();
                 this.site = new Site({id: this.model.get('site')});
                 this.listenTo(this.order_forms, 'add', this.render);
                 this.listenTo(this.model, 'change', this.render);
@@ -28,33 +29,95 @@ define(
                 this.order_forms.fetch();
                 this.button_template = _.template(button_template);
                 this.select_items_template = _.template(select_items_template);
+                this.item_views = [];
+            },
+            events: {
+                'change #id_notes': 'savenotes',
+                'change .item-quantity': 'changeQuantity'
+            },
+            savenotes: function(e) {
+                this.model.set('notes', e.target.value);
+            },
+            changeQuantity: function(e) {
+                var oi = this.order_items.get(e.target.name);
+                if (!oi) {
+                    this.order_items.add({
+                        id: parseInt(e.target.name),
+                        quantity: e.target.value
+                    });
+                } else {
+                    oi.set('quantity', e.target.value);
+                }
+                return false;
+            },
+            orderTotal: function() {
+                return _.reduce(this.order_items, function(memo, value) {
+                    return memo + totalForItem(value)
+                });                
             },
             el: '#order-flow-view',
+            totalForItem: function(item, order_items) {
+                var oi = order_items.get(item.id)
+                if (!oi) {
+                    return "";
+                }
+                if (!oi.get('quantity')) {
+                    return "";
+                }
+                var q = parseFloat(oi.get('quantity'));
+                if (!q) {
+                    return "";
+                }
+                if (item.unit_cost) {
+                    var num = item.unit_cost * q;
+                    return Math.round( num * 100 + Number.EPSILON ) / 100;
+
+                } else {
+                    return "";
+                }
+            },
             render: function() {
-                console.log('render '
-                            + ' order_forms ' + this.order_forms
-                            + ' model '+ this.model
-                            + ' app ' + this.app.models.order);
+                var self = this;
                 if (!this.site.has('number')) {
-                    console.log('order_flow.render waiting on site');
                     return this;
                 }
                 if (this.order_form_detail) {
                     if (!this.order_form_detail.has('sorted_items')) {  // to indicate it comes from server.
                         return this;
                     }
-                    console.log('has order form: ' + this.order_form_detail.get('order_sheet').code);
                     var t = this.select_items_template({
                         order: this.model,
                         site: this.site,
                         order_form: this.order_form_detail.get('order_sheet'),
-                        items: this.order_form_detail.get('sorted_items')
+                        items: this.order_form_detail.get('sorted_items'),
+                        order_items: this.order_items,
+                        totalForItem: this.totalForItem,
+                        quantityForItem: function(item, order_items) {
+                            var oi = order_items.get(item.id);
+                            if (oi) {
+                                return oi.get('quantity');
+                            } else {
+                                return '';
+                            }
+                        },
+                        subtotal: function() {
+                            var num = _.reduce(
+                                self.order_form_detail.get('sorted_items'),
+                                function(memo, val) {
+                                    var t = self.totalForItem(val, self.order_items);
+                                    if (t) {
+                                        return t + memo;
+                                    } else {
+                                        return memo;
+                                    }
+                                }, 0);
+                            return Math.round( num * 100 + Number.EPSILON ) / 100;
+                        }
                     });
                     this.$el.html(t);
                     return this;
                 }
                 if (!this.order_forms.models) {
-                    console.log('order_flow.render waiting on order_forms');
                     return this;
                 }
                 if (this.app.models.order.has('order_sheet')) {
@@ -70,10 +133,15 @@ define(
                                var b = button_template(f.attributes);
                                buttons.append(b);                               
                            });
-                    var self = this;
                     $("#order-form-buttons button").click(function() {
-                        console.log('click: ' + this.id);
                         self.order_form_detail = new OrderFormDetail({id: parseInt(this.id)});
+                        if (self.model.has('id')) {
+                            self.order_items = new OrderItems({id: self.model.get('id')});
+                        } else {
+                            self.order_items = new OrderItems();
+                        }
+                        self.listenTo(self.order_items, 'change', self.render);
+                        self.listenTo(self.order_items, 'add', self.render);
                         self.listenTo(self.order_form_detail, 'change', self.render);
                         self.order_form_detail.fetch();
                     });
