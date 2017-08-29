@@ -43,51 +43,11 @@ define(
                 helpMessage: "Instructions to Captain, appears on logistics form"
             },
             {
-                name: "supports_extra_name_on_order",
-                label: "Supports extra name on order",
-		            control: "checkbox"
-            },
-             {
-                 control: "spacer"
-             },
-            {
-                name: "delivery_options",
-                label: "Delivery options",
-                control: "radio",
-		            default: "No",
-                options: [
-                    {label: "Yes", value: "Yes"},
-                    {label: "No", value: "No"},
-                ],
-                helpMessage: "Allow Captain to select Delivery to site"
-
-            },
-
-            {
-                name: "retrieval_options",
-                label: "Retrieval options",
-                control: "radio",
-		            default: "No",
-                options: [
-                    {label: "Yes", value: "Yes"},
-                    {label: "No", value: "No"},
-                ],
-                helpMessage: "Drop-off and retrieval (like debris box) Note: do not set this with either delivery or pick-up</span>"
-            },
-
-            {
-                name: "pickup_options",
-                label: "Pickup options",
-                control: "radio",
-		            default: "No",
-                options: [
-                    {label: "Yes", value: "Yes"},
-                    {label: "No", value: "No"},
-                ],
-                helpMessage: "Allow Captain to select Pick-up from RTP warehouse"
-            },
-            {
-                control: "spacer"
+                name: "instructions",
+                label: "Instructions",
+                control: "textarea",
+                default: "",
+                helpMessage: "Instructions to Captain, appears on order form"
             },
             {
                 name: "default_supplier",
@@ -97,12 +57,63 @@ define(
                 helpMessage: "Default Supplier, used if Item's supplier is not set."
             },
             {
-                name: "instructions",
-                label: "Instructions",
-                control: "textarea",
-                default: "",
-                helpMessage: "Instructions to Captain, appears on order form"
+                label: "Default Supplier, used if Item's supplier is not set.",
+                control: "help"
             },
+            {
+                name: "supports_extra_name_on_order",
+                label: "Supports extra name on order",
+		            control: "checkbox"
+            },
+            {control: "spacer"},
+            {
+                label: "Choose one of the next three options.",
+                control: "help"
+            },
+            {
+                name: "delivery_options",
+                label: "Delivery options",
+                control: "select",
+                    default: "No",
+                options: [
+                    {label: "No", value: "No"},
+                    {label: "Yes", value: "Yes"},
+                ],
+            },
+            {
+                label: "Allow Captain to select Delivery to site",
+                control: "help"
+            },
+            {
+                name: "retrieval_options",
+                label: "Retrieval options",
+                control: "select",
+                    default: "No",
+                options: [
+                    {label: "No", value: "No"},
+                    {label: "Yes", value: "Yes"},
+                ],
+            },
+            {
+                label: "Drop-off and retrieval (like debris box) Note: do not set this with either delivery or pick-up",
+                control: "help"
+            },
+            {
+                name: "pickup_options",
+                label: "Pickup options",
+                control: "select",
+		            default: "No",
+                options: [
+                    {label: "No", value: "No"},
+                    {label: "Yes", value: "Yes"},
+                ],
+                // helpMessage: "Allow Captain to select Pick-up from RTP warehouse"
+            },
+            {
+                label: "Allow Captain to select Pick-up from RTP warehouse",
+                control: "help"
+            },
+            {control: "spacer"},
             {
                 id: "submit",
                 control: "button",
