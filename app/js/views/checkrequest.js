@@ -22,15 +22,15 @@ define(
                     disabled: true
             },
             {
+                name: "program",
+                label: "Program",
+                control: "input"
+            },
+            {
                 name: "captain",
                 label: "Captain",
                     control: ModelSelectControl,
                     room_model_module: CaptainChoices,
-            },
-            {
-                name: "program",
-                label: "Program",
-                control: "input"
             },
             {
                 name: "payment_date",
