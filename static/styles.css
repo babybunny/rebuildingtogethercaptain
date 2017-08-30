@@ -366,3 +366,5 @@ body .ui-widget {
 button.btn.white{
   color: white;
 }
+
+div.form-group.thumbnail{border:none}
