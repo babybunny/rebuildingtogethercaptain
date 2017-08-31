@@ -14,15 +14,15 @@ SALES_TAX_RATE = 0.0925
 
 
 def _SortItemsWithSections(items):
-  """Sort a list of items so they look OK in the UI."""
-  items.sort(
-      key=lambda x: (x.order_form_section or None, x.name))
-  prev_section = None
-  for i in items:
-    new_section = i.order_form_section or None
-    if prev_section != new_section:
-      i.first_in_section = True
-    prev_section = new_section    
+    """Sort a list of items so they look OK in the UI."""
+    items.sort(
+        key=lambda x: (x.order_form_section or None, x.name))
+    prev_section = None
+    for i in items:
+        new_section = i.order_form_section or None
+        if prev_section != new_section:
+            i.first_in_section = True
+        prev_section = new_section
 
 
 class _ActiveItems(object):
@@ -69,7 +69,7 @@ class Staff(ndb.Model):
     name = ndb.StringProperty()
     email = ndb.StringProperty(required=True)
     program_selected = ndb.StringProperty()
-    last_welcome = ndb.DateTimeProperty()
+    last_welcome = ndb.DateProperty(auto_now=True)
     notes = ndb.TextProperty()
     since = ndb.DateProperty(auto_now_add=True)
 
@@ -157,7 +157,7 @@ class Supplier(ndb.Model):
     def __str__(self):
         return self.name
 
-    
+
 class OrderSheet(ndb.Model):
     """Set of items commonly ordered together.
     Corresponds to one of the old paper forms, like the Cleaning Supplies form.
