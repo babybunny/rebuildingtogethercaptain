@@ -859,7 +859,7 @@ class CheckRequest(ndb.Model):
     state = ndb.StringProperty(
         choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'),
         default='new')
-    last_editor = ndb.UserProperty()
+    last_editor = ndb.UserProperty(auto_current_user=True)
     modified = ndb.DateTimeProperty(auto_now=True)
 
     def put(self, *a, **k):

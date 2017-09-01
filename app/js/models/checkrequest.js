@@ -5,8 +5,9 @@ define(
             // matches first part of method name in @remote.method
             urlRoot: '/wsgi_service.checkrequest_',
 	          must_be_floats: ['food_amount', 'materials_amount', 'labor_amount'],
+              defaults: { state: "new" }
         });
-        
+
         return Model;
     }
 );

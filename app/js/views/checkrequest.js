@@ -12,78 +12,75 @@ define(
                 name: "id",
                 label: "ID",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
-            // ndb.KeyProperty(kind=NewSite)
                 name: "site",
                 label: "Site",
-                    control: "input",
-                    disabled: true
+                control: "input",
+                disabled: true
             },
             {
                 name: "program",
                 label: "Program",
-                control: "input"
+                control: "input",
+                type: "text"
             },
             {
                 name: "captain",
                 label: "Captain",
                     control: ModelSelectControl,
-                    room_model_module: CaptainChoices,
+                    room_model_module: CaptainChoices
+            },
+            {
+                name: "name",
+                label: "Name",
+                control: "input",
+                required: true,
+                helpMessage: "Payable To"
             },
             {
                 name: "payment_date",
                 label: "Payment date",
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
-                    default: new Date(),
-		            required: true
+		           required: true
             },
             {
                 name: "labor_amount",
                 label: "Labor amount",
                 control: "input",
-                    default: 0.0,
-                    helpMessage: "Labor Amount ($)"
+                helpMessage: "Labor Amount ($)"
             },
             {
                 name: "materials_amount",
                 label: "Materials amount",
                 control: "input",
-                    default: 0.0,
-                    helpMessage: "Materials Amount ($)"
+                helpMessage: "Materials Amount ($)"
             },
             {
                 name: "food_amount",
                 label: "Food amount",
                 control: "input",
-                    default: 0.0,
-                    helpMessage: "Food Amount ($)"
+                helpMessage: "Food Amount ($)"
             },
             {
                 name: "description",
                 label: "Description",
                 control: "textarea"
             },
-            {
-                name: "name",
-                label: "Name",
-                control: "input",
-		            required: true,
-                    helpMessage: "Payable To"
-            },
+
             {
                 name: "address",
                 label: "Address",
                 control: "textarea",
-                    helpMessage: "Payee Address"
+                helpMessage: "Payee Address"
             },
             {
                 name: "tax_id",
                 label: "Tax id",
                 control: "input",
-                    helpMessage: "Payee Tax ID, we'll notify you if we still need this information to process the check"
+                helpMessage: "Payee Tax ID, we'll notify you if we still need this information to process the check"
             },
             {
                 name: "form_of_business",
@@ -107,13 +104,8 @@ define(
                     {label: "payable", value: "payable"},
                     {label: "fulfilled", value: "fulfilled"},
                     {label: "deleted", value: "deleted"}
-                ],
-                    default: 'new'
+                ]
             },
-            //  This is ndb.UserProperty()
-                //{ namme: "last_editor",
-                //  label: "Last editor",
-                //} control: "input"
             {
                 id: "submit",
                 control: "button",
