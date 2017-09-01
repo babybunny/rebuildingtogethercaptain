@@ -12,9 +12,18 @@ define(
                 disabled: true
             },
             {
+                // Unsure if user wants to view last_editor here?
+                name: "last_editor",
+                label: "Last Editor",
+                control: "input",
+                type: "text",
+                disabled: true
+            },
+            {
                 name: "rooms_id",
                 label: "Rooms id",
                 control: "input",
+                type: "text"
             },
             {
                 name: "name",
@@ -26,14 +35,44 @@ define(
                 name: "email",
                 label: "Email",
                 control: "input",
-                type: "email"
+                type: "email",
+                required: true
+            },
+            {
+                name: "phone_mobile",
+                label: "Phone mobile",
+                control: "input",
+                type: "text"
+            },
+            {
+                name: "phone_work",
+                label: "Phone work",
+                control: "input",
+                type: "text"
+            },
+            {
+                name: "phone_home",
+                label: "Phone home",
+                control: "input",
+                type: "text"
+            },
+            {
+                name: "phone_fax",
+                label: "Phone fax",
+                control: "input",
+                type: "text"
+            },
+            {
+                name: "phone_other",
+                label: "Phone other",
+                control: "input",
+                type: "text"
             },
             {
                 name: "tshirt_size",
                 label: "Tshirt size",
                 control: "select",
                 options: [
-                    {label: '--- please select one ---', value: null},
                     {label: "Small", value: "Small"},
                     {label: "Medium", value: "Medium"},
                     {label: "Large", value: "Large"},
@@ -43,39 +82,15 @@ define(
                 ]
             },
             {
-                name: "phone_mobile",
-                label: "Phone mobile",
-                control: "input",
-            },
-            {
-                name: "phone_work",
-                label: "Phone work",
-                control: "input",
-            },
-            {
-                name: "phone_home",
-                label: "Phone home",
-                control: "input",
-            },
-            {
-                name: "phone_fax",
-                label: "Phone fax",
-                control: "input",
-            },
-            {
-                name: "phone_other",
-                label: "Phone other",
-                control: "input",
-            },
-            {
                 name: "notes",
                 label: "Notes",
-                control: "textarea",
+                control: "textarea"
             },
             {
                 id: "submit",
-                control: "button",
-                label: "Save changes"
+                label: "Save changes",
+                control: "button"
+
             }
         ];
 
