@@ -53,16 +53,12 @@ define(
             {
                 name: "hours",
                 label: "Hours",
-                control: "input",
-                    value: "0",
-                    helpMessage: "Hours"
+                control: "input"
             },
             {
                 name: "miles",
                 label: "Miles",
-                control: "input",
-                    value: "0",
-                    helpMessage: "Miles"
+                control: "input"
             },
             {
                 name: "activity_date",
@@ -75,20 +71,6 @@ define(
                 name: "description",
                 label: "Description",
                 control: "textarea"
-            },
-            {
-                name: "last_editor",
-                label: "Last editor",
-                control: "input",
-                    disabled: true
-            },
-            {
-                name: "modified",
-                label: "Modified",
-                control: "input",
-                    type: "datetime-local",
-                    format: "yyyy-mm-dd, hh:mm:ss",
-                    disabled: true
             },
             {
                 id: "submit",
