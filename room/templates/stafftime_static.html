@@ -65,9 +65,7 @@
     Description
   </td>
   <td>
-    {% if entity.description %}
-	{{ entity.description|replace('\n', '<br/>\n') }}
-	{% endif %}
+    {{ entity.description|escape|replace('\n', '<br>\n') }}
   </td>
 </tr>
 <tr>

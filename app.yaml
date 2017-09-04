@@ -1,7 +1,7 @@
 service: default
 runtime: python27
 threadsafe: no
-api_version: 1
+api_version: kate_testing
 
 env_variables:
   ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.nobody@gmail.com
