@@ -10,10 +10,12 @@ define(
         'text!app/templates/order_choose_form.html',
         'text!app/templates/order_form_button.html',
         'text!app/templates/order_select_items.html',
+        'text!app/templates/order_logistics.html',
     ],
     function(bsdp, RoomFormView, ModelSelectControl,
              OrderFormOverview, OrderItems, Site, OrderFormDetail,
-             choose_form_template, button_template, select_items_template) {
+             choose_form_template, button_template, select_items_template,
+             logistics_template) {
         var OrderFlowView = Backbone.View.extend({
             initialize: function(app, loading) {
                 this.app = app;
@@ -29,11 +31,13 @@ define(
                 this.order_forms.fetch();
                 this.button_template = _.template(button_template);
                 this.select_items_template = _.template(select_items_template);
+                this.logistics_template = _.template(logistics_template);
                 this.item_views = [];
             },
             events: {
                 'change #id_notes': 'savenotes',
-                'change .item-quantity': 'changeQuantity'
+                'change .item-quantity': 'changeQuantity',
+                'click #order-proceed-button': 'renderLogistics',
             },
             savenotes: function(e) {
                 this.model.set('notes', e.target.value);
@@ -75,6 +79,15 @@ define(
                 } else {
                     return "";
                 }
+            },
+            renderLogistics: function() {
+                var t = this.logistics_template({
+                    order: this.model,
+                    site: this.site,
+                    order_form: this.order_form_detail.get('order_sheet'),
+                });
+                this.$el.html(t);
+                return this;
             },
             render: function() {
                 var self = this;
