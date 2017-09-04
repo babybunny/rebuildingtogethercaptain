@@ -300,6 +300,19 @@ def CreateAll():
     supports_extra_name_on_order=False,
   ).put()
 
+  KEYS['ITEM5'] = ndb_models.Item(
+    bar_code_number=1256,
+    name='Some More Item',
+    appears_on_order_form=KEYS['ORDERSHEET2'],
+    order_form_section='A Section',
+    description="""The description is very short. Here it is.  But you can add an extra name.""",
+    measure='Roll',
+    unit_cost=99.99,
+    supplier=KEYS['SUPPLIER'],
+    # None url='http://example.com/item4',
+    supports_extra_name_on_order=True,
+  ).put()
+
   KEYS['INVENTORYITEM'] = ndb_models.InventoryItem(
     item=KEYS['ITEM'],
     quantity=0,
