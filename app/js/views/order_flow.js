@@ -1,5 +1,6 @@
 define(
     [
+        'backbone', 'backform', 'bootstrap',
         'bootstrap-datepicker',
         'app/views/rooms_form',
 	      'app/views/model_select_control',
@@ -12,7 +13,8 @@ define(
         'text!app/templates/order_select_items.html',
         'text!app/templates/order_logistics.html',
     ],
-    function(bsdp, RoomFormView, ModelSelectControl,
+    function(Backbone, Backform, bootstrap,
+             bsdp, RoomFormView, ModelSelectControl,
              OrderFormOverview, OrderItems, Site, OrderFormDetail,
              choose_form_template, button_template, select_items_template,
              logistics_template) {
@@ -23,6 +25,7 @@ define(
                 this.choose_form_template = _.template(choose_form_template);
                 this.order_forms = new OrderFormOverview();
                 this.order_items = new OrderItems();
+                this.delivery = new Backbone.Model();
                 this.site = new Site({id: this.model.get('site')});
                 this.listenTo(this.order_forms, 'add', this.render);
                 this.listenTo(this.model, 'change', this.render);
@@ -87,6 +90,36 @@ define(
                     order_form: this.order_form_detail.get('order_sheet'),
                 });
                 this.$el.html(t);
+                this.delivery_form = new Backform.Form({
+                    model: this.delivery,
+                    fields: [
+                        {
+                            name: 'delivery_date',
+                            label: 'Delivery date (Mon-Fri only)',
+                            control: "datepicker",
+                            options: {format: "yyyy-mm-dd"},
+                            required: true
+                        },
+                        {
+                            name: "contact",
+                            label: "Contact person (who will accept delivery)",
+                            control: "input",
+                        },
+                        {
+                            name: "contact_phone",
+                            label: "Contact phone",
+                            control: "input",
+                        },
+                        {
+                            name: "notes",
+                            label: "Instructions for delivery person",
+                            control: "textarea"
+                        },
+                    ],
+                    events: {},
+                });
+                this.delivery_form.setElement(this.$el.find('#order-delivery-form'));
+                this.delivery_form.render();
                 return this;
             },
             render: function() {
