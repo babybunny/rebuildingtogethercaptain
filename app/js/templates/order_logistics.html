@@ -3,3 +3,7 @@
 <p>Please set up the logistics for your order here.  Includes delivery, pickup, or rental options as appropriate.
 </p>
 
+<% if (order_form.logistics_instructions) { %>
+<p><%= order_form.logistics_instructions %>
+</p>
+<% } %>

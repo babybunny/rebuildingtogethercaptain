@@ -332,6 +332,7 @@ def _OrderSheetModelToMessage(mdl):
     name=mdl.name,
     visibility=mdl.visibility,
     instructions=mdl.instructions,
+    logistics_instructions=mdl.logistics_instructions,
     delivery_options=mdl.delivery_options,
     retrieval_options=mdl.retrieval_options,
     pickup_options=mdl.pickup_options,
@@ -346,6 +347,7 @@ def _OrderSheetMessageToModel(msg, mdl):
   mdl.name = msg.name
   mdl.visibility = msg.visibility
   mdl.instructions = msg.instructions
+  mdl.logistics_instructions = msg.logistics_instructions
   mdl.delivery_options = msg.delivery_options
   mdl.retrieval_options = msg.retrieval_options
   mdl.pickup_options = msg.pickup_options
@@ -362,9 +364,10 @@ class OrderSheet(messages.Message):
   default_supplier = messages.IntegerField(4)
   visibility = messages.StringField(5)
   instructions = messages.StringField(6)
-  delivery_options = messages.StringField(7)
-  retrieval_options = messages.StringField(8)
-  pickup_options = messages.StringField(9)
+  logistics_instructions = messages.StringField(7)
+  delivery_options = messages.StringField(8)
+  retrieval_options = messages.StringField(9)
+  pickup_options = messages.StringField(10)
   
 
 ############
