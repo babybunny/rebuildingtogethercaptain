@@ -4,8 +4,12 @@ define(
         var Model = ProtoModel.extend({
             // matches first part of method name in @remote.method
             urlRoot: '/wsgi_service.staff_',
+                defaults: {
+                    notes: ""
+                }
+
         });
-        
+
         return Model;
     }
 );

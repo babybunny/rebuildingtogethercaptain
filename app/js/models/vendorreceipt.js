@@ -5,8 +5,14 @@ define(
             // matches first part of method name in @remote.method
             urlRoot: '/wsgi_service.vendorreceipt_',
 	          must_be_floats: ['amount'],
+
+              defaults: {
+                  state: "new",
+                  description: ""
+                //   added description so users dont see None 
+              }
         });
-        
+
         return Model;
     }
 );

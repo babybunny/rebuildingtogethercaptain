@@ -14,11 +14,7 @@ define(
                 disabled: true
             },
             // boilerplate
-            {
-                name: "code",
-                label: "Code",
-                control: "input",
-            },
+
             {
                 name: "name",
                 label: "Name",
@@ -35,56 +31,82 @@ define(
                 ]
             },
             {
-                name: "logistics_instructions",
-                label: "Logistics instructions",
-                control: "textarea",
+                name: "supports_extra_name_on_order",
+                label: "Supports extra name on order",
+		            control: "checkbox"
             },
             {
-                name: "delivery_options",
-                label: "Delivery options",
-                control: "select",
-		            default: "No",
-                options: [
-                    {label: "Yes", value: "Yes"},
-                    {label: "No", value: "No"},
-                ],
-            },
-            {
-                name: "retrieval_options",
-                label: "Retrieval options",
-                control: "select",
-		            default: "No",
-                options: [
-                    {label: "Yes", value: "Yes"},
-                    {label: "No", value: "No"},
-                ]
-            },
-            /* TODO     {
-               name: "supports_extra_name_on_order",
-               label: "Supports extra name on order",
-               // "supports_extra_name_on_order is a BooleanProperty('supports_extra_name_on_order', default=False).  TODO",
-               },
-            */
-            {
-                name: "pickup_options",
-                label: "Pickup options",
-                control: "select",
-		            default: "No",
-                options: [
-                    {label: "Yes", value: "Yes"},
-                    {label: "No", value: "No"},
-                ]
-            },
-            {
-                name: "default_supplier",
-                label: "Defaultsupplier",
-                control: ModelSelectControl,
-		            room_model_module: SupplierChoices,
+                name: "code",
+                label: "Code",
+                control: "input",
+                helpMessage: "Three-letter code like LUM for Lumber"
             },
             {
                 name: "instructions",
                 label: "Instructions",
                 control: "textarea",
+                default: "",
+                helpMessage: "Instructions to Captain, appears on order form"
+            },
+            {
+                name: "logistics_instructions",
+                label: "Logistics instructions",
+                control: "textarea",
+                default: "",
+                helpMessage: "Instructions to Captain, appears on logistics form"
+            },
+            {
+                name: "default_supplier",
+                label: "Default supplier",
+                control: ModelSelectControl,
+		            room_model_module: SupplierChoices
+            },
+            {
+                label: "Default Supplier, used if Item's supplier is not set.",
+                control: "help"
+            },
+
+            {
+                name: "delivery_options",
+                label: "Delivery options",
+                control: "select",
+                    default: "No",
+                options: [
+                    {label: "No", value: "No"},
+                    {label: "Yes", value: "Yes"},
+                ],
+            },
+            {
+                label: "Allow Captain to select Delivery to site",
+                control: "help"
+            },
+            {
+                name: "pickup_options",
+                label: "Pickup options",
+                control: "select",
+                    default: "No",
+                options: [
+                    {label: "No", value: "No"},
+                    {label: "Yes", value: "Yes"},
+                ],
+            },
+            {
+                label: "Allow Captain to select Pick-up from RTP warehouse",
+                control: "help"
+            },
+            {
+                name: "retrieval_options",
+                label: "Retrieval options",
+                control: "select",
+                    default: "No",
+                options: [
+                    {label: "No", value: "No"},
+                    {label: "Yes", value: "Yes"},
+                ],
+            },
+            {
+                label: "Drop-off and retrieval (like debris box) Note: do not set this with either delivery or pick-up",
+                control: "help"
             },
             {
                 id: "submit",
@@ -92,7 +114,7 @@ define(
                 label: "Save changes"
             }
         ];
-	      
+
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
 		            name: 'ordersheet',

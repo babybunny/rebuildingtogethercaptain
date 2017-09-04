@@ -11,7 +11,50 @@ define(
                 control: "input",
                 disabled: true
             },
-            // boilerplate
+            {
+                name: "since",
+                label: "Since",
+                control: "input",
+                    type: "date",
+                    format: "yyyy-mm-dd",
+                    disabled: true
+            },
+            {
+                name: "name",
+                label: "Name",
+                control: "input",
+                    type: "text",
+                    required: true
+            },
+            {
+                name: "email",
+                label: "Email",
+                control: "input",
+                    type: "email"
+            },
+            {
+                name: "address",
+                label: "Address",
+                control: "input",
+                    type: "text"
+            },
+            {
+                name: "phone1",
+                label: "Phone1",
+                control: "input",
+                    type: "text"
+            },
+            {
+                name: "phone2",
+                label: "Phone2",
+                control: "input",
+                    type: "text"
+            },
+            {
+                name: "notes",
+                label: "Notes",
+                control: "textarea"
+            },
             {
                 name: "active",
                 label: "Active",
@@ -29,44 +72,6 @@ define(
                     {label: "Everyone", value: "Everyone"},
                     {label: "Staff Only", value: "Staff Only"},
                 ]
-            },
-            {
-                name: "name",
-                label: "Name",
-                control: "input",
-                required: true
-            },
-            {
-                name: "email",
-                label: "Email",
-                control: "input",
-            },
-            {
-                name: "address",
-                label: "Address",
-                control: "input",
-            },
-            {
-                name: "phone1",
-                label: "Phone1",
-                control: "input",
-            },
-            {
-                name: "phone2",
-                label: "Phone2",
-                control: "input",
-            },
-            {
-                name: "notes",
-                label: "Notes",
-                control: "textarea",
-            },
-            {
-                name: "since",
-                label: "Since",
-                control: "input",
-                disabled: true
-                // "since is a DateProperty('since', auto_now_add=True).  TODO",
             },
             {
                 id: "submit",

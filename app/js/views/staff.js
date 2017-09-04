@@ -9,42 +9,47 @@ define(
                 name: "id",
                 label: "ID",
                 control: "input",
-                disabled: true
+                    disabled: true
             },
-            // boilerplate
             {
                 name: "name",
                 label: "Name",
                 control: "input",
+                    type: "text"
             },
             {
                 name: "email",
                 label: "Email",
                 control: "input",
+                    type: "email",
+                    required: true
             },
             {
                 name: "notes",
                 label: "Notes",
-                control: "textarea",
+                control: "textarea"
             },
             {
                 name: "program_selected",
                 label: "Program selected",
                 control: "input",
-                disabled: true
+                    disabled: true
             },
             {
                 name: "last_welcome",
                 label: "Last welcome",
                 control: "input",
-                disabled: true
+                    type: "date",
+                    disabled: true,
+                    format: "yyyy-mm-dd"
             },
             {
                 name: "since",
                 label: "Since",
                 control: "input",
-                disabled: true
-                // "since is a DateProperty('since', auto_now_add=True).  TODO",
+                    type: "date",
+                    disabled: true,
+                    format: "yyyy-mm-dd"
             },
             {
                 id: "submit",
@@ -52,7 +57,7 @@ define(
                 label: "Save changes"
             }
         ];
-        
+
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
 		            name: 'staff',

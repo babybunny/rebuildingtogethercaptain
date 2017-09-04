@@ -1,75 +1,97 @@
 define(
     [
-	      'bootstrap-datepicker',
+	    'bootstrap-datepicker',
         'app/views/rooms_form',
-	      'app/views/model_select_control',
+	    'app/views/model_select_control',
         'app/models/captain_choices',
         'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
     ],
     function(bsdp, RoomFormView, ModelSelectControl,
-             CaptainChoices, SupplierChoices, template) {
+             CaptainChoice, SupplierChoice, template) {
         var fields = [
             {
                 name: "id",
                 label: "ID",
                 control: "input",
-                disabled: true
+                    disabled: true
             },
-            // boilerplate
             {
                 name: "site",
                 label: "Site",
                 control: "input",
-                disabled: true
+                    disabled: true
             },
             {
                 name: "state",
                 label: "State",
                 control: "select",
                 options: [
-                    {label: "fulfilled", value: "fulfilled"},
                     {label: "new", value: "new"},
-                    {label: "deleted", value: "deleted"},
                     {label: "submitted", value: "submitted"},
                     {label: "payable", value: "payable"},
+                    {label: "fulfilled", value: "fulfilled"},
+                    {label: "deleted", value: "deleted"}
                 ]
-            },
-            {
-                name: "captain",
-                label: "Captain",
-		            control: ModelSelectControl,
-		            room_model_module: CaptainChoices,
-            },
-            {
-                name: "purchase_date",
-                label: "Purchase date",
-                control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
             },
             {
                 name: "amount",
                 label: "Amount",
                 control: "input",
+                    helpMessage: "Purchase Amount ($)."
             },
+            // {   Do we need program property on form?
+            //     Currently defaulting to selected program.
+            //     name: "program",
+            //     label: "Program",
+            //     control: "input",
+            //         type: "text"
+            // },
+            {
+                name: "purchase_date",
+                label: "Purchase Date",
+                control: "datepicker",
+                    options: {format: "yyyy-mm-dd"},
+                    required: true
+            },
+            {
+                name: "captain",
+                label: "Captain",
+                    control: ModelSelectControl,
+                    room_model_module: CaptainChoice
+            },
+            // {   Do we need vendor property on form?
+            //     Currently, if SupplierChoice is seleced,
+            //         vender = supplier
+            //     name: "vendor",
+            //     label: "Vendor",
+            //     control: "input",
+            //         type: "text"
+            // },
             {
                 name: "supplier",
                 label: "Supplier",
-		            control: ModelSelectControl,
-		            room_model_module: SupplierChoices,
+                    control: ModelSelectControl,
+                    room_model_module: SupplierChoice
             },
             {
                 name: "description",
                 label: "Description",
-                control: "textarea",
+                control: "textarea"
             },
+            // {
+            //     name: "last_editor",
+            //     label: "Last Editor",
+            //     control: "input",
+            //         disabled: true
+            // },
             {
                 id: "submit",
-                control: "button",
-                label: "Save changes"
+                label: "Save changes",
+                control: "button"
             }
         ];
-        
+
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
 		            name: 'vendorreceipt',
