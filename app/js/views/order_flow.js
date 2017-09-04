@@ -41,6 +41,7 @@ define(
                 'change #id_notes': 'savenotes',
                 'change .item-quantity': 'changeQuantity',
                 'click #order-proceed-button': 'renderLogistics',
+                'click #order-submit': 'save',
             },
             savenotes: function(e) {
                 this.model.set('notes', e.target.value);
@@ -83,6 +84,10 @@ define(
                     return "";
                 }
             },
+            save: function() {
+                this.model.set('delivery', this.delivery.attributes);
+                this.model.save();
+            },
             renderLogistics: function() {
                 var t = this.logistics_template({
                     order: this.model,
@@ -116,7 +121,6 @@ define(
                             control: "textarea"
                         },
                     ],
-                    events: {},
                 });
                 this.delivery_form.setElement(this.$el.find('#order-delivery-form'));
                 this.delivery_form.render();
