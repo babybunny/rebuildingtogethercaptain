@@ -216,9 +216,6 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/site_budget',
                   staff.SiteBudget,
                   name='SiteBudget'),
-    webapp2.Route(r'/site_budget_export',
-                  staff.SiteBudgetExport,
-                  name='SiteBudgetExport'),
     
     webapp2.Route(r'/scoreboard',
                   Placeholder,
@@ -284,7 +281,12 @@ app = webapp2.WSGIApplication(
         webapp2.Route(r'/help',
                       Placeholder,
                       name='Help'),  # TODO
-        login_required,
-    ], 
+        login_required, 
+        # This one is left out of login_required so it can be unit tested.
+        # It does require login.  See issue 313.
+        webapp2.Route(r'/room/site_budget_export',
+                      staff.SiteBudgetExport,
+                      name='SiteBudgetExport'),
+   ], 
     debug=True)
 
