@@ -1163,7 +1163,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
           sub_total += oimsg.quantity * item.unit_cost
     order.sub_total = sub_total
     if not order.state:
-      order.state = 'Submitted'
+      order.state = 'Received'
     order.put()
     ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
     for oimsg in request.order_items:
