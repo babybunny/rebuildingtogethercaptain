@@ -30,6 +30,8 @@ define(
                 this.delivery = new Backbone.Model();
                 this.site = new Site({id: this.model.get('site')});
                 this.listenTo(this.order_forms, 'add', this.render);
+                this.listenTo(this.order_items, 'add', this.render);
+                this.listenTo(this.order_items, 'change', this.render);
                 this.listenTo(this.model, 'change', this.render);
                 this.listenTo(this.site, 'change', this.render);
                 this.site.fetch();
@@ -244,12 +246,6 @@ define(
                     $(".order-form-buttons button").click(function() {
                         self.order_form_detail = new OrderFormDetail({id: parseInt(this.id)});
                         self.model.set('order_sheet', self.order_form_detail.get('id'));
-                        if (self.model.has('id')) {
-                            self.order_items = new OrderItems({id: self.model.get('id')});
-                        } else {
-                            self.order_items = new OrderItems();
-                        }
-                        self.listenTo(self.order_items, 'sync', self.render);
                         self.listenTo(self.order_form_detail, 'sync', self.render);
                         self.order_form_detail.fetch();
                     });
