@@ -958,7 +958,7 @@ class StaffTime(ndb.Model):
     miles.verbose_name = 'Miles'
     activity_date = ndb.DateProperty()
     description = ndb.TextProperty()
-    last_editor = ndb.UserProperty()
+    last_editor = ndb.UserProperty(auto_current_user=True)
     modified = ndb.DateTimeProperty(auto_now=True)
 
     def put(self, *a, **k):
