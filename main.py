@@ -209,8 +209,8 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/sites_and_captains',
                   staff.SitesAndCaptains,
                   name='SitesAndCaptains'),
-    webapp2.Route(r'/ordersheet_items',
-                  Placeholder,
+    webapp2.Route(r'/ordersheet_items/<id:\d+>',
+                  staff.OrderSheetItemList,
                   name='OrderSheetItemList'),
 
     webapp2.Route(r'/site_budget',

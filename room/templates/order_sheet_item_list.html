@@ -10,21 +10,6 @@ $(function(){
   $("table.tablesorter").tablesorter({
       sortList: [[1, 0], [2, 0]]
     });
-  {% for entity in entries %}
-  $('.jeditable-state[name="{{ entity.key.integer_id() }}"]').editable(
-     "{{ webapp2.uri_for("ItemPrice", id=entity.key.integer_id()) }}", {
-         cancel    : 'Cancel',
-         submit    : 'OK',
-         indicator : '<img src="/static/ajax-loader.gif">',
-         tooltip   : 'Click to edit...',
-         cssclass  : 'inherit',
-         type      : 'text',
-         }
-  ).hover(
-    function(){$(this).css('background-color', '#FBFFAB')},
-    function(){$(this).css('background-color', 'inherit')}
-  );
-  {% endfor %}
 });
 </script>
 {% endblock %}
@@ -51,21 +36,18 @@ $(function(){
     {% for entity in entries %}
     <tr>
       <td>
-	<a name="{{ entity.key.integer_id() }}"
-	   href="{{ webapp2.uri_for("ItemEdit", id=entity.key.integer_id()) }}">
-	  {{entity.key.integer_id()|escape}}
-	</a>
+	      <a name="{{ entity.key.integer_id() }}"
+	         href="{{ webapp2.uri_for("Item", id=entity.key.integer_id()) }}">
+	        {{entity.key.integer_id()|escape}}
+	      </a>
       </td><td>
-	{{ entity.order_form_section|escape }}
+	      {{ entity.order_form_section|escape }}
       </td><td>
-	{{ entity.name|escape }}
+	      {{ entity.name|escape }}
       </td><td>
-	{{ entity.measure|escape }}
-      </td><td class="dollar editable">
-	<span class="sortorder">{{ entity.unit_cost }}</span>
-	<div class="jeditable-state" 
-	       id="unit_cost"
-	       name="{{ entity.key.integer_id() }}">{{ "%0.2f" % entity.unit_cost }}</div>
+	      {{ entity.measure|escape }}
+      </td><td class="dollar">
+	      {{ entity.unit_cost|escape }}
       </td>
     </tr>
     {% endfor %}

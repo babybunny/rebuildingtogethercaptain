@@ -382,6 +382,12 @@ class OrderSheet(EditView):
   template_value = 'ordersheet'
   template_file = 'simple_form'
 
+class OrderSheetItemList(StaffHandler):
+  """Request / -- show all items in an Order Sheet."""
+  def get(self, id):
+    sheet = ndb.Key(ndb_models.OrderSheet, int(id)).get()
+    return _EntryList(self.request, ndb_models.Item, 'order_sheet_item_list',
+                      query=sheet.item_set, params={'order_sheet': sheet})
 
 class SiteExpenseList(StaffHandler):
   model_class = None   # 'StaffTime'
