@@ -204,3 +204,25 @@ class CustomApiTest(unittest2.TestCase):
         self.assertIn(u'sorted_items', response.json)
         # TODO: more checks
         
+    def testOrderFull(self):
+        post_json_body = {
+            "order":{
+                "site": str(self.keys['SITE'].integer_id()),
+                "order_sheet":self.keys['ORDERSHEET'].integer_id()
+            },
+            "order_items":[
+                {"item":self.keys['ITEM'].integer_id(),"quantity":"2"}
+            ],
+            "delivery":{
+                "notes":"Please go around back.",
+                "contact_phone":"650 555 1212",
+                "contact":"Person Man",
+                "delivery_date":"2017-09-27"
+            }
+        }
+        response = app.post_json('/wsgi_service.order_full_create',
+                                 post_json_body,
+                                 status=200,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        

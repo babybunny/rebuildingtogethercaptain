@@ -8,6 +8,7 @@ define(
         'app/models/order_items',
         'app/models/site',
         'app/models/order_form_detail',
+        'app/models/order_full',
         'text!app/templates/order_choose_form.html',
         'text!app/templates/order_form_button.html',
         'text!app/templates/order_select_items.html',
@@ -15,12 +16,13 @@ define(
     ],
     function(Backbone, Backform, bootstrap,
              bsdp, RoomFormView, ModelSelectControl,
-             OrderFormOverview, OrderItems, Site, OrderFormDetail,
+             OrderFormOverview, OrderItems, Site, OrderFormDetail, OrderFull,
              choose_form_template, button_template, select_items_template,
              logistics_template) {
         var OrderFlowView = Backbone.View.extend({
             initialize: function(app, loading) {
                 this.app = app;
+                this.order_full = new OrderFull();
                 this.model = this.app.models.order;
                 this.choose_form_template = _.template(choose_form_template);
                 this.order_forms = new OrderFormOverview();
@@ -47,10 +49,10 @@ define(
                 this.model.set('notes', e.target.value);
             },
             changeQuantity: function(e) {
-                var oi = this.order_items.get(e.target.name);
+                var oi = this.order_items.get(parseInt(e.target.name));
                 if (!oi) {
                     this.order_items.add({
-                        id: parseInt(e.target.name),
+                        item: parseInt(e.target.name),
                         quantity: e.target.value
                     });
                 } else {
@@ -85,8 +87,13 @@ define(
                 }
             },
             save: function() {
-                this.model.set('delivery', this.delivery.attributes);
-                this.model.save();
+                this.order_full.save({
+                    order: this.model.attributes,
+                    order_items: this.order_items.map(function(modl) {
+                        return modl.attributes;
+                    }),
+                    delivery: this.delivery.attributes,
+                });
             },
             renderLogistics: function() {
                 var t = this.logistics_template({
@@ -170,6 +177,7 @@ define(
                 if (!this.order_forms.models) {
                     return this;
                 }
+                // TODO: does this test do anything?  see above tests.
                 if (this.app.models.order.has('order_sheet')) {
                     console.log('has order sheet ' + this.model.get('order_sheet'));
                 } else {
@@ -185,6 +193,7 @@ define(
                            });
                     $("#order-form-buttons button").click(function() {
                         self.order_form_detail = new OrderFormDetail({id: parseInt(this.id)});
+                        self.model.set('order_sheet', self.order_form_detail.get('id'));
                         if (self.model.has('id')) {
                             self.order_items = new OrderItems({id: self.model.get('id')});
                         } else {

@@ -185,7 +185,7 @@
 	                {% endif %}
 	              </td>
 	              <td class="action">
-	                <a href="{{ webapp2.uri_for('OrderPreview', site=site.key.integer_id()) }}">
+	                <a href="{{ webapp2.uri_for('OrderFlow', site_id=site.key.integer_id(), id='') }}">
 	                  Place an Order
 	                </a>
 	              </td>

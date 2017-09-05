@@ -706,7 +706,6 @@ def _OrderModelToMessage(mdl):
 def _OrderMessageToModel(msg, mdl):
   mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
   mdl.order_sheet = ndb.Key(ndb_models.OrderSheet, msg.order_sheet)
-  mdl.state = msg.state
   mdl.notes = msg.notes
   mdl.reconciliation_notes = msg.reconciliation_notes
   mdl.logistics_end = msg.logistics_end
@@ -714,28 +713,103 @@ def _OrderMessageToModel(msg, mdl):
   mdl.logistics_start = msg.logistics_start
   mdl.actual_total = msg.actual_total
 
+  if msg.state:
+    mdl.state = msg.state
+    
   if msg.vendor:
     mdl.vendor = ndb.Key(ndb_models.Supplier, msg.vendor)
-  try:
-    mdl.invoice_date = datetime.date(*map(int, msg.invoice_date[:10].split('-')))
-  except Exception, e:
-    raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {} {}'.format(msg.invoice_date, e))
+
+  if msg.invoice_date:
+    try:
+      mdl.invoice_date = datetime.date(*map(int, msg.invoice_date[:10].split('-')))
+    except Exception, e:
+      raise remote.ApplicationError('failed to parse invoice_date as yyyy-mm-dd: {} {}'.format(msg.invoice_date, e))
 
   return mdl
 
 class Order(messages.Message):
   id = messages.IntegerField(1)
-  site = messages.IntegerField(2)
-  order_sheet = messages.IntegerField(3)
+  site = messages.IntegerField(2, required=True)
+  order_sheet = messages.IntegerField(3, required=True)
   reconciliation_notes = messages.StringField(4)
+
+  # These are auto-computed in the backend.
   logistics_end = messages.StringField(5)
   logistics_instructions = messages.StringField(6)
   logistics_start = messages.StringField(7)
+
   notes = messages.StringField(8)
   invoice_date = messages.StringField(9)
   state = messages.StringField(10)
   vendor = messages.IntegerField(11)
   actual_total = messages.FloatField(12)
+
+
+#############
+# OrderItem #
+#############
+
+def _OrderItemModelToMessage(mdl):
+  s = OrderItem(
+    id=mdl.key.integer_id(),
+    item=mdl.item.key.integer_id(),
+    order=mdl.order.key.integer_id(),
+    name=mdl.name,
+    quantity=mdl.quantity_float,
+  )
+  # any special handling, like for user objects or datetimes
+  if mdl.supplier:
+    supplier=mdl.supplier.key.integer_id(),
+
+  return s
+
+def _OrderItemMessageToModel(msg, mdl):
+  mdl.name = msg.name
+  mdl.quantity_float = msg.quantity
+  mdl.item = ndb.Key(ndb_models.Item, msg.item)
+  mdl.order = ndb.Key(ndb_models.Order, msg.order)
+  # can't set automatic fields:
+  if msg.supplier:
+    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
+  return mdl
+
+class OrderItem(messages.Message):
+  id = messages.IntegerField(1)
+  item = messages.IntegerField(2)
+  order = messages.IntegerField(3)
+  supplier = messages.IntegerField(4)
+  quantity = messages.FloatField(5)
+  name = messages.StringField(6)
+
+  
+############
+# Delivery #
+############
+
+def _DeliveryModelToMessage(mdl):
+  s = Delivery(
+    id=mdl.key.integer_id(),
+    delivery_date=mdl.delivery_date,
+    notes=mdl.notes,
+    contact=mdl.contact,
+    contact_phone=mdl.contact_phone,
+  )
+  return s
+
+def _DeliveryMessageToModel(msg, mdl):
+  mdl.delivery_date = msg.delivery_date  # is a string in the datastore!
+  mdl.notes = msg.notes
+  mdl.contact = msg.contact
+  mdl.contact_phone = msg.contact_phone
+  return mdl
+
+class Delivery(messages.Message):
+  id = messages.IntegerField(1)
+  # Omit the 'site' field, it's handled separately.
+  delivery_date = messages.StringField(2)
+  contact = messages.StringField(3)
+  contact_phone = messages.StringField(4)
+  notes = messages.StringField(5)
 
         
 #######################################
@@ -754,6 +828,10 @@ class OrderFormDetail(messages.Message):
   order_sheet = messages.MessageField(OrderSheet, 1)
   sorted_items = messages.MessageField(Item, 2, repeated=True)
 
+class OrderFull(messages.Message):
+  order = messages.MessageField(Order, 1, required=True)
+  order_items = messages.MessageField(OrderItem, 2, repeated=True)
+  delivery = messages.MessageField(Delivery, 3)
 
 
 # Use the multi-line string below as a template for adding models.
@@ -782,7 +860,7 @@ class Example(messages.Message):
   name = messages.StringField(2)
 
 """
-  
+
 basic_crud_config = (
   (Jurisdiction, ndb_models.Jurisdiction,
    _JurisdictionMessageToModel, _JurisdictionModelToMessage),
@@ -936,7 +1014,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   def ehlo(self, request):
     logging.info('ehlo')
     return message_types.VoidMessage()
-    
+  
   # This needs an update for the new encoding for StaffPosition rates.  Per issue 238.
   # If it's used at all...
   @remote.method(StaffPosition,
@@ -947,7 +1025,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
                                   hourly_rate=request.hourly_rate)
     if request.key:
       sp.key = ndb.Key(ndb_models.StaffPosition, request.key)
-    sp.put()
+      sp.put()
     return GenericResponse()
 
   @remote.method(Program,
@@ -974,7 +1052,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     for p in ndb_models.Program.query():
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
-    
+  
   @remote.method(message_types.VoidMessage,
                  OrderFormChoices)  
   def order_form_choices(self, request):
@@ -1002,6 +1080,29 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       res.sorted_items.append(i)
     return res
   
+  @remote.method(OrderFull, message_types.VoidMessage)
+  def order_full_create(self, request):
+    # TODO ndb.start_transaction ...
+    order = _OrderMessageToModel(request.order, ndb_models.Order())
+    delivery = _DeliveryMessageToModel(request.delivery, ndb_models.Delivery(site=order.site))
+    delivery.put()
+    sub_total = 0.
+    for oimsg in request.order_items:
+      if oimsg.quantity:
+        item = ndb.Key(ndb_models.Item, oimsg.item).get()  # TODO: get_multi
+        if item.unit_cost:
+          sub_total += oimsg.quantity * item.unit_cost
+    order.sub_total = sub_total
+    if not order.state:
+      order.state = 'Submitted'
+    order.put()
+    ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+    for oimsg in request.order_items:
+      oimsg.order = order.key.integer_id()
+      _OrderItemMessageToModel(oimsg, ndb_models.OrderItem()).put()
+    return message_types.VoidMessage()
+
+
 # # # # # # # # # #
 #     Choices     #
 # # # # # # # # # #
