@@ -2,7 +2,7 @@ define(
     [
         'bootstrap-datepicker',
         'app/views/rooms_form',
-	    'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/captain_choices',
         'text!app/templates/simple_form.html'
     ],
