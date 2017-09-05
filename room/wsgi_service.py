@@ -805,13 +805,79 @@ def _DeliveryMessageToModel(msg, mdl):
 
 class Delivery(messages.Message):
   id = messages.IntegerField(1)
-  # Omit the 'site' field, it's handled separately.
+  # Omit the 'site' field, it's not part of the API.
   delivery_date = messages.StringField(2)
   contact = messages.StringField(3)
   contact_phone = messages.StringField(4)
   notes = messages.StringField(5)
 
         
+############
+# Pickup #
+############
+
+def _PickupModelToMessage(mdl):
+  s = Pickup(
+    id=mdl.key.integer_id(),
+    pickup_date=mdl.pickup_date,
+    return_date=mdl.return_date,
+    notes=mdl.notes,
+    contact=mdl.contact,
+    contact_phone=mdl.contact_phone,
+  )
+  return s
+
+def _PickupMessageToModel(msg, mdl):
+  mdl.pickup_date = msg.pickup_date  # is a string in the datastore!
+  mdl.return_date = msg.return_date  # is a string in the datastore!
+  mdl.notes = msg.notes
+  mdl.contact = msg.contact
+  mdl.contact_phone = msg.contact_phone
+  return mdl
+
+class Pickup(messages.Message):
+  id = messages.IntegerField(1)
+  # Omit the 'site' field, it's not part of the API.
+  pickup_date = messages.StringField(2)
+  return_date = messages.StringField(3)
+  contact = messages.StringField(4)
+  contact_phone = messages.StringField(5)
+  notes = messages.StringField(6)
+
+        
+############
+# Retrieval #
+############
+
+def _RetrievalModelToMessage(mdl):
+  s = Retrieval(
+    id=mdl.key.integer_id(),
+    retrieval_date=mdl.retrieval_date,
+    dropoff_date=mdl.dropoff_date,
+    notes=mdl.notes,
+    contact=mdl.contact,
+    contact_phone=mdl.contact_phone,
+  )
+  return s
+
+def _RetrievalMessageToModel(msg, mdl):
+  mdl.retrieval_date = msg.retrieval_date  # is a string in the datastore!
+  mdl.dropoff_date = msg.dropoff_date  # is a string in the datastore!
+  mdl.notes = msg.notes
+  mdl.contact = msg.contact
+  mdl.contact_phone = msg.contact_phone
+  return mdl
+
+class Retrieval(messages.Message):
+  id = messages.IntegerField(1)
+  # Omit the 'site' field, it's not part of the API.
+  retrieval_date = messages.StringField(2)
+  dropoff_date = messages.StringField(3)
+  contact = messages.StringField(4)
+  contact_phone = messages.StringField(5)
+  notes = messages.StringField(6)
+
+
 #######################################
 # Non-CRUD API and composite messages #
 #######################################
