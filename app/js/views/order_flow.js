@@ -87,13 +87,40 @@ define(
                 }
             },
             save: function() {
-                this.order_full.save({
-                    order: this.model.attributes,
-                    order_items: this.order_items.map(function(modl) {
-                        return modl.attributes;
-                    }),
-                    delivery: this.delivery.attributes,
-                });
+                $('span.status')
+                    .css('color', '#909b27')
+                    .text('Saving...')
+                    .show();
+                this.order_full.save(
+                    {
+                        order: this.model.attributes,
+                        order_items: this.order_items.map(function(modl) {
+                            return modl.attributes;
+                        }),
+                        delivery: this.delivery.attributes,
+                    },
+                    {
+                        'success': function(model, attrs, response) {
+                            response.xhr.statusText = 'SAVED';
+                            $('span.status')
+                                .css('color', '#409b27')
+                                .text('Saved')
+                                .show()
+                                .fadeOut({
+                                    duration: 1000,
+                                    complete: function() {
+                                        // redirect to the "back to site" URL
+                                        window.location = $('#rooms-form-after-save').attr('href');
+                                    }
+                                });                            
+                        },
+                        'error': function(model, response, error) {
+                            $('span.status')
+                                .css('color', 'red')
+                                .text('Error: ' + response.responseText)
+                                .show();
+                        },
+                    });
             },
             renderLogistics: function() {
                 var t = this.logistics_template({
@@ -127,8 +154,21 @@ define(
                             label: "Instructions for delivery person",
                             control: "textarea"
                         },
+                        {
+                            name: "submit",
+                            control: "button",
+                            label: "Submit Order"
+                        },
                     ],
+                    events: {
+                        'submit': function(e) {
+                            e.preventDefault();
+                            console.log('submit order backform');
+                            this.trigger('submit');
+                        },
+                    }
                 });
+                this.listenTo(this.delivery_form, 'submit', this.save);
                 this.delivery_form.setElement(this.$el.find('#order-delivery-form'));
                 this.delivery_form.render();
                 return this;
