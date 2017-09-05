@@ -242,6 +242,17 @@ def CreateAll():
     delivery_options='Yes',
     retrieval_options='Yes',
     pickup_options='No',
+    visibility='Everyone'
+  ).put()
+  KEYS['ORDERSHEET4'] = ndb_models.OrderSheet(
+    # no default_supplier
+    name='VOID',
+    code='VOI',
+    instructions='This should be visible to Staff only',
+    delivery_options='No',
+    retrieval_options='No',
+    pickup_options='No',
+    visibility='Staff Only'
   ).put()
 
   KEYS['ITEM'] = ndb_models.Item(
@@ -311,6 +322,14 @@ def CreateAll():
     supplier=KEYS['SUPPLIER'],
     # None url='http://example.com/item4',
     supports_extra_name_on_order=True,
+  ).put()
+  KEYS['ITEM6'] = ndb_models.Item(
+    name='A deleted Item',
+    appears_on_order_form=KEYS['ORDERSHEET4'],
+    description="""This item has been discontinued.""",
+    measure='Roll',
+    unit_cost=12.34,
+    supplier=KEYS['SUPPLIER'],
   ).put()
 
   KEYS['INVENTORYITEM'] = ndb_models.InventoryItem(

@@ -224,14 +224,24 @@ define(
                     console.log('need to choose order sheet');
                     var t = this.choose_form_template({s: this.model.attributes});
                     this.$el.html(t);
-                    var buttons = this.$('#order-form-buttons');
                     var button_template = this.button_template;
-                    _.each(this.order_forms.models,
-                           function(f) {
-                               var b = button_template(f.attributes);
-                               buttons.append(b);                               
-                           });
-                    $("#order-form-buttons button").click(function() {
+                    var buttons = this.$('#order-form-buttons-everyone');
+                    var order_forms = this.order_forms.groupBy('visibility');
+                    var addButtons = function(visibility) {
+                        _.chain(order_forms[visibility])
+                            .sortBy(function(f) {return f.get('code')})
+                            .each(function(f) { 
+                                buttons.append(button_template(f.attributes));
+                            });
+                    }
+                    addButtons('Everyone')
+                    buttons = this.$('#order-form-buttons-staff');
+                    buttons.hide();
+                    if (order_forms['Staff Only']) {
+                        addButtons('Staff Only')
+                        buttons.show();
+                    }
+                    $(".order-form-buttons button").click(function() {
                         self.order_form_detail = new OrderFormDetail({id: parseInt(this.id)});
                         self.model.set('order_sheet', self.order_form_detail.get('id'));
                         if (self.model.has('id')) {
@@ -239,9 +249,8 @@ define(
                         } else {
                             self.order_items = new OrderItems();
                         }
-                        self.listenTo(self.order_items, 'change', self.render);
-                        self.listenTo(self.order_items, 'add', self.render);
-                        self.listenTo(self.order_form_detail, 'change', self.render);
+                        self.listenTo(self.order_items, 'sync', self.render);
+                        self.listenTo(self.order_form_detail, 'sync', self.render);
                         self.order_form_detail.fetch();
                     });
 

@@ -332,6 +332,9 @@ table.order_form_header span {
 #order-form-buttons {
     width: 400px;
 }
+button.order-form {
+    margin: 2px;
+}
 #login_div {
     float: right;
     min-width: 300px;

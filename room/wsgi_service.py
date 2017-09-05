@@ -886,6 +886,7 @@ class OrderFormChoice(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
   code = messages.StringField(3)
+  visibility= messages.StringField(4)
   
 class OrderFormChoices(messages.Message):
   order_form = messages.MessageField(OrderFormChoice, 1, repeated=True)
@@ -1124,7 +1125,9 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   def order_form_choices(self, request):
     res = OrderFormChoices()
     for m in ndb_models.OrderSheet.query():
-      f = OrderFormChoice(name=m.name, code=m.code, id=m.key.integer_id())
+      f = OrderFormChoice(
+        id=m.key.integer_id(), name=m.name,
+        code=m.code, visibility=m.visibility)
       res.order_form.append(f)
     return res
 
