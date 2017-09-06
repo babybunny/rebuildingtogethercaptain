@@ -9,8 +9,10 @@
 <h2>Create or edit a {{ type }}</h2>
 <p>
   <a id="rooms-form-after-save" href="{{ webapp2.uri_for('StaffHome') }}">Back to Staff Home</a>
+  {% if site %}
   |
   <a href="{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}">Back to Site #{{site.number}}</a>
+  {% endif %}
 </p>
 <p>
   <a href='{{ list_uri }}'>See the entire {{ type }} list for program {{ user.program_selected }}.</a>
