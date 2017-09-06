@@ -44,7 +44,9 @@ define(
             events: {
                 'change #id_notes': 'savenotes',
                 'change .item-quantity': 'changeQuantity',
-                'click #order-proceed-button': 'renderLogistics',
+                'click #order-proceed-delivery': 'renderLogistics',
+                'click #order-proceed-pickup': 'renderLogistics',
+                'click #order-proceed-retrieval': 'renderLogistics',
                 'click #order-submit': 'save',
             },
             savenotes: function(e) {

@@ -46,8 +46,6 @@
                 </span>
                 <br>
                 <% } %>
-                <input name="submit" type="submit" value="Submit this order and proceed to delivery options">
-
               </td>
             </tr>
 
@@ -128,7 +126,8 @@
                 <%= item.measure %>
               </td>
               <td class="quantity">
-                <input type="text" class="item-quantity" name="<%- item.id %>" value="<%- quantityForItem(item, order_items) %>" size="5">
+                <input type="text" class="item-quantity" name="<%- item.id %>"
+                       value="<%- quantityForItem(item, order_items) %>" size="5">
                 =
                 
               </td>
@@ -159,10 +158,17 @@
             <tr>
               <td>
               </td>
-              <td>
-              </td>
-              <td colspan="5" class="form-summary">
-                <input id="order-proceed-button" name="submit" type="submit" value="Submit this order and proceed to delivery options">
+              <td colspan="6" class="form-summary">
+                Next, set up logistics: 
+                <% if (order_form.delivery_options == 'Yes') { %>
+                <button id="order-proceed-delivery">Proceed to Delivery Options</button>
+                <% } %>
+                <% if (order_form.pickup_options == 'Yes') { %>
+                <button id="order-proceed-pickup">Proceed to Pickup Options</button>
+                <% } %>
+                <% if (order_form.retrieval_options == 'Yes') { %>
+                <button id="order-proceed-retrieval">Proceed to Retrieval Options</button>
+                <% } %>
               </td>
             </tr>
 
