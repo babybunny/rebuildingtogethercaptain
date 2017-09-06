@@ -1,12 +1,5 @@
 <h2>Logistics: <%= order_form.name %> Order for Site #<%= site.get('number') %>
 </h2>
-<p>Please set up the logistics for your order here.  Includes delivery, pickup, or rental options as appropriate.
-</p>
+<p>Choose your <%- logistics_words %> options.</p>
 
-<% if (order_form.logistics_instructions) { %>
-<h3>Logistics Instructions</h3>
-<p><%= order_form.logistics_instructions %>
-</p>
-<% } %>
-
-<form id="order-delivery-form"></form>
+<form id="order-logistics-form"></form>

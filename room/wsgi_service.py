@@ -899,6 +899,8 @@ class OrderFull(messages.Message):
   order = messages.MessageField(Order, 1, required=True)
   order_items = messages.MessageField(OrderItem, 2, repeated=True)
   delivery = messages.MessageField(Delivery, 3)
+  pickup = messages.MessageField(Pickup, 4)
+  retrieval = messages.MessageField(Retrieval, 5)
 
 
 # Use the multi-line string below as a template for adding models.
@@ -1153,8 +1155,6 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   def order_full_create(self, request):
     # TODO ndb.start_transaction ...
     order = _OrderMessageToModel(request.order, ndb_models.Order())
-    delivery = _DeliveryMessageToModel(request.delivery, ndb_models.Delivery(site=order.site))
-    delivery.put()
     sub_total = 0.
     for oimsg in request.order_items:
       if oimsg.quantity:
@@ -1165,10 +1165,27 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     if not order.state:
       order.state = 'Received'
     order.put()
-    ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+
+    if request.delivery:
+      delivery = _DeliveryMessageToModel(request.delivery,
+                                         ndb_models.Delivery(site=order.site))
+      delivery.put()
+      ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+    if request.pickup:
+      pickup = _PickupMessageToModel(request.pickup,
+                                     ndb_models.Pickup(site=order.site))
+      pickup.put()
+      ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
+    if request.retrieval:
+      retrieval = _RetrievalMessageToModel(request.retrieval,
+                                           ndb_models.Retrieval(site=order.site))
+      retrieval.put()
+      ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
+
     for oimsg in request.order_items:
       oimsg.order = order.key.integer_id()
-      _OrderItemMessageToModel(oimsg, ndb_models.OrderItem()).put()
+      _OrderItemMessageToModel(oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
+
     return message_types.VoidMessage()
 
 

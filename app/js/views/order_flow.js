@@ -19,6 +19,70 @@ define(
              OrderFormOverview, OrderItems, Site, OrderFormDetail, OrderFull,
              choose_form_template, button_template, select_items_template,
              logistics_template) {
+        var basic_logistics_fields = [
+            {
+                name: "contact",
+                label: "Contact person (who will be present)",
+                control: "input",
+            },
+            {
+                name: "contact_phone",
+                label: "Contact phone",
+                control: "input",
+            },
+            {
+                name: "notes",
+                label: "Instructions for delivery person",
+                control: "textarea"
+            },
+            {
+                name: "submit",
+                control: "button",
+                label: "Choose these options and complete order"
+            },
+        ];
+
+        var delivery_fields = [
+            {
+                name: 'delivery_date',
+                label: 'Delivery date (Mon-Fri only)',
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd"},
+                required: true
+            },
+        ].concat(basic_logistics_fields);
+
+        var pickup_fields = [
+            {
+                name: 'pickup_date',
+                label: 'Pickup date (Mon-Fri only)',
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd"},
+                required: true
+            },
+            {
+                name: 'return_date',
+                label: '(Optional) Return date for durable equipment',
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd"},
+            },
+        ].concat(basic_logistics_fields);
+        
+        var retrieval_fields = [
+            {
+                name: 'dropoff_date',
+                label: 'Delivery date (Mon-Fri only)',
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd"},
+            },
+            {
+                name: 'retrieval_date',
+                label: 'Retrieval Date (Mon-Fri only)',
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd"},
+            },
+        ].concat(basic_logistics_fields);
+
         var OrderFlowView = Backbone.View.extend({
             initialize: function(app, loading) {
                 this.app = app;
@@ -27,7 +91,7 @@ define(
                 this.choose_form_template = _.template(choose_form_template);
                 this.order_forms = new OrderFormOverview();
                 this.order_items = new OrderItems();
-                this.delivery = new Backbone.Model();
+                this.logistics = new Backbone.Model();
                 this.site = new Site({id: this.model.get('site')});
                 this.listenTo(this.order_forms, 'add', this.render);
                 this.listenTo(this.order_items, 'add', this.render);
@@ -44,9 +108,9 @@ define(
             events: {
                 'change #id_notes': 'savenotes',
                 'change .item-quantity': 'changeQuantity',
-                'click #order-proceed-delivery': 'renderLogistics',
-                'click #order-proceed-pickup': 'renderLogistics',
-                'click #order-proceed-retrieval': 'renderLogistics',
+                'click #order-proceed-delivery': 'renderDelivery',
+                'click #order-proceed-pickup': 'renderPickup',
+                'click #order-proceed-retrieval': 'renderRetrieval',
                 'click #order-submit': 'save',
             },
             savenotes: function(e) {
@@ -95,15 +159,14 @@ define(
                     .css('color', '#909b27')
                     .text('Saving...')
                     .show();
+                this.order_full.set({
+                    order: this.model.attributes,
+                    order_items: this.order_items.map(function(modl) {
+                        return modl.attributes;
+                    })
+                });
                 this.order_full.save(
-                    {
-                        order: this.model.attributes,
-                        order_items: this.order_items.map(function(modl) {
-                            return modl.attributes;
-                        }),
-                        delivery: this.delivery.attributes,
-                    },
-                    {
+                    null, {
                         'success': function(model, attrs, response) {
                             response.xhr.statusText = 'SAVED';
                             $('span.status')
@@ -126,55 +189,39 @@ define(
                         },
                     });
             },
-            renderLogistics: function() {
+            renderDelivery: function() {
+                this.order_full.set('delivery', this.logistics.attributes);
+                this.renderLogistics(delivery_fields, "Delivery");
+            },
+            renderPickup: function() {
+                this.order_full.set('pickup', this.logistics.attributes);
+                this.renderLogistics(pickup_fields, "Pickup and Return");
+            },
+            renderRetrieval: function() {
+                this.order_full.set('retrieval', this.logistics.attributes);
+                this.renderLogistics(retrieval_fields, "Drop-off and Retrieval");
+            },
+            renderLogistics: function(fields, logistics_words) {
                 var t = this.logistics_template({
                     order: this.model,
                     site: this.site,
+                    logistics_words: logistics_words,
                     order_form: this.order_form_detail.get('order_sheet'),
                 });
                 this.$el.html(t);
-                this.delivery_form = new Backform.Form({
-                    model: this.delivery,
-                    fields: [
-                        {
-                            name: 'delivery_date',
-                            label: 'Delivery date (Mon-Fri only)',
-                            control: "datepicker",
-                            options: {format: "yyyy-mm-dd"},
-                            required: true
-                        },
-                        {
-                            name: "contact",
-                            label: "Contact person (who will accept delivery)",
-                            control: "input",
-                        },
-                        {
-                            name: "contact_phone",
-                            label: "Contact phone",
-                            control: "input",
-                        },
-                        {
-                            name: "notes",
-                            label: "Instructions for delivery person",
-                            control: "textarea"
-                        },
-                        {
-                            name: "submit",
-                            control: "button",
-                            label: "Submit Order"
-                        },
-                    ],
+                this.logistics_form = new Backform.Form({
+                    model: this.logistics,
+                    fields: fields,
                     events: {
                         'submit': function(e) {
                             e.preventDefault();
-                            console.log('submit order backform');
                             this.trigger('submit');
                         },
                     }
                 });
-                this.listenTo(this.delivery_form, 'submit', this.save);
-                this.delivery_form.setElement(this.$el.find('#order-delivery-form'));
-                this.delivery_form.render();
+                this.listenTo(this.logistics_form, 'submit', this.save);
+                this.logistics_form.setElement(this.$el.find('#order-logistics-form'));
+                this.logistics_form.render();
                 return this;
             },
             render: function() {
