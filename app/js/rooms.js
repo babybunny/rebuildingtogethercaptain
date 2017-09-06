@@ -56,7 +56,6 @@ require(
                 break;
             case 'create':
             case 'update':
-                debugger;
                 var xhr = options.xhr = Backbone.$.ajax(_.extend(settings, {
                     data: JSON.stringify(model.attributes),
                 }))
