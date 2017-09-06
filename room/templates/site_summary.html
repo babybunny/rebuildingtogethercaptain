@@ -143,7 +143,9 @@ Total Expenses:
 	        {{ cr.name }}	
         </td>
         <td>
+          {% if cr.payment_date %}
 	        {{ cr.payment_date.strftime("%b %d %Y") }}
+          {% endif %}
         </td>
         <td class="notes">
 	        {{ cr.description }}
@@ -193,7 +195,9 @@ Total Expenses:
 	        {{ vr.supplier.get().name }}	
         </td>
         <td>
+          {% if vr.purchase_date %}
 	        {{ vr.purchase_date.strftime("%b %d %Y") }}
+          {% endif %}
         </td>
         <td class="notes">
 	        {{ vr.description }}
