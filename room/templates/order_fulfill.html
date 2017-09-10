@@ -3,11 +3,7 @@
  | List all Orders
 {% endblock %}
 {%block about_this_page %}
-<h2>{{ action_verb }} {{ num_orders}} Order(s)
-  {% if order_sheet %}
-  for {{ order_sheet.name }}
-  {% endif %}
-</h2>
+<h2>{{ action_verb }} {{ num_orders}} Order(s)</h2>
 
 {% if confirm_url %}
 <form action="{{ confirm_url }}" method="POST" 
@@ -29,11 +25,7 @@
 {% if back_to_list_url %}
 <br>
 <a href="{{ back_to_list_url }}">
-  Click here to go back to the list of 
-  {% if order_sheet %}
-  {{ order_sheet.name }}
-  {% endif %}
-  Orders.
+  Click here to go back to the list of Orders.
 </a>
 <br>
 {% endif %}
@@ -42,12 +34,11 @@
 {%endblock%}
 {%block body%}
 {% for order_dict in orders %}
-{% with order_dict.order as order %}
-{% with order_dict.order_items as order_items %}
+{% set order = order_dict.order %}
+{% set order_items = order_dict.order_items  %}
+{% set site = order.site.get() %}
 <h1 class="page-break-before">&nbsp;</h1>
 {% include "order_layout.html" %}
 <br>
-{% endwith %}
-{% endwith %}
 {% endfor %}
 {%endblock%}

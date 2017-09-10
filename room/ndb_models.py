@@ -36,7 +36,9 @@ class _ActiveItems(object):
         """
         self._query = kind_cls.query(kind_cls.site == ref.key,
                                      kind_cls.state != 'new',
-                                     kind_cls.state != 'deleted')
+                                     kind_cls.state != 'deleted',
+                                     kind_cls.state != 'Deleted'
+        )
 
     def Count(self):
         return self._query.count()
@@ -856,9 +858,7 @@ class CheckRequest(ndb.Model):
         choices=('Corporation', 'Partnership', 'Sole Proprietor',
                  'Don\'t Know'))
     form_of_business.verbose_name = "Payee Business Type"
-    state = ndb.StringProperty(
-        choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'),
-        default='new')
+    state = ndb.StringProperty()
     last_editor = ndb.UserProperty(auto_current_user=True)
     modified = ndb.DateTimeProperty(auto_now=True)
 
@@ -883,9 +883,7 @@ class VendorReceipt(ndb.Model):
     amount = ndb.FloatProperty()
     amount.verbose_name = 'Purchase Amount ($)'
     description = ndb.TextProperty()
-    state = ndb.StringProperty(
-        choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'),
-        default='new')
+    state = ndb.StringProperty()
     last_editor = ndb.UserProperty()
     modified = ndb.DateTimeProperty(auto_now=True)
 
@@ -923,9 +921,7 @@ class InKindDonation(ndb.Model):
     materials_amount.verbose_name = 'Materials Value ($)'
     description = ndb.TextProperty()
     budget = ndb.StringProperty(choices=('Normal', 'Roofing'), default='Normal')
-    state = ndb.StringProperty(
-        choices=('new', 'submitted', 'pending letter', 'fulfilled', 'deleted'),
-        default='new')
+    state = ndb.StringProperty()
     last_editor = ndb.UserProperty()
     modified = ndb.DateTimeProperty(auto_now=True)
 
@@ -949,9 +945,7 @@ class StaffTime(ndb.Model):
     captain = ndb.KeyProperty(kind=Captain)
     position = ndb.KeyProperty(kind=StaffPosition)
     program = ndb.StringProperty()
-    state = ndb.StringProperty(
-        choices=('new', 'submitted', 'fulfilled', 'deleted'),
-        default='new')
+    state = ndb.StringProperty()
     hours = ndb.FloatProperty(default=0.0)
     hours.verbose_name = 'Hours'
     miles = ndb.FloatProperty(default=0.0)
@@ -1008,8 +1002,6 @@ class Expense(ndb.Model):
     amount = ndb.FloatProperty()
     amount.verbose_name = 'Purchase Amount ($)'
     description = ndb.TextProperty()
-    state = ndb.StringProperty(
-        choices=('new', 'submitted', 'payable', 'fulfilled', 'deleted'),
-        default='new')
+    state = ndb.StringProperty()
     last_editor = ndb.UserProperty()
     modified = ndb.DateTimeProperty(auto_now=True)

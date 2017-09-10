@@ -396,16 +396,20 @@ class SiteExpenseList(StaffHandler):
   
   def get(self, site_id=None):
     mdl_cls = getattr(ndb_models, self.model_class)
-    query = mdl_cls.query(mdl_cls.state != 'new')
-    params = {'which_site': 'All',
-              'expense_type': self.expense_type,
-              'model_cls_name': self.model_class,
-              'table_template': self.table_template}
+    query = mdl_cls.query()
+    query = query.filter(mdl_cls.state != 'Deleted')
+    params = {
+      'which_site': 'All',
+      'expense_type': self.expense_type,
+      'model_cls_name': self.model_class,
+      'table_template': self.table_template,
+    }
     if site_id is not None:
       site_key = ndb.Key(ndb_models.NewSite, int(site_id))
       site = site_key.get()
       query = query.filter(mdl_cls.site == site_key)
       params['which_site'] = 'Site ' + site.number
+      params['next_key'] = site_key.urlsafe()
     else:
       user, _ = common.GetUser(self.request)
       if user.program_selected:
@@ -554,6 +558,7 @@ class OrderFlow(StaffHandler):
     d = dict(site=site)
     return common.Respond(self.request, 'order_flow', d)
 
+
 class Order(SiteExpenseEditor):
   model_class = ndb_models.Order
   list_view = 'OrderBySite'
@@ -585,4 +590,134 @@ class Example(EditView):
 """
   
 
+
+###############
+# Order stuff #
+###############
+
+FULFILL_MULTIPLE = 'Fulfill Multiple Orders'
+
+class OrderBySheet(StaffHandler):
+  def get(self, order_sheet_id=None):
+    """Request / -- show all orders."""
+    user, _ = common.GetUser(self.request)
+    d = _OrderListInternal(order_sheet_id, user.program_selected)
+    return common.Respond(self.request, 'order_list', d)
+
+
+def _OrderListInternal(order_sheet_id, program=None):
+  query = ndb_models.Order.query()
+  query.filter(ndb_models.Order.state != 'Deleted')
+  if program is not None:
+    query.filter(ndb_models.Order.program == program)
+  order_sheet = None
+  if order_sheet_id:
+    order_sheet = ndb.Key(ndb_models.OrderSheet, int(order_sheet_id)).get()
+    if order_sheet is not None:
+      query.filter(ndb_models.Order.order_sheet == order_sheet.key)
+  orders = list(query)
+  mass_action = {'export_csv': EXPORT_CSV,
+                 'fulfill_many': FULFILL_MULTIPLE}
+  return {'orders': orders,
+          'order_sheet': order_sheet,
+          'export_checkbox_prefix':
+          POSTED_ID_PREFIX,
+          'mass_action': mass_action,
+          'num_being_filled': len([o for o in orders
+                                   if o.state == 'Being Filled'])
+          }
+
+
+class _OrderChangeConfirm(StaffHandler):
+  state = None  # abstract base class
+
+  def post(self):
+    order_ids = PostedIds(self.request.POST)
+    order_keys = (ndb.Key(ndb_models.Order, order_id) for order_id in order_ids)
+    orders = ndb.get_multi(order_keys)
+    for order in orders:
+      order.state = self.state
+    ndb.put_multi(orders)
+
+    next_key = self.request.get('next_key')
+    logging.info('boo {}'.format(next_key))
+    if next_key is not None:
+      k = ndb.Key(urlsafe=next_key)
+      if k.kind() == 'NewSite':
+        logging.info(webapp2.uri_for('OrderBySite', site_id=k.id()))
+        return self.redirect_to('OrderBySite', site_id=k.id())
+      else:
+        logging.warn('no plan for continuing to list of orders for kind: {}'.format(k.kind()))
+
+    # fallback
+    return webapp2.redirect_to('StaffHome')  # TODO: should go somewhere better.
+  
+
+class OrderDeleteConfirm(_OrderChangeConfirm):
+  state = 'Deleted'
+
+class OrderFulfillConfirm(_OrderChangeConfirm):
+  state = 'Being Filled'
+
+    
+FULFULL_OR_DELETE_OPTIONS = {
+    'fulfill': {
+        'action_verb': 'Fulfill',
+        'confirm_method': 'OrderFulfillConfirm',
+        'submit_value': 'Click here to print and confirm fulfillment has started',
+        'should_print': True,
+    },
+    'delete':  {
+        'action_verb': 'Delete',
+        'confirm_method': 'OrderDeleteConfirm',
+        'submit_value': 'Click here to confirm deletion',
+        'should_print': False,
+    },
+}
+
+
+class OrderDelete(StaffHandler):
+  def get(self, order_id):
+    """Prompt user to delete the order."""
+    next_key = self.request.get('next_key')
+    d = _OrderFulfillInternal([order_id], next_key, mode='delete')
+    return common.Respond(self.request, 'order_fulfill', d)
+
+
+class OrderFulfill(StaffHandler):
+  def get(self, order_id):
+    """Start the fulfillment process for an order."""
+    next_key = self.request.get('next_key')
+    d = _OrderFulfillInternal([order_id], next_key, mode='fulfill')
+    return common.Respond(self.request, 'order_fulfill', d)
+
+
+def _OrderFulfillInternal(order_ids, next_key, mode):
+  options = FULFULL_OR_DELETE_OPTIONS[mode]
+  orders = []
+  for order_id in order_ids:
+    order = ndb.Key(ndb_models.Order, int(order_id)).get()
+    q = ndb_models.OrderItem.query().filter(ndb_models.OrderItem.order == order.key)
+    order_items = [oi for oi in q if oi.FloatQuantity()]
+    _SortOrderItemsWithSections(order_items)
+    orders.append({'order': order,
+                   'order_items': order_items})
+
+    
+  list_url = webapp2.uri_for('OrderBySheet', next_key=next_key)
+  confirm_url = webapp2.uri_for('OrderDeleteConfirm', next_key=next_key)
+                                
+  orders.sort(key=lambda o: o['order'].site.get().number)
+  return {'orders': orders,
+          'order_items': order_items,
+          'back_to_list_url': list_url,
+          'confirm_url': confirm_url,
+          'action_verb': options['action_verb'],
+          'submit_value': options['submit_value'],
+          'should_print': options['should_print'],
+          'show_logistics_details': True,
+          'num_orders': len(orders),
+          'export_checkbox_prefix':
+          POSTED_ID_PREFIX,
+          }
 

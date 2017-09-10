@@ -18,7 +18,8 @@ $(function(){
 {%block about_this_page %}
 <h2>{{ which_site}} {{ expense_type }}s</h2>
 <p>These are the {{ expense_type }} records for <strong>{{ user.program_selected }}</strong>.
-<p>To create a new {{ expense_type }}, start from the Site page <br/>(because every Staff Time must be associated with a Site).
+<p>To create a new {{ expense_type }}, start from the Site page <br/>(because every
+ {{ expense_type }} must be associated with a Site).
 {% endblock %}
 {%block body%}
 {% include table_template %}

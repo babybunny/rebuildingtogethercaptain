@@ -25,11 +25,11 @@ $(function() {
 {% endif %}
 </h2>
 <p>To make an order, go to the site 
- (from <a href="{% url room.staff.StaffHome %}">Staff Home</a>)
+ (from <a href="{{ webapp2.uri_for('StaffHome') }}">Staff Home</a>)
 and use the normal Place Order links.  
 {%endblock%}
 {%block body%}
-<form method="POST" action="{% url room.order.OrderExport %}">
+<form method="POST" action="{{ webapp2.uri_for('OrderExport') }}">
   To act on many orders at once, check their boxes and then click 
   <input type="submit" name="submit" value="{{ mass_action.export_csv }}">
   or
@@ -38,14 +38,13 @@ and use the normal Place Order links.
   <input type="hidden" name="order_sheet_id" value="{{ order_sheet.key.integer_id() }}">
   {% endif %}
   {% if order_sheet %}
-  <br>Or <a href="{% url room.order.OrderReconcile order_sheet.key.integer_id() %}">
+  <br>Or <a href="{{ webapp2.uri_for('OrderReconcile', order_sheet_id= order_sheet.key.integer_id()) }}">
     reconcile {{ num_being_filled }} orders 
     </a>
   in "Being Filled" status.
   {% endif %}
   <br>
-  {% with 1 as in_form %}
+  {% set in_form = 1 %}
   {% include "order_table.html" %}
-  {% endwith %}
 </form>
 {%endblock%}

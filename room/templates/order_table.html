@@ -45,27 +45,15 @@
 	<span class="sortorder">{{ order.state }}</span>
 	<span class="actions">
 	{% if order.state == 'Received' %}
-	{% if order_sheet %}
-	<a href="{{ webapp2.uri_for('OrderFulfill', id=order.key.integer_id(), order_sheet_id=order_sheet.key.integer_id()) }}">
-	  Fulfill
-	</a>
-	{% else %}
-	<a href="{{ webapp2.uri_for('OrderFulfill', id=order.key.integer_id()) }}">
+	<a href="{{ webapp2.uri_for('OrderFulfill', order_id=order.key.integer_id(), next_key=next_key) }}">
 	  Fulfill
 	</a>	
 	{% endif %}
-	{% endif %}
 	{% if order.state != 'Deleted' %}
 	-
-	{% if order_sheet %}
-	<a href="{{ webapp2.uri_for('OrderDelete', id=order.key.integer_id(), order_sheet_id=order_sheet.key.integer_id()) }}">
+	<a href="{{ webapp2.uri_for('OrderDelete', order_id=order.key.integer_id(), next_key=next_key) }}">
 	    Delete
 	</a>
-	{% else %}
-	<a href="{{ webapp2.uri_for('OrderDelete', id=order.key.integer_id()) }}">
-	    Delete
-	</a>
-	{% endif %}
 	{% endif %}
 	-
 	<a href="{{ webapp2.uri_for('Order', site_id=order.site.integer_id(), id=order.key.integer_id()) }}">

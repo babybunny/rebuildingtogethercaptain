@@ -92,12 +92,25 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.OrderSheet,
                   name='OrderSheet'),
 
+    webapp2.Route(r'/order_by_sheet/<order_sheet_id:\d*>',
+                  staff.OrderBySheet,
+                  name='OrderBySheet'),
+    webapp2.Route(r'/order_by_sheet',
+                  staff.OrderBySheet,
+                  name='OrderBySheet'),
     webapp2.Route(r'/order_by_program',
                   staff.OrderList,
                   name='OrderByProgram'),
     webapp2.Route(r'/order_view/<id:\d+>',
                   staff.OrderView,
                   name='OrderView'),
+    webapp2.Route(r'/order_delete/<order_id:\d+>',
+                  staff.OrderDelete,
+                  name='OrderDelete'),
+    webapp2.Route(r'/order_fulfill/<order_id:\d+>',
+                  staff.OrderFulfill,
+                  name='OrderFulfill'),
+
     webapp2.Route(r'/site/<site_id:\d+>/order',
                   staff.OrderList,
                   name='OrderBySite'),
@@ -242,15 +255,6 @@ login_required = routes.PathPrefixRoute('/room', [
                   name='OrderEdit'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
-                  name='OrderDelete'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='OrderFulfill'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
-                  name='OrderList'),  # TODO
-    webapp2.Route(r'/help',
-                  Placeholder,
                   name='OrderNew'),  # TODO
     webapp2.Route(r'/help/<site:\d+>',
                   Placeholder,
@@ -258,6 +262,12 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='CaptainExport'),  # TODO
+    webapp2.Route(r'/help',
+                  Placeholder,
+                  name='OrderExport'),  # TODO
+    webapp2.Route(r'/help/<order_sheet_id:<\d+>',
+                  Placeholder,
+                  name='OrderReconcile'),  # TODO
     webapp2.Route(r'/help',
                   Placeholder,
                   name='CaptainNew'),  # TODO
@@ -283,6 +293,12 @@ app = webapp2.WSGIApplication(
         webapp2.Route(r'/room/site_budget_export',
                       staff.SiteBudgetExport,
                       name='SiteBudgetExport'),
+        webapp2.Route(r'/order_delete_confirm',
+                      staff.OrderDeleteConfirm,
+                      name='OrderDeleteConfirm'),
+        webapp2.Route(r'/order_fulfill_confirm',
+                      staff.OrderFulfillConfirm,
+                      name='OrderFulfillConfirm'),
    ], 
     debug=True)
 
