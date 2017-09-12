@@ -608,7 +608,7 @@ class OrderPicklist(StaffHandler):
       ndb_models.Order.state != 'new')
     if program is not None:
       query = query.filter(ndb_models.Order.program == program)
-    next_key = None
+    next_key = ''
     order_sheet = None
     order_sheet_id = self.request.get('order_sheet_id')
     if order_sheet_id:
