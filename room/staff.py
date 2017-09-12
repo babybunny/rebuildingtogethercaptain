@@ -603,7 +603,9 @@ class OrderPicklist(StaffHandler):
     """Request / -- show all orders."""
     user, _ = common.GetUser(self.request)
     program = user.program_selected
-    query = ndb_models.Order.query(ndb_models.Order.state != 'Deleted')
+    query = ndb_models.Order.query(
+      ndb_models.Order.state != 'Deleted',
+      ndb_models.Order.state != 'new')
     if program is not None:
       query = query.filter(ndb_models.Order.program == program)
     next_key = None
