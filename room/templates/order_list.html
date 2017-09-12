@@ -29,16 +29,14 @@ $(function() {
 and use the normal Place Order links.  
 {%endblock%}
 {%block body%}
+{% if entries %}
 <form method="POST" action="{{ webapp2.uri_for('OrderExport') }}">
   To act on many orders at once, check their boxes and then click 
   <input type="submit" name="submit" value="{{ mass_action.export_csv }}">
   or
   <input type="submit" name="submit" value="{{ mass_action.fulfill_many }}">
-  {% if order_sheet %}
-  <input type="hidden" name="order_sheet_id" value="{{ order_sheet.key.integer_id() }}">
-  {% endif %}
-  {% if order_sheet %}
-  <br>Or <a href="{{ webapp2.uri_for('OrderReconcile', order_sheet_id= order_sheet.key.integer_id()) }}">
+  {% if order_sheet and num_being_filled %}
+  <br>Or <a href="{{ webapp2.uri_for('OrderReconcile', next_key=order_sheet.key.urlsafe()) }}">
     reconcile {{ num_being_filled }} orders 
     </a>
   in "Being Filled" status.
@@ -47,4 +45,7 @@ and use the normal Place Order links.
   {% set in_form = 1 %}
   {% include "order_table.html" %}
 </form>
+{% else %}
+<p>No orders available.</p>
+{% endif %}
 {%endblock%}

@@ -528,6 +528,7 @@ def _SortOrderItemsWithSections(order_items):
     prev_section = new_section
 
 
+# This is a super lame list function, there is a better one at OrderPicklist
 class OrderList(SiteExpenseList):
   model_class = 'Order'
   expense_type = 'Order'
@@ -597,35 +598,35 @@ class Example(EditView):
 
 FULFILL_MULTIPLE = 'Fulfill Multiple Orders'
 
-class OrderBySheet(StaffHandler):
-  def get(self, order_sheet_id=None):
+class OrderPicklist(StaffHandler):
+  def get(self):
     """Request / -- show all orders."""
     user, _ = common.GetUser(self.request)
-    d = _OrderListInternal(order_sheet_id, user.program_selected)
+    program = user.program_selected
+    query = ndb_models.Order.query(ndb_models.Order.state != 'Deleted')
+    if program is not None:
+      query = query.filter(ndb_models.Order.program == program)
+    next_key = None
+    order_sheet = None
+    order_sheet_id = self.request.get('order_sheet_id')
+    if order_sheet_id:
+      order_sheet = ndb.Key(ndb_models.OrderSheet, int(order_sheet_id)).get()
+      if order_sheet is not None:
+        query = query.filter(ndb_models.Order.order_sheet == order_sheet.key)
+        next_key = order_sheet.key.urlsafe()
+    orders = list(query)
+    mass_action = {'export_csv': EXPORT_CSV,
+                   'fulfill_many': FULFILL_MULTIPLE}
+    d = {
+      'entries': orders,
+      'order_sheet': order_sheet,
+      'export_checkbox_prefix': POSTED_ID_PREFIX,
+      'mass_action': mass_action,
+      'next_key': next_key,
+      'num_being_filled': len([o for o in orders
+                               if o.state == 'Being Filled'])
+    }
     return common.Respond(self.request, 'order_list', d)
-
-
-def _OrderListInternal(order_sheet_id, program=None):
-  query = ndb_models.Order.query()
-  query.filter(ndb_models.Order.state != 'Deleted')
-  if program is not None:
-    query.filter(ndb_models.Order.program == program)
-  order_sheet = None
-  if order_sheet_id:
-    order_sheet = ndb.Key(ndb_models.OrderSheet, int(order_sheet_id)).get()
-    if order_sheet is not None:
-      query.filter(ndb_models.Order.order_sheet == order_sheet.key)
-  orders = list(query)
-  mass_action = {'export_csv': EXPORT_CSV,
-                 'fulfill_many': FULFILL_MULTIPLE}
-  return {'orders': orders,
-          'order_sheet': order_sheet,
-          'export_checkbox_prefix':
-          POSTED_ID_PREFIX,
-          'mass_action': mass_action,
-          'num_being_filled': len([o for o in orders
-                                   if o.state == 'Being Filled'])
-          }
 
 
 class _OrderChangeConfirm(StaffHandler):
@@ -644,11 +645,13 @@ class _OrderChangeConfirm(StaffHandler):
       k = ndb.Key(urlsafe=next_key)
       if k.kind() == 'NewSite':
         return self.redirect_to('OrderBySite', site_id=k.id())
+      elif k.kind() == 'OrderSheet':
+        return self.redirect_to('OrderByProgram', order_sheet_id=k.id())
       else:
         logging.warn('no plan for continuing to list of orders for kind: {}'.format(k.kind()))
 
     # fallback
-    return webapp2.redirect_to('StaffHome')  # TODO: should go somewhere better.
+    return webapp2.redirect_to('OrderByProgram')  # TODO: should go somewhere better.
   
 
 class OrderDeleteConfirm(_OrderChangeConfirm):
@@ -694,20 +697,23 @@ class _OrderFulfillInternal(StaffHandler):
     }
     return common.Respond(self.request, 'order_fulfill', d)
 
+  
 class OrderDelete(_OrderFulfillInternal):
   """Prompt user to delete the order."""
   options = {
-        'action_verb': 'Delete',
-        'confirm_method': 'OrderDeleteConfirm',
-        'submit_value': 'Click here to confirm deletion',
-        'should_print': False,
-    }
-
+    'action_verb': 'Delete',
+    'confirm_method': 'OrderDeleteConfirm',
+    # TODO: purists insist that UI text be in templates.
+    'submit_value': 'Click here to confirm deletion',  
+    'should_print': False,
+  }
+  
+  
 class OrderFulfill(_OrderFulfillInternal):
   """Start the fulfillment process for an order."""
   options = {
-        'action_verb': 'Fulfill',
-        'confirm_method': 'OrderFulfillConfirm',
-        'submit_value': 'Click here to print and confirm fulfillment has started',
-        'should_print': True,
-    }
+    'action_verb': 'Fulfill',
+    'confirm_method': 'OrderFulfillConfirm',
+    'submit_value': 'Click here to print and confirm fulfillment has started',
+    'should_print': True,
+  }

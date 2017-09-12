@@ -92,14 +92,11 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.OrderSheet,
                   name='OrderSheet'),
 
-    webapp2.Route(r'/order_by_sheet/<order_sheet_id:\d*>',
-                  staff.OrderBySheet,
+    webapp2.Route(r'/order_picklist',
+                  staff.OrderPicklist,
                   name='OrderBySheet'),
-    webapp2.Route(r'/order_by_sheet',
-                  staff.OrderBySheet,
-                  name='OrderBySheet'),
-    webapp2.Route(r'/order_by_program',
-                  staff.OrderList,
+    webapp2.Route(r'/order_picklist',
+                  staff.OrderPicklist,
                   name='OrderByProgram'),
     webapp2.Route(r'/order_view/<id:\d+>',
                   staff.OrderView,
@@ -265,7 +262,7 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/help',
                   Placeholder,
                   name='OrderExport'),  # TODO
-    webapp2.Route(r'/help/<order_sheet_id:<\d+>',
+    webapp2.Route(r'/help',
                   Placeholder,
                   name='OrderReconcile'),  # TODO
     webapp2.Route(r'/help',
