@@ -1,7 +1,7 @@
 define(
     ['backbone', 'backform', 'bootstrap'],
     function(Backbone, Backform, bootstrap) {
-        
+
         // options: name, template, model, loading, fields
         var RoomFormView = Backbone.View.extend({
             el: '#simple-form-view',
@@ -14,7 +14,7 @@ define(
                 self.name = options.name;
                 self.loading = options.loading;
                 self.saved = false;
-                
+
                 this.listenTo(this.model, 'change',
                               function(model) {
                                   if ( self.loading ) {
@@ -36,7 +36,7 @@ define(
                                         // redirect to the "back to site" URL
                                         window.location = $('#rooms-form-after-save').attr('href');
                                     }
-                                });                            
+                                });
                         },
                         'error': function(model, response, error) {
                             $('span.status')
@@ -44,9 +44,9 @@ define(
                                 .text('Error: ' + response.responseText)
                                 .show();
                         },
-                    });              
+                    });
                 };
-                
+
                 this.form = new Backform.Form({
                     model: this.model,
                     fields: options.fields,
@@ -55,10 +55,15 @@ define(
                             e.preventDefault();
                             this.statusText = e.statusText;
                             console.log( self.name,' submit backform');
-                            onSave();
+                            if (!self.model.isValid()){
+                                $('span.status').text(self.model.validationError).css('color', '#a94442');
+                            }
+                            else{
+                                onSave();
+                            }
                         },
-                        
-                    },                    
+
+                    },
                 });
             },
             render: function() {
@@ -93,7 +98,7 @@ define(
                     this.$('button').on('mousedown mouseup', function() {
                         $(this).toggleClass('white');
                     });
-                    
+
                 }
                 return this;
             },
@@ -104,7 +109,7 @@ define(
                 );
                 return field_list[0]._previousAttributes;
             },
-            
+
         });
         return RoomFormView;
     }

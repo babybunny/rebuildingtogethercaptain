@@ -12,14 +12,6 @@ define(
                 disabled: true
             },
             {
-                // Unsure if user wants to view last_editor here?
-                name: "last_editor",
-                label: "Last Editor",
-                control: "input",
-                type: "text",
-                disabled: true
-            },
-            {
                 name: "rooms_id",
                 label: "Rooms id",
                 control: "input",
@@ -28,15 +20,13 @@ define(
             {
                 name: "name",
                 label: "Name",
-                control: "input",
-                required: true
+                control: "input"
             },
             {
                 name: "email",
                 label: "Email",
                 control: "input",
-                type: "email",
-                required: true
+                type: "email"
             },
             {
                 name: "phone_mobile",
@@ -73,6 +63,7 @@ define(
                 label: "Tshirt size",
                 control: "select",
                 options: [
+                    {label: "--------", value: ""},
                     {label: "Small", value: "Small"},
                     {label: "Medium", value: "Medium"},
                     {label: "Large", value: "Large"},
@@ -91,7 +82,8 @@ define(
                 label: "Save changes",
                 control: "button"
 
-            }
+            },
+
         ];
 
         var ViewFactory = function(app, loading) {
