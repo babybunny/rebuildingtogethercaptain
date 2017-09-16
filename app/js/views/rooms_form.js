@@ -59,6 +59,7 @@ define(
                                 $('span.status').text(self.model.validationError).css('color', '#a94442');
                             }
                             else{
+                                this.model.validate_protorpc();
                                 onSave();
                             }
                         },

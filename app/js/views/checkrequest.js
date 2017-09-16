@@ -9,96 +9,66 @@ define(
     function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, template) {
         var fields = [
             {
-                name: "id",
-                label: "ID",
-                control: "input",
-                disabled: true
-            },
-            {
-                name: "site",
-                label: "Site",
-                control: "input",
-                disabled: true
-            },
-            {
-                name: "program",
-                label: "Program",
-                control: "input",
-                type: "text"
-            },
-            {
-                name: "captain",
-                label: "Captain",
-                    control: ModelSelectControl,
-                    room_model_module: CaptainChoices
-            },
-            {
                 name: "name",
-                label: "Name",
-                control: "input",
-                required: true,
-                helpMessage: "Payable To"
+                label: "Payable To",
+                control: "input"
             },
             {
                 name: "payment_date",
                 label: "Payment date",
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
-		           required: true
+                options: {format: "yyyy-mm-dd"}
             },
             {
                 name: "labor_amount",
-                label: "Labor amount",
-                control: "input",
-                helpMessage: "Labor Amount ($)"
+                label: "Labor Amount ($)",
+                control: "input"
             },
             {
                 name: "materials_amount",
-                label: "Materials amount",
-                control: "input",
-                helpMessage: "Materials Amount ($)"
+                label: "Materials Amount ($)",
+                control: "input"
             },
             {
                 name: "food_amount",
-                label: "Food amount",
-                control: "input",
-                helpMessage: "Food Amount ($)"
+                label: "Food Amount ($)",
+                control: "input"
             },
             {
                 name: "description",
                 label: "Description",
-                control: "textarea"
+                control: "textarea",
+                helpMessage: "Please include place of purchase and list of items purchased.  Also submit corresponding recipt."
             },
 
             {
                 name: "address",
-                label: "Address",
-                control: "textarea",
-                helpMessage: "Payee Address"
+                label: "Payee Address",
+                control: "textarea"
             },
             {
                 name: "tax_id",
-                label: "Tax id",
+                label: "Payee Tax ID",
                 control: "input",
-                helpMessage: "Payee Tax ID, we'll notify you if we still need this information to process the check"
+                helpMessage: "We'll notify you if we still need this information to process the check"
             },
             {
                 name: "form_of_business",
-                label: "Form of business",
+                label: "Payee Business Type",
                 control: "select",
                 options: [
                     {label: "Corporation", value: "Corporation"},
                     {label: "Sole Proprietor", value: "Sole Proprietor"},
                     {label: "Partnership", value: "Partnership"},
                     {label: "Don't Know", value: "Don't Know"},
-                ],
-                    helpMessage: "Payee Business Type"
+                ]
             },
             {
                 name: "state",
                 label: "State",
                 control: "select",
                 options: [
+                    {label: "--------", value: ""},
                     {label: "new", value: "new"},
                     {label: "submitted", value: "submitted"},
                     {label: "payable", value: "payable"},
