@@ -643,7 +643,7 @@ class _OrderChangeConfirm(StaffHandler):
     ndb.put_multi(orders)
 
     next_key = self.request.get('next_key')
-    if next_key is not None:
+    if next_key:
       k = ndb.Key(urlsafe=next_key)
       if k.kind() == 'NewSite':
         return self.redirect_to('OrderBySite', site_id=k.id())
