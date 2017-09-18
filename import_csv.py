@@ -1,11 +1,7 @@
 """
 Imports site and captain data into ROOM.
-Intended to be run with the remote_api:
-bash> export PYTHONPATH=.:$PYTHONPATH
-bash> python $(which remote_api_shell.py) -s rebuildingtogethercaptain.appspot.com
-s~rebuildingtogethercaptain-hrd> import import_csv
 
-Great instructions at
+Intended to be run with the remote_api. Great instructions at
 https://github.com/babybunny/rebuildingtogethercaptain/wiki/Import-Site-and-Captain-Data
 
 # or for development..
