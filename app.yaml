@@ -29,11 +29,6 @@ handlers:
   static_files: static/robots.txt
   upload: static/robots.txt
 
-- url: /remote_api
-  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
-  login: admin
-  secure: always
-
 # WSGI protorpc service handler
 - url: /wsgi_service.*
   script: room.wsgi_service.application
