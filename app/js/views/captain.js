@@ -26,7 +26,7 @@ define(
                 name: "email",
                 label: "Email",
                 control: "input",
-                type: "email"
+                type: "text"
             },
             {
                 name: "phone_mobile",
