@@ -235,7 +235,12 @@ class CustomApiTest(unittest2.TestCase):
         self.assertEquals('200 OK', response.status)
         self.assertIn(u'order', response.json)
         self.assertIn(u'order_sheet', response.json['order'])
+        self.assertNotIn(u'order_items', response.json)
         self.assertIn(u'delivery', response.json)
         self.assertEquals(u'Joe Delivery', response.json['delivery']['contact'])
+        self.assertIn(u'retrieval', response.json)
+        self.assertEquals(u'Joe Retrieval', response.json['retrieval']['contact'])
+        self.assertIn(u'pickup', response.json)
+        self.assertEquals(u'Joe Pickup', response.json['pickup']['contact'])
 
                 

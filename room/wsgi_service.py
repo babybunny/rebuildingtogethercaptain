@@ -1160,9 +1160,19 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       raise remote.ApplicationError(
         'No Order found with key {}'.format(request.id))
     res.order = _OrderModelToMessage(order_mdl)
+
     join_mdl = ndb_models.OrderDelivery.query(ndb_models.OrderDelivery.order == order_key).get()
     if join_mdl is not None:
       res.delivery = _DeliveryModelToMessage(join_mdl.delivery.get())
+
+    join_mdl = ndb_models.OrderPickup.query(ndb_models.OrderPickup.order == order_key).get()
+    if join_mdl is not None:
+      res.pickup = _PickupModelToMessage(join_mdl.pickup.get())
+
+    join_mdl = ndb_models.OrderRetrieval.query(ndb_models.OrderRetrieval.order == order_key).get()
+    if join_mdl is not None:
+      res.retrieval = _RetrievalModelToMessage(join_mdl.retrieval.get())
+
     return res
     
   @remote.method(OrderFull, message_types.VoidMessage)
