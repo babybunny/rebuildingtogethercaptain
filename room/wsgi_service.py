@@ -752,14 +752,14 @@ class Order(messages.Message):
 def _OrderItemModelToMessage(mdl):
   s = OrderItem(
     id=mdl.key.integer_id(),
-    item=mdl.item.key.integer_id(),
-    order=mdl.order.key.integer_id(),
+    item=mdl.item.integer_id(),
+    order=mdl.order.integer_id(),
     name=mdl.name,
     quantity=mdl.quantity_float,
   )
   # any special handling, like for user objects or datetimes
   if mdl.supplier:
-    supplier=mdl.supplier.key.integer_id(),
+    supplier=mdl.supplier.integer_id(),
 
   return s
 
@@ -1161,6 +1161,9 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
         'No Order found with key {}'.format(request.id))
     res.order = _OrderModelToMessage(order_mdl)
 
+    for oi_mdl in ndb_models.OrderItem.query(ndb_models.OrderItem.order == order_key):
+      res.order_items.append(_OrderItemModelToMessage(oi_mdl))
+    
     join_mdl = ndb_models.OrderDelivery.query(ndb_models.OrderDelivery.order == order_key).get()
     if join_mdl is not None:
       res.delivery = _DeliveryModelToMessage(join_mdl.delivery.get())
