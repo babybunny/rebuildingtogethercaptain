@@ -5,8 +5,8 @@ define(
             // matches first part of method name in @remote.method
             urlRoot: '/wsgi_service.inkinddonation_',
 	          must_be_floats: ['labor_amount', 'materials_amount'],
+              defaults:{ state: "new", budget: "Normal"}
         });
-        
         return Model;
     }
 );

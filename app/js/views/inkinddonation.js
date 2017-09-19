@@ -9,21 +9,8 @@ define(
     function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, template) {
         var fields = [
             {
-                name: "id",
-                label: "ID",
-                control: "input",
-                    disabled: true
-            },
-            {
-                // site = ndb.KeyProperty(kind=NewSite)
-                name: "site",
-                label: "Site",
-                control: "input",
-		            disabled: true
-            },
-            {
-                name: "program",
-                label: "Program",
+                name: "donor",
+                label: "Donor",
                 control: "input",
                     type: "text"
             },
@@ -40,12 +27,6 @@ define(
                     options: {format: "yyyy-mm-dd"}
             },
             {
-                name: "donor",
-                label: "Donor",
-                control: "input",
-                    type: "text"
-            },
-            {
                 name: "donor_phone",
                 label: "Donor phone",
                 control: "input",
@@ -59,17 +40,13 @@ define(
             },
             {
                 name: "labor_amount",
-                label: "Labor amount",
-                control: "input",
-                    default: 0.0,
-                    helpMessage: 'Labor Value ($)'
+                label: "Labor Value ($)",
+                control: "input"
             },
             {
                 name: "materials_amount",
-                label: "Materials amount",
-                control: "input",
-                    default: 0.0,
-                    helpMessage: 'Materials Value ($)'
+                label: "Materials Value ($)",
+                control: "input"
             },
             {
                 name: "description",
@@ -84,7 +61,6 @@ define(
                     {label: "Normal", value: "Normal"},
                     {label: "Roofing", value: "Roofing"}
                 ],
-		            default: "Normal"
             },
             {
                 name: "state",
@@ -97,7 +73,6 @@ define(
                     {label: "fulfilled", value: "fulfilled"},
                     {label: "deleted", value: "deleted"}
                 ],
-                    default: "new"
             },
             {
                 id: "submit",
