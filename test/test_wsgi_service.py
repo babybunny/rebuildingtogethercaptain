@@ -234,5 +234,8 @@ class CustomApiTest(unittest2.TestCase):
                                  headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('200 OK', response.status)
         self.assertIn(u'order', response.json)
-        
+        self.assertIn(u'order_sheet', response.json['order'])
+        self.assertIn(u'delivery', response.json)
+        self.assertEquals(u'Joe Delivery', response.json['delivery']['contact'])
+
                 
