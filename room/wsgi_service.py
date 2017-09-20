@@ -901,7 +901,7 @@ class OrderFull(messages.Message):
   delivery = messages.MessageField(Delivery, 3)
   pickup = messages.MessageField(Pickup, 4)
   retrieval = messages.MessageField(Retrieval, 5)
-
+  id = messages.IntegerField(6)
 
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
@@ -1159,6 +1159,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     if order_mdl is None:
       raise remote.ApplicationError(
         'No Order found with key {}'.format(request.id))
+    res.id = order_key.integer_id()
     res.order = _OrderModelToMessage(order_mdl)
 
     for oi_mdl in ndb_models.OrderItem.query(ndb_models.OrderItem.order == order_key):
