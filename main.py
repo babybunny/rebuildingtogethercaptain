@@ -21,25 +21,25 @@ EXPENSE_KINDS = (
 
 
 class MainPage(webapp2.RequestHandler):
-    """The main UI page, renders the 'index.html' template."""
-    
-    def get(self):
-        """Renders the main page."""
-        user, status = common.GetUser(self.request)
-        if user and user.staff:
-            self.redirect_to('StaffHome')
-        if user and user.captain:
-            self.redirect_to('CaptainHome')
-        login_url = users.create_login_url('/')
-        logout_url = users.create_logout_url('/')
-        template_values = dict(locals())
-        template = jinja_environment.get_template('templates/welcome.html')
-        self.response.out.write(template.render(template_values))
+  """The main UI page, renders the 'index.html' template."""
 
-        
+  def get(self):
+    """Renders the main page."""
+    user, status = common.GetUser(self.request)
+    if user and user.staff:
+      self.redirect_to('StaffHome')
+    if user and user.captain:
+      self.redirect_to('CaptainHome')
+    login_url = users.create_login_url('/')
+    logout_url = users.create_logout_url('/')
+    template_values = dict(locals())
+    template = jinja_environment.get_template('templates/welcome.html')
+    self.response.out.write(template.render(template_values))
+
+
 class Placeholder(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write('Placeholder')
+  def get(self):
+    self.response.out.write('Placeholder')
 
 
 jinja_environment = jinja2.Environment(
@@ -70,21 +70,21 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/staff/<id:\d*>',
                   staff.Staff,
                   name='Staff'),
-    
+
     webapp2.Route(r'/captain',
                   staff.CaptainList,
                   name='CaptainList'),
     webapp2.Route(r'/captain/<id:\d*>',
                   staff.Captain,
                   name='Captain'),
-    
+
     webapp2.Route(r'/supplier',
                   staff.SupplierList,
                   name='SupplierList'),
     webapp2.Route(r'/supplier/<id:\d*>',
                   staff.Supplier,
                   name='Supplier'),
-    
+
     webapp2.Route(r'/ordersheet',
                   staff.OrderSheetList,
                   name='OrderSheetList'),
@@ -113,10 +113,10 @@ login_required = routes.PathPrefixRoute('/room', [
                   name='OrderBySite'),
     webapp2.Route(r'/site/<site_id:\d+>/order/<id:\d*>',
                   staff.Order,
-                  name='Order'),    
+                  name='Order'),
     webapp2.Route(r'/site/<site_id:\d+>/order_flow/<id:\d*>',
                   staff.OrderFlow,
-                  name='OrderFlow'),    
+                  name='OrderFlow'),
 
     webapp2.Route(r'/stafftime_by_program',
                   staff.StaffTimeList,
@@ -129,7 +129,7 @@ login_required = routes.PathPrefixRoute('/room', [
                   name='StaffTimeBySite'),
     webapp2.Route(r'/site/<site_id:\d+>/stafftime/<id:\d*>',
                   staff.StaffTime,
-                  name='StaffTime'),    
+                  name='StaffTime'),
 
     webapp2.Route(r'/checkrequest_by_program',
                   staff.CheckRequestList,
@@ -185,7 +185,7 @@ login_required = routes.PathPrefixRoute('/room', [
     #               staff.Example,
     #               name='Example'),
 
-    
+
     webapp2.Route(r'/site/view/<id:\d+>/',
                   staff.SiteView,
                   name='SiteView'),
@@ -195,7 +195,7 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/site/<id:\d*>',
                   staff.Site,
                   name='Site'),
-    
+
     webapp2.Route(r'/site_expenses/<id:\d+>',
                   staff.SiteExpenses,
                   name='SiteExpenses'),
@@ -222,7 +222,7 @@ login_required = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/site_budget',
                   staff.SiteBudget,
                   name='SiteBudget'),
-    
+
     webapp2.Route(r'/scoreboard',
                   Placeholder,
                   name='Scoreboard'),  # TODO
@@ -284,7 +284,7 @@ app = webapp2.WSGIApplication(
         webapp2.Route(r'/help',
                       Placeholder,
                       name='Help'),  # TODO
-        login_required, 
+        login_required,
         # This one is left out of login_required so it can be unit tested.
         # It does require login.  See issue 313.
         webapp2.Route(r'/room/site_budget_export',
@@ -296,6 +296,5 @@ app = webapp2.WSGIApplication(
         webapp2.Route(r'/order_fulfill_confirm',
                       staff.OrderFulfillConfirm,
                       name='OrderFulfillConfirm'),
-   ], 
+    ],
     debug=True)
-
