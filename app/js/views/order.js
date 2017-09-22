@@ -19,26 +19,17 @@ define(
                 label: "Site",
                 control: "input",
                     disabled: true,
-                    required: true
             },
             {
                 name: "order_sheet",
                 label: "Order sheet",
-                control: "input",
-                    disabled: true,
-                    required: true
-            },
-            {
-                name: "program",
-                label: "Program",
-                control: "input",
-                    type: "text"
+                    control: "input",
+                    disabled: true
             },
             {
                 name: "sub_total",
                 label: "Subtotal",
                 control: "input"
-                    // float
             },
             {
                 name: "state",
@@ -49,9 +40,7 @@ define(
             {
                 name: "actual_total",
                 label: "Actual total",
-                control: "input",
-                    // float
-                    helpMessage: "Use this is in the rare case when the order's actual total can't be automatically computed correctly."
+                control: "input"
             },
             {
                 name: "reconciliation_notes",
