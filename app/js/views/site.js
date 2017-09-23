@@ -17,150 +17,130 @@ define(
                 name: "number",
                 label: "Number",
                 control: "input",
-		            required: true,
-                    // in future autogenerate number
+                maxlength:"10",
+                helpMessage: '"10001DAL" reads: 2010, #001, Daly City'
             },
             {
                 name: "program",
                 label: "Program",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "name",
-                label: "Name",
-                control: "input",
-                    type: "text",
-                    helpMessage: "Recipient Name"
+                label: "Recipient Name",
+                control: "input"
             },
             {
                 name: "applicant",
-                label: "Applicant",
-                control: "input",
-                    type: "text",
-                    helpMessage: "Applicant Contact"
+                label: "Applicant Contact",
+                control: "input"
             },
             {
                 name: "applicant_home_phone",
                 label: "Applicant home phone",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "applicant_work_phone",
                 label: "Applicant work phone",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "applicant_mobile_phone",
                 label: "Applicant mobile phone",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "applicant_email",
                 label: "Applicant email",
-                control: "input",
-                    type: "email"
+                control: "input"
             },
             {
                 name: "rating",
                 label: "Rating",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "roof",
                 label: "Roof",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "rrp_test",
                 label: "Rrp test",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "rrp_level",
                 label: "Rrp level",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "jurisdiction",
                 label: "Jurisdiction",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "jurisdiction_choice",
                 label: "Jurisdiction choice",
                     control: ModelSelectControl,
-                    room_model_module: JurisdictionChoices,
+                    room_model_module: JurisdictionChoices
             },
             {
                 name: "scope_of_work",
                 label: "Scope of work",
-                control: "textarea",
+                control: "textarea"
             },
             {
                 name: "sponsor",
                 label: "Sponsor",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "street_number",
-                label: "Street number",
+                label: "Street Address",
                 control: "input",
-                    type: "text",
+                    maxlength: "100",
                     helpMessage: "Full street address like 960 Main Street, Apt 4"
             },
             {
                 name: "city_state_zip",
                 label: "City state zip",
                 control: "input",
+                    maxlength: "100",
                     helpMessage: "City State Zip, like Menlo Park CA 94025"
             },
-            {   // ndb.IntegerProperty
+            {
                 name: "budget",
                 label: "Budget",
-                control: "input",
-                    type: "number"
+                control: "input"
             },
             {
                 name: "announcement_subject",
                 label: "Announcement subject",
-                control: "input",
-                    type: "text"
+                control: "input"
             },
             {
                 name: "announcement_body",
                 label: "Announcement body",
                 control: "textarea"
             },
-            // search_prefixes = ndb.StringProperty(repeated=True)
             {
                 name: "photo_link",
                 label: "Photo link",
                 control: "input",
-                    type: "text",
-                    helpMessage: "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
+                helpMessage: "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
             },
             {
                 name: "volunteer_signup_link",
                 label: "Volunteer signup link",
                 control: "input",
-                    type: "text",
-                    helpMessage: "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
+                helpMessage: "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
             },
             {
                 name: "latest_computed_expenses",
                 label: "Latest Compted Expenses",
-                control: "input",
-                    // float
+                control: "input"
             },
             {
                 id: "submit",
