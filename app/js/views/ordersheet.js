@@ -13,8 +13,6 @@ define(
                 control: "input",
                 disabled: true
             },
-            // boilerplate
-
             {
                 name: "name",
                 label: "Name",
@@ -24,7 +22,6 @@ define(
                 name: "visibility",
                 label: "Visibility",
                 control: "select",
-		            default: "Everyone",
                 options: [
                     {label: "Everyone", value: "Everyone"},
                     {label: "Staff Only", value: "Staff Only"},
@@ -45,68 +42,50 @@ define(
                 name: "instructions",
                 label: "Instructions",
                 control: "textarea",
-                default: "",
                 helpMessage: "Instructions to Captain, appears on order form"
             },
             {
                 name: "logistics_instructions",
                 label: "Logistics instructions",
                 control: "textarea",
-                default: "",
                 helpMessage: "Instructions to Captain, appears on logistics form"
             },
             {
                 name: "default_supplier",
                 label: "Default supplier",
-                control: ModelSelectControl,
-		            room_model_module: SupplierChoices
+                    control: ModelSelectControl,
+                    room_model_module: SupplierChoices,
+                helpMessage: "Default Supplier, used if Item's supplier is not set."
             },
-            {
-                label: "Default Supplier, used if Item's supplier is not set.",
-                control: "help"
-            },
-
             {
                 name: "delivery_options",
                 label: "Delivery options",
                 control: "select",
-                    default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-            },
-            {
-                label: "Allow Captain to select Delivery to site",
-                control: "help"
+                helpMessage: "Allow Captain to select Delivery to site"
             },
             {
                 name: "pickup_options",
-                label: "Pickup options",
+                label: "Pick-up options",
                 control: "select",
-                    default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-            },
-            {
-                label: "Allow Captain to select Pick-up from RTP warehouse",
-                control: "help"
+                helpMessage: "Allow Captain to select Pick-up from RTP warehouse"
             },
             {
                 name: "retrieval_options",
                 label: "Retrieval options",
                 control: "select",
-                    default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-            },
-            {
-                label: "Drop-off and retrieval (like debris box) Note: do not set this with either delivery or pick-up",
-                control: "help"
+                helpMessage: "Drop-off and retrieval (like debris box) <span style='display:block'>Note: do not set this with either <i>Delivery or Pick-up</i>.</span>",
             },
             {
                 id: "submit",
