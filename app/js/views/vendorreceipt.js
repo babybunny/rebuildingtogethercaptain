@@ -36,7 +36,7 @@ define(
             },
             {
                 name: "amount",
-                label: "Purchase Amount ($).",
+                label: "Purchase Amount ($)",
                 control: "input"
             },
             // {   Do we need program property on form?
