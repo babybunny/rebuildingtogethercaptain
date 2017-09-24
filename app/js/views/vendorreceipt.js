@@ -36,9 +36,8 @@ define(
             },
             {
                 name: "amount",
-                label: "Amount",
-                control: "input",
-                    helpMessage: "Purchase Amount ($)."
+                label: "Purchase Amount ($)",
+                control: "input"
             },
             // {   Do we need program property on form?
             //     Currently defaulting to selected program.
@@ -51,8 +50,7 @@ define(
                 name: "purchase_date",
                 label: "Purchase Date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"},
-                    required: true
+                    options: {format: "yyyy-mm-dd"}
             },
             {
                 name: "captain",
@@ -70,21 +68,17 @@ define(
             // },
             {
                 name: "supplier",
-                label: "Supplier",
+                label: "Vendor",
                     control: ModelSelectControl,
-                    room_model_module: SupplierChoice
+                    room_model_module: SupplierChoice,
+                    // found following help_text in master room/forms.py  line 250
+                   // helpMessage: "or add a new vendor using the form on the right"
             },
             {
                 name: "description",
                 label: "Description",
                 control: "textarea"
             },
-            // {
-            //     name: "last_editor",
-            //     label: "Last Editor",
-            //     control: "input",
-            //         disabled: true
-            // },
             {
                 id: "submit",
                 label: "Save changes",
