@@ -19,13 +19,13 @@ define(
                 name: "bar_code_number",
                 label: "Bar code number",
                 control: "input",
-                    type: "text"
+                    type: "number"
             },
             {
                 name: "name",
                 label: "Name",
                 control: "input",
-                    type: "text"
+                    required: true
             },
             {
                 name: "appears_on_order_form",
@@ -75,7 +75,7 @@ define(
             },
             {
                 name: "unit_cost",
-                label: "Unit cost ($)",
+                label: "Unit cost",
                 control: "input"
             },
             {
@@ -86,6 +86,7 @@ define(
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
+                default: "No"
             },
             {
                 name: "picture",
@@ -114,12 +115,14 @@ define(
             {
                 name: "url",
                 label: "Url",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "supports_extra_name_on_order",
                 label: "Supports extra name on order",
-		            control: "checkbox"
+		            control: "checkbox",
+                    default: false
             },
             {
                 id: "submit",

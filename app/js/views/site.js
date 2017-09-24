@@ -17,108 +17,123 @@ define(
                 name: "number",
                 label: "Number",
                 control: "input",
-                maxlength:"10",
-                helpMessage: '"10001DAL" reads: 2010, #001, Daly City'
+		            required: true,
+                    helpMessage: "\"10001DAL\" reads: 2010, #001, Daly City"
+                    // in future autogenerate number
             },
             {
                 name: "program",
                 label: "Program",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "name",
                 label: "Recipient Name",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "applicant",
                 label: "Applicant Contact",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "applicant_home_phone",
                 label: "Applicant home phone",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "applicant_work_phone",
                 label: "Applicant work phone",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "applicant_mobile_phone",
                 label: "Applicant mobile phone",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "applicant_email",
                 label: "Applicant email",
-                control: "input"
+                control: "input",
+                    type: "email"
             },
             {
                 name: "rating",
                 label: "Rating",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "roof",
                 label: "Roof",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "rrp_test",
                 label: "Rrp test",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "rrp_level",
                 label: "Rrp level",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "jurisdiction",
                 label: "Jurisdiction",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "jurisdiction_choice",
                 label: "Jurisdiction choice",
                     control: ModelSelectControl,
-                    room_model_module: JurisdictionChoices
+                    room_model_module: JurisdictionChoices,
             },
             {
                 name: "scope_of_work",
                 label: "Scope of work",
-                control: "textarea"
+                control: "textarea",
             },
             {
                 name: "sponsor",
                 label: "Sponsor",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "street_number",
                 label: "Street Address",
                 control: "input",
-                    maxlength: "100",
+                    type: "text",
                     helpMessage: "Full street address like 960 Main Street, Apt 4"
             },
             {
                 name: "city_state_zip",
-                label: "City state zip",
+                label: "City State Zip",
                 control: "input",
-                    maxlength: "100",
                     helpMessage: "City State Zip, like Menlo Park CA 94025"
             },
-            {
+            {   // ndb.IntegerProperty
                 name: "budget",
                 label: "Budget",
-                control: "input"
+                control: "input",
+                    type: "number"
             },
             {
                 name: "announcement_subject",
                 label: "Announcement subject",
-                control: "input"
+                control: "input",
+                    type: "text"
             },
             {
                 name: "announcement_body",
@@ -129,13 +144,15 @@ define(
                 name: "photo_link",
                 label: "Photo link",
                 control: "input",
-                helpMessage: "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
+                    type: "text",
+                    helpMessage: "example: https://www.flickr.com/gp/rebuildingtogetherpeninsula/UX22iM/"
             },
             {
                 name: "volunteer_signup_link",
                 label: "Volunteer signup link",
                 control: "input",
-                helpMessage: "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
+                    type: "text",
+                    helpMessage: "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
             },
             {
                 name: "latest_computed_expenses",

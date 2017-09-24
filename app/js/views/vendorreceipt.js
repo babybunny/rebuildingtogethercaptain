@@ -36,7 +36,7 @@ define(
             },
             {
                 name: "amount",
-                label: "Purchase Amount ($)",
+                label: "Purchase Amount ($).",
                 control: "input"
             },
             // {   Do we need program property on form?
@@ -50,7 +50,8 @@ define(
                 name: "purchase_date",
                 label: "Purchase Date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"}
+                    options: {format: "yyyy-mm-dd"},
+                    required: true
             },
             {
                 name: "captain",
@@ -71,14 +72,20 @@ define(
                 label: "Vendor",
                     control: ModelSelectControl,
                     room_model_module: SupplierChoice,
-                    // found following help_text in master room/forms.py  line 250
-                   // helpMessage: "or add a new vendor using the form on the right"
+                    // helpMessage found -> old forms.py line 257
+                    // helpMessage: "or add a new vendor using the form on the right"
             },
             {
                 name: "description",
                 label: "Description",
                 control: "textarea"
             },
+            // {
+            //     name: "last_editor",
+            //     label: "Last Editor",
+            //     control: "input",
+            //         disabled: true
+            // },
             {
                 id: "submit",
                 label: "Save changes",

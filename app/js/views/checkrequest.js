@@ -9,15 +9,41 @@ define(
     function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, template) {
         var fields = [
             {
+                name: "id",
+                label: "ID",
+                control: "input",
+                disabled: true
+            },
+            {
+                name: "site",
+                label: "Site",
+                control: "input",
+                disabled: true
+            },
+            {
+                name: "program",
+                label: "Program",
+                control: "input",
+                type: "text"
+            },
+            {
+                name: "captain",
+                label: "Captain",
+                    control: ModelSelectControl,
+                    room_model_module: CaptainChoices
+            },
+            {
                 name: "name",
                 label: "Payable To",
-                control: "input"
+                control: "input",
+                required: true
             },
             {
                 name: "payment_date",
                 label: "Payment date",
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"}
+                options: {format: "yyyy-mm-dd"},
+		           required: true
             },
             {
                 name: "labor_amount",
@@ -38,7 +64,7 @@ define(
                 name: "description",
                 label: "Description",
                 control: "textarea",
-                helpMessage: "Please include place of purchase and list of items purchased.  Also submit corresponding recipt."
+                helpMessage: "Please include place of purchase and list of items purchased<br>and submit corresponding recipt."
             },
 
             {
@@ -50,7 +76,7 @@ define(
                 name: "tax_id",
                 label: "Payee Tax ID",
                 control: "input",
-                helpMessage: "We'll notify you if we still need this information to process the check"
+                helpMessage: "We'll notify you if we still need this information<br>to process the check"
             },
             {
                 name: "form_of_business",
@@ -68,7 +94,6 @@ define(
                 label: "State",
                 control: "select",
                 options: [
-                    {label: "--------", value: ""},
                     {label: "new", value: "new"},
                     {label: "submitted", value: "submitted"},
                     {label: "payable", value: "payable"},

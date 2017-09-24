@@ -19,7 +19,8 @@ define(
                 name: "site",
                 label: "Site",
                 control: "input",
-                    disabled: true
+                    disabled: true,
+                    required: true
             },
             {
                 name: "program",
@@ -34,9 +35,11 @@ define(
             },
             {
                 name: "position",
-                label: "Staff Position",
+                label: "Position",
 		            control: ModelSelectControl,
 		            room_model_module: StaffPositionChoice,
+                    // helpMessage found -> old forms.py line 288
+                    // helpMessage: "or add a new position using the form on the right"
             },
             {
                 name: "state",
@@ -63,7 +66,8 @@ define(
                 name: "activity_date",
                 label: "Activity date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"}
+                    options: {format: "yyyy-mm-dd"},
+                    required: true
             },
             {
                 name: "description",

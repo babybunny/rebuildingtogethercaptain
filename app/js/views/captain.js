@@ -20,13 +20,14 @@ define(
             {
                 name: "name",
                 label: "Name",
-                control: "input"
+                control: "input",
+                required: true
             },
             {
                 name: "email",
                 label: "Email",
                 control: "input",
-                type: "text"
+                type: "email"
             },
             {
                 name: "phone_mobile",
@@ -63,7 +64,6 @@ define(
                 label: "Tshirt size",
                 control: "select",
                 options: [
-                    {label: "--------", value: ""},
                     {label: "Small", value: "Small"},
                     {label: "Medium", value: "Medium"},
                     {label: "Large", value: "Large"},
@@ -82,8 +82,7 @@ define(
                 label: "Save changes",
                 control: "button"
 
-            },
-
+            }
         ];
 
         var ViewFactory = function(app, loading) {

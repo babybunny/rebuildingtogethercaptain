@@ -66,8 +66,15 @@ define(
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
             },
+            //     "notes" help_text found in old models.py 
+            //     commenting out because "notes" in basic_logistics_fields
+            // {
+            //     name: "notes",
+            //     label: "Instructions for warehouse staff",
+            //     control: "textarea"
+            // }
         ].concat(basic_logistics_fields);
-        
+
         var retrieval_fields = [
             {
                 name: 'dropoff_date',
@@ -131,7 +138,7 @@ define(
             orderTotal: function() {
                 return _.reduce(this.order_items, function(memo, value) {
                     return memo + totalForItem(value)
-                });                
+                });
             },
             el: '#order-flow-view',
             totalForItem: function(item, order_items) {
@@ -179,7 +186,7 @@ define(
                                         // redirect to the "back to site" URL
                                         window.location = $('#rooms-form-after-save').attr('href');
                                     }
-                                });                            
+                                });
                         },
                         'error': function(model, response, error) {
                             $('span.status')
@@ -281,7 +288,7 @@ define(
                     var addButtons = function(visibility) {
                         _.chain(order_forms[visibility])
                             .sortBy(function(f) {return f.get('code')})
-                            .each(function(f) { 
+                            .each(function(f) {
                                 buttons.append(button_template(f.attributes));
                             });
                     }
@@ -300,7 +307,7 @@ define(
                     });
 
                 }
-                return this;                    
+                return this;
             }
         });
         return OrderFlowView;

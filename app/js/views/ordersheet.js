@@ -13,6 +13,8 @@ define(
                 control: "input",
                 disabled: true
             },
+            // boilerplate
+
             {
                 name: "name",
                 label: "Name",
@@ -22,6 +24,7 @@ define(
                 name: "visibility",
                 label: "Visibility",
                 control: "select",
+		            default: "Everyone",
                 options: [
                     {label: "Everyone", value: "Everyone"},
                     {label: "Staff Only", value: "Staff Only"},
@@ -42,25 +45,28 @@ define(
                 name: "instructions",
                 label: "Instructions",
                 control: "textarea",
+                default: "",
                 helpMessage: "Instructions to Captain, appears on order form"
             },
             {
                 name: "logistics_instructions",
                 label: "Logistics instructions",
                 control: "textarea",
+                default: "",
                 helpMessage: "Instructions to Captain, appears on logistics form"
             },
             {
                 name: "default_supplier",
                 label: "Default supplier",
-                    control: ModelSelectControl,
-                    room_model_module: SupplierChoices,
-                helpMessage: "Default Supplier, used if Item's supplier is not set."
+                control: ModelSelectControl,
+		            room_model_module: SupplierChoices,
+                    helpMessage: "Default Supplier, used if Item's supplier is not set."
             },
             {
                 name: "delivery_options",
                 label: "Delivery options",
                 control: "select",
+                    default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
@@ -69,8 +75,9 @@ define(
             },
             {
                 name: "pickup_options",
-                label: "Pick-up options",
+                label: "Pickup options",
                 control: "select",
+                    default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
@@ -81,11 +88,12 @@ define(
                 name: "retrieval_options",
                 label: "Retrieval options",
                 control: "select",
+                    default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-                helpMessage: "Drop-off and retrieval (like debris box) <span style='display:block'>Note: do not set this with either <i>Delivery or Pick-up</i>.</span>",
+                helpMessage: "Drop-off and retrieval (like debris box) <br>Note: do not set this with either delivery <em>or</em> pick-up"
             },
             {
                 id: "submit",

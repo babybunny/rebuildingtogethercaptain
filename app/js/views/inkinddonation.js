@@ -9,8 +9,20 @@ define(
     function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, template) {
         var fields = [
             {
-                name: "donor",
-                label: "Donor",
+                name: "id",
+                label: "ID",
+                control: "input",
+                    disabled: true
+            },
+            {
+                name: "site",
+                label: "Site",
+                control: "input",
+		            disabled: true
+            },
+            {
+                name: "program",
+                label: "Program",
                 control: "input",
                     type: "text"
             },
@@ -27,6 +39,12 @@ define(
                     options: {format: "yyyy-mm-dd"}
             },
             {
+                name: "donor",
+                label: "Donor",
+                control: "input",
+                    type: "text"
+            },
+            {
                 name: "donor_phone",
                 label: "Donor phone",
                 control: "input",
@@ -36,17 +54,19 @@ define(
                 name: "donor_info",
                 label: "Donor info",
                 control: "textarea",
-                    helpMessage: 'Include as much of the following donor information as possible: donor name, company, address, phone, email.'
+                    helpMessage: 'Include as much of the following donor information as possible:<br><span style="margin-left: 10px">donor name, company, address, phone, email.</span>'
             },
             {
                 name: "labor_amount",
                 label: "Labor Value ($)",
-                control: "input"
+                control: "input",
+                    default: 0.0,
             },
             {
                 name: "materials_amount",
                 label: "Materials Value ($)",
-                control: "input"
+                control: "input",
+                    default: 0.0
             },
             {
                 name: "description",
@@ -61,6 +81,7 @@ define(
                     {label: "Normal", value: "Normal"},
                     {label: "Roofing", value: "Roofing"}
                 ],
+		            default: "Normal"
             },
             {
                 name: "state",
@@ -73,6 +94,7 @@ define(
                     {label: "fulfilled", value: "fulfilled"},
                     {label: "deleted", value: "deleted"}
                 ],
+                    default: "new"
             },
             {
                 id: "submit",
