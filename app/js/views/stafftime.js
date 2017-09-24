@@ -19,8 +19,7 @@ define(
                 name: "site",
                 label: "Site",
                 control: "input",
-                    disabled: true,
-                    required: true
+                    disabled: true
             },
             {
                 name: "program",
@@ -64,8 +63,7 @@ define(
                 name: "activity_date",
                 label: "Activity date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"},
-                    required: true
+                    options: {format: "yyyy-mm-dd"}
             },
             {
                 name: "description",
