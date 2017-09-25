@@ -37,9 +37,7 @@ define(
                 name: "position",
                 label: "Position",
 		            control: ModelSelectControl,
-		            room_model_module: StaffPositionChoice,
-                    // helpMessage found -> old forms.py line 288
-                    // helpMessage: "or add a new position using the form on the right"
+		            room_model_module: StaffPositionChoice
             },
             {
                 name: "state",

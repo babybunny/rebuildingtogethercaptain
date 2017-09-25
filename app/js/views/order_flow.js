@@ -66,13 +66,6 @@ define(
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
             },
-            //     "notes" help_text found in old models.py 
-            //     commenting out because "notes" in basic_logistics_fields
-            // {
-            //     name: "notes",
-            //     label: "Instructions for warehouse staff",
-            //     control: "textarea"
-            // }
         ].concat(basic_logistics_fields);
 
         var retrieval_fields = [

@@ -19,7 +19,6 @@ define(
                 control: "input",
 		            required: true,
                     helpMessage: "\"10001DAL\" reads: 2010, #001, Daly City"
-                    // in future autogenerate number
             },
             {
                 name: "program",

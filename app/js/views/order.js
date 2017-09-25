@@ -38,7 +38,6 @@ define(
                 name: "sub_total",
                 label: "Subtotal",
                 control: "input"
-                    // float
             },
             {
                 name: "state",

@@ -39,13 +39,6 @@ define(
                 label: "Purchase Amount ($)",
                 control: "input"
             },
-            // {   Do we need program property on form?
-            //     Currently defaulting to selected program.
-            //     name: "program",
-            //     label: "Program",
-            //     control: "input",
-            //         type: "text"
-            // },
             {
                 name: "purchase_date",
                 label: "Purchase Date",
@@ -59,33 +52,17 @@ define(
                     control: ModelSelectControl,
                     room_model_module: CaptainChoice
             },
-            // {   Do we need vendor property on form?
-            //     Currently, if SupplierChoice is seleced,
-            //         vender = supplier
-            //     name: "vendor",
-            //     label: "Vendor",
-            //     control: "input",
-            //         type: "text"
-            // },
             {
                 name: "supplier",
                 label: "Vendor",
                     control: ModelSelectControl,
-                    room_model_module: SupplierChoice,
-                    // helpMessage found -> old forms.py line 257
-                    // helpMessage: "or add a new vendor using the form on the right"
+                    room_model_module: SupplierChoice
             },
             {
                 name: "description",
                 label: "Description",
                 control: "textarea"
             },
-            // {
-            //     name: "last_editor",
-            //     label: "Last Editor",
-            //     control: "input",
-            //         disabled: true
-            // },
             {
                 id: "submit",
                 label: "Save changes",
