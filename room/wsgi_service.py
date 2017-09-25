@@ -85,7 +85,8 @@ def _StaffModelToMessage(mdl):
 
 def _StaffMessageToModel(msg, mdl):
   mdl.name = msg.name
-  mdl.email = msg.email
+  if msg.email:
+    mdl.email = msg.email.lower()
   mdl.program_selected = msg.program_selected
   mdl.notes = msg.notes
   # can't set "since" or "last_welcome", they are automatic
@@ -127,7 +128,8 @@ def _CaptainModelToMessage(mdl):
 
 def _CaptainMessageToModel(msg, mdl):
   mdl.name = msg.name
-  mdl.email = msg.email
+  if msg.email:
+    mdl.email = msg.email.lower()
   mdl.rooms_id = msg.rooms_id
   mdl.phone_mobile = msg.phone_mobile
   mdl.phone_work = msg.phone_work
@@ -179,7 +181,8 @@ def _SupplierModelToMessage(mdl):
 
 def _SupplierMessageToModel(msg, mdl):
   mdl.name = msg.name
-  mdl.email = msg.email
+  if msg.email:
+    mdl.email = msg.email.lower()
   mdl.address = msg.address
   mdl.phone1 = msg.phone1
   mdl.phone2 = msg.phone2

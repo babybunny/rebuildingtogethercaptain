@@ -103,7 +103,6 @@ class Captain(ndb.Model):
     search_prefixes = ndb.StringProperty(repeated=True)
 
     def put(self, *a, **k):
-        self.email = self.email.lower()
         prefixes = set()
         if self.name:
             prefixes.add(self.name)

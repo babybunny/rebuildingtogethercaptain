@@ -183,7 +183,42 @@ class BugsTest(unittest2.TestCase):
         self.assertIn(u'payment_date', response.json)
         self.assertEquals('2011-02-03', response.json['payment_date'])
 
+    def testCaptainNoEmail(self):
+        post_json_body = {
+            "name": "Mister Captain",
+            }
+        response = app.post_json('/wsgi_service.captain_create',
+                                 post_json_body,
+                                 status=200,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn(u'name', response.json)
+        self.assertEquals('Mister Captain', response.json['name'])
 
+    def testCaptainEmptyEmail(self):
+        post_json_body = {
+            "name": "Mister Captain",
+            "email": ""}
+        response = app.post_json('/wsgi_service.captain_create',
+                                 post_json_body,
+                                 status=200,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn(u'name', response.json)
+        self.assertEquals('Mister Captain', response.json['name'])
+
+    def testCaptainLowerEmail(self):
+        post_json_body = {
+            "name": "Mister Captain",
+            "email": "Mister@Captain.com"}
+        response = app.post_json('/wsgi_service.captain_create',
+                                 post_json_body,
+                                 status=200,
+                                 headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+        self.assertEquals('200 OK', response.status)
+        self.assertIn(u'email', response.json)
+        self.assertEquals('mister@captain.com', response.json['email'])
+        
 class CustomApiTest(unittest2.TestCase):
     def setUp(self):
         self.keys = test_models.CreateAll()
