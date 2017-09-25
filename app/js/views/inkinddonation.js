@@ -54,7 +54,7 @@ define(
                 name: "donor_info",
                 label: "Donor info",
                 control: "textarea",
-                    helpMessage: 'Include as much of the following donor information as possible:<br><span style="margin-left: 10px">donor name, company, address, phone, email.</span>'
+                    helpMessage: 'Include as much of the following donor information as possible:<br>donor name, company, address, phone, email.'
             },
             {
                 name: "labor_amount",
