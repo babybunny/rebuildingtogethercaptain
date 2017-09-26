@@ -2,7 +2,6 @@ import argparse
 
 try:
   import dev_appserver
-  dev_appserver.fix_sys_path()
 except ImportError:
   print('Please make sure the App Engine SDK is in your PYTHONPATH.')
   raise

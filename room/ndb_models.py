@@ -778,7 +778,7 @@ class InventoryItem(ndb.Model):
 
 
 def _GetRateFromArray(default, array, activity_date):
-    if not array:
+    if not array or not array[0].split():
         return default
     activity_date_str = activity_date.isoformat()
     rate = default
