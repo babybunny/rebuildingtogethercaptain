@@ -76,7 +76,7 @@ define(
                 name: "tax_id",
                 label: "Payee Tax ID",
                 control: "input",
-                helpMessage: "We'll notify you if we still need this information<br>to process the check"
+                helpMessage: "We'll notify you if we still need this information to process the check"
             },
             {
                 name: "form_of_business",
