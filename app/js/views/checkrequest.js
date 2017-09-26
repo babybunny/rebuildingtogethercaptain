@@ -64,7 +64,7 @@ define(
                 name: "description",
                 label: "Description",
                 control: "textarea",
-                helpMessage: "Please include place of purchase and list of items purchased<br>and submit corresponding recipt."
+                helpMessage: "Please include place of purchase and list of items purchased, and submit corresponding recipt."
             },
 
             {
