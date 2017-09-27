@@ -12,14 +12,6 @@ define(
                 disabled: true
             },
             {
-                // Unsure if user wants to view last_editor here?
-                name: "last_editor",
-                label: "Last Editor",
-                control: "input",
-                type: "text",
-                disabled: true
-            },
-            {
                 name: "rooms_id",
                 label: "Rooms id",
                 control: "input",
@@ -35,8 +27,7 @@ define(
                 name: "email",
                 label: "Email",
                 control: "input",
-                type: "email",
-                required: true
+                type: "email"
             },
             {
                 name: "phone_mobile",

@@ -35,9 +35,9 @@ define(
             },
             {
                 name: "position",
-                label: "Staff Position",
+                label: "Position",
 		            control: ModelSelectControl,
-		            room_model_module: StaffPositionChoice,
+		            room_model_module: StaffPositionChoice
             },
             {
                 name: "state",

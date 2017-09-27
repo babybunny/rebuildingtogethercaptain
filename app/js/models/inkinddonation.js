@@ -6,7 +6,7 @@ define(
             urlRoot: '/wsgi_service.inkinddonation_',
 	          must_be_floats: ['labor_amount', 'materials_amount'],
         });
-        
+
         return Model;
     }
 );

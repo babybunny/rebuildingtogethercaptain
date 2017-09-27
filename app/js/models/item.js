@@ -6,7 +6,7 @@ define(
             urlRoot: '/wsgi_service.item_',
             must_be_floats: ['unit_cost']
         });
-        
+
         return Model;
     }
 );

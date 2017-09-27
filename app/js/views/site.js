@@ -18,7 +18,7 @@ define(
                 label: "Number",
                 control: "input",
 		            required: true,
-                    // in future autogenerate number
+                    helpMessage: "\"10001DAL\" reads: 2010, #001, Daly City"
             },
             {
                 name: "program",
@@ -28,17 +28,15 @@ define(
             },
             {
                 name: "name",
-                label: "Name",
+                label: "Recipient Name",
                 control: "input",
-                    type: "text",
-                    helpMessage: "Recipient Name"
+                    type: "text"
             },
             {
                 name: "applicant",
-                label: "Applicant",
+                label: "Applicant Contact",
                 control: "input",
-                    type: "text",
-                    helpMessage: "Applicant Contact"
+                    type: "text"
             },
             {
                 name: "applicant_home_phone",
@@ -113,14 +111,14 @@ define(
             },
             {
                 name: "street_number",
-                label: "Street number",
+                label: "Street Address",
                 control: "input",
                     type: "text",
                     helpMessage: "Full street address like 960 Main Street, Apt 4"
             },
             {
                 name: "city_state_zip",
-                label: "City state zip",
+                label: "City State Zip",
                 control: "input",
                     helpMessage: "City State Zip, like Menlo Park CA 94025"
             },
@@ -141,7 +139,6 @@ define(
                 label: "Announcement body",
                 control: "textarea"
             },
-            // search_prefixes = ndb.StringProperty(repeated=True)
             {
                 name: "photo_link",
                 label: "Photo link",
@@ -159,8 +156,7 @@ define(
             {
                 name: "latest_computed_expenses",
                 label: "Latest Compted Expenses",
-                control: "input",
-                    // float
+                control: "input"
             },
             {
                 id: "submit",

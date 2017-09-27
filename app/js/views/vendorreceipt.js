@@ -36,17 +36,9 @@ define(
             },
             {
                 name: "amount",
-                label: "Amount",
-                control: "input",
-                    helpMessage: "Purchase Amount ($)."
+                label: "Purchase Amount ($)",
+                control: "input"
             },
-            // {   Do we need program property on form?
-            //     Currently defaulting to selected program.
-            //     name: "program",
-            //     label: "Program",
-            //     control: "input",
-            //         type: "text"
-            // },
             {
                 name: "purchase_date",
                 label: "Purchase Date",
@@ -60,17 +52,9 @@ define(
                     control: ModelSelectControl,
                     room_model_module: CaptainChoice
             },
-            // {   Do we need vendor property on form?
-            //     Currently, if SupplierChoice is seleced,
-            //         vender = supplier
-            //     name: "vendor",
-            //     label: "Vendor",
-            //     control: "input",
-            //         type: "text"
-            // },
             {
                 name: "supplier",
-                label: "Supplier",
+                label: "Vendor",
                     control: ModelSelectControl,
                     room_model_module: SupplierChoice
             },
@@ -79,12 +63,6 @@ define(
                 label: "Description",
                 control: "textarea"
             },
-            // {
-            //     name: "last_editor",
-            //     label: "Last Editor",
-            //     control: "input",
-            //         disabled: true
-            // },
             {
                 id: "submit",
                 label: "Save changes",

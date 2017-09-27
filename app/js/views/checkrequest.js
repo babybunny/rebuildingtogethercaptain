@@ -34,10 +34,9 @@ define(
             },
             {
                 name: "name",
-                label: "Name",
+                label: "Payable To",
                 control: "input",
-                required: true,
-                helpMessage: "Payable To"
+                required: true
             },
             {
                 name: "payment_date",
@@ -48,51 +47,47 @@ define(
             },
             {
                 name: "labor_amount",
-                label: "Labor amount",
-                control: "input",
-                helpMessage: "Labor Amount ($)"
+                label: "Labor Amount ($)",
+                control: "input"
             },
             {
                 name: "materials_amount",
-                label: "Materials amount",
-                control: "input",
-                helpMessage: "Materials Amount ($)"
+                label: "Materials Amount ($)",
+                control: "input"
             },
             {
                 name: "food_amount",
-                label: "Food amount",
-                control: "input",
-                helpMessage: "Food Amount ($)"
+                label: "Food Amount ($)",
+                control: "input"
             },
             {
                 name: "description",
                 label: "Description",
-                control: "textarea"
+                control: "textarea",
+                helpMessage: "Please include place of purchase and list of items purchased, and submit corresponding recipt."
             },
 
             {
                 name: "address",
-                label: "Address",
-                control: "textarea",
-                helpMessage: "Payee Address"
+                label: "Payee Address",
+                control: "textarea"
             },
             {
                 name: "tax_id",
-                label: "Tax id",
+                label: "Payee Tax ID",
                 control: "input",
-                helpMessage: "Payee Tax ID, we'll notify you if we still need this information to process the check"
+                helpMessage: "We'll notify you if we still need this information to process the check"
             },
             {
                 name: "form_of_business",
-                label: "Form of business",
+                label: "Payee Business Type",
                 control: "select",
                 options: [
                     {label: "Corporation", value: "Corporation"},
                     {label: "Sole Proprietor", value: "Sole Proprietor"},
                     {label: "Partnership", value: "Partnership"},
                     {label: "Don't Know", value: "Don't Know"},
-                ],
-                    helpMessage: "Payee Business Type"
+                ]
             },
             {
                 name: "state",

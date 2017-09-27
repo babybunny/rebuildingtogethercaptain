@@ -9,7 +9,7 @@ define(
               defaults: {
                   state: "new",
                   description: ""
-                //   added description so users dont see None 
+                //   added description so users dont see None
               }
         });
 

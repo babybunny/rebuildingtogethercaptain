@@ -38,7 +38,6 @@ define(
                 name: "sub_total",
                 label: "Subtotal",
                 control: "input"
-                    // float
             },
             {
                 name: "state",
@@ -50,8 +49,7 @@ define(
                 name: "actual_total",
                 label: "Actual total",
                 control: "input",
-                    // float
-                    helpMessage: "Use this is in the rare case when the order's actual total can't be automatically computed correctly."
+                    helpMessage: "Use this in the rare case when the order's actual total can't be automatically computed correctly."
             },
             {
                 name: "reconciliation_notes",

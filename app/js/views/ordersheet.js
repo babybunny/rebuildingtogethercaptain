@@ -59,13 +59,9 @@ define(
                 name: "default_supplier",
                 label: "Default supplier",
                 control: ModelSelectControl,
-		            room_model_module: SupplierChoices
+		            room_model_module: SupplierChoices,
+                    helpMessage: "Default Supplier, used if Item's supplier is not set."
             },
-            {
-                label: "Default Supplier, used if Item's supplier is not set.",
-                control: "help"
-            },
-
             {
                 name: "delivery_options",
                 label: "Delivery options",
@@ -75,10 +71,7 @@ define(
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-            },
-            {
-                label: "Allow Captain to select Delivery to site",
-                control: "help"
+                helpMessage: "Allow Captain to select Delivery to site"
             },
             {
                 name: "pickup_options",
@@ -89,10 +82,7 @@ define(
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-            },
-            {
-                label: "Allow Captain to select Pick-up from RTP warehouse",
-                control: "help"
+                helpMessage: "Allow Captain to select Pick-up from RTP warehouse"
             },
             {
                 name: "retrieval_options",
@@ -103,10 +93,7 @@ define(
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-            },
-            {
-                label: "Drop-off and retrieval (like debris box) Note: do not set this with either delivery or pick-up",
-                control: "help"
+                helpMessage: "Drop-off and retrieval (like debris box) <br>Note: do not set this with either delivery <em>or</em> pick-up"
             },
             {
                 id: "submit",

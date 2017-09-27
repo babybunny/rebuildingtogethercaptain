@@ -9,7 +9,7 @@ define(
             visibility: 'Everyone',
 	          default_supplier: '',
         });
-        
+
         return Model;
     }
 );

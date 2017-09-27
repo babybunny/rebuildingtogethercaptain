@@ -15,7 +15,6 @@ define(
                     disabled: true
             },
             {
-                // site = ndb.KeyProperty(kind=NewSite)
                 name: "site",
                 label: "Site",
                 control: "input",
@@ -55,21 +54,19 @@ define(
                 name: "donor_info",
                 label: "Donor info",
                 control: "textarea",
-                    helpMessage: 'Include as much of the following donor information as possible: donor name, company, address, phone, email.'
+                    helpMessage: 'Include as much of the following donor information as possible:<br>donor name, company, address, phone, email.'
             },
             {
                 name: "labor_amount",
-                label: "Labor amount",
+                label: "Labor Value ($)",
                 control: "input",
                     default: 0.0,
-                    helpMessage: 'Labor Value ($)'
             },
             {
                 name: "materials_amount",
-                label: "Materials amount",
+                label: "Materials Value ($)",
                 control: "input",
-                    default: 0.0,
-                    helpMessage: 'Materials Value ($)'
+                    default: 0.0
             },
             {
                 name: "description",
