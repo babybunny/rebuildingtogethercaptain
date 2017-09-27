@@ -26,17 +26,13 @@ def get_route_list(router):
 
   routes=[]
   for i in get_routes(router):
-    if hasattr(i, 'handler'):
-      # I think this means it's a route, not a path prefix
-      cur_template = i.template
-      cur_handler  = i.handler
-      cur_method   = i.handler_method
-      cur_doc      = get_doc(cur_handler,cur_method)
-      r={'template':cur_template, 'handler':cur_handler, 'method':cur_method, 'doc':cur_doc, 'name': i.name}
-      routes.append(r)
-    else:
-      r=get_route_list(i)
-      routes.extend(r)
+    assert hasattr(i, 'handler')  # I think this means it's a route, not a path prefix
+    cur_template = i.template
+    cur_handler  = i.handler
+    cur_method   = i.handler_method
+    cur_doc      = get_doc(cur_handler,cur_method)
+    r={'template':cur_template, 'handler':cur_handler, 'method':cur_method, 'doc':cur_doc, 'name': i.name}
+    routes.append(r)
 
   return routes
 

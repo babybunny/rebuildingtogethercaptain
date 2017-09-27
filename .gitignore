@@ -1,3 +1,7 @@
 virtualenv/
 build/
 node_modules/
+*.pyc
+.idea/*
+package-lock.json
+nose2.cfg

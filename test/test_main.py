@@ -1,20 +1,27 @@
 """Functional tests for main views."""
 
-import unittest2
+import os
+import unittest
 from webtest import TestApp
 import main
 from test import test_models
+import app_engine_test_utils
 
 app = TestApp(main.app)
 
-class WelcomeTest(unittest2.TestCase):
+
+class WelcomeTest(unittest.TestCase):
+
+    def setUp(self):
+        app_engine_test_utils.activate_app_engine_testbed()
+        app_engine_test_utils.clear_ndb_cache()
+
     def testHelp(self):
         response = app.get('/help')
         self.assertEquals('200 OK', response.status)
 
     def testRoot(self):
-        # determines dev user from nose2.cfg
-        # testbed-env = ROOMS_DEV_SIGNIN_EMAIL="rebuildingtogether.nobody@gmail.com"
+        os.environ['ROOMS_DEV_SIGNIN_EMAIL'] = "rebuildingtogether.nobody@gmail.com"
         response = app.get('/')
         self.assertEquals('200 OK', response.status)
         self.assertIn('Welcome to ROOMS', str(response))
@@ -26,8 +33,11 @@ class WelcomeTest(unittest2.TestCase):
         self.assertIn('rebuildingtogether.staff@gmail.com', str(response))
 
 
-class StatefulTest(unittest2.TestCase):
+class StatefulTest(unittest.TestCase):
     def setUp(self):
+        app_engine_test_utils.activate_app_engine_testbed()
+        app_engine_test_utils.clear_ndb_cache()
+        self.keys = test_models.CreateAll()
         test_models.CreateAll()        
                 
     def testRootXHeaderStaff(self):
