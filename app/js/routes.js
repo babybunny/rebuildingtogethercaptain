@@ -59,16 +59,14 @@ define(
                 requirejs(['app/views/order_flow'],
                           function(OrderFlow) {
                               console.log('new order flow');
-                              self.app.views['order_flow'] = new OrderFlow(self.app, site_id);
+                              self.app.views['order_flow'] = new OrderFlow(site_id);
                           });
             },
-            edit_order: function(site_id, id) {
-                requirejs(['app/models/order', 'app/views/order_flow'],
-                          function(Model, View) {
-                              self.app.models['order'] = new Model(
-                                  {site: site_id, id: id});
-                              self.app.models['order'].fetch();
-                              self.app.views['order_flow'] = new View(self.app, true);
+            edit_order: function(site_id, order_id) {
+                requirejs(['app/views/order_flow'],
+                          function(OrderFlow) {
+                              console.log('edit order flow');
+                              self.app.views['order_flow'] = new OrderFlow(site_id, order_id);
                           });
             },
         });

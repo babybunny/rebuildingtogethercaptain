@@ -85,34 +85,48 @@ define(
         ].concat(basic_logistics_fields);
 
         var OrderFlowView = Backbone.View.extend({
-            initialize: function(app, site_id) {
+            initialize: function(site_id, order_id) {
                 var self = this;
-                this.app = app;  // TODO
+                this.order_id = order_id;
+                
+                var site = new Site({id: site_id});
+                site.fetch().then(function() {self.site = site; self.render()});
 
-                // TODO
-                self.app.models['order'] = new Order({site: site_id});
-                this.model = this.app.models.order;
+                if (order_id) {  // edit mode
+                    var order_full = new OrderFull({id: order_id});
+                    order_full.fetch().then(function() {
+                        self.order_full = order_full;
+                        self.order = new Order(order_full.get('order'));
+                        self.order_items = new OrderItems(order_full.get('order_items'));
+                        self.listenTo(self.order_items, 'change add', self.renderStep2);
+                        self.listenTo(self.order, 'change', self.renderStep2);
+                        
+                        if (order_full.has('delivery')) {
+                            self.logistics = new Backbone.Model(order_full.get('delivery'));
+                        }
+                        if (order_full.has('pickup')) {
+                            self.logistics = new Backbone.Model(order_full.get('pickup'));
+                        }
+                        if (order_full.has('retrieval')) {
+                            self.logistics = new Backbone.Model(order_full.get('retrieval'));
+                        }
 
-                if (this.model.has('id')) {  // edit mode
-                    var order_full = new OrderFull({id: this.model.get('id')});
-                    this.listenTo(order_full, 'sync', this.render);
-                    order_full.fetch().then(function() {self.order_full = order_full});
+                        var ofd = new OrderFormDetail({id: self.order.get('order_sheet')});
+                        ofd.fetch().then(function() {
+                            self.order_form_detail = ofd;
+                            self.renderStep2();
+                        });                    
+                    });
                 } else {
                     this.order_full = new OrderFull();
+                    this.order = new Order({site: site_id});
+                    var order_forms = new OrderFormOverview();
+                    order_forms.fetch().then(function() {self.order_forms = order_forms; self.render()});
+                    this.order_items = new OrderItems();
+                    this.logistics = new Backbone.Model();
+                    this.listenTo(this.order_items, 'change add', this.renderStep2);
+                    this.listenTo(this.order, 'change', this.renderStep2);
                 }
-                this.order_forms = new OrderFormOverview();
-                this.order_items = new OrderItems();
-                this.logistics = new Backbone.Model();
-
-                var site = new Site({id: site_id});
-                this.listenTo(site, 'sync', this.render);
-                site.fetch().then(function() {self.site = site});
-
-                this.listenTo(this.order_forms, 'add', this.render);
-                this.listenTo(this.order_items, 'add', this.render);
-                this.listenTo(this.order_items, 'change', this.render);
-                this.listenTo(this.model, 'change', this.render);
-                this.order_forms.fetch();
 
                 this.choose_form_template = _.template(choose_form_template);
                 this.button_template = _.template(button_template);
@@ -128,7 +142,7 @@ define(
                 'click #order-submit': 'save',
             },
             savenotes: function(e) {
-                this.model.set('notes', e.target.value);
+                this.order.set('notes', e.target.value);                
             },
             changeQuantity: function(e) {
                 var oi = this.order_items.get(parseInt(e.target.name));
@@ -174,7 +188,7 @@ define(
                     .text('Saving...')
                     .show();
                 this.order_full.set({
-                    order: this.model.attributes,
+                    order: this.order.attributes,
                     order_items: this.order_items.map(function(modl) {
                         return modl.attributes;
                     })
@@ -216,8 +230,9 @@ define(
                 this.renderLogistics(retrieval_fields, "Drop-off and Retrieval");
             },
             renderLogistics: function(fields, logistics_words) {
+                console.log('step 3');
                 var t = this.logistics_template({
-                    order: this.model,
+                    order: this.order,
                     site: this.site,
                     logistics_words: logistics_words,
                     order_form: this.order_form_detail.get('order_sheet'),
@@ -239,98 +254,98 @@ define(
                 return this;
             },
             render: function() {
+                this.renderStep1();
+                return this
+            },
+            renderStep2: function() {
+                console.log('step 2');
+                var self = this;                
+                if (!this.order_form_detail) {
+                    return this;  // loading
+                }
+                var t = this.select_items_template({
+                    order: this.order,
+                    site: this.site,
+                    order_form: this.order_form_detail.get('order_sheet'),
+                    items: this.order_form_detail.get('sorted_items'),  // TODO
+                    order_items: this.order_items,
+                    totalForItem: this.totalForItem,
+                    quantityForItem: function(item, order_items) {
+                        var oi = order_items.get(item.id);
+                        if (oi) {
+                            return oi.get('quantity');
+                        } else {
+                            return '';
+                        }
+                    },
+                    subtotal: function() {
+                        var num = _.reduce(
+                            self.order_form_detail.get('sorted_items'),
+                            function(memo, val) {
+                                var t = self.totalForItem(val, self.order_items);
+                                if (t) {
+                                    return t + memo;
+                                } else {
+                                    return memo;
+                                }
+                            }, 0);
+                        return Math.round( num * 100 + Number.EPSILON ) / 100;
+                    }
+                });
+                this.$el.html(t);
+                return this;
+            },           
+            renderStep1: function() {  // step 1, render the choose order form screen.
                 var self = this;
-                if (!this.site) {
+                if (!this.site) {  
+                    console.log('waiting for site');
                     return this;  // loading 
                 }
-
-                if (this.order_id && !this.order) {
+                if (!this.order_full) {
+                    console.log('waiting for order_full');
+                    return this;  // loading
+                }
+                if (!this.order_forms) {
+                    console.log('waiting for order_forms');
                     return this;  // loading
                 }
                 
-                // if the order has no sheet
-                //   order sheet page
-                
-                // if the order has no items
-                //   items page
+                var t = this.choose_form_template({
+                    s: this.order.attributes,
+                    site: this.site,
+                });
+                this.$el.html(t);
+                var order_forms = this.order_forms.groupBy('visibility');
+                var button_template = this.button_template;
 
-                // logistics
+                // buttons for forms that everyone can see
+                var buttons = this.$('#order-form-buttons-everyone');
+                var addButtons = function(visibility) {
+                    _.chain(order_forms[visibility])
+                        .sortBy(function(f) {return f.get('code')})
+                        .each(function(f) {
+                            buttons.append(button_template(f.attributes));
+                        });
+                }
+                addButtons('Everyone')
 
-                
-                if (this.order_form_detail) {
-                    if (!this.order_form_detail.has('sorted_items')) {  // to indicate it comes from server.
-                        return this;
-                    }
-                    var t = this.select_items_template({
-                        order: this.model,
-                        site: this.site,
-                        order_form: this.order_form_detail.get('order_sheet'),
-                        items: this.order_form_detail.get('sorted_items'),
-                        order_items: this.order_items,
-                        totalForItem: this.totalForItem,
-                        quantityForItem: function(item, order_items) {
-                            var oi = order_items.get(item.id);
-                            if (oi) {
-                                return oi.get('quantity');
-                            } else {
-                                return '';
-                            }
-                        },
-                        subtotal: function() {
-                            var num = _.reduce(
-                                self.order_form_detail.get('sorted_items'),
-                                function(memo, val) {
-                                    var t = self.totalForItem(val, self.order_items);
-                                    if (t) {
-                                        return t + memo;
-                                    } else {
-                                        return memo;
-                                    }
-                                }, 0);
-                            return Math.round( num * 100 + Number.EPSILON ) / 100;
-                        }
-                    });
-                    this.$el.html(t);
-                    return this;
+                // staff-only buttons
+                buttons = this.$('#order-form-buttons-staff');
+                buttons.hide();
+                if (order_forms['Staff Only']) {
+                    addButtons('Staff Only')
+                    buttons.show();
                 }
-                if (!this.order_forms.models) {
-                    return this;
-                }
-                // TODO: does this test do anything?  see above tests.
-                if (this.app.models.order.has('order_sheet')) {
-                    console.log('has order sheet ' + this.model.get('order_sheet'));
-                } else {
-                    console.log('need to choose order sheet');
-                    var t = this.choose_form_template({
-                        s: this.model.attributes,
-                        site: this.site,
-                    });
-                    this.$el.html(t);
-                    var button_template = this.button_template;
-                    var buttons = this.$('#order-form-buttons-everyone');
-                    var order_forms = this.order_forms.groupBy('visibility');
-                    var addButtons = function(visibility) {
-                        _.chain(order_forms[visibility])
-                            .sortBy(function(f) {return f.get('code')})
-                            .each(function(f) {
-                                buttons.append(button_template(f.attributes));
-                            });
-                    }
-                    addButtons('Everyone')
-                    buttons = this.$('#order-form-buttons-staff');
-                    buttons.hide();
-                    if (order_forms['Staff Only']) {
-                        addButtons('Staff Only')
-                        buttons.show();
-                    }
-                    $(".order-form-buttons button").click(function() {
-                        self.order_form_detail = new OrderFormDetail({id: parseInt(this.id)});
-                        self.model.set('order_sheet', self.order_form_detail.get('id'));
-                        self.listenTo(self.order_form_detail, 'sync', self.render);
-                        self.order_form_detail.fetch();
-                    });
 
-                }
+                // when button is clicked, move to step 2
+                $(".order-form-buttons button").click(function() {
+                    var id = parseInt(this.id);  // ordersheet ID
+                    self.order.set('order_sheet', id);
+                    var ofd = new OrderFormDetail({id: id});
+                    ofd.fetch().then(function() {
+                        self.order_form_detail = ofd;
+                        self.renderStep2()});
+                });
                 return this;
             }
         });
