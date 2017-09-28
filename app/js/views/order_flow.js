@@ -85,25 +85,35 @@ define(
 
         var OrderFlowView = Backbone.View.extend({
             initialize: function(app, loading) {
+                var self = this;
                 this.app = app;
-                this.order_full = new OrderFull();
                 this.model = this.app.models.order;
-                this.choose_form_template = _.template(choose_form_template);
+
+                if (this.model.has('id')) {  // edit mode
+                    var order_full = new OrderFull({id: this.model.get('id')});
+                    this.listenTo(order_full, 'sync', this.render);
+                    order_full.fetch().then(function() {self.order_full = order_full});
+                } else {
+                    this.order_full = new OrderFull();
+                }
                 this.order_forms = new OrderFormOverview();
                 this.order_items = new OrderItems();
                 this.logistics = new Backbone.Model();
-                this.site = new Site({id: this.model.get('site')});
+
+                var site = new Site({id: this.model.get('site')});
+                this.listenTo(site, 'sync', this.render);
+                site.fetch().then(function() {self.site = site});
+
                 this.listenTo(this.order_forms, 'add', this.render);
                 this.listenTo(this.order_items, 'add', this.render);
                 this.listenTo(this.order_items, 'change', this.render);
                 this.listenTo(this.model, 'change', this.render);
-                this.listenTo(this.site, 'change', this.render);
-                this.site.fetch();
                 this.order_forms.fetch();
+
+                this.choose_form_template = _.template(choose_form_template);
                 this.button_template = _.template(button_template);
                 this.select_items_template = _.template(select_items_template);
                 this.logistics_template = _.template(logistics_template);
-                this.item_views = [];
             },
             events: {
                 'change #id_notes': 'savenotes',
@@ -226,8 +236,8 @@ define(
             },
             render: function() {
                 var self = this;
-                if (!this.site.has('number')) {
-                    return this;
+                if (!this.site) {
+                    return this;  // loading 
                 }
                 if (this.order_form_detail) {
                     if (!this.order_form_detail.has('sorted_items')) {  // to indicate it comes from server.
@@ -273,7 +283,10 @@ define(
                     console.log('has order sheet ' + this.model.get('order_sheet'));
                 } else {
                     console.log('need to choose order sheet');
-                    var t = this.choose_form_template({s: this.model.attributes});
+                    var t = this.choose_form_template({
+                        s: this.model.attributes,
+                        site: this.site,
+                    });
                     this.$el.html(t);
                     var button_template = this.button_template;
                     var buttons = this.$('#order-form-buttons-everyone');
