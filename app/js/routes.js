@@ -56,11 +56,10 @@ define(
                               editPage(self.app, Model, View, type, {site: site_id, id: id})});
             },
             new_order: function(site_id) {
-                requirejs(['app/models/order', 'app/views/order_flow'],
-                          function(Model, View) {
+                requirejs(['app/views/order_flow'],
+                          function(OrderFlow) {
                               console.log('new order flow');
-                              self.app.models['order'] = new Model({site: site_id});
-                              self.app.views['order_flow'] = new View(self.app, false);
+                              self.app.views['order_flow'] = new OrderFlow(self.app, site_id);
                           });
             },
             edit_order: function(site_id, id) {

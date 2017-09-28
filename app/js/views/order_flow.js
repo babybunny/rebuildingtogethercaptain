@@ -6,6 +6,7 @@ define(
 	      'app/views/model_select_control',
         'app/models/order_form_overview',
         'app/models/order_items',
+        'app/models/order',  // TODO: remove?
         'app/models/site',
         'app/models/order_form_detail',
         'app/models/order_full',
@@ -16,7 +17,7 @@ define(
     ],
     function(Backbone, Backform, bootstrap,
              bsdp, RoomFormView, ModelSelectControl,
-             OrderFormOverview, OrderItems, Site, OrderFormDetail, OrderFull,
+             OrderFormOverview, OrderItems, Order, Site, OrderFormDetail, OrderFull,
              choose_form_template, button_template, select_items_template,
              logistics_template) {
         var basic_logistics_fields = [
@@ -84,9 +85,12 @@ define(
         ].concat(basic_logistics_fields);
 
         var OrderFlowView = Backbone.View.extend({
-            initialize: function(app, loading) {
+            initialize: function(app, site_id) {
                 var self = this;
-                this.app = app;
+                this.app = app;  // TODO
+
+                // TODO
+                self.app.models['order'] = new Order({site: site_id});
                 this.model = this.app.models.order;
 
                 if (this.model.has('id')) {  // edit mode
@@ -100,7 +104,7 @@ define(
                 this.order_items = new OrderItems();
                 this.logistics = new Backbone.Model();
 
-                var site = new Site({id: this.model.get('site')});
+                var site = new Site({id: site_id});
                 this.listenTo(site, 'sync', this.render);
                 site.fetch().then(function() {self.site = site});
 
@@ -239,6 +243,20 @@ define(
                 if (!this.site) {
                     return this;  // loading 
                 }
+
+                if (this.order_id && !this.order) {
+                    return this;  // loading
+                }
+                
+                // if the order has no sheet
+                //   order sheet page
+                
+                // if the order has no items
+                //   items page
+
+                // logistics
+
+                
                 if (this.order_form_detail) {
                     if (!this.order_form_detail.has('sorted_items')) {  // to indicate it comes from server.
                         return this;
