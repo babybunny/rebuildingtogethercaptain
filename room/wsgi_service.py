@@ -1156,6 +1156,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   
   @remote.method(SimpleId, OrderFull)
   def order_full_read(self, request):
+    self._authorize_staff()
     res = OrderFull()
     order_key = ndb.Key(ndb_models.Order, request.id)
     order_mdl = order_key.get()
@@ -1182,8 +1183,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
 
     return res
     
-  @remote.method(OrderFull, message_types.VoidMessage)
-  def order_full_create(self, request):
+  def _order_full_put(self, request):
     # TODO ndb.start_transaction ...
     order = _OrderMessageToModel(request.order, ndb_models.Order())
     sub_total = 0.
@@ -1217,8 +1217,27 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       oimsg.order = order.key.integer_id()
       _OrderItemMessageToModel(oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
 
-    return message_types.VoidMessage()
 
+  @remote.method(OrderFull, message_types.VoidMessage)
+  def order_full_create(self, request):
+    self._authorize_staff()
+    if request.id:
+      raise remote.ApplicationError('must not have id in create')
+    self._order_full_put(request)
+    return message_types.VoidMessage()
+    
+  @remote.method(OrderFull, message_types.VoidMessage)
+  def order_full_update(self, request):  
+    self._authorize_staff()
+    if not request.id:
+      raise remote.ApplicationError('id is required')
+    mdl = ndb.Key(ndb_models.Order, request.id).get()
+    if not mdl:
+      raise remote.ApplicationError(
+        'No {} found with key {}'.format(Order, request.id))
+    self._order_full_put(request)
+    return message_types.VoidMessage()
+    
 
 # # # # # # # # # #
 #     Choices     #

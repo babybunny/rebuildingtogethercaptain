@@ -102,13 +102,13 @@ define(
                         self.listenTo(self.order, 'change', self.renderStep2);
                         
                         if (order_full.has('delivery')) {
-                            self.logistics = new Backbone.Model(order_full.get('delivery'));
+                            self.delivery = new Backbone.Model(order_full.get('delivery'));
                         }
                         if (order_full.has('pickup')) {
-                            self.logistics = new Backbone.Model(order_full.get('pickup'));
+                            self.pickup = new Backbone.Model(order_full.get('pickup'));
                         }
                         if (order_full.has('retrieval')) {
-                            self.logistics = new Backbone.Model(order_full.get('retrieval'));
+                            self.retrieval = new Backbone.Model(order_full.get('retrieval'));
                         }
 
                         var ofd = new OrderFormDetail({id: self.order.get('order_sheet')});
@@ -218,18 +218,18 @@ define(
                     });
             },
             renderDelivery: function() {
-                this.order_full.set('delivery', this.logistics.attributes);
-                this.renderLogistics(delivery_fields, "Delivery");
+                this.order_full.set('delivery', this.delivery.attributes);
+                this.renderLogistics(delivery_fields, "Delivery", this.delivery);
             },
             renderPickup: function() {
-                this.order_full.set('pickup', this.logistics.attributes);
-                this.renderLogistics(pickup_fields, "Pickup and Return");
+                this.order_full.set('pickup', this.pickup.attributes);
+                this.renderLogistics(pickup_fields, "Pickup and Return", this.pickup);
             },
             renderRetrieval: function() {
-                this.order_full.set('retrieval', this.logistics.attributes);
-                this.renderLogistics(retrieval_fields, "Drop-off and Retrieval");
+                this.order_full.set('retrieval', this.retrieval.attributes);
+                this.renderLogistics(retrieval_fields, "Drop-off and Retrieval", this.retrieval);
             },
-            renderLogistics: function(fields, logistics_words) {
+            renderLogistics: function(fields, logistics_words, model) {
                 console.log('step 3');
                 var t = this.logistics_template({
                     order: this.order,
@@ -239,7 +239,7 @@ define(
                 });
                 this.$el.html(t);
                 this.logistics_form = new Backform.Form({
-                    model: this.logistics,
+                    model: model,
                     fields: fields,
                     events: {
                         'submit': function(e) {
@@ -260,6 +260,9 @@ define(
             renderStep2: function() {
                 console.log('step 2');
                 var self = this;                
+                if (!this.site) {
+                    return this;  // loading
+                }
                 if (!this.order_form_detail) {
                     return this;  // loading
                 }
