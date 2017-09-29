@@ -1,22 +1,3 @@
-# some of these are for testing only
-beautifulsoup4==4.6.0
-google-api-python-client==1.6.4
-httplib2==0.10.3
-Jinja2==2.9.6
-linecache2==1.0.0
-MarkupSafe==1.0
 nose2==0.6.5
 nose2-gae==0.1.7
-oauth2client==4.1.2
-pyasn1==0.3.6
-pyasn1-modules==0.1.4
-PyYAML==3.12
-rsa==3.4.2
-six==1.11.0
-traceback2==1.4.0
-unittest2==1.1.0
-uritemplate==3.0.0
-waitress==1.0.2
-webapp2==2.5.2
-WebOb==1.7.3
 WebTest==2.0.28
