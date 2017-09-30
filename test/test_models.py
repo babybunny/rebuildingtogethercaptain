@@ -8,9 +8,9 @@ Also, these models may be used in unit tests.
 
 import datetime
 import logging
-import unittest2
+import unittest
 from room import ndb_models
-
+import app_engine_test_utils
 
 def CreateAll():
   """Creates all the models in this module.
@@ -449,7 +449,12 @@ def DeleteAll(KEYS):
     key.delete()
 
 
-class ModelsTest(unittest2.TestCase):
+class ModelsTest(unittest.TestCase):
+
+  def setUp(self):
+    app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
+
   def testCreate(self):
     KEYS = CreateAll()
     self.assertTrue(KEYS)

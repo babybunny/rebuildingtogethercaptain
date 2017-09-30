@@ -1,12 +1,15 @@
 """Unit tests for ndb_models."""
+import unittest
 
-import unittest2
-from room import ndb_models
 import test_models
+import app_engine_test_utils
 
 
-class ModelsTest(unittest2.TestCase):
+class ModelsTest(unittest.TestCase):
+
     def setUp(self):
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
 
     def tearDown(self):

@@ -1,10 +1,10 @@
 """Functional tests for WSGI app for Protocol RPC service API."""
 
-import unittest2
+import unittest
 from webtest import TestApp
 from room import wsgi_service
 from test import test_models
-
+import app_engine_test_utils
 app = TestApp(wsgi_service.application)
 
 
@@ -19,8 +19,10 @@ models_and_data = (
 )
 
 
-class BasicCrudTest(unittest2.TestCase):
+class BasicCrudTest(unittest.TestCase):
     def setUp(self):
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
 
     def tearDown(self):
@@ -134,8 +136,10 @@ for name, fields in models_and_data:
     setattr(BasicCrudTest, 'test{}UpdateBadWrongId'.format(name), tstUpdateBadWrongId)
     
     
-class ChoicesTest(unittest2.TestCase):
+class ChoicesTest(unittest.TestCase):
     def setUp(self):
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
 
     def tearDown(self):
@@ -153,8 +157,10 @@ class ChoicesTest(unittest2.TestCase):
         self.assertDictContainsSubset({u'label': u'House of Supply'}, response.json['choice'][0])
         
 
-class BugsTest(unittest2.TestCase):
+class BugsTest(unittest.TestCase):
     def setUp(self):
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
 
     def tearDown(self):
@@ -219,8 +225,10 @@ class BugsTest(unittest2.TestCase):
         self.assertIn(u'email', response.json)
         self.assertEquals('mister@captain.com', response.json['email'])
         
-class CustomApiTest(unittest2.TestCase):
+class CustomApiTest(unittest.TestCase):
     def setUp(self):
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
         
     def tearDown(self):
@@ -280,5 +288,3 @@ class CustomApiTest(unittest2.TestCase):
         self.assertEquals(u'Joe Retrieval', response.json['retrieval']['contact'])
         self.assertIn(u'pickup', response.json)
         self.assertEquals(u'Joe Pickup', response.json['pickup']['contact'])
-        
-                
