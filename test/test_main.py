@@ -13,8 +13,8 @@ app = TestApp(main.app)
 class WelcomeTest(unittest.TestCase):
 
     def setUp(self):
-        app_engine_test_utils.activate_app_engine_testbed()
-        app_engine_test_utils.clear_ndb_cache()
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
 
     def testHelp(self):
         response = app.get('/help')
@@ -35,11 +35,10 @@ class WelcomeTest(unittest.TestCase):
 
 class StatefulTest(unittest.TestCase):
     def setUp(self):
-        app_engine_test_utils.activate_app_engine_testbed()
-        app_engine_test_utils.clear_ndb_cache()
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
-        test_models.CreateAll()        
-                
+
     def testRootXHeaderStaff(self):
         response = app.get('/', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('302 Moved Temporarily', response.status)

@@ -8,8 +8,8 @@ import app_engine_test_utils
 class ModelsTest(unittest.TestCase):
 
     def setUp(self):
-        app_engine_test_utils.activate_app_engine_testbed()
-        app_engine_test_utils.clear_ndb_cache()
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
 
     def tearDown(self):

@@ -452,8 +452,8 @@ def DeleteAll(KEYS):
 class ModelsTest(unittest.TestCase):
 
   def setUp(self):
-    app_engine_test_utils.activate_app_engine_testbed()
-    app_engine_test_utils.clear_ndb_cache()
+    app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
 
   def testCreate(self):
     KEYS = CreateAll()

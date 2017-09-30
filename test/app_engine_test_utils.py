@@ -2,7 +2,7 @@ from google.appengine.ext import testbed
 from google.appengine.ext import ndb
 
 
-def activate_app_engine_testbed():
+def activate_app_engine_testbed_and_clear_cache():
     """
     https://cloud.google.com/appengine/docs/standard/python/tools/localunittesting
 
@@ -15,11 +15,5 @@ def activate_app_engine_testbed():
     tb.init_user_stub()
     tb.init_memcache_stub()
     tb.init_images_stub(enable=False)
-    return tb
-
-
-def clear_ndb_cache():
-    """
-    https://cloud.google.com/appengine/docs/standard/python/tools/localunittesting
-    """
     ndb.get_context().clear_cache()
+    return tb

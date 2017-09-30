@@ -16,7 +16,7 @@ except OSError:
 
 time.sleep(6)
 
-dev_utilities.main(8080)
+dev_utilities.init_stubs_and_models(8080)
 
 print("check out the local server at http://localhost:8080")
 

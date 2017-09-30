@@ -19,8 +19,8 @@ APP = TestApp(main.app)
 class LoggedInTest(unittest.TestCase):
 
     def setUp(self):
-        app_engine_test_utils.activate_app_engine_testbed()
-        app_engine_test_utils.clear_ndb_cache()
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
 
     def testStaffHome(self):
         response = APP.get('/room/staff_home')
@@ -32,9 +32,9 @@ class LoggedInTest(unittest.TestCase):
 class StatefulTestNoProgram(unittest.TestCase):
 
     def setUp(self):
-        app_engine_test_utils.activate_app_engine_testbed()
-        app_engine_test_utils.clear_ndb_cache()
-        self.keys = test_models.CreateAll()        
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
+        self.keys = test_models.CreateAll()
                 
     def tearDown(self):
         test_models.DeleteAll(self.keys)
@@ -48,9 +48,9 @@ class StatefulTestNoProgram(unittest.TestCase):
 class StatefulTestCaptain(unittest.TestCase):
 
     def setUp(self):
-        app_engine_test_utils.activate_app_engine_testbed()
-        app_engine_test_utils.clear_ndb_cache()
-        self.keys = test_models.CreateAll()        
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
+        self.keys = test_models.CreateAll()
         s = self.keys['STAFF'].get()
         s.program_selected = '2011 Test'
         s.put()
@@ -69,8 +69,8 @@ class StatefulTestCaptain(unittest.TestCase):
 class StatefulTestStaffWithProgram(unittest.TestCase):
 
     def setUp(self):
-        app_engine_test_utils.activate_app_engine_testbed()
-        app_engine_test_utils.clear_ndb_cache()
+        app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+
         self.keys = test_models.CreateAll()
         s = self.keys['STAFF'].get()
         s.program_selected = '2011 Test'
