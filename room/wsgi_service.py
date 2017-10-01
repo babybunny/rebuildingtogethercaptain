@@ -881,6 +881,35 @@ class Retrieval(messages.Message):
   notes = messages.StringField(6)
 
 
+############
+# SiteCaptain #
+############
+
+def _SiteCaptainModelToMessage(mdl):
+  s = SiteCaptain(
+    id=mdl.key.integer_id(),
+    site=mdl.site.integer_id(),
+    captain=mdl.captain.integer_id(),
+    type=mdl.type,
+  )
+  # any special handling, like for user objects or datetimes
+  return s
+
+def _SiteCaptainMessageToModel(msg, mdl):
+  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+  mdl.type = msg.type
+  # can't set automatic fields:
+  # TODO
+  return mdl
+
+class SiteCaptain(messages.Message):
+  id = messages.IntegerField(1)
+  site = messages.IntegerField(2)
+  captain = messages.IntegerField(3)
+  type = messages.StringField(4)
+
+                              
 #######################################
 # Non-CRUD API and composite messages #
 #######################################
@@ -906,6 +935,10 @@ class OrderFull(messages.Message):
   retrieval = messages.MessageField(Retrieval, 5)
   id = messages.IntegerField(6)
 
+class SiteCaptains(messages.Message):
+  sitecaptain = messages.MessageField(SiteCaptain, 1, repeated=True)
+
+  
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
 """
@@ -960,6 +993,8 @@ basic_crud_config = (
    _ItemMessageToModel, _ItemModelToMessage),
   (Order, ndb_models.Order,
    _OrderMessageToModel, _OrderModelToMessage),
+  (SiteCaptain, ndb_models.SiteCaptain,
+   _SiteCaptainMessageToModel, _SiteCaptainModelToMessage),
 
 
   #  (Example, ndb_models.Example,
@@ -1238,6 +1273,13 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     self._order_full_put(request)
     return message_types.VoidMessage()
     
+  @remote.method(SimpleId, SiteCaptains)  
+  def sitecaptains_for_site(self, request):
+    res = SiteCaptains()
+    for m in ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)):
+      f = _SiteCaptainModelToMessage(m)
+      res.sitecaptain.append(f)
+    return res
 
 # # # # # # # # # #
 #     Choices     #
