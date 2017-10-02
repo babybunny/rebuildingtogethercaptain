@@ -59,19 +59,10 @@ define(
                 this.form = new Backform.Form({
                     model: this.model,
                     fields: fields,
-                    events: {
-                        'submit': function(e) {
-                            e.preventDefault();
-                            this.statusText = e.statusText;
-                            console.log('sitecaptain submit backform');
-                            addCaptain();
-                        },
-                    }
                 });
             },
             removeCaptain: function(e) {
-                console.log('remove captain ', this, e, e.target.name);
-                console.log(this.sitecaptains.get(parseInt(e.target.name)));
+                // console.log('remove captain ', this, e, e.target.name);
                 this.sitecaptains.remove(this.sitecaptains.get(parseInt(e.target.name)));
                 this.render();
             },
