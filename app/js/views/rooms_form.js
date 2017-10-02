@@ -88,7 +88,7 @@ define(
                     this.firstfield = this.getFirstField();
                     this.form.setElement(this.$el.find('#simple-form-backform'));
                     this.form.render();
-                    this.$(this.firstfield.control + '[name=' + this.firstfield.name +']')
+                    this.$('[name=' + this.firstfield.name +']')
                         .focus();
                     this.$('button').on('mousedown mouseup', function() {
                         $(this).toggleClass('white');

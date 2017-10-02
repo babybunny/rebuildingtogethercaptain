@@ -935,8 +935,12 @@ class OrderFull(messages.Message):
   retrieval = messages.MessageField(Retrieval, 5)
   id = messages.IntegerField(6)
 
+class SiteCaptainDetail(messages.Message):
+  sitecaptain = messages.MessageField(SiteCaptain, 1)
+  name = messages.StringField(2)
+  
 class SiteCaptains(messages.Message):
-  sitecaptain = messages.MessageField(SiteCaptain, 1, repeated=True)
+  sitecaptain_detail = messages.MessageField(SiteCaptainDetail, 1, repeated=True)
 
   
 # Use the multi-line string below as a template for adding models.
@@ -1276,9 +1280,12 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   @remote.method(SimpleId, SiteCaptains)  
   def sitecaptains_for_site(self, request):
     res = SiteCaptains()
-    for m in ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)):
+    sitecaptain_models = list(ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))
+    for m in sitecaptain_models:
       f = _SiteCaptainModelToMessage(m)
-      res.sitecaptain.append(f)
+      captain_model = ndb.Key(ndb_models.Captain, f.captain).get()
+      detail = SiteCaptainDetail(sitecaptain=f, name=captain_model.name)
+      res.sitecaptain_detail.append(detail)
     return res
 
 # # # # # # # # # #

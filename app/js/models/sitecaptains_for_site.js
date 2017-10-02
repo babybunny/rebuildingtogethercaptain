@@ -9,7 +9,9 @@ define(
                 this.site_id = site_id;
             },
             parse: function(response, options) {
-                return response.sitecaptain;
+                return _.map(response.sitecaptain_detail, function(s) {
+                    return _.extend(s.sitecaptain, {name: s.name});
+                })
             },            
             getApiInputs: function() {
                 return {id: this.site_id}

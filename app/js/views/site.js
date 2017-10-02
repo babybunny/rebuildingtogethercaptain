@@ -3,7 +3,7 @@ define(
          'app/views/rooms_form',
 	     'app/views/model_select_control',
          'app/models/jurisdiction_choices',
-         'text!app/templates/site_form.html'
+         'text!app/templates/simple_form.html'
     ],
     function(RoomFormView, ModelSelectControl, JurisdictionChoices, template) {
         var fields = [
