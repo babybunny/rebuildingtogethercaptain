@@ -1,12 +1,14 @@
 """Methods common to all handlers."""
 
-import jinja2
 import logging
 import os
 import pprint
+
+import jinja2
 import webapp2
 from google.appengine.api import mail
 from google.appengine.api import users
+
 import ndb_models
 
 # Current value of National Rebuilding Day!

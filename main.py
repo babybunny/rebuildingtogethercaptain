@@ -1,19 +1,16 @@
 """Main application, welcome screen."""
-import logging
 import os
 
 import jinja2
 import webapp2
+from google.appengine.api import users
 from webapp2_extras import routes
 
-from room import common
-from room import ndb_models
-from room import staff
 from room import captain
+from room import common
+from room import staff
+
 # from room import views
-
-from google.appengine.api import users
-
 
 EXPENSE_KINDS = (
     # 'CheckRequest',
@@ -21,30 +18,29 @@ EXPENSE_KINDS = (
 
 
 class MainPage(webapp2.RequestHandler):
-  """The main UI page, renders the 'index.html' template."""
+    """The main UI page, renders the 'index.html' template."""
 
-  def get(self):
-    """Renders the main page."""
-    user, status = common.GetUser(self.request)
-    if user and user.staff:
-      self.redirect_to('StaffHome')
-    if user and user.captain:
-      self.redirect_to('CaptainHome')
-    login_url = users.create_login_url('/')
-    logout_url = users.create_logout_url('/')
-    template_values = dict(locals())
-    template = jinja_environment.get_template('templates/welcome.html')
-    self.response.out.write(template.render(template_values))
+    def get(self):
+        """Renders the main page."""
+        user, status = common.GetUser(self.request)
+        if user and user.staff:
+            self.redirect_to('StaffHome')
+        if user and user.captain:
+            self.redirect_to('CaptainHome')
+        login_url = users.create_login_url('/')
+        logout_url = users.create_logout_url('/')
+        template_values = dict(locals())
+        template = jinja_environment.get_template('templates/welcome.html')
+        self.response.out.write(template.render(template_values))
 
 
 class Placeholder(webapp2.RequestHandler):
-  def get(self):
-    self.response.out.write('Placeholder')
+    def get(self):
+        self.response.out.write('Placeholder')
 
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
-
 
 # Be sure to also configure the /room path with login: required in app.yaml.
 login_required = routes.PathPrefixRoute('/room', [
@@ -170,7 +166,6 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.InKindDonation,
                   name='InKindDonation'),
 
-
     webapp2.Route(r'/item',
                   staff.ItemList,
                   name='ItemList'),
@@ -278,9 +273,9 @@ login_required = routes.PathPrefixRoute('/room', [
 
 post_routes = routes.PathPrefixRoute('/room', [
     webapp2.Route(r'/room/site_budget_export',
-                          staff.SiteBudgetExport,
-                          name='SiteBudgetExport')
-    ])
+                  staff.SiteBudgetExport,
+                  name='SiteBudgetExport')
+])
 
 app = webapp2.WSGIApplication(
     [

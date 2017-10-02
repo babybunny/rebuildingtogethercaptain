@@ -2,19 +2,19 @@
 
 import os
 import unittest
+
 from webtest import TestApp
+
+import app_engine_test_utils
 import main
 from test import test_models
-import app_engine_test_utils
 
 app = TestApp(main.app)
 
 
 class WelcomeTest(unittest.TestCase):
-
     def setUp(self):
         app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
 
     def testHelp(self):
         response = app.get('/help')
@@ -45,7 +45,7 @@ class StatefulTest(unittest.TestCase):
         self.assertIn('Location', response.headers)
         self.assertIn('/staff_home', response.headers['Location'])
         self.assertIn('rebuildingtogether.staff@gmail.com', str(response))
-        
+
     def testRootXHeaderCaptain(self):
         response = app.get('/', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.capn@gmail.com'})
         self.assertEquals('302 Moved Temporarily', response.status)
