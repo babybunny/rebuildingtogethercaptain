@@ -1283,7 +1283,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     sitecaptain_models = list(ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))
     for m in sitecaptain_models:
       f = _SiteCaptainModelToMessage(m)
-      captain_model = ndb.Key(ndb_models.Captain, f.captain).get()
+      captain_model = ndb.Key(ndb_models.Captain, f.captain).get()  // TODO: get_multi
       detail = SiteCaptainDetail(sitecaptain=f, name=captain_model.name)
       res.sitecaptain_detail.append(detail)
     return res
