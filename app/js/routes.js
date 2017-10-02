@@ -22,7 +22,7 @@ define(
                 self.app = app;
             },
             routes: {
-                // Overriddden edits
+                // More complex edit flows. Must precede the generic ones below.
                 'room/site/:id': 'edit_site',
                 
                 // Generic new and edit pages for top-level objects like Supplier, Staff.
@@ -73,10 +73,8 @@ define(
                           });
             },
             edit_site: function(site_id) {
-                console.log('edit site');
                 requirejs(['app/views/site_flow'],
                           function(Flow) {
-                              console.log('edit site flow');
                               self.app.views['site_flow'] = new Flow(self.app, site_id);
                           });
             },

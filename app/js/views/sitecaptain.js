@@ -1,8 +1,7 @@
 define(
     [
         'backbone', 'backform', 'bootstrap',
-        'app/models/captain_choices',
-        'app/models/sitecaptain',
+        'app/models/captain_choices', 'app/models/sitecaptain',
 	      'app/views/model_select_control',
         'text!app/templates/sitecaptains.html'
     ],
