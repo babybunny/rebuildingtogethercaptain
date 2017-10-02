@@ -37,9 +37,10 @@ Search for 'example' to find the right place.
 
 """
 
-
 import inspect
+
 import dev_appserver
+
 dev_appserver.fix_sys_path()
 from room import ndb_models
 
@@ -52,103 +53,105 @@ ndb_model_classes = dict(
 
 
 def label(s):
-  """Return a string formatted as a label for s."""
-  return s.replace('_', ' ').capitalize()
+    """Return a string formatted as a label for s."""
+    return s.replace('_', ' ').capitalize()
 
 
 def js(clsname):
-  """Creates js files for model and view.
+    """Creates js files for model and view.
 
-  Actually writes the files in place. So be careful about overwriting your customized version.
-  """
-  wsgi_path_fragment = clsname.lower()
-  with open('app/js/models/{}.js'.format(wsgi_path_fragment), 'w') as f, open('app/js/models/example.js', 'r') as examplef:
-    for line in examplef:
-      line = line.replace('example', wsgi_path_fragment)
-      f.write(line)
+    Actually writes the files in place. So be careful about overwriting your customized version.
+    """
+    wsgi_path_fragment = clsname.lower()
+    with open('app/js/models/{}.js'.format(wsgi_path_fragment), 'w') as f, open('app/js/models/example.js',
+                                                                                'r') as examplef:
+        for line in examplef:
+            line = line.replace('example', wsgi_path_fragment)
+            f.write(line)
 
-  with open('app/js/views/{}.js'.format(wsgi_path_fragment), 'w') as f, open('app/js/views/example.js', 'r') as examplef:
-    for line in examplef:
-      line = line.replace('example', wsgi_path_fragment)
-      f.write(line)
-      if '// boilerplate' in line:
-        padding = line.find('/')
-        # expand the model's fields
-        for field, cls in ndb_model_classes[clsname].__dict__.items():
-          if not inspect.isclass(type(cls)):
-            continue
-          if issubclass(type(cls), ndb_models.ndb.Property):
-            f.write('{0}{1}\n'.format(' ' * padding, '{'))
-            f.write('{0}name: "{1}",\n'.format(' ' * (padding + 4), field))
-            f.write('{0}label: "{1}",\n'.format(
-                ' ' * (padding + 4), label(field)))
-            if (issubclass(type(cls), ndb_models.ndb.StringProperty)
-                or issubclass(type(cls), ndb_models.ndb.IntegerProperty)
-                    or issubclass(type(cls), ndb_models.ndb.FloatProperty)):
-              if cls._choices:
-                f.write('{0}control: "select",\n'.format(' ' * (padding + 4)))
-                f.write('{0}options: [\n'.format(' ' * (padding + 4)))
-                for choice in cls._choices:
-                  f.write('{0}{1}label: "{3}", value: "{3}"{2},\n'.format(
-                      ' ' * (padding + 8), '{', '}', choice))
-                f.write('{0}]\n'.format(' ' * (padding + 4)))
+    with open('app/js/views/{}.js'.format(wsgi_path_fragment), 'w') as f, open('app/js/views/example.js',
+                                                                               'r') as examplef:
+        for line in examplef:
+            line = line.replace('example', wsgi_path_fragment)
+            f.write(line)
+            if '// boilerplate' in line:
+                padding = line.find('/')
+                # expand the model's fields
+                for field, cls in ndb_model_classes[clsname].__dict__.items():
+                    if not inspect.isclass(type(cls)):
+                        continue
+                    if issubclass(type(cls), ndb_models.ndb.Property):
+                        f.write('{0}{1}\n'.format(' ' * padding, '{'))
+                        f.write('{0}name: "{1}",\n'.format(' ' * (padding + 4), field))
+                        f.write('{0}label: "{1}",\n'.format(
+                            ' ' * (padding + 4), label(field)))
+                        if (issubclass(type(cls), ndb_models.ndb.StringProperty)
+                            or issubclass(type(cls), ndb_models.ndb.IntegerProperty)
+                            or issubclass(type(cls), ndb_models.ndb.FloatProperty)):
+                            if cls._choices:
+                                f.write('{0}control: "select",\n'.format(' ' * (padding + 4)))
+                                f.write('{0}options: [\n'.format(' ' * (padding + 4)))
+                                for choice in cls._choices:
+                                    f.write('{0}{1}label: "{3}", value: "{3}"{2},\n'.format(
+                                        ' ' * (padding + 8), '{', '}', choice))
+                                f.write('{0}]\n'.format(' ' * (padding + 4)))
 
-              else:
-                f.write('{0}control: "input",\n'.format(' ' * (padding + 4)))
-            elif issubclass(type(cls), ndb_models.ndb.DateProperty):
-              f.write('{0}control: "datepicker",\n'.format(
-                  ' ' * (padding + 4)))
-              f.write(
-                  '{0}options: {1}format: "yyyy-mm-dd"{2},\n'.format(' ' * (padding + 4), '{', '}'))
-            elif issubclass(type(cls), ndb_models.ndb.TextProperty):
-              f.write('{0}control: "textarea",\n'.format(' ' * (padding + 4)))
-            elif issubclass(type(cls), ndb_models.ndb.BlobProperty):
-              f.write(
-                  '{0}// "{1} is a BlobProperty, skipping",\n'.format(' ' * (padding), field))
-            elif issubclass(type(cls), ndb_models.ndb.KeyProperty):
-              f.write(
-                  '{0}// "{1} is a Key.  TODO",\n'.format(' ' * (padding + 4), field))
-            else:
-              f.write('{0}// "{1} is a {2}.  TODO",\n'.format(' ' *
-                                                              (padding + 4), field, str(cls)))
-            f.write('{0}{1}\n'.format(' ' * padding, '},'))
+                            else:
+                                f.write('{0}control: "input",\n'.format(' ' * (padding + 4)))
+                        elif issubclass(type(cls), ndb_models.ndb.DateProperty):
+                            f.write('{0}control: "datepicker",\n'.format(
+                                ' ' * (padding + 4)))
+                            f.write(
+                                '{0}options: {1}format: "yyyy-mm-dd"{2},\n'.format(' ' * (padding + 4), '{', '}'))
+                        elif issubclass(type(cls), ndb_models.ndb.TextProperty):
+                            f.write('{0}control: "textarea",\n'.format(' ' * (padding + 4)))
+                        elif issubclass(type(cls), ndb_models.ndb.BlobProperty):
+                            f.write(
+                                '{0}// "{1} is a BlobProperty, skipping",\n'.format(' ' * (padding), field))
+                        elif issubclass(type(cls), ndb_models.ndb.KeyProperty):
+                            f.write(
+                                '{0}// "{1} is a Key.  TODO",\n'.format(' ' * (padding + 4), field))
+                        else:
+                            f.write('{0}// "{1} is a {2}.  TODO",\n'.format(' ' *
+                                                                            (padding + 4), field, str(cls)))
+                        f.write('{0}{1}\n'.format(' ' * padding, '},'))
 
 
 def api(clsname):
-  message_fields = []
-  d2g = []
-  g2d = []
+    message_fields = []
+    d2g = []
+    g2d = []
 
-  for field, cls in ndb_model_classes[clsname].__dict__.items():
-    if not inspect.isclass(type(cls)):
-      continue
-    if not issubclass(type(cls), ndb_models.ndb.Property):
-      continue
-    d2g.append('{0}=mdl.{0},'.format(field))
-    g2d.append('mdl.{0} = msg.{0}'.format(field))
-    if (issubclass(type(cls), ndb_models.ndb.StringProperty)
-        or issubclass(type(cls), ndb_models.ndb.TextProperty)
+    for field, cls in ndb_model_classes[clsname].__dict__.items():
+        if not inspect.isclass(type(cls)):
+            continue
+        if not issubclass(type(cls), ndb_models.ndb.Property):
+            continue
+        d2g.append('{0}=mdl.{0},'.format(field))
+        g2d.append('mdl.{0} = msg.{0}'.format(field))
+        if (issubclass(type(cls), ndb_models.ndb.StringProperty)
+            or issubclass(type(cls), ndb_models.ndb.TextProperty)
             or issubclass(type(cls), ndb_models.ndb.DateProperty)):
-      message_fields.append('{0} = messages.StringField({1})'.format(
-          field, len(message_fields) + 2))
-    elif issubclass(type(cls), ndb_models.ndb.FloatProperty):
-      message_fields.append('{0} = messages.FloatField({1})'.format(
-          field, len(message_fields) + 2))
-    elif issubclass(type(cls), ndb_models.ndb.IntegerProperty):
-      message_fields.append('{0} = messages.IntegerField({1})'.format(
-          field, len(message_fields) + 2))
-    elif issubclass(type(cls), ndb_models.ndb.KeyProperty):
-      message_fields.append('{0} = messages.IntegerField({1})'.format(
-          field, len(message_fields) + 2))
-      d2g.pop()
-      d2g.append('{0}=mdl.{0}.integer_id(),'.format(field))
-      g2d.pop()
-      g2d.append(
-          'mdl.{0} = ndb.Key(ndb_models.{1}, msg.{0})'.format(field, cls._kind))
-    else:
-      d2g.pop()
-      g2d.pop()
-  return """
+            message_fields.append('{0} = messages.StringField({1})'.format(
+                field, len(message_fields) + 2))
+        elif issubclass(type(cls), ndb_models.ndb.FloatProperty):
+            message_fields.append('{0} = messages.FloatField({1})'.format(
+                field, len(message_fields) + 2))
+        elif issubclass(type(cls), ndb_models.ndb.IntegerProperty):
+            message_fields.append('{0} = messages.IntegerField({1})'.format(
+                field, len(message_fields) + 2))
+        elif issubclass(type(cls), ndb_models.ndb.KeyProperty):
+            message_fields.append('{0} = messages.IntegerField({1})'.format(
+                field, len(message_fields) + 2))
+            d2g.pop()
+            d2g.append('{0}=mdl.{0}.integer_id(),'.format(field))
+            g2d.pop()
+            g2d.append(
+                'mdl.{0} = ndb.Key(ndb_models.{1}, msg.{0})'.format(field, cls._kind))
+        else:
+            d2g.pop()
+            g2d.pop()
+    return """
 ############
 # {0} #
 ############
@@ -187,8 +190,8 @@ EXPENSE_TYPES = ('CheckRequest', 'VendorReceipt',
 
 
 def views(clsname):
-  if clsname in EXPENSE_TYPES:
-    return """
+    if clsname in EXPENSE_TYPES:
+        return """
 
 class {0}List(SiteExpenseList):
   model_class = '{0}'
@@ -212,7 +215,7 @@ class {0}(SiteExpenseEditor):
 
 """.format(clsname, clsname.lower())
 
-  return """
+    return """
 class {0}List(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.{0}, '{1}_list')
@@ -226,8 +229,8 @@ class {0}(EditView):
 
 
 def routes(clsname):
-  if clsname in EXPENSE_TYPES:
-    return """
+    if clsname in EXPENSE_TYPES:
+        return """
 
     webapp2.Route(r'/{1}_by_program',
                   staff.{0}List,
@@ -243,7 +246,7 @@ def routes(clsname):
                   name='{0}'),
 
 """.format(clsname, clsname.lower())
-  return """
+    return """
     webapp2.Route(r'/{1}',
                   staff.{0}List,
                   name='{0}List'),

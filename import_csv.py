@@ -14,6 +14,7 @@ dev~rebuildingtogethercaptain> import_csv.import_captains(input_csv="../2012_ROO
 
 import csv
 import logging
+
 from room import models
 
 ##############
@@ -23,128 +24,132 @@ PROGRAM = '2017 NRD'
 
 
 def import_photos(input_csv="../2012_ROOMS_phote.csv"):
-  """Change input_csv to actual input file - the default is test data."""
-  reader = csv.DictReader(open(input_csv))
-  for s in reader:
-    number = s["Site ID"]
-    site = models.NewSite.all().filter('number =', number).get()
-    if not site:
-      continue
-    if s['Flickr Pages']:
-      site.photo_link = s['Flickr Pages']
-      site.put()
+    """Change input_csv to actual input file - the default is test data."""
+    reader = csv.DictReader(open(input_csv))
+    for s in reader:
+        number = s["Site ID"]
+        site = models.NewSite.all().filter('number =', number).get()
+        if not site:
+            continue
+        if s['Flickr Pages']:
+            site.photo_link = s['Flickr Pages']
+            site.put()
 
 
 def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
-  """Change input_csv to actual input file - the default is test data."""
-  reader = csv.DictReader(open(input_csv))
-  for s in reader:
-    number = s["Site ID"]
-    site = models.NewSite.all().filter('number =', number).get()
-    if site:
-      logging.info('site %s exists, skipping', number)
-      continue
-    else:
-      site = models.NewSite(number=number)
-    site.program = PROGRAM
-    site.budget = int(s["Budgeted Cost in Campaign"]
-                      ) if s["Budgeted Cost in Campaign"] else 0
+    """Change input_csv to actual input file - the default is test data."""
+    reader = csv.DictReader(open(input_csv))
+    for s in reader:
+        number = s["Site ID"]
+        site = models.NewSite.all().filter('number =', number).get()
+        if site:
+            logging.info('site %s exists, skipping', number)
+            continue
+        else:
+            site = models.NewSite(number=number)
+        site.program = PROGRAM
+        site.budget = int(s["Budgeted Cost in Campaign"]
+                          ) if s["Budgeted Cost in Campaign"] else 0
 
-    # Because Python 2.x csv module only reads ascii.
-    def clean_s(k):
-      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').replace('\xb1', '').encode('ascii', 'replace')
+        # Because Python 2.x csv module only reads ascii.
+        def clean_s(k):
+            return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
+                                                                                                                 '').replace(
+                '\x95', '').replace('\xb1', '').encode('ascii', 'replace')
 
-    site.name = clean_s("Repair Application: Applicant's Name")
-    site.street_number = clean_s("Street Address")
-    site.city_state_zip = "%s CA, %s" % (
-        clean_s("Repair Application: Recipient's City"),
-        clean_s("Repair Application: Recipient's Zip Code"))
-    site.applicant = clean_s("Repair Application: Applicant's Name")
-    site.applicant_home_phone = clean_s(
-        "Repair Application: Applicant Home Phone")
-    site.applicant_work_phone = clean_s(
-        "Repair Application: Applicant Work Phone")
-    site.applicant_mobile_phone = clean_s(
-        "Repair Application: Applicant Mobile Phone")
-    site.sponsor = clean_s("(Sponsor) Campaign Description")
-    site.rrp_test = clean_s("Repair Application: RRP Test Results")
-    site.rrp_level = clean_s("Repair Application: RRP Result Notes")
-    # site.roof = clean_s("Roof?")
-    site.jurisdiction = clean_s("Jurisdiction")
-    site.announcement_subject = clean_s("Announcement Subject")
-    site.announcement_body = clean_s("Announcement Body")
-    site.put()
-    logging.info('put site %s', number)
+        site.name = clean_s("Repair Application: Applicant's Name")
+        site.street_number = clean_s("Street Address")
+        site.city_state_zip = "%s CA, %s" % (
+            clean_s("Repair Application: Recipient's City"),
+            clean_s("Repair Application: Recipient's Zip Code"))
+        site.applicant = clean_s("Repair Application: Applicant's Name")
+        site.applicant_home_phone = clean_s(
+            "Repair Application: Applicant Home Phone")
+        site.applicant_work_phone = clean_s(
+            "Repair Application: Applicant Work Phone")
+        site.applicant_mobile_phone = clean_s(
+            "Repair Application: Applicant Mobile Phone")
+        site.sponsor = clean_s("(Sponsor) Campaign Description")
+        site.rrp_test = clean_s("Repair Application: RRP Test Results")
+        site.rrp_level = clean_s("Repair Application: RRP Result Notes")
+        # site.roof = clean_s("Roof?")
+        site.jurisdiction = clean_s("Jurisdiction")
+        site.announcement_subject = clean_s("Announcement Subject")
+        site.announcement_body = clean_s("Announcement Body")
+        site.put()
+        logging.info('put site %s', number)
 
 
 def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
-  """Change input_csv to actual input file - the default is test data."""
-  reader = csv.DictReader(open(input_csv))
-  for s in reader:
-    def clean_s(k):
-      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').encode('ascii', 'replace')
+    """Change input_csv to actual input file - the default is test data."""
+    reader = csv.DictReader(open(input_csv))
+    for s in reader:
+        def clean_s(k):
+            return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
+                                                                                                                 '').replace(
+                '\x95', '').encode('ascii', 'replace')
 
-    key = s.get('key')
-    email = clean_s("Email")
-    rooms_id = clean_s("ROOMS Captain ID")
-    # name = "%s %s" % (clean_s("First Name"),
-    #                   clean_s("Last Name"))
-    name = clean_s("Name")
-    captain = None
-    if key:
-      captain = models.Captain.get_by_id(int(key))
-      if captain:
-        logging.info('got captain from key %s', key)
-    if not captain:
-      captain = models.Captain.all().filter('rooms_id =', rooms_id).get()
-      if captain:
-        logging.info('got captain from rooms_id %s', rooms_id)
-    if not captain:
-      captain = models.Captain.all().filter('email =', email).get()
-      if captain:
-        logging.info('got captain from email %s', email)
-    if not captain:
-      logging.info('creating captain key %s name %s email %s rooms_id %s',
-                   key, name, email, rooms_id)
-      captain = models.Captain(name=name, email=email, rooms_id=rooms_id)
+        key = s.get('key')
+        email = clean_s("Email")
+        rooms_id = clean_s("ROOMS Captain ID")
+        # name = "%s %s" % (clean_s("First Name"),
+        #                   clean_s("Last Name"))
+        name = clean_s("Name")
+        captain = None
+        if key:
+            captain = models.Captain.get_by_id(int(key))
+            if captain:
+                logging.info('got captain from key %s', key)
+        if not captain:
+            captain = models.Captain.all().filter('rooms_id =', rooms_id).get()
+            if captain:
+                logging.info('got captain from rooms_id %s', rooms_id)
+        if not captain:
+            captain = models.Captain.all().filter('email =', email).get()
+            if captain:
+                logging.info('got captain from email %s', email)
+        if not captain:
+            logging.info('creating captain key %s name %s email %s rooms_id %s',
+                         key, name, email, rooms_id)
+            captain = models.Captain(name=name, email=email, rooms_id=rooms_id)
 
-    # Over-write these values, assume volunteer database is more up to
-    # date.
-    captain.name = name
-    captain.email = email
-    captain.rooms_id = rooms_id
-    # captain.phone1 = clean_s("Preferred Phone") or None
-    # captain.phone_mobile = clean_s("Phone mobile")
-    # captain.phone_work = clean_s("Phone work")
-    # captain.phone_home = clean_s("Phone home")
-    # captain.phone_fax = clean_s("Phones Fax::number")
-    # captain.phone_other = clean_s("Phones Other::number")
-    captain.put()
+        # Over-write these values, assume volunteer database is more up to
+        # date.
+        captain.name = name
+        captain.email = email
+        captain.rooms_id = rooms_id
+        # captain.phone1 = clean_s("Preferred Phone") or None
+        # captain.phone_mobile = clean_s("Phone mobile")
+        # captain.phone_work = clean_s("Phone work")
+        # captain.phone_home = clean_s("Phone home")
+        # captain.phone_fax = clean_s("Phones Fax::number")
+        # captain.phone_other = clean_s("Phones Other::number")
+        captain.put()
 
-    number = s["Site ID"]
-    site = models.NewSite.all().filter('number =', number).get()
-    if not site:
-      logging.error('site %s does not exist, skipping', number)
-      continue
+        number = s["Site ID"]
+        site = models.NewSite.all().filter('number =', number).get()
+        if not site:
+            logging.error('site %s does not exist, skipping', number)
+            continue
 
-    # In input type is like "Volunteer Captain" but in model it's
-    # "Volunteer"
-    input_type = s["Captain Type"]
-    for t in models.SiteCaptain.type.choices:
-      if t in input_type:
-        break
+        # In input type is like "Volunteer Captain" but in model it's
+        # "Volunteer"
+        input_type = s["Captain Type"]
+        for t in models.SiteCaptain.type.choices:
+            if t in input_type:
+                break
 
-    query = models.SiteCaptain.all()
-    query.filter('site =', site).filter('captain =', captain)
-    sitecaptain = query.get()
-    if sitecaptain is None:
-      logging.info('Creating new SiteCaptain mapping %s to %s',
-                   site.number, captain.name)
-      sitecaptain = models.SiteCaptain(site=site, captain=captain, type=t)
-    else:
-      logging.info('Found existing SiteCaptain')
-      sitecaptain.type = t
-    sitecaptain.put()
+        query = models.SiteCaptain.all()
+        query.filter('site =', site).filter('captain =', captain)
+        sitecaptain = query.get()
+        if sitecaptain is None:
+            logging.info('Creating new SiteCaptain mapping %s to %s',
+                         site.number, captain.name)
+            sitecaptain = models.SiteCaptain(site=site, captain=captain, type=t)
+        else:
+            logging.info('Found existing SiteCaptain')
+            sitecaptain.type = t
+        sitecaptain.put()
 
 
 ANNOUNCEMENT_BODY = """Please remember that your Home Depot card will be held until we receive your scope of work form.
@@ -182,7 +187,7 @@ ANNOUNCEMENT_SUBJECT = """Scope of work is due March 13; all forms due March 28.
 
 
 def set_announcement():
-  for s in models.NewSite.all().filter('program =', PROGRAM):
-    s.announcement_subject = ANNOUNCEMENT_SUBJECT
-    s.announcement_body = ANNOUNCEMENT_BODY
-    s.put()
+    for s in models.NewSite.all().filter('program =', PROGRAM):
+        s.announcement_subject = ANNOUNCEMENT_SUBJECT
+        s.announcement_body = ANNOUNCEMENT_BODY
+        s.put()

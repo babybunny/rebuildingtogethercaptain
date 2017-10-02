@@ -1,5 +1,5 @@
-from google.appengine.ext import testbed
 from google.appengine.ext import ndb
+from google.appengine.ext import testbed
 
 
 def activate_app_engine_testbed_and_clear_cache():

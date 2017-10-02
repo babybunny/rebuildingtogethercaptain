@@ -1,6 +1,8 @@
 import os
 import unittest
+
 import path_utils
+
 path_utils.fix_sys_path()
 
 THIS_FILES_PATH = os.path.realpath(__file__)

@@ -1,26 +1,21 @@
 """Functional tests for staff views."""
 
-import os
-
 import unittest
-import app_engine_test_utils
 
 from webtest import TestApp
+
+import app_engine_test_utils
 import main
 from room import staff
-from test import test_models
 from test import route_lister
-
+from test import test_models
 
 APP = TestApp(main.app)
 
 
-
 class LoggedInTest(unittest.TestCase):
-
     def setUp(self):
         app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
 
     def testStaffHome(self):
         response = APP.get('/room/staff_home')
@@ -28,25 +23,24 @@ class LoggedInTest(unittest.TestCase):
         # TODO: this could be more robust.  no guarantee that it's localhost?
         self.assertEquals('http://localhost/', response.headers['Location'])
 
-        
-class StatefulTestNoProgram(unittest.TestCase):
 
+class StatefulTestNoProgram(unittest.TestCase):
     def setUp(self):
         app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
         self.keys = test_models.CreateAll()
-                
+
     def tearDown(self):
         test_models.DeleteAll(self.keys)
-        
+
     def testHomeXHeaderStaff(self):
-        response = APP.get('/room/staff_home', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff2@gmail.com'})
+        response = APP.get('/room/staff_home',
+                           headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff2@gmail.com'})
         self.assertEquals('302 Moved Temporarily', response.status)
         self.assertEquals('http://localhost/room/select_program', response.headers['Location'])
-        
+
 
 class StatefulTestCaptain(unittest.TestCase):
-
     def setUp(self):
         app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
@@ -57,17 +51,16 @@ class StatefulTestCaptain(unittest.TestCase):
 
     def tearDown(self):
         test_models.DeleteAll(self.keys)
-        
+
     def _get(self, path):
         return APP.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.capn@gmail.com'})
 
     def testCaptainHome(self):
         response = self._get('/room/captain_home')
         self.assertIn('Ahoy Captain!', response.body)
-        
-    
-class StatefulTestStaffWithProgram(unittest.TestCase):
 
+
+class StatefulTestStaffWithProgram(unittest.TestCase):
     def setUp(self):
         app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
@@ -77,7 +70,7 @@ class StatefulTestStaffWithProgram(unittest.TestCase):
         s.put()
 
     def tearDown(self):
-        test_models.DeleteAll(self.keys)    
+        test_models.DeleteAll(self.keys)
 
     def _get(self, path):
         return APP.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
@@ -86,7 +79,7 @@ class StatefulTestStaffWithProgram(unittest.TestCase):
         return APP.post(path,
                         headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'},
                         params={'submit': staff.EXPORT_CSV})
-        
+
 
 class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
     """Automatically test all routes to ensure they don't crash."""
@@ -128,6 +121,7 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
 
 class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     """Test specific routes with a certain degree of intelligence."""
+
     def testStaffHome(self):
         response = self._get('/room/staff_home')
         self.assertEquals('200 OK', response.status)
@@ -146,7 +140,7 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
         self.assertEquals('200 OK', response.status)
         self.assertIn('2011 Test', str(response))
         self.assertIn('Miss Captain', str(response))
-        
+
     def testSiteView(self):
         response = self._get('/room/site/view/{:d}/'.format(self.keys['SITE'].integer_id()))
         self.assertEquals('200 OK', response.status)

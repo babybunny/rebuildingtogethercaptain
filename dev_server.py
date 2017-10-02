@@ -1,8 +1,8 @@
+import subprocess
 import sys
 import time
-import subprocess
-import dev_utilities
 
+import dev_utilities
 
 command = ['dev_appserver.py',
            '--clear_datastore=yes',

@@ -7,6 +7,7 @@ endpoints.
 import collections
 import logging
 import math
+
 from google.appengine.ext import ndb
 
 # TODO: move to global config
@@ -38,7 +39,7 @@ class _ActiveItems(object):
                                      kind_cls.state != 'new',
                                      kind_cls.state != 'deleted',
                                      kind_cls.state != 'Deleted'
-        )
+                                     )
 
     def Count(self):
         return self._query.count()
@@ -281,7 +282,7 @@ class NewSite(ndb.Model):
     announcement_subject = ndb.StringProperty(default='Nothing Needs Attention')
     announcement_body = ndb.TextProperty(
         default="Pat yourself on the back - no items need attention.\n"
-        "You have a clean bill of health.")
+                "You have a clean bill of health.")
     search_prefixes = ndb.StringProperty(repeated=True)
     photo_link = ndb.StringProperty()
     volunteer_signup_link = ndb.StringProperty()

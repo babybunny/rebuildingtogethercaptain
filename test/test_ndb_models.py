@@ -1,12 +1,11 @@
 """Unit tests for ndb_models."""
 import unittest
 
-import test_models
 import app_engine_test_utils
+import test_models
 
 
 class ModelsTest(unittest.TestCase):
-
     def setUp(self):
         app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
@@ -14,7 +13,7 @@ class ModelsTest(unittest.TestCase):
 
     def tearDown(self):
         test_models.DeleteAll(self.keys)
-        
+
     def testOrder(self):
         o = self.keys['ORDER'].get()
         self.assertTrue(o)
@@ -28,7 +27,7 @@ class ModelsTest(unittest.TestCase):
     def testOrderUnicode(self):
         o = self.keys['ORDER'].get()
         self.assertEquals(u'110TEST Fixme Center Some Supplies 3 items $10.92', unicode(o))
-    
+
     def testOrder2Unicode(self):
         o = self.keys['ORDER2'].get()
         self.assertEquals(u'110TEST Fixme Center Some Supplies 0 items $9.10', unicode(o))
