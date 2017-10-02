@@ -34,7 +34,7 @@ def _OrderListInternal(order_sheet_id, program=None):
   return {'orders': orders,
           'order_sheet': order_sheet,
           'export_checkbox_prefix':
-          views.POSTED_ID_PREFIX,
+            views.POSTED_ID_PREFIX,
           'mass_action': mass_action,
           'num_being_filled': len([o for o in orders
                                    if o.state == 'Being Filled'])
@@ -50,7 +50,7 @@ def OrderReconcile(request, order_sheet_id=None):
 
 def _OrderReconcileInternal(order_sheet_id, program=None):
   query = models.Order.all().filter(
-      'state IN ', ['Being Filled', 'Reconciled'])
+    'state IN ', ['Being Filled', 'Reconciled'])
   order_sheet = models.OrderSheet.get_by_id(int(order_sheet_id))
   if order_sheet is not None:
     query.filter('order_sheet = ', order_sheet)
@@ -97,6 +97,7 @@ def ReconciliationNotes(request, order_id):
 
 def InvoiceDate(request, order_id):
   """Updates an order's invoice_date field.  value like 03/20/2012"""
+
   def _ParseDatePickerFormat(v):
     return datetime.datetime.strptime(v, '%m/%d/%Y')
 
@@ -116,6 +117,7 @@ def State(request, order_id):
 
 def Vendor(request, order_id):
   """Updates an order's state field."""
+
   def _GetSupplier(supplier_id):
     return models.Supplier.get_by_id(int(supplier_id))
 
@@ -139,6 +141,7 @@ def OrderDeleteConfirm(request, order_sheet_id=None):
   order_ids = views.PostedIds(request.POST)
   return _OrderConfirmInternal(order_ids, order_sheet_id,
                                state='Deleted')
+
 
 # TODO: combine two methods below once tests are OK.
 
@@ -166,26 +169,27 @@ def _OrderConfirmInternal(order_ids, order_sheet_id, state):
     next_object = models.OrderSheet.get_by_id(next_id)
     if next_object is not None:
       return http.HttpResponseRedirect(urlresolvers.reverse(
-          OrderList, args=[next_id]))
+        OrderList, args=[next_id]))
 
     next_object = models.NewSite.get_by_id(next_id)
     if next_object is not None:
       return http.HttpResponseRedirect(urlresolvers.reverse(
-          views.SiteView, args=[next_id]))
+        views.SiteView, args=[next_id]))
+
 
 FULFULL_OR_DELETE_OPTIONS = {
-    'fulfill': {
-        'action_verb': 'Fulfill',
-        'confirm_method': OrderFulfillConfirm,
-        'submit_value': 'Click here to print and confirm fulfillment has started',
-        'should_print': True,
-    },
-    'delete':  {
-        'action_verb': 'Delete',
-        'confirm_method': OrderDeleteConfirm,
-        'submit_value': 'Click here to confirm deletion',
-        'should_print': False,
-    },
+  'fulfill': {
+    'action_verb': 'Fulfill',
+    'confirm_method': OrderFulfillConfirm,
+    'submit_value': 'Click here to print and confirm fulfillment has started',
+    'should_print': True,
+  },
+  'delete': {
+    'action_verb': 'Delete',
+    'confirm_method': OrderDeleteConfirm,
+    'submit_value': 'Click here to confirm deletion',
+    'should_print': False,
+  },
 }
 
 
@@ -234,7 +238,7 @@ def _OrderFulfillInternal(order_ids, order_sheet_id, mode):
           'show_logistics_details': True,
           'num_orders': len(orders),
           'export_checkbox_prefix':
-          views.POSTED_ID_PREFIX,
+            views.POSTED_ID_PREFIX,
           }
 
 
@@ -244,7 +248,7 @@ def OrderExport(request):
   if request.POST['submit'] == views.EXPORT_CSV:
     response = http.HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = (
-        'attachment; filename=%s_orders.csv' % user.email())
+      'attachment; filename=%s_orders.csv' % user.email())
     _OrderExportInternal(response, request.POST)
     return response
   elif request.POST['submit'] == FULFILL_MULTIPLE:
@@ -335,7 +339,7 @@ def _OrderExportInternal(writable, post_vars):
 
 def _SortOrderItemsWithSections(order_items):
   order_items.sort(
-      key=lambda x: (x.item.order_form_section or None, x.item.name))
+    key=lambda x: (x.item.order_form_section or None, x.item.name))
   prev_section = None
   for o in order_items:
     new_section = o.item.order_form_section or None
@@ -361,14 +365,14 @@ def _OrderPut(request, user, order):
     form_cls = forms.OrderForm
 
   form = form_cls(
-      data=request.POST or None,
-      files=request.FILES or None,
-      instance=order)
+    data=request.POST or None,
+    files=request.FILES or None,
+    instance=order)
 
   # A little sketchy, but the best way to adjust HTML attributes of a field.
   form['notes'].field.widget.attrs['cols'] = 120
   form['notes'].field.widget.attrs['rows'] = max(
-      5, len(form.instance.VisibleNotes().splitlines()))
+    5, len(form.instance.VisibleNotes().splitlines()))
   created_by_user = common.GetUser(request,
                                    order.last_editor)[0],
   template_dict = {'form': form,
@@ -422,10 +426,10 @@ def _OrderPut(request, user, order):
 
   if order.order_sheet.HasLogistics():
     return http.HttpResponseRedirect(
-        urlresolvers.reverse(OrderLogistics, args=[str(order.key().id())])), None
+      urlresolvers.reverse(OrderLogistics, args=[str(order.key().id())])), None
   else:
     return http.HttpResponseRedirect(urlresolvers.reverse(
-        views.SiteView, args=[str(order.site.key().id())])), None
+      views.SiteView, args=[str(order.site.key().id())])), None
 
 
 def OrderLogistics(request, order_id):
@@ -466,37 +470,37 @@ def OrderLogistics(request, order_id):
 
   form_objects = {}
   form_objects['delivery'] = forms.DeliveryForm(
-      data=request.POST or None,
-      files=request.FILES or None,
-      instance=delivery)
+    data=request.POST or None,
+    files=request.FILES or None,
+    instance=delivery)
   form_objects['pickup'] = forms.PickupForm(
-      data=request.POST or None,
-      files=request.FILES or None,
-      instance=pickup)
+    data=request.POST or None,
+    files=request.FILES or None,
+    instance=pickup)
   form_objects['retrieval'] = forms.RetrievalForm(
-      data=request.POST or None,
-      files=request.FILES or None,
-      instance=retrieval)
+    data=request.POST or None,
+    files=request.FILES or None,
+    instance=retrieval)
 
   existing_dates = []
   for d in order.site.delivery_set:
     for o in d.orderdelivery_set:
       existing_dates.append(
-          (d.delivery_date, 'Delivery', o.order.order_sheet.name,
-           o.order.key().id()))
+        (d.delivery_date, 'Delivery', o.order.order_sheet.name,
+         o.order.key().id()))
   for d in order.site.pickup_set:
     for o in d.orderpickup_set:
       existing_dates.append(
-          (d.pickup_date, 'Pick-up', o.order.order_sheet.name,
-           o.order.key().id()))
+        (d.pickup_date, 'Pick-up', o.order.order_sheet.name,
+         o.order.key().id()))
   for d in order.site.retrieval_set:
     for o in d.orderretrieval_set:
       existing_dates.append(
-          (d.dropoff_date, 'Drop-off', o.order.order_sheet.name,
-           o.order.key().id()))
+        (d.dropoff_date, 'Drop-off', o.order.order_sheet.name,
+         o.order.key().id()))
       existing_dates.append(
-          (d.retrieval_date, 'Retrieval', o.order.order_sheet.name,
-           o.order.key().id()))
+        (d.retrieval_date, 'Retrieval', o.order.order_sheet.name,
+         o.order.key().id()))
 
   existing_dates.sort()
 
@@ -580,10 +584,10 @@ def OrderLogistics(request, order_id):
 
   if request.POST.get('submit', '').endswith('(STAFF ONLY)'):
     return http.HttpResponseRedirect(urlresolvers.reverse(
-        OrderFulfill, args=[str(order.key().id())]))
+      OrderFulfill, args=[str(order.key().id())]))
 
   return http.HttpResponseRedirect(urlresolvers.reverse(
-      views.SiteView, args=[str(order.site.key().id())]))
+    views.SiteView, args=[str(order.site.key().id())]))
 
 
 def OrderEdit(request, order_id):
@@ -623,7 +627,7 @@ def OrderNew(request, site_id=None, order_sheet_code=None):
     return http.HttpResponseRedirect(users.CreateLoginURL(request.path))
   site = models.NewSite.get_by_id(int(site_id))
   order_sheet = models.OrderSheet.all().filter(
-      'code = ', order_sheet_code).get()
+    'code = ', order_sheet_code).get()
   # TODO: error if order_sheet is None
   order = models.Order(site=site, order_sheet=order_sheet, state='new')
   order.put()

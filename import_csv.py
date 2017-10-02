@@ -14,6 +14,7 @@ dev~rebuildingtogethercaptain> import_csv.import_captains(input_csv="../2012_ROO
 
 import csv
 import logging
+
 from room import models
 
 ##############
@@ -52,20 +53,22 @@ def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
 
     # Because Python 2.x csv module only reads ascii.
     def clean_s(k):
-      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').replace('\xb1', '').encode('ascii', 'replace')
+      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
+                                                                                                           '').replace(
+        '\x95', '').replace('\xb1', '').encode('ascii', 'replace')
 
     site.name = clean_s("Repair Application: Applicant's Name")
     site.street_number = clean_s("Street Address")
     site.city_state_zip = "%s CA, %s" % (
-        clean_s("Repair Application: Recipient's City"),
-        clean_s("Repair Application: Recipient's Zip Code"))
+      clean_s("Repair Application: Recipient's City"),
+      clean_s("Repair Application: Recipient's Zip Code"))
     site.applicant = clean_s("Repair Application: Applicant's Name")
     site.applicant_home_phone = clean_s(
-        "Repair Application: Applicant Home Phone")
+      "Repair Application: Applicant Home Phone")
     site.applicant_work_phone = clean_s(
-        "Repair Application: Applicant Work Phone")
+      "Repair Application: Applicant Work Phone")
     site.applicant_mobile_phone = clean_s(
-        "Repair Application: Applicant Mobile Phone")
+      "Repair Application: Applicant Mobile Phone")
     site.sponsor = clean_s("(Sponsor) Campaign Description")
     site.rrp_test = clean_s("Repair Application: RRP Test Results")
     site.rrp_level = clean_s("Repair Application: RRP Result Notes")
@@ -82,7 +85,9 @@ def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
   reader = csv.DictReader(open(input_csv))
   for s in reader:
     def clean_s(k):
-      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3', '').replace('\x95', '').encode('ascii', 'replace')
+      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
+                                                                                                           '').replace(
+        '\x95', '').encode('ascii', 'replace')
 
     key = s.get('key')
     email = clean_s("Email")

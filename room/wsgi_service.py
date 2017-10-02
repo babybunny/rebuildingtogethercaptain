@@ -1,51 +1,53 @@
-
 import datetime
 import logging
-import os
-import six
 
-from protorpc import messages
+import six
+from google.appengine.ext import ndb
 from protorpc import message_types
+from protorpc import messages
 from protorpc import remote
 from protorpc.wsgi import service
-
-from google.appengine.api import users
-from google.appengine.ext import ndb
 
 import common
 import ndb_models
 
-
 package = 'rooms'
+
 
 class GenericResponse(messages.Message):
   message = messages.StringField(1)
-  
+
+
 class SimpleId(messages.Message):
   id = messages.IntegerField(1, required=True)
+
 
 class Choice(messages.Message):
   id = messages.IntegerField(1, required=True)
   label = messages.StringField(2)
 
+
 class Choices(messages.Message):
   choice = messages.MessageField(Choice, 1, repeated=True)
+
 
 class StaffPosition(messages.Message):
   key = messages.IntegerField(1)
   position_name = messages.StringField(2)
   hourly_rate = messages.FloatField(3)
-  
+
+
 class Program(messages.Message):
   year = messages.IntegerField(1)
   name = messages.StringField(2)
   site_number_prefix = messages.StringField(3)
   status = messages.StringField(4)
 
+
 class Programs(messages.Message):
   program = messages.MessageField(Program, 1, repeated=True)
 
-  
+
 ################
 # Jurisdiction #
 ################
@@ -57,13 +59,16 @@ def _JurisdictionModelToMessage(mdl):
   )
   return s
 
+
 def _JurisdictionMessageToModel(msg, mdl):
   mdl.name = msg.name
   return mdl
 
+
 class Jurisdiction(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
+
 
 #########
 # Staff #
@@ -83,6 +88,7 @@ def _StaffModelToMessage(mdl):
     s.last_welcome = mdl.last_welcome.isoformat()  # datetime, for display only
   return s
 
+
 def _StaffMessageToModel(msg, mdl):
   mdl.name = msg.name
   if msg.email:
@@ -92,6 +98,7 @@ def _StaffMessageToModel(msg, mdl):
   # can't set "since" or "last_welcome", they are automatic
   return mdl
 
+
 class Staff(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
@@ -100,6 +107,7 @@ class Staff(messages.Message):
   program_selected = messages.StringField(5)
   notes = messages.StringField(6)
   since = messages.StringField(7)
+
 
 ###########
 # Captain #
@@ -126,6 +134,7 @@ def _CaptainModelToMessage(mdl):
     s.modified = mdl.modified.isoformat()  # datetime, for display only
   return s
 
+
 def _CaptainMessageToModel(msg, mdl):
   mdl.name = msg.name
   if msg.email:
@@ -141,6 +150,7 @@ def _CaptainMessageToModel(msg, mdl):
   # can't set automatic fields
   # last_welcome modified last_editor
   return mdl
+
 
 class Captain(messages.Message):
   id = messages.IntegerField(1)
@@ -159,6 +169,7 @@ class Captain(messages.Message):
   last_editor = messages.StringField(14)
   # search_prefixes is internal only
 
+
 ############
 # Supplier #
 ############
@@ -172,12 +183,13 @@ def _SupplierModelToMessage(mdl):
     phone1=mdl.phone1,
     phone2=mdl.phone2,
     notes=mdl.notes,
-    active=mdl.active,            
+    active=mdl.active,
     visibility=mdl.visibility,
   )
   if mdl.since:
     s.since = mdl.since.isoformat()  # datetime, for display only
   return s
+
 
 def _SupplierMessageToModel(msg, mdl):
   mdl.name = msg.name
@@ -191,6 +203,7 @@ def _SupplierMessageToModel(msg, mdl):
   mdl.visibility = msg.visibility
   # can't set "since", it's automatic
   return mdl
+
 
 class Supplier(messages.Message):
   name = messages.StringField(1)
@@ -242,6 +255,7 @@ def _NewSiteModelToMessage(mdl):
 
   return s
 
+
 def _NewSiteMessageToModel(msg, mdl):
   mdl.rating = msg.rating
   mdl.applicant = msg.applicant
@@ -272,6 +286,7 @@ def _NewSiteMessageToModel(msg, mdl):
 
   return mdl
 
+
 class NewSite(messages.Message):
   id = messages.IntegerField(1)
   rating = messages.StringField(2)
@@ -300,7 +315,6 @@ class NewSite(messages.Message):
   applicant_email = messages.StringField(25)
 
 
-
 ############
 # Site #
 ############
@@ -313,18 +327,22 @@ def _SiteModelToMessage(mdl):
   # Any special handling, like for user objects or datetimes
   return s
 
+
 def _SiteMessageToModel(msg, mdl):
   mdl.number = msg.number
   # can't set automatic fields:
   # TODO
   return mdl
 
+
 class Site(messages.Message):
   id = messages.IntegerField(1)
-  number = messages.StringField(2) 
+  number = messages.StringField(2)
 
 
 ############
+
+
 # OrderSheet #
 ############
 
@@ -345,6 +363,7 @@ def _OrderSheetModelToMessage(mdl):
     s.default_supplier = mdl.default_supplier.integer_id()
   return s
 
+
 def _OrderSheetMessageToModel(msg, mdl):
   mdl.code = msg.code
   mdl.name = msg.name
@@ -360,6 +379,7 @@ def _OrderSheetMessageToModel(msg, mdl):
     mdl.supplier = ndb.Key(ndb_models.Supplier, msg.default_supplier)
   return mdl
 
+
 class OrderSheet(messages.Message):
   id = messages.IntegerField(1)
   code = messages.StringField(2)
@@ -371,7 +391,7 @@ class OrderSheet(messages.Message):
   delivery_options = messages.StringField(8)
   retrieval_options = messages.StringField(9)
   pickup_options = messages.StringField(10)
-  
+
 
 ############
 # StaffTime #
@@ -392,10 +412,11 @@ def _StaffTimeModelToMessage(mdl):
   if mdl.captain:
     s.captain = mdl.captain.integer_id()
   if mdl.activity_date:
-    s.activity_date=mdl.activity_date.isoformat()
+    s.activity_date = mdl.activity_date.isoformat()
   else:
     s.activity_date = ''
   return s
+
 
 def _StaffTimeMessageToModel(msg, mdl):
   mdl.program = msg.program
@@ -415,6 +436,7 @@ def _StaffTimeMessageToModel(msg, mdl):
   except Exception, e:
     raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.activity_date))
   return mdl
+
 
 class StaffTime(messages.Message):
   id = messages.IntegerField(1)
@@ -449,12 +471,13 @@ def _CheckRequestModelToMessage(mdl):
   )
   # any special handling, like for user objects or datetimes
   if mdl.payment_date:
-    s.payment_date=mdl.payment_date.isoformat()
+    s.payment_date = mdl.payment_date.isoformat()
   else:
     s.payment_date = ''
   if mdl.captain:
     s.captain = mdl.captain.integer_id()
   return s
+
 
 def _CheckRequestMessageToModel(msg, mdl):
   mdl.description = msg.description
@@ -477,8 +500,9 @@ def _CheckRequestMessageToModel(msg, mdl):
     mdl.payment_date = datetime.date(*map(int, msg.payment_date.split('-')))
   except Exception, e:
     raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.payment_date))
-    
+
   return mdl
+
 
 class CheckRequest(messages.Message):
   id = messages.IntegerField(1)
@@ -495,7 +519,6 @@ class CheckRequest(messages.Message):
   state = messages.StringField(12)
   form_of_business = messages.StringField(14)
 
-      
 
 ############
 # VendorReceipt #
@@ -512,7 +535,7 @@ def _VendorReceiptModelToMessage(mdl):
   )
   # any special handling, like for user objects or datetimes
   if mdl.purchase_date:
-    s.purchase_date=mdl.purchase_date.isoformat()
+    s.purchase_date = mdl.purchase_date.isoformat()
   else:
     s.purchase_date = ''
   if mdl.captain:
@@ -521,6 +544,7 @@ def _VendorReceiptModelToMessage(mdl):
     s.supplier = mdl.supplier.integer_id()
 
   return s
+
 
 def _VendorReceiptMessageToModel(msg, mdl):
   mdl.vendor = msg.vendor
@@ -541,6 +565,7 @@ def _VendorReceiptMessageToModel(msg, mdl):
   except Exception, e:
     raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.purchase_date))
   return mdl
+
 
 class VendorReceipt(messages.Message):
   id = messages.IntegerField(1)
@@ -574,12 +599,13 @@ def _InKindDonationModelToMessage(mdl):
   )
   # any special handling, like for user objects or datetimes
   if mdl.donation_date:
-    s.donation_date=mdl.donation_date.isoformat()
+    s.donation_date = mdl.donation_date.isoformat()
   else:
     s.donation_date = ''
   if mdl.captain:
     s.captain = mdl.captain.integer_id()
   return s
+
 
 def _InKindDonationMessageToModel(msg, mdl):
   mdl.labor_amount = msg.labor_amount
@@ -603,6 +629,7 @@ def _InKindDonationMessageToModel(msg, mdl):
     raise remote.ApplicationError('failed to parse date as yyyy-mm-dd: {}'.format(msg.donation_date))
   return mdl
 
+
 class InKindDonation(messages.Message):
   id = messages.IntegerField(1)
   labor_amount = messages.FloatField(2)
@@ -616,7 +643,7 @@ class InKindDonation(messages.Message):
   state = messages.StringField(10)
   budget = messages.StringField(12)
   donor = messages.StringField(13)
-    
+
 
 ############
 # Item #
@@ -643,7 +670,8 @@ def _ItemModelToMessage(mdl):
   s.visible_name = mdl.VisibleName()
   s.visible_section = mdl.VisibleOrderFormSection()
   return s
-  
+
+
 def _ItemMessageToModel(msg, mdl):
   mdl.description = msg.description
   mdl.bar_code_number = msg.bar_code_number
@@ -661,6 +689,7 @@ def _ItemMessageToModel(msg, mdl):
     mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
   return mdl
 
+
 class Item(messages.Message):
   id = messages.IntegerField(1)
   description = messages.StringField(2)
@@ -676,7 +705,6 @@ class Item(messages.Message):
   supplier = messages.IntegerField(12)
   visible_name = messages.StringField(13)
   visible_section = messages.StringField(14)
-
 
 
 ############
@@ -700,11 +728,12 @@ def _OrderModelToMessage(mdl):
   if mdl.vendor:
     s.vendor = mdl.vendor.integer_id()
   if mdl.invoice_date:
-    s.invoice_date=mdl.invoice_date.isoformat()
+    s.invoice_date = mdl.invoice_date.isoformat()
   else:
     s.invoice_date = ''
 
   return s
+
 
 def _OrderMessageToModel(msg, mdl):
   mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
@@ -718,7 +747,7 @@ def _OrderMessageToModel(msg, mdl):
 
   if msg.state:
     mdl.state = msg.state
-    
+
   if msg.vendor:
     mdl.vendor = ndb.Key(ndb_models.Supplier, msg.vendor)
 
@@ -729,6 +758,7 @@ def _OrderMessageToModel(msg, mdl):
       raise remote.ApplicationError('failed to parse invoice_date as yyyy-mm-dd: {} {}'.format(msg.invoice_date, e))
 
   return mdl
+
 
 class Order(messages.Message):
   id = messages.IntegerField(1)
@@ -762,9 +792,10 @@ def _OrderItemModelToMessage(mdl):
   )
   # any special handling, like for user objects or datetimes
   if mdl.supplier:
-    supplier=mdl.supplier.integer_id(),
+    supplier = mdl.supplier.integer_id(),
 
   return s
+
 
 def _OrderItemMessageToModel(msg, mdl):
   mdl.name = msg.name
@@ -776,6 +807,7 @@ def _OrderItemMessageToModel(msg, mdl):
     mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
   return mdl
 
+
 class OrderItem(messages.Message):
   id = messages.IntegerField(1)
   item = messages.IntegerField(2)
@@ -784,7 +816,7 @@ class OrderItem(messages.Message):
   quantity = messages.FloatField(5)
   name = messages.StringField(6)
 
-  
+
 ############
 # Delivery #
 ############
@@ -799,12 +831,14 @@ def _DeliveryModelToMessage(mdl):
   )
   return s
 
+
 def _DeliveryMessageToModel(msg, mdl):
   mdl.delivery_date = msg.delivery_date  # is a string in the datastore!
   mdl.notes = msg.notes
   mdl.contact = msg.contact
   mdl.contact_phone = msg.contact_phone
   return mdl
+
 
 class Delivery(messages.Message):
   id = messages.IntegerField(1)
@@ -814,7 +848,7 @@ class Delivery(messages.Message):
   contact_phone = messages.StringField(4)
   notes = messages.StringField(5)
 
-        
+
 ############
 # Pickup #
 ############
@@ -830,6 +864,7 @@ def _PickupModelToMessage(mdl):
   )
   return s
 
+
 def _PickupMessageToModel(msg, mdl):
   mdl.pickup_date = msg.pickup_date  # is a string in the datastore!
   mdl.return_date = msg.return_date  # is a string in the datastore!
@@ -837,6 +872,7 @@ def _PickupMessageToModel(msg, mdl):
   mdl.contact = msg.contact
   mdl.contact_phone = msg.contact_phone
   return mdl
+
 
 class Pickup(messages.Message):
   id = messages.IntegerField(1)
@@ -847,7 +883,7 @@ class Pickup(messages.Message):
   contact_phone = messages.StringField(5)
   notes = messages.StringField(6)
 
-        
+
 ############
 # Retrieval #
 ############
@@ -863,6 +899,7 @@ def _RetrievalModelToMessage(mdl):
   )
   return s
 
+
 def _RetrievalMessageToModel(msg, mdl):
   mdl.retrieval_date = msg.retrieval_date  # is a string in the datastore!
   mdl.dropoff_date = msg.dropoff_date  # is a string in the datastore!
@@ -870,6 +907,7 @@ def _RetrievalMessageToModel(msg, mdl):
   mdl.contact = msg.contact
   mdl.contact_phone = msg.contact_phone
   return mdl
+
 
 class Retrieval(messages.Message):
   id = messages.IntegerField(1)
@@ -889,14 +927,17 @@ class OrderFormChoice(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
   code = messages.StringField(3)
-  visibility= messages.StringField(4)
-  
+  visibility = messages.StringField(4)
+
+
 class OrderFormChoices(messages.Message):
   order_form = messages.MessageField(OrderFormChoice, 1, repeated=True)
+
 
 class OrderFormDetail(messages.Message):
   order_sheet = messages.MessageField(OrderSheet, 1)
   sorted_items = messages.MessageField(Item, 2, repeated=True)
+
 
 class OrderFull(messages.Message):
   order = messages.MessageField(Order, 1, required=True)
@@ -905,6 +946,7 @@ class OrderFull(messages.Message):
   pickup = messages.MessageField(Pickup, 4)
   retrieval = messages.MessageField(Retrieval, 5)
   id = messages.IntegerField(6)
+
 
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
@@ -961,10 +1003,10 @@ basic_crud_config = (
   (Order, ndb_models.Order,
    _OrderMessageToModel, _OrderModelToMessage),
 
-
   #  (Example, ndb_models.Example,
   # _ExampleMessageToModel, _ExampleModelToMessage),
-  )
+)
+
 
 class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metaclass so we have to as well.
   """Metaclass for adding CRUD methods to a service, based on a config."""
@@ -993,6 +1035,7 @@ class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metac
       Returns:
         three CRU functions, each usable as a Protorpc remote method
       """
+
       def mdl_read(self, request):
         self._authorize_staff()
         if not request.id:
@@ -1054,11 +1097,11 @@ class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metac
 
 class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   """Protorpc service implementing a CRUD API for ROOM models"""
-  
+
   # Stash the request state so we can get at the HTTP headers later.
   def initialize_request_state(self, request_state):
     self.rs = request_state
-    
+
   def _authorize_staff(self):
     """Simply call this to ensure that the user has a Staff record.
 
@@ -1077,7 +1120,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       remote.ApplicationError if the user is not Staff or Captain.
     """
     user, status = common.GetUser(self.rs)
-    if user and ( user.staff or user.captain ):
+    if user and (user.staff or user.captain):
       return
     raise remote.ApplicationError('Must be a ROOMS user to use this API.')
 
@@ -1086,7 +1129,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
   def ehlo(self, request):
     logging.info('ehlo')
     return message_types.VoidMessage()
-  
+
   # This needs an update for the new encoding for StaffPosition rates.  Per issue 238.
   # If it's used at all...
   @remote.method(StaffPosition,
@@ -1101,7 +1144,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     return GenericResponse()
 
   @remote.method(Program,
-                 GenericResponse)  
+                 GenericResponse)
   def program_put(self, request):
     self._authorize_staff()
     resp = GenericResponse()
@@ -1118,15 +1161,15 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     return resp
 
   @remote.method(message_types.VoidMessage,
-                 Programs)  
+                 Programs)
   def program_list(self, request):
     programs = Programs()
     for p in ndb_models.Program.query():
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
-  
+
   @remote.method(message_types.VoidMessage,
-                 OrderFormChoices)  
+                 OrderFormChoices)
   def order_form_choices(self, request):
     res = OrderFormChoices()
     for m in ndb_models.OrderSheet.query():
@@ -1153,7 +1196,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       i = _ItemModelToMessage(im)
       res.sorted_items.append(i)
     return res
-  
+
   @remote.method(SimpleId, OrderFull)
   def order_full_read(self, request):
     self._authorize_staff()
@@ -1168,7 +1211,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
 
     for oi_mdl in ndb_models.OrderItem.query(ndb_models.OrderItem.order == order_key):
       res.order_items.append(_OrderItemModelToMessage(oi_mdl))
-    
+
     join_mdl = ndb_models.OrderDelivery.query(ndb_models.OrderDelivery.order == order_key).get()
     if join_mdl is not None:
       res.delivery = _DeliveryModelToMessage(join_mdl.delivery.get())
@@ -1182,7 +1225,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       res.retrieval = _RetrievalModelToMessage(join_mdl.retrieval.get())
 
     return res
-    
+
   def _order_full_put(self, request):
     # TODO ndb.start_transaction ...
     order = _OrderMessageToModel(request.order, ndb_models.Order())
@@ -1217,7 +1260,6 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       oimsg.order = order.key.integer_id()
       _OrderItemMessageToModel(oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
 
-
   @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_create(self, request):
     self._authorize_staff()
@@ -1225,9 +1267,9 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
       raise remote.ApplicationError('must not have id in create')
     self._order_full_put(request)
     return message_types.VoidMessage()
-    
+
   @remote.method(OrderFull, message_types.VoidMessage)
-  def order_full_update(self, request):  
+  def order_full_update(self, request):
     self._authorize_staff()
     if not request.id:
       raise remote.ApplicationError('id is required')
@@ -1237,16 +1279,15 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
         'No {} found with key {}'.format(Order, request.id))
     self._order_full_put(request)
     return message_types.VoidMessage()
-    
 
-# # # # # # # # # #
-#     Choices     #
-# # # # # # # # # #
-# These APIs exist to populate drop-down selections in UI.
-# Used for models that have foreign keys.
+  # # # # # # # # # #
+  #     Choices     #
+  # # # # # # # # # #
+  # These APIs exist to populate drop-down selections in UI.
+  # Used for models that have foreign keys.
 
   @remote.method(message_types.VoidMessage,
-                 Choices)  
+                 Choices)
   def captain_choices_read(self, request):
     choices = Choices()
     for mdl in ndb_models.Captain.query().order(ndb_models.Supplier.name):
@@ -1254,15 +1295,15 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     return choices
 
   @remote.method(message_types.VoidMessage,
-                 Choices)  
+                 Choices)
   def supplier_choices_read(self, request):
     choices = Choices()
     for mdl in ndb_models.Supplier.query(ndb_models.Supplier.active == 'Active').order(ndb_models.Supplier.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
-  
+
   @remote.method(message_types.VoidMessage,
-                 Choices)  
+                 Choices)
   def staffposition_choices_read(self, request):
     choices = Choices()
     for mdl in ndb_models.StaffPosition.query().order(ndb_models.StaffPosition.position_name):
@@ -1270,7 +1311,7 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     return choices
 
   @remote.method(message_types.VoidMessage,
-                 Choices)  
+                 Choices)
   def jurisdiction_choices_read(self, request):
     choices = Choices()
     for mdl in ndb_models.Jurisdiction.query().order(ndb_models.Jurisdiction.name):
@@ -1278,12 +1319,12 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     return choices
 
   @remote.method(message_types.VoidMessage,
-                 Choices)  
+                 Choices)
   def ordersheet_choices_read(self, request):
     choices = Choices()
     for mdl in ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
-application = service.service_mapping(RoomApi, r'/wsgi_service')
 
+application = service.service_mapping(RoomApi, r'/wsgi_service')

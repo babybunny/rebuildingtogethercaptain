@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+
 from google.appengine.api import users
 
 import common
@@ -23,10 +24,10 @@ def Scoreboard(request):
   user, _, _ = common.GetUser(request)
   num_captains = models.Captain.all().count()
   num_captains_active = models.Captain.all().filter(
-      'last_welcome != ', None).count()
+    'last_welcome != ', None).count()
   pct_captains_active = num_captains_active * 100.0 / num_captains
   num_captains_with_tshirt = models.Captain.all().filter(
-      'tshirt_size != ', None).count()
+    'tshirt_size != ', None).count()
 
   query = models.NewSite.all().order('number')
   query.filter('program =', user.program_selected)
@@ -40,7 +41,7 @@ def _ScoreboardUsers(user_cls, request):
   user, _, _ = common.GetUser(request)
   user_activity = []
   welcomes = user_cls.all().filter(
-      'last_welcome != ', None).order('-last_welcome').fetch(20)
+    'last_welcome != ', None).order('-last_welcome').fetch(20)
   for c in welcomes:
     u = users.User(c.email)
     equery = models.Order.all().filter('state IN ',
@@ -56,34 +57,34 @@ def _ScoreboardUsers(user_cls, request):
 
 def ScoreboardCaptains(request):
   return common.Respond(
-      request, 'scoreboard_users',
-      {'user_activity': _ScoreboardUsers(models.Captain, request),
-       'name': 'Captain'})
+    request, 'scoreboard_users',
+    {'user_activity': _ScoreboardUsers(models.Captain, request),
+     'name': 'Captain'})
 
 
 def ScoreboardStaff(request):
   return common.Respond(
-      request, 'scoreboard_users',
-      {'user_activity': _ScoreboardUsers(models.Staff, request),
-       'name': 'Staff'})
+    request, 'scoreboard_users',
+    {'user_activity': _ScoreboardUsers(models.Staff, request),
+     'name': 'Staff'})
 
 
 def ScoreboardOrders(request):
   user, _, _ = common.GetUser(request)
   activity = []
   activity_rows = [
-      ('All Orders',
-       models.Order.all().filter('program =', user.program_selected),
-       urlresolvers.reverse(order.OrderList)),
-      ('Check Requests',
-          models.CheckRequest.all().filter('program =', user.program_selected),
-          urlresolvers.reverse(views.CheckRequestList)),
-      ('Vendor Receipts',
-          models.VendorReceipt.all().filter('program =', user.program_selected),
-          urlresolvers.reverse(views.VendorReceiptList)),
-      ('In-kind Donations',
-          models.InKindDonation.all().filter('program =', user.program_selected),
-          urlresolvers.reverse(views.InKindDonationList)),
+    ('All Orders',
+     models.Order.all().filter('program =', user.program_selected),
+     urlresolvers.reverse(order.OrderList)),
+    ('Check Requests',
+     models.CheckRequest.all().filter('program =', user.program_selected),
+     urlresolvers.reverse(views.CheckRequestList)),
+    ('Vendor Receipts',
+     models.VendorReceipt.all().filter('program =', user.program_selected),
+     urlresolvers.reverse(views.VendorReceiptList)),
+    ('In-kind Donations',
+     models.InKindDonation.all().filter('program =', user.program_selected),
+     urlresolvers.reverse(views.InKindDonationList)),
   ]
   order_sheets = models.OrderSheet.all().order('name')
   order_sheets = [o for o in order_sheets if o.visibility != 'Staff Only']
@@ -91,8 +92,8 @@ def ScoreboardOrders(request):
     query = models.Order.all().filter('program =', user.program_selected)
     query.filter('order_sheet =', os)
     activity_rows.append(
-        ('Form: %s' % os.name[0:20], query,
-         urlresolvers.reverse(order.OrderList, args=[os.key().id()])))
+      ('Form: %s' % os.name[0:20], query,
+       urlresolvers.reverse(order.OrderList, args=[os.key().id()])))
 
   now = datetime.datetime.now()
   one = datetime.timedelta(days=1)
@@ -110,15 +111,15 @@ def ScoreboardOrders(request):
     recent = len([s for s in received_orders if now - s.modified < one])
     logging.info('got activity row: %s', name)
     activity.append(
-        (name, link,
-         totals_by_state.get('Received', 0) +
-         totals_by_state.get('submitted', 0),
-         recent,
-         total, sites, editors,
-         totals_by_state.get('Deleted', 0) + totals_by_state.get('new', 0),
-         totals_by_state.get('new', 0),
-         totals_by_state.get('Being Filled', 0),
-         totals_by_state.get('Reconciled', 0)))
+      (name, link,
+       totals_by_state.get('Received', 0) +
+       totals_by_state.get('submitted', 0),
+       recent,
+       total, sites, editors,
+       totals_by_state.get('Deleted', 0) + totals_by_state.get('new', 0),
+       totals_by_state.get('new', 0),
+       totals_by_state.get('Being Filled', 0),
+       totals_by_state.get('Reconciled', 0)))
 
   d = locals()
   return common.Respond(request, 'scoreboard_orders', d)
