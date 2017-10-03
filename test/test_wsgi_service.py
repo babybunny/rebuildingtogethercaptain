@@ -153,8 +153,8 @@ class ChoicesTest(unittest.TestCase):
                                  headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
         self.assertEquals('200 OK', response.status)
         self.assertIn(u'choice', response.json)
-        self.assertEquals(1, len(response.json['choice']))
-        self.assertDictContainsSubset({u'label': u'House of Supply'}, response.json['choice'][0])
+        self.assertEquals(2, len(response.json['choice']))
+        self.assertDictContainsSubset({u'label': u'House of Supply'}, response.json['choice'][1])  # this is stable because the choices are ordered.
         
 
 class BugsTest(unittest.TestCase):
