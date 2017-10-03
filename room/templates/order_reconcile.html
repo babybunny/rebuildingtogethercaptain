@@ -153,9 +153,10 @@ editable columns</span> and change the status to "Reconciled".
 	      Site #
 	      <a target="_blank"
 	         href="{{ webapp2.uri_for('SiteView', id=order.site.integer_id()) }}">
-	        {{ order.site.number|escape }}
+	        {{ order.site.get().number|escape }}
 	      </a>
 	      Order ID # {{ order.key.integer_id() }}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       </td>
       <td>
 	      {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor }})
@@ -178,17 +179,17 @@ editable columns</span> and change the status to "Reconciled".
 	           >{{ order.reconciliation_notes }}</div>
       </td>
       <td class="editable">
-	      <span class="sortorder">{{ order.invoice_date.strftime("%b %d %Y") }}TODO:format</span>
+	      <span class="sortorder">{{ order.invoice_date }}</span>
 	      <div class="jeditable-invoice"
 	           id="invoice_date"
 	           name="{{ order.key.integer_id() }}"
-	           >{{ order.invoice_date.strftime("%b %d %Y") }}TODO:format</div>
+	           >{{ order.invoice_date.strftime("%b %d %Y") }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.vendor }}</span>
 	      <div class="jeditable-vendor"
 	           id="vendor"
-	           name="{{ order.key.integer_id() }}">{{ order.vendor }}</div>
+	           name="{{ order.key.integer_id() }}">{{ order.vendor.get().name }}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.state }}</span>
