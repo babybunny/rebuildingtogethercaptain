@@ -372,7 +372,7 @@ def CreateAll():
     state='Being Filled',
     actual_total=9.10,
     reconciliation_notes='''These are the reconciliation notes from the very nice staff on order2''',
-    invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 6),
+    # invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 6),
     # vendor=KEYS['SUPPLIER'],
     logistics_start='a logistic start',
     logistics_end='a logistic end',

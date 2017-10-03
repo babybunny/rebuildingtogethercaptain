@@ -184,7 +184,7 @@ editable columns</span> and change the status to "Reconciled".
 	      <div class="jeditable-invoice"
 	           id="invoice_date"
 	           name="{{ order.key.integer_id() }}"
-	           >{{ order.invoice_date.strftime("%m/%d/%Y") }}</div>
+	           >{% if order.invoice_date %}{{ order.invoice_date.strftime("%m/%d/%Y") }}{% endif %}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{% if order.vendor %}{{ order.vendor.get().name }}{% endif %}</span>
