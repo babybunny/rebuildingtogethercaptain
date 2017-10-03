@@ -111,6 +111,23 @@ login_required = routes.PathPrefixRoute('/room', [
                   staff.OrderReconcile,
                   name='OrderReconcile'),
 
+    webapp2.Route(r'/order/actualtotal/<order_id:\d+>',
+                  staff.ActualTotal,
+                  name='ActualTotal'),
+    webapp2.Route(r'/order/reconciliationnotes/<order_id:\d+>',
+                  staff.ReconciliationNotes,
+                  name='ReconciliationNotes'),
+    webapp2.Route(r'/order/invoicedate/<order_id:\d+>',
+                  staff.InvoiceDate,
+                  name='InvoiceDate'),
+    webapp2.Route(r'/order/state/<order_id:\d+>',
+                  staff.State,
+                  name='State'),
+    webapp2.Route(r'/order/vendor/<order_id:\d+>',
+                  staff.Vendor,
+                  name='Vendor'),
+
+  
     webapp2.Route(r'/site/<site_id:\d+>/order',
                   staff.OrderList,
                   name='OrderBySite'),

@@ -24,7 +24,7 @@ $(function() {
   });
   {% for order in orders %}
   $('.jeditable-amount[name="{{ order.key.integer_id() }}"]').editable(
-     "{# TODO webapp2.uri_for('ActualTotal', order.key.integer_id()) #}", {
+     "{{ webapp2.uri_for('ActualTotal', order_id=order.key.integer_id()) }}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -36,7 +36,7 @@ $(function() {
     function(){$(this).css('background-color', 'inherit')}
   );
   $('.jeditable-notes[name="{{ order.key.integer_id() }}"]').editable(
-     "{# TODO webapp2.uri_for('ReconciliationNotes', order.key.integer_id()) #}", {
+     "{{ webapp2.uri_for('ReconciliationNotes', order_id=order.key.integer_id()) }}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -48,7 +48,7 @@ $(function() {
     function(){$(this).css('background-color', 'inherit')}
   );
   $('.jeditable-invoice[name="{{ order.key.integer_id() }}"]').editable(
-     "{# TODO webapp2.uri_for('InvoiceDate', order.key.integer_id()) #}", {
+     "{{ webapp2.uri_for('InvoiceDate', order_id=order.key.integer_id()) }}", {
          type      : 'datepicker',
          cancel    : 'Cancel',
          submit    : 'OK',
@@ -61,7 +61,7 @@ $(function() {
     function(){$(this).css('background-color', 'inherit')}
   );
   $('.jeditable-state[name="{{ order.key.integer_id() }}"]').editable(
-     "{# TODO webapp2.uri_for('State', order.key.integer_id()) #}", {
+     "{{ webapp2.uri_for('State', order_id=order.key.integer_id()) }}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -75,7 +75,7 @@ $(function() {
     function(){$(this).css('background-color', 'inherit')}
   );
   $('.jeditable-vendor[name="{{ order.key.integer_id() }}"]').editable(
-     "{# TODO webapp2.uri_for('Vendor', order.key.integer_id()) #}", {
+     "{{ webapp2.uri_for('Vendor', order_id=order.key.integer_id()) }}", {
          cancel    : 'Cancel',
          submit    : 'OK',
          indicator : '<img src="/static/ajax-loader.gif">',
@@ -83,7 +83,7 @@ $(function() {
          cssclass  : 'inherit',
          type      : 'select',
          data      : " { {% for supplier in suppliers %}'{{ supplier.key.integer_id() }}': '{{ supplier.name }}', {% endfor %} " +
-         " 'selected': '{{ order.vendor }}'}",
+         " 'selected': '{{ order.vendor.integer_id() }}'}",
          }
   ).hover(
     function(){$(this).css('background-color', '#FBFFAB')},
@@ -183,10 +183,10 @@ editable columns</span> and change the status to "Reconciled".
 	      <div class="jeditable-invoice"
 	           id="invoice_date"
 	           name="{{ order.key.integer_id() }}"
-	           >{{ order.invoice_date.strftime("%b %d %Y") }}</div>
+	           >{{ order.invoice_date.strftime("%m/%d/%Y") }}</div>
       </td>
       <td class="editable">
-	      <span class="sortorder">{{ order.vendor }}</span>
+	      <span class="sortorder">{{ order.vendor.get().name }}</span>
 	      <div class="jeditable-vendor"
 	           id="vendor"
 	           name="{{ order.key.integer_id() }}">{{ order.vendor.get().name }}</div>

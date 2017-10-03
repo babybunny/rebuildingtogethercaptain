@@ -734,9 +734,70 @@ class OrderReconcile(StaffHandler):
       query.filter(ndb_models.Order.program == user.program_selected)
     orders = list(query)
     suppliers = list(ndb_models.Supplier.query())
-
     d = {'orders': orders,
          'order_sheet': order_sheet,
          'suppliers': suppliers,
     }
+    logging.info(d);
     return common.Respond(self.request, 'order_reconcile', d)
+
+
+def _ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
+  """Changes an order field based on POST data from jeditable."""
+  user, _ = common.GetUser(request)
+  if not request.POST:
+    return webapp2.abort(400)
+  order = ndb.Key(ndb_models.Order, int(order_id)).get()
+  if not order:
+    return webapp2.abort(400)
+  field = request.POST['id']
+  value = input_sanitizer(request.POST['value'])
+  logging.info("  setattr(order, %s, %r)", field, value)
+  setattr(order, field, value)
+  order.put()
+  if output_filter is not None:
+    value = output_filter(value)
+  return request.response.out.write(value)
+
+
+class ActualTotal(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's actual_total field."""
+    return _ChangeOrder(self.request, order_id, input_sanitizer=lambda v: float(v))
+
+
+class ReconciliationNotes(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's reconciliation_notes field."""
+    return _ChangeOrder(self.request, order_id, input_sanitizer=lambda v: v)
+
+
+class InvoiceDate(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's invoice_date field.  value like 03/20/2012"""
+    def _ParseDatePickerFormat(v):
+      return datetime.datetime.strptime(v, '%m/%d/%Y')
+
+    def _FormatDate(dt):
+      """Formats a datetime as Django template filter |date:"m/d/Y" """
+      return dt.strftime("%m/%d/%Y")
+
+    return _ChangeOrder(self.request, order_id,
+                        input_sanitizer=_ParseDatePickerFormat,
+                        output_filter=_FormatDate)
+
+
+class State(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's state field."""
+    return _ChangeOrder(self.request, order_id, input_sanitizer=lambda v: v)
+
+
+class Vendor(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's state field."""
+    def _GetSupplier(supplier_id):
+      return ndb.Key(ndb_models.Supplier, int(supplier_id))
+
+    return _ChangeOrder(self.request, order_id, input_sanitizer=_GetSupplier,
+                        output_filter=lambda(k):k.get().name)

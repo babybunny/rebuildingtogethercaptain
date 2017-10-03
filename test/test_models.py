@@ -83,6 +83,14 @@ def CreateAll():
     phone2='650 555 2222',
     notes="""Supplier notes value""",
   ).put()
+  KEYS['SUPPLIER2'] = ndb_models.Supplier(
+    name='Home of Paint',
+    email='paint@example.com',
+    address='888 Paint Pl, Main City, CA 99999',
+    phone1='650 555 1111',
+    phone2='650 555 2222',
+    notes="""Paint supplier notes""",
+  ).put()
 
   KEYS['SITE'] = ndb_models.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION'],
