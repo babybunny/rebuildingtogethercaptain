@@ -84,7 +84,7 @@ def CreateAll():
     notes="""Supplier notes value""",
   ).put()
   KEYS['SUPPLIER2'] = ndb_models.Supplier(
-    name='Home of Paint',
+    name='Joe\'s Home of Paint',
     email='paint@example.com',
     address='888 Paint Pl, Main City, CA 99999',
     phone1='650 555 1111',
