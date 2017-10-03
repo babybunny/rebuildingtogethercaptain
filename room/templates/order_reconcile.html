@@ -83,7 +83,7 @@ $(function() {
          cssclass  : 'inherit',
          type      : 'select',
          data      : " { {% for supplier in suppliers %}'{{ supplier.key.integer_id() }}': '{{ supplier.name }}', {% endfor %} " +
-         " 'selected': '{{ order.vendor.integer_id() }}'}",
+         " 'selected': '{% if order.vendor %}{{ order.vendor.integer_id() }}{% endif %}'}",
          }
   ).hover(
     function(){$(this).css('background-color', '#FBFFAB')},
@@ -187,10 +187,10 @@ editable columns</span> and change the status to "Reconciled".
 	           >{{ order.invoice_date.strftime("%m/%d/%Y") }}</div>
       </td>
       <td class="editable">
-	      <span class="sortorder">{{ order.vendor.get().name }}</span>
+	      <span class="sortorder">{% if order.vendor %}{{ order.vendor.get().name }}{% endif %}</span>
 	      <div class="jeditable-vendor"
 	           id="vendor"
-	           name="{{ order.key.integer_id() }}">{{ order.vendor.get().name }}</div>
+	           name="{{ order.key.integer_id() }}">{% if order.vendor %}{{ order.vendor.get().name }}{% endif %}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.state }}</span>
