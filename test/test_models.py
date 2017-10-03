@@ -85,6 +85,14 @@ def CreateAll():
     phone2='650 555 2222',
     notes="""Supplier notes value""",
   ).put()
+  KEYS['SUPPLIER2'] = ndb_models.Supplier(
+    name='Home of Paint',
+    email='paint@example.com',
+    address='888 Paint Pl, Main City, CA 99999',
+    phone1='650 555 1111',
+    phone2='650 555 2222',
+    notes="""Paint supplier notes""",
+  ).put()
 
   KEYS['SITE'] = ndb_models.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION'],
@@ -363,11 +371,11 @@ def CreateAll():
     program='2011 Test',
     sub_total=8.00,  # a BS number
     notes='''These are very very nice order2 notes.''',
-    state='Received',
+    state='Being Filled',
     actual_total=9.10,
     reconciliation_notes='''These are the reconciliation notes from the very nice staff on order2''',
-    invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 6),
-    vendor=KEYS['SUPPLIER'],
+    # invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 6),
+    # vendor=KEYS['SUPPLIER'],
     logistics_start='a logistic start',
     logistics_end='a logistic end',
     logistics_instructions='''another logistic instruction'''
