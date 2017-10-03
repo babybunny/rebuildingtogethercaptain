@@ -161,7 +161,12 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
         self.assertIn('My First Item', response.body)
         self.assertIn('Acorn City', response.body)
 
+    def testOrderReconcile(self):
+        response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
+        self.assertEquals('200 OK', response.status)
+        self.assertIn('Being Filled', response.body)
 
+        
 StatefulTestStaffWithProgramAuto.build()
 
 if __name__ == '__main__':

@@ -719,3 +719,24 @@ class OrderFulfill(_OrderFulfillInternal):
     'submit_value': 'Click here to print and confirm fulfillment has started',
     'should_print': True,
   }
+
+
+class OrderReconcile(StaffHandler):
+  def get(self, order_sheet_id):
+    """Reconcile filled orders."""
+    user, _ = common.GetUser(self.request)
+    query = ndb_models.Order.query(
+        ndb_models.Order.state.IN(['Being Filled', 'Reconciled']))
+    order_sheet = ndb.Key(ndb_models.OrderSheet, int(order_sheet_id)).get()
+    if order_sheet is not None:
+      query.filter(ndb_models.Order.order_sheet == order_sheet.key)
+    if user.program_selected is not None:
+      query.filter(ndb_models.Order.program == user.program_selected)
+    orders = list(query)
+    suppliers = list(ndb_models.Supplier.query())
+
+    d = {'orders': orders,
+         'order_sheet': order_sheet,
+         'suppliers': suppliers,
+    }
+    return common.Respond(self.request, 'order_reconcile', d)
