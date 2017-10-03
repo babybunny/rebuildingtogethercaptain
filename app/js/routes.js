@@ -22,6 +22,9 @@ define(
                 self.app = app;
             },
             routes: {
+                // More complex edit flows. Must precede the generic ones below.
+                'room/site/:id': 'edit_site',
+                
                 // Generic new and edit pages for top-level objects like Supplier, Staff.
                 'room/:type/': 'new',
                 'room/:type/:id': 'edit',
@@ -69,6 +72,13 @@ define(
                               self.app.views['order_flow'] = new OrderFlow(site_id, order_id);
                           });
             },
+            edit_site: function(site_id) {
+                requirejs(['app/views/site_flow'],
+                          function(Flow) {
+                              self.app.views['site_flow'] = new Flow(self.app, site_id);
+                          });
+            },
+                
         });
     }
 );
