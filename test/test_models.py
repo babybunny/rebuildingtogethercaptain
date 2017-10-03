@@ -9,8 +9,10 @@ Also, these models may be used in unit tests.
 import datetime
 import logging
 import unittest
-from room import ndb_models
+
 import app_engine_test_utils
+from room import ndb_models
+
 
 def CreateAll():
   """Creates all the models in this module.
@@ -44,7 +46,7 @@ def CreateAll():
     name="Mister Staff",
     email="rebuildingtogether.staff2@gmail.com",
   ).put()
-  
+
   KEYS['CAPTAIN'] = ndb_models.Captain(
     name="Miss Captain",
     email="rebuildingtogether.capn@gmail.com",
@@ -67,14 +69,14 @@ def CreateAll():
     site_number_prefix="120",
     status="Active"
   ).put()
-  
+
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
   ).put()
   KEYS['JURISDICTION2'] = ndb_models.Jurisdiction(
     name="Unicorn Town"
   ).put()
-  
+
   KEYS['SUPPLIER'] = ndb_models.Supplier(
     name='House of Supply',
     email='supplier@example.com',
@@ -167,7 +169,7 @@ def CreateAll():
     type='Construction'
   ).put()
 
-  KEYS['STAFFTIME'] = ndb_models.StaffTime(  
+  KEYS['STAFFTIME'] = ndb_models.StaffTime(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     position=KEYS['STAFFPOSITION'],
@@ -432,7 +434,7 @@ def CreateAll():
     quantity_float=2.0,
     name='extra name',
   ).put()
-  
+
   KEYS['ORDERITEM4'] = ndb_models.OrderItem(
     order=KEYS['ORDER'],
     item=KEYS['ITEM4'],
@@ -448,8 +450,8 @@ def CreateAll():
 
   logging.info('added keys: {}', KEYS.keys())
   return KEYS
-  
-  
+
+
 def DeleteAll(KEYS):
   while KEYS:
     name, key = KEYS.popitem()
@@ -458,10 +460,8 @@ def DeleteAll(KEYS):
 
 
 class ModelsTest(unittest.TestCase):
-
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
 
   def testCreate(self):
     KEYS = CreateAll()
