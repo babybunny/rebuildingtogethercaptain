@@ -3,6 +3,7 @@
 import csv
 import json
 import logging
+import datetime
 
 import webapp2
 from google.appengine.ext import ndb
@@ -25,20 +26,7 @@ class SelectProgram(webapp2.RequestHandler):
   """
 
   def get(self):
-    user, _ = common.GetUser(self.request)
-    if not user and not user.staff:
-      return webapp2.redirect_to('Start')
-    program = self.request.get('program')
-    if not program:
-      what_you_are_doing = "Select a Program to work on"
-      program_url_base = webapp2.uri_for('SelectProgram')
-      return common.Respond(self.request, 'select_program', locals())
-
-    if program not in common.PROGRAMS:
-      return http.HttpResponseError('program %s not in PROGRAMS' % program)
-    user.staff.program_selected = program
-    user.staff.put()
-    return webapp2.redirect_to('StaffHome')
+    webapp2.abort(404)
 
 
 class StaffHandler(webapp2.RequestHandler):
@@ -164,13 +152,13 @@ class SiteExpenseState(StaffHandler):
     user, _ = common.GetUser(self.request)
     if not user.staff:
       return webapp2.abort(403)
-    if not request.POST:
+    if not self.request.POST:
       return webapp2.abort(400)
     cls = SITE_EXPENSE_TYPES[item_cls]
     modl = ndb.Key(cls, int(item_id))
     if not modl:
       return webapp2.abort(404)
-    value = request.POST['value']
+    value = self.request.POST['value']
     modl.state = value
     modl.put()
     return self.request
@@ -188,15 +176,9 @@ class SitesAndCaptains(StaffHandler):
     entries = list(query)
     logging.info('loaded %d sites for %s', len(entries), user.program_selected)
     sitecaptains_by_site = {}
-    # TODO: this is fetching too many - we only need those for the current
-    # program.  use ancestor?
-    for sc in ndb_models.SiteCaptain.query():
-      sitecaptains_by_site.setdefault(sc.site.integer_id(), []).append(sc)
-    logging.info('loaded sitecaptains')
-    for s in entries:
-      k = s.key.integer_id()
-      if k in sitecaptains_by_site:
-        s.sitecaptains = sitecaptains_by_site[k]
+    for site in entries:
+      site.sitecaptains = list(site.sitecaptain_set)
+      sitecaptains_by_site[site.key.integer_id()] = site.sitecaptains
     d = {'entries': entries, 'num_entries': len(entries), 'user': user,
          'sitecaptains_by_site': sitecaptains_by_site}
     return common.Respond(self.request, 'site_list', d)
