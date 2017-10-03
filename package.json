@@ -2,7 +2,7 @@
   "name": "ROOMS", 
   "version": "0.0.2",
   "private": true,
-  "eslintConfig": {/* https://eslint.org/docs/user-guide/configuring */},
+  "eslintConfig": {},
   "dependencies": {
     "requirejs": "latest",
     "requirejs-text": "latest",
