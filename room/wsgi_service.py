@@ -1,7 +1,6 @@
 
 import datetime
 import logging
-import os
 import six
 
 from protorpc import messages
@@ -9,7 +8,6 @@ from protorpc import message_types
 from protorpc import remote
 from protorpc.wsgi import service
 
-from google.appengine.api import users
 from google.appengine.ext import ndb
 
 import common
