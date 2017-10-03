@@ -162,14 +162,15 @@ editable columns</span> and change the status to "Reconciled".
 	      {{ order.modified.strftime("%b %d %Y") }} (by {{ order.last_editor }})
       </td>
       <td class="dollar">
-	      {{ "%0.2f" % order.GrandTotal() }}
+	      {{ "%0.02f" % order.GrandTotal() }}
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.actual_total }}</span>
 	      <div class="jeditable-amount"
 	           id="actual_total"
 	           name="{{ order.key.integer_id() }}"
-	           >{{ "%0.2f" % order.actual_total }}</div>
+	           >{% if order.actual_total != None %}
+          {{ "%0.02f" % order.actual_total }}{% endif %}</div>
       </td>
       <td class="editable">
 	      <span class="sortorder">{{ order.reconciliation_notes }}</span>

@@ -738,7 +738,6 @@ class OrderReconcile(StaffHandler):
          'order_sheet': order_sheet,
          'suppliers': suppliers,
     }
-    logging.info(d);
     return common.Respond(self.request, 'order_reconcile', d)
 
 
