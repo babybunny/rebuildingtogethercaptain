@@ -729,9 +729,9 @@ class OrderReconcile(StaffHandler):
         ndb_models.Order.state.IN(['Being Filled', 'Reconciled']))
     order_sheet = ndb.Key(ndb_models.OrderSheet, int(order_sheet_id)).get()
     if order_sheet is not None:
-      query.filter(ndb_models.Order.order_sheet == order_sheet.key)
+      query = query.filter(ndb_models.Order.order_sheet == order_sheet.key)
     if user.program_selected is not None:
-      query.filter(ndb_models.Order.program == user.program_selected)
+      query = query.filter(ndb_models.Order.program == user.program_selected)
     orders = list(query)
     suppliers = list(ndb_models.Supplier.query())
     d = {'orders': orders,
