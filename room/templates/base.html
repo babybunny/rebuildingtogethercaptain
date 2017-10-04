@@ -64,7 +64,6 @@
 $("#site_number").keyup(function(event){
     if(event.keyCode === 13){  // enter key
         var site_number = $('#site_number').val();
-        console.log("Attempting to load site " + site_number + " ...");
         var loc = window.location;
         var new_loc = loc.protocol + '//' + loc.host +
                         '{{ webapp2.uri_for('SiteLookup', site_number=999) }}';
