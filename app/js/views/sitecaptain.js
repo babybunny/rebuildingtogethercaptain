@@ -63,7 +63,9 @@ define(
             },
             removeCaptain: function(e) {
                 // console.log('remove captain ', this, e, e.target.name);
-                this.sitecaptains.remove(this.sitecaptains.get(parseInt(e.target.name)));
+                var m = this.sitecaptains.get(parseInt(e.target.name));
+                this.sitecaptains.remove(m);
+                m.destroy();
                 this.render();
             },
             addCaptain: function() {
