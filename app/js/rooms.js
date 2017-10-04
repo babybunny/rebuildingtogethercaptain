@@ -21,7 +21,8 @@ require(
             } else {
                 var url = this.urlRoot + method;  // Example: '/wsgi_service.captain_' + 'create'
             }
-            console.log('Backbone sync ' + method + ' url: ' + url);
+            console.log('Backbone sync ' + method + ' url: ' + url + ' model: ');
+            console.log(model);
             // Template for a ROOMS API settings.
             var settings = {
                 url: url,
@@ -50,8 +51,12 @@ require(
 
             switch (method) {
             case 'read':
+                var inputs = {"id": model.id};
+                if (model.getApiInputs) {
+                    inputs = model.getApiInputs();
+                }
                 var xhr = options.xhr = Backbone.$.ajax(_.extend(settings, {
-                    data: JSON.stringify({"id": model.id})
+                    data: JSON.stringify(inputs)
                 }))
                 break;
             case 'create':

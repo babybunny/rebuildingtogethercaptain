@@ -4,9 +4,8 @@
 # the Staff and Supplier views.
 
 import csv
-import datetime
 import logging
-import os
+
 try:
   import simplejson as json
 except ImportError:
@@ -14,11 +13,9 @@ except ImportError:
 from google.appengine.api import images
 from google.appengine.api import users
 from google.appengine.ext import db
-from google.appengine.ext.webapp import template
 
 import ndb_models
 import common
-
 
 PICTURE_HEIGHT, PICTURE_WIDTH = 600, 400
 THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH = 50, 50
@@ -102,7 +99,7 @@ def CaptainHome(request, captain_id=None):
                          'captain': captain,
                          'captain_form': captain_form,
                          'captain_contact_submit':
-                         'Save changes to personal info',
+                           'Save changes to personal info',
                          'map_width': MAP_WIDTH, 'map_height': MAP_HEIGHT,
                          'site_list_detail': True,
                          'start_new_order_submit': START_NEW_ORDER_SUBMIT,
@@ -122,10 +119,10 @@ def OrderSheetEdit(request, order_sheet_id=None):
   order_sheet = None
   if order_sheet_id:
     order_sheet = models.OrderSheet.get(
-        db.Key.from_path(models.OrderSheet.kind(), int(order_sheet_id)))
+      db.Key.from_path(models.OrderSheet.kind(), int(order_sheet_id)))
     if order_sheet is None:
       return http.HttpResponseNotFound(
-          'No order_sheet exists with that key (%r)' % order_sheet_id)
+        'No order_sheet exists with that key (%r)' % order_sheet_id)
     what = 'Changing existing Order Form'
   else:
     what = 'Adding new Order Form'
@@ -226,7 +223,7 @@ def SiteEdit(request, site_id=None):
     site = models.NewSite.get_by_id(int(site_id))
     if site is None:
       return http.HttpResponseNotFound(
-          'No site exists with that key (%r)' % site_id)
+        'No site exists with that key (%r)' % site_id)
     what = 'Changing existing Site'
   else:
     what = 'Adding new Site'
@@ -242,7 +239,7 @@ def SiteEdit(request, site_id=None):
 
   if site and site.jurisdiction and not site.jurisdiction_choice:
     site.jurisdiction_choice = models.Jurisdiction.all().filter(
-        'name =', site.jurisdiction).get()
+      'name =', site.jurisdiction).get()
 
   form = form_class(data=None, instance=site)
 
@@ -266,7 +263,7 @@ def SiteEdit(request, site_id=None):
       form = form_class(data=request.POST, instance=site)
       if site is None:
         existing_site = models.NewSite.all().filter(
-            'number =', form.data['number']).get()
+          'number =', form.data['number']).get()
         if existing_site:
           return common.Respond(request, 'site_exists', {'site': existing_site})
 
@@ -274,10 +271,10 @@ def SiteEdit(request, site_id=None):
       if _TryToSaveForm(form):
         if staff:
           return http.HttpResponseRedirect(
-              urlresolvers.reverse(SiteView, args=[form.instance.key().id()]))
+            urlresolvers.reverse(SiteView, args=[form.instance.key().id()]))
         else:
           return http.HttpResponseRedirect(
-              urlresolvers.reverse(CaptainHome))
+            urlresolvers.reverse(CaptainHome))
     if delete_sitecaptain in request.POST:
       for id in request.POST.getlist(delete_sitecaptain):
         sc = models.SiteCaptain.get_by_id(int(id))
@@ -299,7 +296,7 @@ def SiteEdit(request, site_id=None):
       # Avoid entering duplicate SiteCaptains.
       for sitecaptain in site.sitecaptain_set:
         if (sitecaptain.captain == save_form.cleaned_data['captain']
-                and sitecaptain.type == save_form.cleaned_data['type']):
+            and sitecaptain.type == save_form.cleaned_data['type']):
           save_form.errors['__all__'] = 'That Captain already exists.'
           return common.Respond(request, 'staff_site', template_dict)
 
@@ -370,8 +367,8 @@ def SiteBudget(request):
   if not staff:
     return http.HttpResponse(status=400)
   params = {
-      'export_csv': EXPORT_CSV,
-      'export_checkbox_prefix': POSTED_ID_PREFIX
+    'export_csv': EXPORT_CSV,
+    'export_checkbox_prefix': POSTED_ID_PREFIX
   }
   query = models.NewSite.all()
   if staff and staff.program_selected:
@@ -403,7 +400,7 @@ def SiteBudgetExport(request):
   if request.POST['submit'] == EXPORT_CSV:
     response = http.HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = (
-        'attachment; filename=%s_site_budget.csv' % user.email())
+      'attachment; filename=%s_site_budget.csv' % user.email())
     _SiteBudgetExportInternal(response, request.POST)
     return response
 
@@ -450,6 +447,7 @@ def _SiteBudgetExportInternal(writable, post_vars):
            ]
     row = [unicode(f).encode('ascii', 'ignore') for f in row]
     writer.writerow(row)
+
 
 # TODO: could be more complete
 
@@ -550,7 +548,7 @@ def CaptainEdit(request, captain_id=None):
     captain = models.Captain.get_by_id(int(captain_id))
     if captain is None:
       return http.HttpResponseNotFound(
-          'No captain exists with that key (%r)' % captain_id)
+        'No captain exists with that key (%r)' % captain_id)
     what = 'Changing existing Captain'
   else:
     what = 'Adding new Captain'
@@ -561,7 +559,7 @@ def CaptainEdit(request, captain_id=None):
     form_class = forms.CaptainContactForm
   else:
     template_dict = {
-        'what_you_are_doing': 'Not permitted to edit this Captain.'}
+      'what_you_are_doing': 'Not permitted to edit this Captain.'}
     return common.Respond(request, 'captain', template_dict)
 
   form = form_class(data=None, instance=captain)
@@ -609,11 +607,11 @@ def _PersonEdit(request, id, person_cls, form_cls, template, readable):
     person = person_cls.get_by_id(int(id))
     if person is None:
       return http.HttpResponseNotFound(
-          'No %s exists with that key (%r)' % (readable, id))
+        'No %s exists with that key (%r)' % (readable, id))
     what = 'Changing existing %s' % readable
   else:
     what = 'Adding new %s' % readable
-  form = form_cls(data=request.POST or None,  instance=person)
+  form = form_cls(data=request.POST or None, instance=person)
   if not request.POST:
     return common.Respond(request, template,
                           {'form': form, 'person': person,
@@ -731,9 +729,9 @@ def ItemEdit(request, item_id=None):
   if item.picture:
     try:
       item.picture = db.Blob(
-          images.resize(item.picture, PICTURE_HEIGHT, PICTURE_WIDTH))
+        images.resize(item.picture, PICTURE_HEIGHT, PICTURE_WIDTH))
       item.thumbnail = db.Blob(
-          images.resize(item.picture, THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH))
+        images.resize(item.picture, THUMBNAIL_HEIGHT, THUMBNAIL_WIDTH))
     except images.BadImageError:
       item.picture = None
       item.thumbnail = None
@@ -820,7 +818,7 @@ def ItemPicture(request, item_id, is_thumbnail=False):
   elif size >= 2 and image.startswith("\xff\xD8"):
     content_type = 'image/jpeg'
   elif (size >= 8 and (image.startswith("II\x2a\x00") or
-                       image.startswith("MM\x00\x2a"))):
+                         image.startswith("MM\x00\x2a"))):
     content_type = 'image/tiff'
   elif size >= 2 and image.startswith("BM"):
     content_type = 'image/bmp'
@@ -909,7 +907,7 @@ class SiteExpense:
     entity = cls.model.get_by_id(id)
     if entity is None:
       return http.HttpResponseNotFound(
-          'No %s exists with that key (%r)' % (cls.readable, id))
+        'No %s exists with that key (%r)' % (cls.readable, id))
     edit_id = entity.key().id()
 
     if entity.state == 'new':
@@ -926,12 +924,12 @@ class SiteExpense:
       supplier_form = None
     if not request.POST:
       return common.Respond(
-          request, cls.template_base,
-          {'form': form,
-           'supplier_form': supplier_form,
-           'entity': entity,
-           'edit_id': edit_id,
-           'what_you_are_doing': what})
+        request, cls.template_base,
+        {'form': form,
+         'supplier_form': supplier_form,
+         'entity': entity,
+         'edit_id': edit_id,
+         'what_you_are_doing': what})
 
     errors = form.errors
     if not errors:
@@ -941,12 +939,12 @@ class SiteExpense:
         errors['__all__'] = unicode(err)
     if errors:
       return common.Respond(
-          request, cls.template_base,
-          {'form': form,
-           'supplier_form': supplier_form,
-           'entity': entity,
-           'edit_id': edit_id,
-           'what': 'Fix errors below and try submitting again.'})
+        request, cls.template_base,
+        {'form': form,
+         'supplier_form': supplier_form,
+         'entity': entity,
+         'edit_id': edit_id,
+         'what': 'Fix errors below and try submitting again.'})
 
     entity.last_editor = user
     if entity.state == 'new':
@@ -955,15 +953,15 @@ class SiteExpense:
     user = captain or staff
     if user:
       subj = '%s #%s for Site #%s Updated by %s' % (
-          cls.readable,
-          entity.key().id(),
-          entity.site.number,
-          user.name)
+        cls.readable,
+        entity.key().id(),
+        entity.site.number,
+        user.name)
       common.NotifyAdminViaMail(subj,
                                 template=cls.template_base + '_email.html',
                                 template_dict={'entity': entity})
     return http.HttpResponseRedirect(urlresolvers.reverse(
-        SiteView, args=[entity.site.key().id()]))
+      SiteView, args=[entity.site.key().id()]))
 
 
 class CheckRequest(SiteExpense):
@@ -1016,12 +1014,11 @@ StaffTimeEdit = StaffTime.Edit
 StaffTimeList = StaffTime.List
 StaffTimeView = StaffTime.View
 
-
 SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
-    ndb_models.CheckRequest,
-    ndb_models.VendorReceipt,
-    ndb_models.InKindDonation,
-    ndb_models.StaffTime,
+  ndb_models.CheckRequest,
+  ndb_models.VendorReceipt,
+  ndb_models.InKindDonation,
+  ndb_models.StaffTime,
 ))
 
 
@@ -1063,7 +1060,7 @@ def Expense(request, expense_id):
       params['error'] = 'Expense ID %s not found!' % expense_id
     else:
       params.update(
-          {'expense': expense})
+        {'expense': expense})
     return common.Respond(request, 'expense.html', params)
   elif request.META['REQUEST_METHOD'] == 'POST':
     logging.info(request.POST)

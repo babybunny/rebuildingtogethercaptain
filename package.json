@@ -2,6 +2,7 @@
   "name": "ROOMS", 
   "version": "0.0.2",
   "private": true,
+  "eslintConfig": {},
   "dependencies": {
     "requirejs": "latest",
     "requirejs-text": "latest",

@@ -1,0 +1,17 @@
+<% if (sitecaptains) { %>
+<h3>Active Captains for this site</h3>
+<% for (sc of sitecaptains) { %>
+     <div class="sitecaptain">
+       <button class="remove-sitecaptain" name="<%= sc.get('id') %>">
+         Remove
+       </button>
+       <%= sc.get('type') %> Captain:
+       <%= sc.get('name') %>
+     </div>
+  <% } %>
+<% } else { %>
+  <h3>No Captains active for this site</h3>
+<% } %>
+<h3>Add a new Captain</h3>
+<div id="sitecaptain-form-backform"></div>
+

@@ -1,14 +1,14 @@
 """Staff views"""
 
 import csv
-import datetime
 import json
 import logging
+
 import webapp2
 from google.appengine.ext import ndb
 
-import ndb_models
 import common
+import ndb_models
 
 TEST_SITE_NUMBER = '11999ZZZ'
 EXPORT_CSV = 'Export CSV'
@@ -47,9 +47,10 @@ class StaffHandler(webapp2.RequestHandler):
   - user matches an existing Staff record
   - Staff record has a selected Program
   """
+
   def dispatch(self, *a, **k):
     user, status = common.GetUser(self.request)
-    if user and user.staff:    
+    if user and user.staff:
       if not user.staff.program_selected:
         logging.info(self.request)
         return webapp2.redirect_to('SelectProgram')
@@ -57,7 +58,7 @@ class StaffHandler(webapp2.RequestHandler):
     else:
       return webapp2.redirect_to('Start')
 
-    
+
 class StaffHome(StaffHandler):
   def get(self):
     order_sheets = list(ndb_models.OrderSheet.query())
@@ -85,7 +86,7 @@ class SiteScopeOfWork(StaffHandler):
     obj.put()
     self.response.write(value)
 
-  
+
 class AutocompleteHandler(StaffHandler):
   model_class = None
   program_filter = False
@@ -102,7 +103,7 @@ class AutocompleteHandler(StaffHandler):
       label = i.Label()
       matches[label] = str(i.key.integer_id())
 
-    self.response.content_type='application/json'
+    self.response.content_type = 'application/json'
     self.response.write(json.dumps(matches))
 
 
@@ -148,14 +149,15 @@ class SiteSummary(StaffHandler):
     site = ndb.Key(ndb_models.NewSite, id).get()
     return common.Respond(self.request, 'site_summary', {'site': site})
 
-  
+
 SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
-    ndb_models.CheckRequest,
-    ndb_models.VendorReceipt,
-    ndb_models.InKindDonation,
-    ndb_models.StaffTime,
+  ndb_models.CheckRequest,
+  ndb_models.VendorReceipt,
+  ndb_models.InKindDonation,
+  ndb_models.StaffTime,
 ))
-  
+
+
 class SiteExpenseState(StaffHandler):
   def get(self, item_cls, item_id):
     """Updates a site expense's state field."""
@@ -173,10 +175,10 @@ class SiteExpenseState(StaffHandler):
     modl.put()
     return self.request
 
-  
 
 class SitesAndCaptains(StaffHandler):
   """Show all Sites and their associated captains in a big list"""
+
   def get(self):
     user, _ = common.GetUser(self.request)
     if not user.program_selected:
@@ -202,11 +204,12 @@ class SitesAndCaptains(StaffHandler):
 
 class SiteBudget(StaffHandler):
   """List all Sites with a "Budget" view."""
+
   def get(self):
     user, _ = common.GetUser(self.request)
     params = {
-        'export_csv': EXPORT_CSV,
-        'export_checkbox_prefix': POSTED_ID_PREFIX
+      'export_csv': EXPORT_CSV,
+      'export_checkbox_prefix': POSTED_ID_PREFIX
     }
     query = ndb_models.NewSite.query(ndb_models.NewSite.program == user.staff.program_selected)
     params['program'] = user.staff.program_selected
@@ -237,9 +240,10 @@ class SiteBudgetExport(StaffHandler):
     if self.request.POST['submit'] == EXPORT_CSV:
       self.response.content_type = 'text/csv'
       self.response.headers['Content-Disposition'] = (
-          'attachment; filename=%s_site_budget.csv' % user.email())
+        'attachment; filename=%s_site_budget.csv' % user.email())
       _SiteBudgetExportInternal(self.response, self.request.POST)
       return self.response
+
 
 def PostedIds(post_vars):
   """Extract IDs from post_vars."""
@@ -248,7 +252,8 @@ def PostedIds(post_vars):
     if var.startswith(POSTED_ID_PREFIX):
       site_ids.append(int(var[len(POSTED_ID_PREFIX):]))
   return site_ids
-  
+
+
 def _SiteBudgetExportInternal(writable, post_vars):
   """Write site budget rows as CSV to a file-like object."""
   site_ids = PostedIds(post_vars)
@@ -328,11 +333,12 @@ class EditView(StaffHandler):
       id = int(id)
       d[self.template_value] = ndb.Key(self.model_class, id).get()
     return common.Respond(self.request, self.template_file, d)
-  
+
 
 class StaffList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Staff, 'staff_list')
+
 
 class Staff(EditView):
   model_class = ndb_models.Staff
@@ -345,16 +351,18 @@ class CaptainList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Captain, 'captain_list')
 
+
 class Captain(EditView):
   model_class = ndb_models.Captain
   list_view = 'CaptainList'
   template_value = 'captain'
   template_file = 'simple_form'
-  
+
 
 class SupplierList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Supplier, 'supplier_list')
+
 
 class Supplier(EditView):
   model_class = ndb_models.Supplier
@@ -362,7 +370,7 @@ class Supplier(EditView):
   template_value = 'supplier'
   template_file = 'simple_form'
 
-  
+
 # SiteList is done by custom view SitesAndCaptains
 
 class Site(EditView):
@@ -371,10 +379,11 @@ class Site(EditView):
   template_value = 'site'
   template_file = 'site'
 
-  
+
 class OrderSheetList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.OrderSheet, 'ordersheet_list')
+
 
 class OrderSheet(EditView):
   model_class = ndb_models.OrderSheet
@@ -382,18 +391,21 @@ class OrderSheet(EditView):
   template_value = 'ordersheet'
   template_file = 'simple_form'
 
+
 class OrderSheetItemList(StaffHandler):
   """Request / -- show all items in an Order Sheet."""
+
   def get(self, id):
     sheet = ndb.Key(ndb_models.OrderSheet, int(id)).get()
     return _EntryList(self.request, ndb_models.Item, 'order_sheet_item_list',
                       query=sheet.item_set, params={'order_sheet': sheet})
 
+
 class SiteExpenseList(StaffHandler):
-  model_class = None   # 'StaffTime'
+  model_class = None  # 'StaffTime'
   expense_type = None  # 'Staff Time'
-  table_template = None # 'stafftime_table.html'
-  
+  table_template = None  # 'stafftime_table.html'
+
   def get(self, site_id=None):
     mdl_cls = getattr(ndb_models, self.model_class)
     query = mdl_cls.query()
@@ -450,7 +462,7 @@ class StaffTimeView(StaffHandler):
     return common.Respond(self.request, 'stafftime_view',
                           {'entity': entity})
 
-  
+
 class StaffTime(SiteExpenseEditor):
   model_class = ndb_models.StaffTime
   list_view = 'StaffTimeBySite'
@@ -468,9 +480,9 @@ class CheckRequestView(StaffHandler):
   def get(self, id):
     entity = ndb.Key(ndb_models.CheckRequest, int(id)).get()
     return common.Respond(self.request, 'checkrequest_view',
-        {'entity': entity})
+                          {'entity': entity})
 
-  
+
 class CheckRequest(SiteExpenseEditor):
   model_class = ndb_models.CheckRequest
   list_view = 'CheckRequestBySite'
@@ -483,15 +495,15 @@ class VendorReceiptList(SiteExpenseList):
   expense_type = 'Vendor Receipt'
   table_template = 'vendorreceipt_table.html'
 
-  
+
 class VendorReceiptView(StaffHandler):
   def get(self, id):
     entity = ndb.Key(ndb_models.VendorReceipt, int(id)).get()
     return common.Respond(self.request, 'vendorreceipt_view',
-        {'entity': entity}
-)
+                          {'entity': entity}
+                          )
 
-  
+
 class VendorReceipt(SiteExpenseEditor):
   model_class = ndb_models.VendorReceipt
   list_view = 'VendorReceiptBySite'
@@ -504,12 +516,14 @@ class InKindDonationList(SiteExpenseList):
   expense_type = 'In-Kind Donation'
   table_template = 'inkinddonation_table.html'
 
+
 class InKindDonationView(StaffHandler):
   def get(self, id):
     entity = ndb.Key(ndb_models.InKindDonation, int(id)).get()
     return common.Respond(self.request, 'inkinddonation_view',
-        {'entity': entity}
-)
+                          {'entity': entity}
+                          )
+
 
 class InKindDonation(SiteExpenseEditor):
   model_class = ndb_models.InKindDonation
@@ -517,9 +531,10 @@ class InKindDonation(SiteExpenseEditor):
   template_value = 'In-Kind Donation'
   template_file = 'expense_form'
 
+
 def _SortOrderItemsWithSections(order_items):
   order_items.sort(
-      key=lambda x: (x.item.get().order_form_section or None, x.item.get().name))
+    key=lambda x: (x.item.get().order_form_section or None, x.item.get().name))
   prev_section = None
   for o in order_items:
     new_section = o.item.get().order_form_section or None
@@ -534,7 +549,7 @@ class OrderList(SiteExpenseList):
   expense_type = 'Order'
   table_template = 'order_table.html'
 
-  
+
 class OrderView(StaffHandler):
   def get(self, id):
     order = ndb.Key(ndb_models.Order, int(id)).get()
@@ -550,8 +565,9 @@ class OrderView(StaffHandler):
          'sales_tax_pct': ndb_models.SALES_TAX_RATE * 100.,
          'show_instructions': True,
          'show_logistics_details': True,
-    }
+         }
     return common.Respond(self.request, 'order_view', d)
+
 
 class OrderFlow(StaffHandler):
   def get(self, site_id, id=None):
@@ -565,11 +581,12 @@ class Order(SiteExpenseEditor):
   list_view = 'OrderBySite'
   template_value = 'Order'
   template_file = 'expense_form'
-            
+
 
 class ItemList(StaffHandler):
   def get(self):
     return _EntryList(self.request, ndb_models.Item, 'item_list')
+
 
 class Item(EditView):
   model_class = ndb_models.Item
@@ -577,7 +594,7 @@ class Item(EditView):
   template_value = 'item'
   template_file = 'simple_form'
 
-  
+
 """
 class ExampleList(StaffHandler):
   def get(self):
@@ -589,14 +606,13 @@ class Example(EditView):
   template_value = 'example'
   template_file = 'simple_form'
 """
-  
-
 
 ###############
 # Order stuff #
 ###############
 
 FULFILL_MULTIPLE = 'Fulfill Multiple Orders'
+
 
 class OrderPicklist(StaffHandler):
   def get(self):
@@ -654,10 +670,11 @@ class _OrderChangeConfirm(StaffHandler):
 
     # fallback
     return webapp2.redirect_to('OrderByProgram')  # TODO: should go somewhere better.
-  
+
 
 class OrderDeleteConfirm(_OrderChangeConfirm):
   state = 'Deleted'
+
 
 class OrderFulfillConfirm(_OrderChangeConfirm):
   state = 'Being Filled'
@@ -678,7 +695,6 @@ class _OrderFulfillInternal(StaffHandler):
       orders.append({'order': order,
                      'order_items': order_items})
 
-
     list_url = webapp2.uri_for('OrderBySheet',  # TODO: better list url
                                next_key=next_key)
     confirm_url = webapp2.uri_for(self.options['confirm_method'], next_key=next_key)
@@ -695,22 +711,22 @@ class _OrderFulfillInternal(StaffHandler):
       'show_logistics_details': True,
       'num_orders': len(orders),
       'export_checkbox_prefix':
-      POSTED_ID_PREFIX,
+        POSTED_ID_PREFIX,
     }
     return common.Respond(self.request, 'order_fulfill', d)
 
-  
+
 class OrderDelete(_OrderFulfillInternal):
   """Prompt user to delete the order."""
   options = {
     'action_verb': 'Delete',
     'confirm_method': 'OrderDeleteConfirm',
     # TODO: purists insist that UI text be in templates.
-    'submit_value': 'Click here to confirm deletion',  
+    'submit_value': 'Click here to confirm deletion',
     'should_print': False,
   }
-  
-  
+
+
 class OrderFulfill(_OrderFulfillInternal):
   """Start the fulfillment process for an order."""
   options = {
@@ -719,3 +735,84 @@ class OrderFulfill(_OrderFulfillInternal):
     'submit_value': 'Click here to print and confirm fulfillment has started',
     'should_print': True,
   }
+
+
+class OrderReconcile(StaffHandler):
+  def get(self, order_sheet_id):
+    """Reconcile filled orders."""
+    user, _ = common.GetUser(self.request)
+    query = ndb_models.Order.query(
+        ndb_models.Order.state.IN(['Being Filled', 'Reconciled']))
+    order_sheet = ndb.Key(ndb_models.OrderSheet, int(order_sheet_id)).get()
+    if order_sheet is not None:
+      query = query.filter(ndb_models.Order.order_sheet == order_sheet.key)
+    if user.program_selected is not None:
+      query = query.filter(ndb_models.Order.program == user.program_selected)
+    orders = list(query)
+    suppliers = list(ndb_models.Supplier.query())
+    d = {'orders': orders,
+         'order_sheet': order_sheet,
+         'suppliers': suppliers,
+    }
+    return common.Respond(self.request, 'order_reconcile', d)
+
+
+def _ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
+  """Changes an order field based on POST data from jeditable."""
+  user, _ = common.GetUser(request)
+  if not request.POST:
+    return webapp2.abort(400)
+  order = ndb.Key(ndb_models.Order, int(order_id)).get()
+  if not order:
+    return webapp2.abort(400)
+  field = request.POST['id']
+  value = input_sanitizer(request.POST['value'])
+  logging.info("  setattr(order, %s, %r)", field, value)
+  setattr(order, field, value)
+  order.put()
+  if output_filter is not None:
+    value = output_filter(value)
+  return request.response.out.write(value)
+
+
+class ActualTotal(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's actual_total field."""
+    return _ChangeOrder(self.request, order_id, input_sanitizer=lambda v: float(v))
+
+
+class ReconciliationNotes(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's reconciliation_notes field."""
+    return _ChangeOrder(self.request, order_id, input_sanitizer=lambda v: v)
+
+
+class InvoiceDate(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's invoice_date field.  value like 03/20/2012"""
+    def _ParseDatePickerFormat(v):
+      return datetime.datetime.strptime(v, '%m/%d/%Y')
+
+    def _FormatDate(dt):
+      """Formats a datetime as Django template filter |date:"m/d/Y" """
+      return dt.strftime("%m/%d/%Y")
+
+    return _ChangeOrder(self.request, order_id,
+                        input_sanitizer=_ParseDatePickerFormat,
+                        output_filter=_FormatDate)
+
+
+class State(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's state field."""
+    return _ChangeOrder(self.request, order_id, input_sanitizer=lambda v: v)
+
+
+class Vendor(StaffHandler):
+  def post(self, order_id):
+    """Updates an order's state field."""
+    def _GetSupplier(supplier_id):
+      return ndb.Key(ndb_models.Supplier, int(supplier_id))
+
+    return _ChangeOrder(self.request, order_id, input_sanitizer=_GetSupplier,
+                        output_filter=lambda(k):k.get().name)
