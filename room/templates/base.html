@@ -23,6 +23,7 @@
       </span>
       {% if user.staff %}
       | <a href="{{ webapp2.uri_for('StaffHome') }}">Staff Home</a>
+      | Go To Site # <input type="text" id="site_number" size="16">
       {% endif %}
       {% if user.captain %}
       | <a href="{{ webapp2.uri_for('CaptainHome') }}">Captain's Page</a>
@@ -59,4 +60,15 @@
     </div>
   </body>
 </html>
-
+<script type="text/javascript">
+$("#site_number").keyup(function(event){
+    if(event.keyCode === 13){  // enter key
+        var site_number = $('#site_number').val();
+        var loc = window.location;
+        var new_loc = loc.protocol + '//' + loc.host +
+                        '{{ webapp2.uri_for('SiteLookup', site_number=999) }}';
+        new_loc = new_loc.replace('999', site_number);
+        window.location = new_loc;
+    }
+});
+</script>
