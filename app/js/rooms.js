@@ -51,6 +51,7 @@ require(
 
             switch (method) {
             case 'read':
+            case 'delete':
                 var inputs = {"id": model.id};
                 if (model.getApiInputs) {
                     inputs = model.getApiInputs();
