@@ -951,7 +951,7 @@ class SiteCaptain(messages.Message):
 
 
 #######################################
-# Non-CRUD API and composite messages #
+# Non-CRU API and composite messages #
 #######################################
 
 class OrderFormChoice(messages.Message):
@@ -1050,8 +1050,8 @@ basic_crud_config = (
 )
 
 
-class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metaclass so we have to as well.
-  """Metaclass for adding CRUD methods to a service, based on a config."""
+class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metaclass so we have to as well.
+  """Metaclass for adding CRU methods to a service, based on a config."""
 
   def __new__(mcs, name, bases, dct):
     """Set up mcs dict so it will have methods wrapped by remote.method.
@@ -1065,7 +1065,10 @@ class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metac
 
       CRU == Create, Read, Update.  
 
-      We don't do Delete because it may leave dangling references.
+      We don't have generic Delete methods for all models because many
+      have references or back-references. These need special handling
+      to avoid dangling references. Deletes should be implemented in
+      custom methods.
 
       Args:
         msg_name: name of the Message
@@ -1137,7 +1140,7 @@ class _GeneratedCrudApi(remote._ServiceClass):  # sorry. but 'remote' used metac
     return type.__new__(mcs, name, bases, dct)
 
 
-class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
+class RoomApi(six.with_metaclass(_GeneratedCruApi, remote.Service)):
   """Protorpc service implementing a CRUD API for ROOM models"""
 
   # Stash the request state so we can get at the HTTP headers later.
@@ -1209,6 +1212,12 @@ class RoomApi(six.with_metaclass(_GeneratedCrudApi, remote.Service)):
     for p in ndb_models.Program.query():
       programs.program.append(Program(name=p.name, year=p.year))
     return programs
+
+  @remote.method(SimpleId, message_types.VoidMessage)
+  def sitecaptain_delete(self, request):
+    self._authorize_staff()
+    ndb.Key(ndb_models.SiteCaptain, request.id).delete()
+    return message_types.VoidMessage()
 
   @remote.method(message_types.VoidMessage,
                  OrderFormChoices)
