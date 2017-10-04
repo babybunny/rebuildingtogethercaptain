@@ -82,7 +82,7 @@ $(function() {
          tooltip   : 'Click to edit...',
          cssclass  : 'inherit',
          type      : 'select',
-         data      : " { {% for supplier in suppliers %}'{{ supplier.key.integer_id() }}': '{{ supplier.name }}', {% endfor %} " +
+         data      : " { {% for supplier in suppliers %}'{{ supplier.key.integer_id() }}': '{{ supplier.name|e }}', {% endfor %} " +
          " 'selected': '{% if order.vendor %}{{ order.vendor.integer_id() }}{% endif %}'}",
          }
   ).hover(
