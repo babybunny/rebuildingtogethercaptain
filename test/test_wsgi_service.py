@@ -157,7 +157,7 @@ class ChoicesTest(unittest.TestCase):
     self.assertIn(u'choice', response.json)
     self.assertEquals(2, len(response.json['choice']))
     self.assertDictContainsSubset({u'label': u'House of Supply'},
-                                  response.json['choice'][1])  # this is stable because the choices are ordered.
+                                  response.json['choice'][0])  # this is stable because the choices are ordered.
 
 
 class BugsTest(unittest.TestCase):
