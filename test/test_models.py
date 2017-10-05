@@ -181,6 +181,18 @@ def CreateAll():
     description="""Description of the time that staff spent."""
   ).put()
 
+  KEYS['STAFFTIME2'] = ndb_models.StaffTime(
+    site=KEYS['SITE'],
+    # captain=None,
+    # position=None,
+    program='2011 Test',
+    state='new',
+    hours=0,
+    miles=0,
+    activity_date=datetime.datetime(2017, 1, 30, 1, 2, 3),
+    description="""This is a legacy record for an uninitialized object."""
+  ).put()
+
   KEYS['CHECKREQUEST'] = ndb_models.CheckRequest(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],

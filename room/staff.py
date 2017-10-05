@@ -428,6 +428,7 @@ class SiteExpenseList(StaffHandler):
     mdl_cls = getattr(ndb_models, self.model_class)
     query = mdl_cls.query()
     query = query.filter(mdl_cls.state != 'Deleted')
+    query = query.filter(mdl_cls.state != 'new')
     params = {
       'which_site': 'All',
       'expense_type': self.expense_type,
