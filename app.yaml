@@ -35,6 +35,11 @@ handlers:
   login: required
   secure: always
 
+- url: /choices_api.*
+  script: room.choices_api.application
+  login: required
+  secure: always
+
 - url: /room/.*
   script: main.app
   login: required
