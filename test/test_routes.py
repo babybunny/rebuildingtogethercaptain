@@ -2,6 +2,7 @@
 
 import unittest
 
+import logging
 from webtest import TestApp
 
 import app_engine_test_utils
@@ -85,13 +86,26 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
   _multiprocess_can_split_ = True
 
   @staticmethod
-  def get_test_function(path, method):
+  def get_test_function(route_info, method):
+
+    path = route_info['template']
+    test_data = route_info['test_data']
+    name = route_info['name']
 
     def get(_self):
+      if '<' in path:
+        if not test_data:
+          _self.skipTest("GET route {0} is parametrized, requires test data".format(name))
+          return
+
       response = _self._get(path)
       _self.assertEquals('200 OK', response.status, msg=str(response))
 
     def post(_self):
+      if not test_data:
+        _self.skipTest("POST route {0} requires test data".format(name))
+        return
+
       response = _self._post(path)
       _self.assertEquals('200 OK', response.status, msg=str(response))
 
@@ -103,17 +117,13 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
 
   @staticmethod
   def build():
-    for r in route_lister.get_route_list(main.login_required):
-      if '<' in r['template']:
-        continue  # TODO: figure out how to test paths with id segments.
-      testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r['template'], 'GET')
+    for r in route_lister.RouteLister(main.login_required).route_data:
+      testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r, 'GET')
       testFunc.__name__ = 'test{}'.format(r['name'])
       setattr(StatefulTestStaffWithProgramAuto, testFunc.__name__, testFunc)
 
-    for r in route_lister.get_route_list(main.post_routes):
-      if '<' in r['template']:
-        continue  # TODO: figure out how to test paths with id segments.
-      testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r['template'], 'POST')
+    for r in route_lister.RouteLister(main.post_routes).route_data:
+      testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r, 'POST')
       testFunc.__name__ = 'test{}'.format(r['name'])
       setattr(StatefulTestStaffWithProgramAuto, testFunc.__name__, testFunc)
 
