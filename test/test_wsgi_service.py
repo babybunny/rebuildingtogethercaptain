@@ -138,28 +138,6 @@ for name, fields in models_and_data:
   setattr(BasicCrudTest, 'test{}UpdateBadWrongId'.format(name), tstUpdateBadWrongId)
 
 
-class ChoicesTest(unittest.TestCase):
-  def setUp(self):
-    app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
-    self.keys = test_models.CreateAll()
-
-  def tearDown(self):
-    test_models.DeleteAll(self.keys)
-
-  def testSupplier(self):
-    post_json_body = {}
-    response = app.post_json('/wsgi_service.supplier_choices_read',
-                             post_json_body,
-                             status=200,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-    self.assertEquals('200 OK', response.status)
-    self.assertIn(u'choice', response.json)
-    self.assertEquals(2, len(response.json['choice']))
-    self.assertDictContainsSubset({u'label': u'House of Supply'},
-                                  response.json['choice'][0])  # this is stable because the choices are ordered.
-
-
 class BugsTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
