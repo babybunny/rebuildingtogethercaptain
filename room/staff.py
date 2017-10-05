@@ -445,7 +445,6 @@ class SiteExpenseList(StaffHandler):
       user, _ = common.GetUser(self.request)
       if user.program_selected:
         query = query.filter(mdl_cls.program == user.program_selected)
-    logging.info('found %d orders for %s', query.count(), query)
     return _EntryList(self.request, mdl_cls, 'site_expense_list',
                       params=params, query=query)
 
