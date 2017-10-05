@@ -140,6 +140,7 @@ class SiteView(StaffHandler):
 class SiteLookup(StaffHandler):
   def get(self, site_number=None):
     if site_number is not None:
+      site_number = site_number.upper()
       query = ndb_models.NewSite.query(ndb_models.NewSite.number == site_number)
       results = list(query)
       if not results:
@@ -152,7 +153,12 @@ class SiteLookup(StaffHandler):
         self.response.set_status(500)
         self.response.write("Data corruption issue, more than one site with number {0}".format(site_number))
         return
-      return self.redirect_to('SiteView', id=results[0].key.integer_id())
+      site = results[0]
+      user, _ = common.GetUser(self.request)
+      if user.program_selected != site.program:
+        user.staff.program_selected = site.program
+        user.staff.put()
+      return self.redirect_to('SiteView', id=site.key.integer_id())
 
 
 class SiteExpenses(StaffHandler):
