@@ -7,6 +7,7 @@ from room import ndb_models
 
 ROUTE_TEST_DATA = {
   # 'Staff': {'model': ndb_models.Staff}
+  ''
 }
 
 class RouteLister(object):

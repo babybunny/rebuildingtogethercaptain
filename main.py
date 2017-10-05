@@ -6,7 +6,7 @@ import webapp2
 from google.appengine.api import users
 from webapp2_extras import routes
 
-from room import captain
+from room import captain, ndb_models
 from room import common
 from room import staff
 
@@ -39,6 +39,28 @@ class Placeholder(webapp2.RequestHandler):
     self.response.out.write('Placeholder')
 
 
+class TestableRoute(webapp2.Route):
+
+  def __init__(self,
+               # builtin webapp2.Route parameters
+               template,
+               handler=None,
+               name=None,
+               defaults=None,
+               build_only=False,
+               handler_method=None,
+               methods=None,
+               schemes=None,
+
+               # add-ons for testing
+               url_params=None,
+               post_data=None):
+
+    self.url_params = url_params
+    self.post_data = post_data
+    super(TestableRoute, self).__init__(template, handler=None, name=None, defaults=None, build_only=False,
+                                        handler_method=None, methods=None, schemes=None)
+
 jinja_environment = jinja2.Environment(
   loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -63,9 +85,12 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/staff',
                 staff.StaffList,
                 name='StaffList'),
-  webapp2.Route(r'/staff/<id:\d*>',
+  TestableRoute(r'/staff/<id:\d*>',
                 staff.Staff,
-                name='Staff'),
+                name='Staff',
+                url_params={'id':
+                              {'model':ndb_models.Staff,
+                               'parameter': 'id'}}),
 
   webapp2.Route(r'/captain',
                 staff.CaptainList,
