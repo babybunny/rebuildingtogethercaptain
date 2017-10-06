@@ -218,14 +218,23 @@ define(
                     });
             },
             renderDelivery: function() {
+                if (!this.delivery) {
+                    this.delivery = new Backbone.Model();
+                }
                 this.order_full.set('delivery', this.delivery.attributes);
                 this.renderLogistics(delivery_fields, "Delivery", this.delivery);
             },
             renderPickup: function() {
+                if (!this.pickup) {
+                    this.pickup = new Backbone.Model();
+                }
                 this.order_full.set('pickup', this.pickup.attributes);
                 this.renderLogistics(pickup_fields, "Pickup and Return", this.pickup);
             },
             renderRetrieval: function() {
+                if (!this.retrieval) {
+                    this.retrieval = new Backbone.Model();
+                }
                 this.order_full.set('retrieval', this.retrieval.attributes);
                 this.renderLogistics(retrieval_fields, "Drop-off and Retrieval", this.retrieval);
             },
