@@ -5,44 +5,18 @@ from protorpc import message_types
 from protorpc import remote
 from protorpc.wsgi import service
 
-import common
+import base_api
 import ndb_models
 from protorpc_messages import *
 
 package = 'rooms'
 
 
-class CustomApi(remote.Service):
+class CustomApi(base_api.BaseApi):
   """Protorpc service implementing a custom API for ROOM.
 
   This covers multi-model updates and more complex reads.
   """
-
-  # Stash the request state so we can get at the HTTP headers later.
-  def initialize_request_state(self, request_state):
-    self.rs = request_state
-
-  def _authorize_staff(self):
-    """Simply call this to ensure that the user has a Staff record.
-
-    Raises:
-      remote.ApplicationError if the user is not Staff.
-    """
-    user, status = common.GetUser(self.rs)
-    if user and user.staff:
-      return
-    raise remote.ApplicationError('Must be staff to use this API.')
-
-  def _authorize_user(self):
-    """Simply call this to ensure that the user has a ROOMS record.
-
-    Raises:
-      remote.ApplicationError if the user is not Staff or Captain.
-    """
-    user, status = common.GetUser(self.rs)
-    if user and (user.staff or user.captain):
-      return
-    raise remote.ApplicationError('Must be a ROOMS user to use this API.')
 
   @remote.method(message_types.VoidMessage,
                  message_types.VoidMessage)
