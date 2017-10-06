@@ -125,20 +125,6 @@ class Captain(ndb.Model):
     return "%s <%s>" % (self.name, self.email)
 
 
-class Program(ndb.Model):
-  """Identifies a program like "National Rebuilding Day".
-
-  Programs with status 'Active' will be visible to Captains.
-
-  Keys are shorthand like "2012 NRD".
-  """
-  year = ndb.IntegerProperty()
-  name = ndb.StringProperty()
-  site_number_prefix = ndb.StringProperty()
-  status = ndb.StringProperty(choices=('Active', 'Inactive'),
-                              default='Inactive')
-
-
 class Supplier(ndb.Model):
   """A supplier of Items."""
   name = ndb.StringProperty(required=True)
@@ -252,6 +238,14 @@ class Item(ndb.Model):
 
   def VisibleOrderFormSection(self):
     return self.VisibleSortableLabel(self.order_form_section)
+
+
+class Site(ndb.Model):
+  """
+  Migrated to this site in October 2017
+  to accommodate Program model
+  """
+
 
 
 class NewSite(ndb.Model):
