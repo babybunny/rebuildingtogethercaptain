@@ -5,8 +5,8 @@ import unittest
 from webtest import TestApp
 
 import app_engine_test_utils
-import main
-from room import staff
+from gae import main
+from gae.room import staff
 from test import route_lister
 from test import test_models
 
