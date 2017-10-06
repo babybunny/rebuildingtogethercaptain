@@ -1,3 +1,0 @@
-key,tshirt_size,modified_by,name,phone_work,phone2,notes,phone1,modified,phone_mobile,phone_home,last_welcome,phone_other,search_prefixes,last_editor,email,phone_fax
-2001,XL,,Captain One,,,,,2012-02-26T10:45:10,(650) 555-1234,(650) 555-2345,,,"[u'two', u'tw', u't', u'two', u'captain', u'capta', u'c', u'captaintwo@example.com', u'capt', u'cap', u'c', u'capta', u'cap', u'captain two', u'ca', u'capt', u'c', u'cap']",,captainone@example.com,(650) 555-3835 fax
-2002,2XL,,Captain Two,,,,,2012-02-26T10:45:10,(650) 555-5270 J (650) 555-1811 P,(650) 555-9162,,,"[u'two', u'tw', u't', u'two', u'captain', u'capta', u'c', u'captaintwo@example.com', u'capt', u'cap', u'c', u'capta', u'cap', u'captain two', u'ca', u'capt', u'c', u'cap']",,captaintwo@example.com,(650) 555-3835 fax
