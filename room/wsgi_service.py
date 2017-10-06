@@ -165,4 +165,4 @@ class RoomApi(six.with_metaclass(_GeneratedCruApi, remote.Service)):
     raise remote.ApplicationError('Must be a ROOMS user to use this API.')
 
 
-application = service.service_mapping(RoomApi, r'/wsgi_service')
+application = service.service_mapping(RoomApi, r'/cru_api')
