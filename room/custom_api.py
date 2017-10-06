@@ -1,17 +1,13 @@
-import datetime
 import logging
 
-import six
 from google.appengine.ext import ndb
 from protorpc import message_types
-from protorpc import messages
 from protorpc import remote
 from protorpc.wsgi import service
 
 import common
 import ndb_models
-# TODO: replace with a more specific import to get the message defs
-from wsgi_service import *
+from protorpc_messages import *
 
 package = 'rooms'
 
@@ -119,11 +115,11 @@ class CustomApi(remote.Service):
     if not mdl:
       raise remote.ApplicationError(
         'No OrderSheet found with key {}'.format(request.id))
-    res.order_sheet = _OrderSheetModelToMessage(mdl)
+    res.order_sheet = OrderSheetModelToMessage(mdl)
     ims = list(ndb_models.Item.query(ndb_models.Item.appears_on_order_form == key))
     ndb_models._SortItemsWithSections(ims)
     for im in ims:
-      i = _ItemModelToMessage(im)
+      i = ItemModelToMessage(im)
       res.sorted_items.append(i)
     return res
 
@@ -137,28 +133,28 @@ class CustomApi(remote.Service):
       raise remote.ApplicationError(
         'No Order found with key {}'.format(request.id))
     res.id = order_key.integer_id()
-    res.order = _OrderModelToMessage(order_mdl)
+    res.order = OrderModelToMessage(order_mdl)
 
     for oi_mdl in ndb_models.OrderItem.query(ndb_models.OrderItem.order == order_key):
-      res.order_items.append(_OrderItemModelToMessage(oi_mdl))
+      res.order_items.append(OrderItemModelToMessage(oi_mdl))
 
     join_mdl = ndb_models.OrderDelivery.query(ndb_models.OrderDelivery.order == order_key).get()
     if join_mdl is not None:
-      res.delivery = _DeliveryModelToMessage(join_mdl.delivery.get())
+      res.delivery = DeliveryModelToMessage(join_mdl.delivery.get())
 
     join_mdl = ndb_models.OrderPickup.query(ndb_models.OrderPickup.order == order_key).get()
     if join_mdl is not None:
-      res.pickup = _PickupModelToMessage(join_mdl.pickup.get())
+      res.pickup = PickupModelToMessage(join_mdl.pickup.get())
 
     join_mdl = ndb_models.OrderRetrieval.query(ndb_models.OrderRetrieval.order == order_key).get()
     if join_mdl is not None:
-      res.retrieval = _RetrievalModelToMessage(join_mdl.retrieval.get())
+      res.retrieval = RetrievalModelToMessage(join_mdl.retrieval.get())
 
     return res
 
   def _order_full_put(self, request):
     # TODO ndb.start_transaction ...
-    order = _OrderMessageToModel(request.order, ndb_models.Order())
+    order = OrderMessageToModel(request.order, ndb_models.Order())
     sub_total = 0.
     for oimsg in request.order_items:
       if oimsg.quantity:
@@ -171,24 +167,24 @@ class CustomApi(remote.Service):
     order.put()
 
     if request.delivery:
-      delivery = _DeliveryMessageToModel(request.delivery,
-                                         ndb_models.Delivery(site=order.site))
+      delivery = DeliveryMessageToModel(request.delivery,
+                                        ndb_models.Delivery(site=order.site))
       delivery.put()
       ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
     if request.pickup:
-      pickup = _PickupMessageToModel(request.pickup,
-                                     ndb_models.Pickup(site=order.site))
+      pickup = PickupMessageToModel(request.pickup,
+                                    ndb_models.Pickup(site=order.site))
       pickup.put()
       ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
     if request.retrieval:
-      retrieval = _RetrievalMessageToModel(request.retrieval,
-                                           ndb_models.Retrieval(site=order.site))
+      retrieval = RetrievalMessageToModel(request.retrieval,
+                                          ndb_models.Retrieval(site=order.site))
       retrieval.put()
       ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
 
     for oimsg in request.order_items:
       oimsg.order = order.key.integer_id()
-      _OrderItemMessageToModel(oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
+      OrderItemMessageToModel(oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
 
   @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_create(self, request):
@@ -216,11 +212,11 @@ class CustomApi(remote.Service):
     sitecaptain_models = list(
       ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))
     for m in sitecaptain_models:
-      f = _SiteCaptainModelToMessage(m)
+      f = SiteCaptainModelToMessage(m)
       captain_model = ndb.Key(ndb_models.Captain, f.captain).get()  # TODO: get_multi
       detail = SiteCaptainDetail(sitecaptain=f, name=captain_model.name)
       res.sitecaptain_detail.append(detail)
     return res
 
 
-application = service.service_mapping(RoomApi, r'/custom_api')
+application = service.service_mapping(CustomApi, r'/custom_api')
