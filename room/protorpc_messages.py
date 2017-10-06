@@ -1,3 +1,13 @@
+"""Protorpc messages and conversion functions that can be used in multiple APIs..
+
+This is the place to put messages that are one-to-one with datastore Kinds 
+(classes in ndb_models.py) and conversion functions. By convention, the conversions are
+  message_instance = KindModelToMessage(model_instance)
+  KindMessageToModel(message_instance, model_instance)
+
+Messages and utility functions that are specific to a particular API module should be defined in that module. This is shared code.
+"""
+
 import datetime
 
 from google.appengine.ext import ndb
@@ -911,44 +921,6 @@ class SiteCaptain(messages.Message):
   site = messages.IntegerField(2)
   captain = messages.IntegerField(3)
   type = messages.StringField(4)
-
-
-#######################################
-# Non-CRU API and composite messages #
-#######################################
-
-class OrderFormChoice(messages.Message):
-  id = messages.IntegerField(1)
-  name = messages.StringField(2)
-  code = messages.StringField(3)
-  visibility = messages.StringField(4)
-
-
-class OrderFormChoices(messages.Message):
-  order_form = messages.MessageField(OrderFormChoice, 1, repeated=True)
-
-
-class OrderFormDetail(messages.Message):
-  order_sheet = messages.MessageField(OrderSheet, 1)
-  sorted_items = messages.MessageField(Item, 2, repeated=True)
-
-
-class OrderFull(messages.Message):
-  order = messages.MessageField(Order, 1, required=True)
-  order_items = messages.MessageField(OrderItem, 2, repeated=True)
-  delivery = messages.MessageField(Delivery, 3)
-  pickup = messages.MessageField(Pickup, 4)
-  retrieval = messages.MessageField(Retrieval, 5)
-  id = messages.IntegerField(6)
-
-
-class SiteCaptainDetail(messages.Message):
-  sitecaptain = messages.MessageField(SiteCaptain, 1)
-  name = messages.StringField(2)
-
-
-class SiteCaptains(messages.Message):
-  sitecaptain_detail = messages.MessageField(SiteCaptainDetail, 1, repeated=True)
 
 
 # Use the multi-line string below as a template for adding models.

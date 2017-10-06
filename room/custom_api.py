@@ -1,7 +1,10 @@
+"""Non-CRU API and composite messages"""
+
 import logging
 
 from google.appengine.ext import ndb
 from protorpc import message_types
+from protorpc import messages
 from protorpc import remote
 from protorpc.wsgi import service
 
@@ -10,6 +13,40 @@ import ndb_models
 import protorpc_messages
 
 package = 'rooms'
+
+
+class OrderFormChoice(messages.Message):
+  id = messages.IntegerField(1)
+  name = messages.StringField(2)
+  code = messages.StringField(3)
+  visibility = messages.StringField(4)
+
+
+class OrderFormChoices(messages.Message):
+  order_form = messages.MessageField(OrderFormChoice, 1, repeated=True)
+
+
+class OrderFormDetail(messages.Message):
+  order_sheet = messages.MessageField(protorpc_messages.OrderSheet, 1)
+  sorted_items = messages.MessageField(protorpc_messages.Item, 2, repeated=True)
+
+
+class OrderFull(messages.Message):
+  order = messages.MessageField(protorpc_messages.Order, 1, required=True)
+  order_items = messages.MessageField(protorpc_messages.OrderItem, 2, repeated=True)
+  delivery = messages.MessageField(protorpc_messages.Delivery, 3)
+  pickup = messages.MessageField(protorpc_messages.Pickup, 4)
+  retrieval = messages.MessageField(protorpc_messages.Retrieval, 5)
+  id = messages.IntegerField(6)
+
+
+class SiteCaptainDetail(messages.Message):
+  sitecaptain = messages.MessageField(protorpc_messages.SiteCaptain, 1)
+  name = messages.StringField(2)
+
+
+class SiteCaptains(messages.Message):
+  sitecaptain_detail = messages.MessageField(SiteCaptainDetail, 1, repeated=True)
 
 
 class CustomApi(base_api.BaseApi):
@@ -31,19 +68,19 @@ class CustomApi(base_api.BaseApi):
     return message_types.VoidMessage()
 
   @remote.method(message_types.VoidMessage,
-                 protorpc_messages.OrderFormChoices)
+                 OrderFormChoices)
   def order_form_choices(self, request):
-    res = protorpc_messages.OrderFormChoices()
+    res = OrderFormChoices()
     for m in ndb_models.OrderSheet.query():
-      f = protorpc_messages.OrderFormChoice(
+      f = OrderFormChoice(
         id=m.key.integer_id(), name=m.name,
         code=m.code, visibility=m.visibility)
       res.order_form.append(f)
     return res
 
-  @remote.method(protorpc_messages.SimpleId, protorpc_messages.OrderFormDetail)
+  @remote.method(protorpc_messages.SimpleId, OrderFormDetail)
   def order_form_detail(self, request):
-    res = protorpc_messages.OrderFormDetail()
+    res = OrderFormDetail()
     if not request.id:
       raise remote.ApplicationError('id is required')
     key = ndb.Key(ndb_models.OrderSheet, request.id)
@@ -59,10 +96,10 @@ class CustomApi(base_api.BaseApi):
       res.sorted_items.append(i)
     return res
 
-  @remote.method(protorpc_messages.SimpleId, protorpc_messages.OrderFull)
+  @remote.method(protorpc_messages.SimpleId, OrderFull)
   def order_full_read(self, request):
     self._authorize_staff()
-    res = protorpc_messages.OrderFull()
+    res = OrderFull()
     order_key = ndb.Key(ndb_models.Order, request.id)
     order_mdl = order_key.get()
     if order_mdl is None:
@@ -126,7 +163,7 @@ class CustomApi(base_api.BaseApi):
       protorpc_messages.OrderItemMessageToModel(
         oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
 
-  @remote.method(protorpc_messages.OrderFull, message_types.VoidMessage)
+  @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_create(self, request):
     self._authorize_staff()
     if request.id:
@@ -134,7 +171,7 @@ class CustomApi(base_api.BaseApi):
     self._order_full_put(request)
     return message_types.VoidMessage()
 
-  @remote.method(protorpc_messages.OrderFull, message_types.VoidMessage)
+  @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_update(self, request):
     self._authorize_staff()
     if not request.id:
@@ -146,15 +183,15 @@ class CustomApi(base_api.BaseApi):
     self._order_full_put(request)
     return message_types.VoidMessage()
 
-  @remote.method(protorpc_messages.SimpleId, protorpc_messages.SiteCaptains)
+  @remote.method(protorpc_messages.SimpleId, SiteCaptains)
   def sitecaptains_for_site(self, request):
-    res = protorpc_messages.SiteCaptains()
+    res = SiteCaptains()
     sitecaptain_models = list(
       ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))
     for m in sitecaptain_models:
       f = protorpc_messages.SiteCaptainModelToMessage(m)
       captain_model = ndb.Key(ndb_models.Captain, f.captain).get()  # TODO: get_multi
-      detail = protorpc_messages.SiteCaptainDetail(sitecaptain=f, name=captain_model.name)
+      detail = SiteCaptainDetail(sitecaptain=f, name=captain_model.name)
       res.sitecaptain_detail.append(detail)
     return res
 
