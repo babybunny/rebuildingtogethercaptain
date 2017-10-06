@@ -1,10 +1,5 @@
-import datetime
-import logging
-
 import six
 from google.appengine.ext import ndb
-from protorpc import message_types
-from protorpc import messages
 from protorpc import remote
 from protorpc.wsgi import service
 

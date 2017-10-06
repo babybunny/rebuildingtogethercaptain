@@ -5,6 +5,7 @@ from protorpc import messages
 from protorpc import remote
 from protorpc.wsgi import service
 
+import common
 import ndb_models
 
 package = 'rooms'
@@ -40,20 +41,10 @@ class ChoicesApi(remote.Service):
       return
     raise remote.ApplicationError('Must be staff to use this API.')
 
-  def _authorize_user(self):
-    """Simply call this to ensure that the user has a ROOMS record.
-
-    Raises:
-      remote.ApplicationError if the user is not Staff or Captain.
-    """
-    user, status = common.GetUser(self.rs)
-    if user and (user.staff or user.captain):
-      return
-    raise remote.ApplicationError('Must be a ROOMS user to use this API.')
-
   @remote.method(message_types.VoidMessage,
                  Choices)
   def captain_choices_read(self, request):
+    self._authorize_staff()
     choices = Choices()
     for mdl in ndb_models.Captain.query().order(ndb_models.Supplier.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
@@ -62,6 +53,7 @@ class ChoicesApi(remote.Service):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def supplier_choices_read(self, request):
+    self._authorize_staff()
     choices = Choices()
     for mdl in ndb_models.Supplier.query(ndb_models.Supplier.active == 'Active').order(ndb_models.Supplier.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
@@ -70,6 +62,7 @@ class ChoicesApi(remote.Service):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def staffposition_choices_read(self, request):
+    self._authorize_staff()
     choices = Choices()
     for mdl in ndb_models.StaffPosition.query().order(ndb_models.StaffPosition.position_name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.position_name))
@@ -78,6 +71,7 @@ class ChoicesApi(remote.Service):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def jurisdiction_choices_read(self, request):
+    self._authorize_staff()
     choices = Choices()
     for mdl in ndb_models.Jurisdiction.query().order(ndb_models.Jurisdiction.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
@@ -86,6 +80,7 @@ class ChoicesApi(remote.Service):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def ordersheet_choices_read(self, request):
+    self._authorize_staff()
     choices = Choices()
     for mdl in ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
