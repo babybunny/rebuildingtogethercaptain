@@ -29,9 +29,9 @@ handlers:
   static_files: static/robots.txt
   upload: static/robots.txt
 
-# WSGI protorpc service handler
+# WSGI protorpc service API handlers.
 - url: /cru_api.*
-  script: room.wsgi_service.application
+  script: room.cru_api.application
   login: required
   secure: always
 
@@ -45,6 +45,7 @@ handlers:
   login: required
   secure: always
 
+# Handlers for most of the pages.
 - url: /room/.*
   script: main.app
   login: required
