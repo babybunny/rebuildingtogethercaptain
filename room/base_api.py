@@ -1,3 +1,8 @@
+"""Minimal base class for all protorpc API applications.
+
+Functionality that is common to all APIs should go here.
+""" 
+
 from protorpc import remote
 import common
 
