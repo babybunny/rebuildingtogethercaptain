@@ -3,7 +3,7 @@ define(
     function(ProtoModel) {
         var Model = ProtoModel.extend({
             // matches first part of method name in @remote.method
-            urlRoot: '/wsgi_service.checkrequest_',
+            urlRoot: '/cru_api.checkrequest_',
 	          must_be_floats: ['food_amount', 'materials_amount', 'labor_amount'],
               defaults: { state: "new" }
         });
