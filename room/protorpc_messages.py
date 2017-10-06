@@ -7,29 +7,8 @@ from protorpc import remote
 import ndb_models
 
 
-class GenericResponse(messages.Message):
-  message = messages.StringField(1)
-
-
 class SimpleId(messages.Message):
   id = messages.IntegerField(1, required=True)
-
-
-class StaffPosition(messages.Message):
-  key = messages.IntegerField(1)
-  position_name = messages.StringField(2)
-  hourly_rate = messages.FloatField(3)
-
-
-class Program(messages.Message):
-  year = messages.IntegerField(1)
-  name = messages.StringField(2)
-  site_number_prefix = messages.StringField(3)
-  status = messages.StringField(4)
-
-
-class Programs(messages.Message):
-  program = messages.MessageField(Program, 1, repeated=True)
 
 
 ################

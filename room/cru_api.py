@@ -3,45 +3,75 @@ from google.appengine.ext import ndb
 from protorpc import remote
 from protorpc.wsgi import service
 
-import common
+import base_api
 import ndb_models
-from protorpc_messages import *
+import protorpc_messages
 
 package = 'rooms'
 
 
 basic_crud_config = (
-  (Jurisdiction, ndb_models.Jurisdiction,
-   JurisdictionMessageToModel, JurisdictionModelToMessage),
-  (Staff, ndb_models.Staff,
-   StaffMessageToModel, StaffModelToMessage),
-  (Captain, ndb_models.Captain,
-   CaptainMessageToModel, CaptainModelToMessage),
-  (Supplier, ndb_models.Supplier,
-   SupplierMessageToModel, SupplierModelToMessage),
-  (NewSite, ndb_models.NewSite,
-   NewSiteMessageToModel, NewSiteModelToMessage),
-  (Site, ndb_models.NewSite,  # TODO: remove
-   SiteMessageToModel, SiteModelToMessage),
-  (OrderSheet, ndb_models.OrderSheet,
-   OrderSheetMessageToModel, OrderSheetModelToMessage),
-  (StaffTime, ndb_models.StaffTime,
-   StaffTimeMessageToModel, StaffTimeModelToMessage),
-  (CheckRequest, ndb_models.CheckRequest,
-   CheckRequestMessageToModel, CheckRequestModelToMessage),
-  (VendorReceipt, ndb_models.VendorReceipt,
-   VendorReceiptMessageToModel, VendorReceiptModelToMessage),
-  (InKindDonation, ndb_models.InKindDonation,
-   InKindDonationMessageToModel, InKindDonationModelToMessage),
-  (Item, ndb_models.Item,
-   ItemMessageToModel, ItemModelToMessage),
-  (Order, ndb_models.Order,
-   OrderMessageToModel, OrderModelToMessage),
-  (SiteCaptain, ndb_models.SiteCaptain,
-   SiteCaptainMessageToModel, SiteCaptainModelToMessage),
+  (protorpc_messages.Jurisdiction,
+   ndb_models.Jurisdiction,
+   protorpc_messages.JurisdictionMessageToModel,
+   protorpc_messages.JurisdictionModelToMessage),
+  (protorpc_messages.Staff,
+   ndb_models.Staff,
+   protorpc_messages.StaffMessageToModel,
+   protorpc_messages.StaffModelToMessage),
+  (protorpc_messages.Captain,
+   ndb_models.Captain,
+   protorpc_messages.CaptainMessageToModel,
+   protorpc_messages.CaptainModelToMessage),
+  (protorpc_messages.Supplier,
+   ndb_models.Supplier,
+   protorpc_messages.SupplierMessageToModel,
+   protorpc_messages.SupplierModelToMessage),
+  (protorpc_messages.NewSite,
+   ndb_models.NewSite,
+   protorpc_messages.NewSiteMessageToModel,
+   protorpc_messages.NewSiteModelToMessage),
+  (protorpc_messages.Site,
+   ndb_models.NewSite,  # TODO: remove
+   protorpc_messages.SiteMessageToModel,
+   protorpc_messages.SiteModelToMessage),
+  (protorpc_messages.OrderSheet,
+   ndb_models.OrderSheet,
+   protorpc_messages.OrderSheetMessageToModel,
+   protorpc_messages.OrderSheetModelToMessage),
+  (protorpc_messages.StaffTime,
+   ndb_models.StaffTime,
+   protorpc_messages.StaffTimeMessageToModel,
+   protorpc_messages.StaffTimeModelToMessage),
+  (protorpc_messages.CheckRequest,
+   ndb_models.CheckRequest,
+   protorpc_messages.CheckRequestMessageToModel,
+   protorpc_messages.CheckRequestModelToMessage),
+  (protorpc_messages.VendorReceipt,
+   ndb_models.VendorReceipt,
+   protorpc_messages.VendorReceiptMessageToModel,
+   protorpc_messages.VendorReceiptModelToMessage),
+  (protorpc_messages.InKindDonation,
+   ndb_models.InKindDonation,
+   protorpc_messages.InKindDonationMessageToModel,
+   protorpc_messages.InKindDonationModelToMessage),
+  (protorpc_messages.Item,
+   ndb_models.Item,
+   protorpc_messages.ItemMessageToModel,
+   protorpc_messages.ItemModelToMessage),
+  (protorpc_messages.Order,
+   ndb_models.Order,
+   protorpc_messages.OrderMessageToModel,
+   protorpc_messages.OrderModelToMessage),
+  (protorpc_messages.SiteCaptain,
+   ndb_models.SiteCaptain,
+   protorpc_messages.SiteCaptainMessageToModel,
+   protorpc_messages.SiteCaptainModelToMessage),
 
-  #  (Example, ndb_models.Example,
-  # ExampleMessageToModel, ExampleModelToMessage),
+  # (protorpc_messages.Example,
+  #  ndb_models.Example,
+  #  protorpc_messages.ExampleMessageToModel,
+  #  protorpc_messages.ExampleModelToMessage),
 )
 
 
@@ -118,7 +148,7 @@ class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metacl
       mdl_create, mdl_read, mdl_update = makeBasicCrud(msg_name, msg, mdl, g2d, d2g)
 
       msg_x2_wrapper = remote.method(msg, msg)
-      id_msg_wrapper = remote.method(SimpleId, msg)
+      id_msg_wrapper = remote.method(protorpc_messages.SimpleId, msg)
 
       func_name = '{}_create'.format(msg_name.lower())
       mdl_create.__name__ = func_name
@@ -135,34 +165,9 @@ class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metacl
     return type.__new__(mcs, name, bases, dct)
 
 
-class RoomApi(six.with_metaclass(_GeneratedCruApi, remote.Service)):
+class RoomApi(six.with_metaclass(_GeneratedCruApi, base_api.BaseApi)):
   """Protorpc service implementing a CRUD API for ROOM models"""
-
-  # Stash the request state so we can get at the HTTP headers later.
-  def initialize_request_state(self, request_state):
-    self.rs = request_state
-
-  def _authorize_staff(self):
-    """Simply call this to ensure that the user has a Staff record.
-
-    Raises:
-      remote.ApplicationError if the user is not Staff.
-    """
-    user, status = common.GetUser(self.rs)
-    if user and user.staff:
-      return
-    raise remote.ApplicationError('Must be staff to use this API.')
-
-  def _authorize_user(self):
-    """Simply call this to ensure that the user has a ROOMS record.
-
-    Raises:
-      remote.ApplicationError if the user is not Staff or Captain.
-    """
-    user, status = common.GetUser(self.rs)
-    if user and (user.staff or user.captain):
-      return
-    raise remote.ApplicationError('Must be a ROOMS user to use this API.')
+  pass
 
 
 application = service.service_mapping(RoomApi, r'/cru_api')

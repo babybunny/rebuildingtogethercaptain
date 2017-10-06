@@ -3,7 +3,7 @@
 We have a lot of models and each one has some boilderplate in 
 app/js/models
 app/js/views
-wsgi_service.py
+cru_api.py
 main.py
 staff.py
 
@@ -156,7 +156,7 @@ def api(clsname):
 # {0} #
 ############
 
-def _{0}ModelToMessage(mdl):
+def {0}ModelToMessage(mdl):
   s = {0}(
     id=mdl.key.integer_id(),
     {2}
@@ -164,7 +164,7 @@ def _{0}ModelToMessage(mdl):
   # any special handling, like for user objects or datetimes
   return s
 
-def _{0}MessageToModel(msg, mdl):
+def {0}MessageToModel(msg, mdl):
   {3}
   # can't set automatic fields:
   # TODO
@@ -177,7 +177,7 @@ class {0}(messages.Message):
 
 
 #  ({0}, ndb_models.{0},
-# _{0}MessageToModel, _{0}ModelToMessage),
+#   {0}MessageToModel, {0}ModelToMessage),
 
     """.format(clsname,
                '\n  '.join(message_fields),

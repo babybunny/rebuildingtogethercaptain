@@ -5,10 +5,10 @@ import unittest
 from webtest import TestApp
 
 import app_engine_test_utils
-from room import wsgi_service
+from room import cru_api
 from test import test_models
 
-app = TestApp(wsgi_service.application)
+app = TestApp(cru_api.application)
 
 # Configuration for basic CRUD tests.
 # List of pairs: (model name, fields dict)

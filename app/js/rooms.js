@@ -19,7 +19,7 @@ require(
             if (this.urlPinned) {
                 var url = this.urlPinned;
             } else {
-                var url = this.urlRoot + method;  // Example: '/wsgi_service.captain_' + 'create'
+                var url = this.urlRoot + method;  // Example: '/cru_api.captain_' + 'create'
             }
             console.log('Backbone sync ' + method + ' url: ' + url + ' model: ');
             console.log(model);

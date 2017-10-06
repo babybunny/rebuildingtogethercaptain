@@ -5,10 +5,11 @@ from protorpc import messages
 from protorpc import remote
 from protorpc.wsgi import service
 
-import common
+import base_api
 import ndb_models
 
 package = 'rooms'
+
 
 class Choice(messages.Message):
   id = messages.IntegerField(1, required=True)
@@ -19,34 +20,18 @@ class Choices(messages.Message):
   choice = messages.MessageField(Choice, 1, repeated=True)
 
 
-class ChoicesApi(remote.Service):
+class ChoicesApi(base_api.BaseApi):
   """Protorpc service implementing APIs that exist to populate
   drop-down selections in UI.  Used when you're editing a ROOM model
   that has foreign keys.
   """
-
-  # TODO: merge with similar methods in wsgi_service.py
-  # Stash the request state so we can get at the HTTP headers later.
-  def initialize_request_state(self, request_state):
-    self.rs = request_state
-
-  def _authorize_staff(self):
-    """Simply call this to ensure that the user has a Staff record.
-
-    Raises:
-      remote.ApplicationError if the user is not Staff.
-    """
-    user, status = common.GetUser(self.rs)
-    if user and user.staff:
-      return
-    raise remote.ApplicationError('Must be staff to use this API.')
 
   @remote.method(message_types.VoidMessage,
                  Choices)
   def captain_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.Captain.query().order(ndb_models.Supplier.name):
+    for mdl in ndb_models.Captain.query().order(ndb_models.Captain.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
