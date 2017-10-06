@@ -10,6 +10,7 @@ import ndb_models
 
 package = 'rooms'
 
+
 class Choice(messages.Message):
   id = messages.IntegerField(1, required=True)
   label = messages.StringField(2)
@@ -30,7 +31,7 @@ class ChoicesApi(base_api.BaseApi):
   def captain_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.Captain.query().order(ndb_models.Supplier.name):
+    for mdl in ndb_models.Captain.query().order(ndb_models.Captain.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
