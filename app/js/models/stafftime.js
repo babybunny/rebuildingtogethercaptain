@@ -3,7 +3,7 @@ define(
     function(ProtoModel) {
         var Model = ProtoModel.extend({
             // matches first part of method name in @remote.method
-            urlRoot: '/wsgi_service.stafftime_',
+            urlRoot: '/cru_api.stafftime_',
 	          must_be_floats: ['hours', 'miles'],
               defaults: {
                   state: "new"

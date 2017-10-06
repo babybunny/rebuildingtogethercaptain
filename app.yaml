@@ -30,13 +30,18 @@ handlers:
   upload: static/robots.txt
 
 # WSGI protorpc service handler
-- url: /wsgi_service.*
+- url: /cru_api.*
   script: room.wsgi_service.application
   login: required
   secure: always
 
 - url: /choices_api.*
   script: room.choices_api.application
+  login: required
+  secure: always
+
+- url: /custom_api.*
+  script: room.custom_api.application
   login: required
   secure: always
 

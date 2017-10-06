@@ -3,7 +3,7 @@ define(
     ['backbone'],
     function(Backbone) {
         var Collection = Backbone.Model.extend({
-            urlPinned: '/wsgi_service.order_form_detail',
+            urlPinned: '/custom_api.order_form_detail',
         });
         
         return Collection;

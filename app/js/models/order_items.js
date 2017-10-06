@@ -3,7 +3,7 @@ define(
     ['backbone'],
     function(Backbone) {
         var Collection = Backbone.Collection.extend({
-            urlPinned: '/wsgi_service.order_items',
+            // no URL - this is browser-side only.
             model: Backbone.Model.extend({
                 idAttribute: 'item'
             }),                
