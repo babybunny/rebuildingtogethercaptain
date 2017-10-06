@@ -3,7 +3,7 @@ define(
     ['backbone', 'app/models/sitecaptain'],
     function(Backbone, SiteCaptainModel) {
         var Collection = Backbone.Collection.extend({
-            urlPinned: '/wsgi_service.sitecaptains_for_site',
+            urlPinned: '/custom_api.sitecaptains_for_site',
             model: SiteCaptainModel,
             initialize: function(site_id) {
                 this.site_id = site_id;

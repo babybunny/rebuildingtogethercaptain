@@ -3,7 +3,7 @@ define(
     ['backbone'],
     function(Backbone) {
         return Backbone.Model.extend({
-            urlRoot: '/wsgi_service.order_full_',
+            urlRoot: '/custom_api.order_full_',
         });
     }
 );

@@ -6,7 +6,7 @@ define(
         var Model = Backbone.Model.extend({
             // matches first part of method name in @remote.method
             // Derived class must implement.
-	          // urlRoot: '/wsgi_service.checkrequest_',
+	          // urlRoot: '/cru_api.checkrequest_',
             
 	          // List of attributes that must be floating point numbers.
 	          // Empty string becomes zero.
