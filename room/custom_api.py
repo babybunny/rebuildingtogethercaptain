@@ -24,44 +24,6 @@ class CustomApi(base_api.BaseApi):
     logging.info('ehlo')
     return message_types.VoidMessage()
 
-  # This needs an update for the new encoding for StaffPosition rates.  Per issue 238.
-  # If it's used at all...
-  @remote.method(StaffPosition,
-                 GenericResponse)
-  def staffposition_put(self, request):
-    self._authorize_staff()
-    sp = ndb_models.StaffPosition(position_name=request.position_name,
-                                  hourly_rate=request.hourly_rate)
-    if request.key:
-      sp.key = ndb.Key(ndb_models.StaffPosition, request.key)
-      sp.put()
-    return GenericResponse()
-
-  @remote.method(Program,
-                 GenericResponse)
-  def program_put(self, request):
-    self._authorize_staff()
-    resp = GenericResponse()
-    try:
-      sp = ndb_models.Program(name=request.name,
-                              year=request.year,
-                              site_number_prefix=request.site_number_prefix,
-                              status=request.status)
-      sp.put()
-      resp.message = 'OK'
-    except Exception, e:
-      resp.message = str(e)
-
-    return resp
-
-  @remote.method(message_types.VoidMessage,
-                 Programs)
-  def program_list(self, request):
-    programs = Programs()
-    for p in ndb_models.Program.query():
-      programs.program.append(Program(name=p.name, year=p.year))
-    return programs
-
   @remote.method(SimpleId, message_types.VoidMessage)
   def sitecaptain_delete(self, request):
     self._authorize_staff()
