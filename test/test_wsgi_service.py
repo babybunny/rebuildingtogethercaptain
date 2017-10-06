@@ -37,7 +37,7 @@ def makeTestMethods(name, fields):
   def tstCreateOK(self):
     post_json_body = {}
     post_json_body.update(fields)
-    response = app.post_json('/wsgi_service.{}_create'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_create'.format(name.lower()),
                              post_json_body,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
@@ -46,33 +46,33 @@ def makeTestMethods(name, fields):
   def tstCreateBadHasId(self):
     post_json_body = {'id': self.keys[name.upper()].integer_id()}
     post_json_body.update(fields)
-    response = app.post_json('/wsgi_service.{}_create'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_create'.format(name.lower()),
                              post_json_body,
                              status=400,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('400 Bad Request', response.status)
 
   def tstReadBadWrongMethod(self):
-    response = app.get('/wsgi_service.{}_read'.format(name.lower()),
+    response = app.get('/cru_api.{}_read'.format(name.lower()),
                        status=400)
     self.assertEquals('400 Bad Request', response.status)
 
   def tstReadBadNoContent(self):
-    response = app.post_json('/wsgi_service.{}_read'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_read'.format(name.lower()),
                              {},
                              status=400,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('400 Bad Request', response.status)
 
   def tstReadBadWrongId(self):
-    response = app.post_json('/wsgi_service.{}_read'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_read'.format(name.lower()),
                              {'id': 999},
                              status=400,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('400 Bad Request', response.status)
 
   def tstReadOK(self):
-    response = app.post_json('/wsgi_service.{}_read'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_read'.format(name.lower()),
                              {'id': self.keys[name.upper()].integer_id()},
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
@@ -81,7 +81,7 @@ def makeTestMethods(name, fields):
   def tstUpdateOK(self):
     post_json_body = {'id': self.keys[name.upper()].integer_id()}
     post_json_body.update(fields)
-    response = app.post_json('/wsgi_service.{}_update'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_update'.format(name.lower()),
                              post_json_body,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
@@ -91,7 +91,7 @@ def makeTestMethods(name, fields):
   def tstUpdateBadMissingId(self):
     post_json_body = {}
     post_json_body.update(fields)
-    response = app.post_json('/wsgi_service.{}_update'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_update'.format(name.lower()),
                              post_json_body,
                              status=400,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
@@ -100,7 +100,7 @@ def makeTestMethods(name, fields):
   def tstUpdateBadWrongId(self):
     post_json_body = {'id': 999}
     post_json_body.update(fields)
-    response = app.post_json('/wsgi_service.{}_update'.format(name.lower()),
+    response = app.post_json('/cru_api.{}_update'.format(name.lower()),
                              post_json_body,
                              status=400,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
@@ -161,7 +161,7 @@ class BugsTest(unittest.TestCase):
       "name": "Mister Payable",
       "tax_id": "123-456-8790",
       "food_amount": 12.34}
-    response = app.post_json('/wsgi_service.checkrequest_create',
+    response = app.post_json('/cru_api.checkrequest_create',
 
                              post_json_body,
                              status=200,
@@ -174,7 +174,7 @@ class BugsTest(unittest.TestCase):
     post_json_body = {
       "name": "Mister Captain",
     }
-    response = app.post_json('/wsgi_service.captain_create',
+    response = app.post_json('/cru_api.captain_create',
                              post_json_body,
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
@@ -186,7 +186,7 @@ class BugsTest(unittest.TestCase):
     post_json_body = {
       "name": "Mister Captain",
       "email": ""}
-    response = app.post_json('/wsgi_service.captain_create',
+    response = app.post_json('/cru_api.captain_create',
                              post_json_body,
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
@@ -198,7 +198,7 @@ class BugsTest(unittest.TestCase):
     post_json_body = {
       "name": "Mister Captain",
       "email": "Mister@Captain.com"}
-    response = app.post_json('/wsgi_service.captain_create',
+    response = app.post_json('/cru_api.captain_create',
                              post_json_body,
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
