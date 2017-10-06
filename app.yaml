@@ -40,6 +40,11 @@ handlers:
   login: required
   secure: always
 
+- url: /custom_api.*
+  script: room.custom_api.application
+  login: required
+  secure: always
+
 - url: /room/.*
   script: main.app
   login: required
