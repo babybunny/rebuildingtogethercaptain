@@ -9,14 +9,11 @@ env_variables:
 #  ROOMS_DEV_SIGNIN_EMAIL: rebuildingtogether.capn@gmail.com
 
 handlers:
-- url: /js/lib
-  static_dir: build/js/lib
+- url: /js
+  static_dir: js
 
-- url: /css/lib
-  static_dir: build/css
-
-- url: /js/app
-  static_dir: app/js
+- url: /css
+  static_dir: css
 
 - url: /static
   static_dir: static

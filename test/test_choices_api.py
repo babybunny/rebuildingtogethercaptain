@@ -5,7 +5,7 @@ import unittest
 from webtest import TestApp
 
 import app_engine_test_utils
-from room import choices_api
+from gae.room import choices_api
 from test import test_models
 
 app = TestApp(choices_api.application)

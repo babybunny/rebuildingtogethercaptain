@@ -11,7 +11,7 @@ import logging
 import unittest
 
 import app_engine_test_utils
-from room import ndb_models
+from gae.room import ndb_models
 
 
 def CreateAll():
