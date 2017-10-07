@@ -2,7 +2,6 @@
 
 import unittest
 
-import logging
 from webtest import TestApp
 
 import app_engine_test_utils
@@ -28,7 +27,6 @@ class LoggedInTest(unittest.TestCase):
 class StatefulTestNoProgram(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
     self.keys = test_models.CreateAll()
 
   def tearDown(self):
@@ -60,7 +58,7 @@ class StatefulTestCaptain(unittest.TestCase):
     self.assertIn('Ahoy Captain!', response.body)
 
 
-class StatefulTestStaffWithProgram(unittest.TestCase):
+class StatefulTestRoutesWithProgram(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
@@ -75,13 +73,13 @@ class StatefulTestStaffWithProgram(unittest.TestCase):
   def _get(self, path):
     return APP.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
 
-  def _post(self, path):
+  def _post(self, path, data):
     return APP.post(path,
                     headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'},
-                    params={'submit': staff.EXPORT_CSV})
+                    params=data)
 
 
-class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
+class StatefulTestRoutesWithProgramAuto(StatefulTestRoutesWithProgram):
   """Automatically test all routes to ensure they don't crash."""
   _multiprocess_can_split_ = True
 
@@ -89,46 +87,47 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
   def get_test_function(route_info, method):
 
     path = route_info['template']
-    test_data = route_info['test_data']
+    url_params = route_info['url_params']
+    post_data = route_info['post_data']
     name = route_info['name']
 
     def get(_self):
       if '<' in path:
-        if not test_data:
-          _self.skipTest("GET route {0} is parametrized, requires test data".format(name))
+        if not url_params:
+          _self.skipTest("GET route {0} is parametrized, requires test url_params".format(name))
           return
+        raise NotImplementedError("")
 
       response = _self._get(path)
       _self.assertEquals('200 OK', response.status, msg=str(response))
 
     def post(_self):
-      if not test_data:
-        _self.skipTest("POST route {0} requires test data".format(name))
+      if not post_data:
+        _self.skipTest("POST route {0} requires test post_data".format(name))
         return
 
-      response = _self._post(path)
+      response = _self._post(path, post_data)
       _self.assertEquals('200 OK', response.status, msg=str(response))
+
+    def skip(_self):
+      _self.skipTest("Testing method {0} is not supported".format(method))
 
     if method == 'GET':
       return get
     if method == 'POST':
       return post
-    raise NotImplementedError('method={0} not supported'.format(method))
+    return skip
 
   @staticmethod
   def build():
-    for r in route_lister.RouteLister(main.login_required).route_data:
-      testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r, 'GET')
-      testFunc.__name__ = 'test{}'.format(r['name'])
-      setattr(StatefulTestStaffWithProgramAuto, testFunc.__name__, testFunc)
-
-    for r in route_lister.RouteLister(main.post_routes).route_data:
-      testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r, 'POST')
-      testFunc.__name__ = 'test{}'.format(r['name'])
-      setattr(StatefulTestStaffWithProgramAuto, testFunc.__name__, testFunc)
+    for r in route_lister.RouteLister(main.app.router).route_data:
+      for method in r['allowed_methods']:
+        testFunc = StatefulTestRoutesWithProgramAuto.get_test_function(r, method)
+        testFunc.__name__ = 'test_{}_{}'.format(method, r['name'])
+        setattr(StatefulTestRoutesWithProgramAuto, testFunc.__name__, testFunc)
 
 
-class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
+class StatefulTestRoutesWithProgramCustom(StatefulTestRoutesWithProgram):
   """Test specific routes with a certain degree of intelligence."""
 
   def testStaffHome(self):
@@ -170,7 +169,7 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
         self.assertIn('Being Filled', response.body)
 
         
-StatefulTestStaffWithProgramAuto.build()
+StatefulTestRoutesWithProgramAuto.build()
 
 if __name__ == '__main__':
   unittest.main()

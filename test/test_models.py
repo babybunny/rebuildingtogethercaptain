@@ -481,8 +481,3 @@ class ModelsTest(unittest.TestCase):
     self.assertIn('ORDERITEM', KEYS)
     DeleteAll(KEYS)
     self.assertFalse(KEYS)
-
-  def testRouteParameterInfoExposed(self):
-    KEYS = CreateAll()
-    for key, model in KEYS.items():
-      raise NotImplementedError()

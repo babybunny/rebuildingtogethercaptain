@@ -3,16 +3,11 @@
 https://stackoverflow.com/questions/13078892/in-webapp2-how-can-i-get-a-list-of-all-route-uris
 """
 import main
-from room import ndb_models
 
-ROUTE_TEST_DATA = {
-  # 'Staff': {'model': ndb_models.Staff}
-  ''
-}
 
 class RouteLister(object):
 
-  def __init__(self, router=main.login_required):
+  def __init__(self, router=main.app.router):
     self._default_router = router
     self.route_data = None
     self._populate()
@@ -35,23 +30,26 @@ class RouteLister(object):
     else:
       return handler.__doc__
 
+  def _route_to_dict(self, route):
+    cur_template = route.template
+    cur_handler = route.handler
+    cur_method = route.handler_method
+    cur_doc = self._get_doc(cur_handler, cur_method)
+    r = {'template': cur_template,
+         'handler': cur_handler,
+         'method': cur_method,
+         'allowed_methods': route.methods or ['GET'],
+         'doc': cur_doc,
+         'name': route.name,
+         'url_params': getattr(route, 'url_params', None),
+         'post_data': getattr(route, 'post_data', None), }
+    return r
+
   def _populate(self):
     self.route_data = []
-    for i in self._get_routes():
-      if hasattr(i, 'handler'):
-        # I think this means it's a route, not a path prefix
-        cur_template = i.template
-        cur_handler  = i.handler
-        cur_method   = i.handler_method
-        cur_doc      = self._get_doc(cur_handler,cur_method)
-        cur_test_data = ROUTE_TEST_DATA.get(i.name)
-        r = {'template':cur_template,
-             'handler':cur_handler,
-             'method':cur_method,
-             'doc':cur_doc,
-             'name': i.name,
-             'test_data': cur_test_data}
-        self.route_data.append(r)
+    for route in self._get_routes():
+      if hasattr(route, 'handler'):
+        self.route_data.append(self._route_to_dict(route))
       else:
-        r = self._get_routes(i)
-        self.route_data.extend(r)
+        route_data_list = map(self._route_to_dict, self._get_routes(route))
+        self.route_data.extend(route_data_list)
