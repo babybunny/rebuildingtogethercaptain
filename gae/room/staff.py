@@ -121,10 +121,21 @@ class CaptainAutocomplete(AutocompleteHandler):
 
 
 class SiteView(StaffHandler):
-  def get(self, id=None):
-    if id:
-      id = int(id)
-      site = ndb.Key(ndb_models.NewSite, id).get()
+  def get(self):
+    if 'id' not in self.request.GET:
+      msg = "{0} url expects an id query parameter".format(self.__class__.__name__)
+      logging.error(msg)
+      self.response.set_status(500)
+      self.response.write(msg)
+      return
+    id = int(self.request.GET['id'])
+    site = ndb.Key(ndb_models.NewSite, id).get()
+    if site is None:
+      msg = "site id {0} was not recognized".format(id)
+      logging.error(msg)
+      self.response.set_status(404)
+      self.response.write(msg)
+      return
     d = dict(
       map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
     )

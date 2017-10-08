@@ -1,7 +1,8 @@
 """Functional tests for staff views."""
 
 import unittest
-
+import path_utils
+path_utils.fix_sys_path()
 from webtest import TestApp
 
 import app_engine_test_utils
@@ -141,7 +142,7 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     self.assertIn('Miss Captain', str(response))
 
   def testSiteView(self):
-    response = self._get('/room/site/view/{:d}/'.format(self.keys['SITE'].integer_id()))
+    response = self._get('/room/site/view?id={:d}'.format(self.keys['SITE'].integer_id()))
     self.assertEquals('200 OK', response.status)
     self.assertIn('2011 Test', response.body)
     self.assertIn('110TEST', response.body)
@@ -154,12 +155,12 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     self.assertIn('My First Item', response.body)
     self.assertIn('Acorn City', response.body)
 
-    def testOrderReconcile(self):
-        response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
-        self.assertEquals('200 OK', response.status)
-        self.assertIn('Being Filled', response.body)
+  def testOrderReconcile(self):
+    response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
+    self.assertEquals('200 OK', response.status)
+    self.assertIn('Being Filled', response.body)
 
-        
+
 StatefulTestStaffWithProgramAuto.build()
 
 if __name__ == '__main__':

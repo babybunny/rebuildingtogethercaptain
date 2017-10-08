@@ -200,13 +200,13 @@ login_required = routes.PathPrefixRoute('/room', [
   #               name='Example'),
 
 
-  webapp2.Route(r'/site/view/<id:\d+>/',
+  webapp2.Route(r'/site/view',
                 staff.SiteView,
                 name='SiteView'),
   webapp2.Route(r'/site/lookup/<site_number:\w+>',
                 staff.SiteLookup,
                 name='SiteLookup'),
-  webapp2.Route(r'/site/list/<id:\d+>/',  # back compat
+  webapp2.Route(r'/site/list',  # back compat
                 staff.SiteView,
                 name='SiteViewBackCompat'),
   webapp2.Route(r'/site/<id:\d*>',
