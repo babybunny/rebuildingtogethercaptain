@@ -7,7 +7,7 @@ from webtest import TestApp
 
 import app_engine_test_utils
 from gae import main
-from gae.room import staff
+from gae.room import staff, ndb_models
 from test import route_lister
 from test import test_models
 
@@ -142,11 +142,13 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     self.assertIn('Miss Captain', str(response))
 
   def testSiteView(self):
-    response = self._get('/room/site/view?id={:d}'.format(self.keys['SITE'].integer_id()))
-    self.assertEquals('200 OK', response.status)
-    self.assertIn('2011 Test', response.body)
-    self.assertIn('110TEST', response.body)
-    self.assertIn('Miss Captain', response.body)
+    models = ndb_models.NewSite().query()
+    self.assertGreater(models.count(), 0, "No NewSite Test data found")
+    for model in models:
+      response = self._get('/room/site/view?id={:d}'.format(model.key.integer_id()))
+      self.assertEquals('200 OK', response.status)
+      self.assertTrue(str(model.name) in response.body)
+      self.assertTrue(str(model.program) in response.body)
 
   def testOrderView(self):
     response = self._get('/room/order_view/{:d}'.format(self.keys['ORDER'].integer_id()))
