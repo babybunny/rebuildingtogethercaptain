@@ -91,11 +91,12 @@ login_required = routes.PathPrefixRoute('/room', [
                 staff.StaffList,
                 name='StaffList',
                 methods=['GET']),
-  TestableRoute(r'/staff/<id:\d*>',
+  TestableRoute(r'/staff?id=<id:\d*>',
                 staff.Staff,
                 name='Staff',
-                url_params={'id': {'model':ndb_models.Staff,
-                                   'parameter': 'id'}}),
+                url_params={'test_models_key': 'STAFF',
+                            'parameter': 'id',
+                            'base_path': r'/staff'}),
 
   webapp2.Route(r'/captain',
                 staff.CaptainList,
@@ -268,7 +269,7 @@ login_required = routes.PathPrefixRoute('/room', [
   #               name='Example'),
 
 
-  webapp2.Route(r'/site/view/<id:\d+>/',
+  webapp2.Route(r'/site/view',
                 staff.SiteView,
                 name='SiteView',
                 methods=['GET']),

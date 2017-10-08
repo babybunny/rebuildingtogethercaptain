@@ -48,7 +48,6 @@ class StaffHandler(webapp2.RequestHandler):
   - user matches an existing Staff record
   - Staff record has a selected Program
   """
-
   def dispatch(self, *a, **k):
     user, status = common.GetUser(self.request)
     if user and user.staff:

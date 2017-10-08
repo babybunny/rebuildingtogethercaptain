@@ -2,7 +2,7 @@
 
 https://stackoverflow.com/questions/13078892/in-webapp2-how-can-i-get-a-list-of-all-route-uris
 """
-import main
+from gae import main
 
 
 class RouteLister(object):

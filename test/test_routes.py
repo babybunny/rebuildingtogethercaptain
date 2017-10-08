@@ -2,11 +2,12 @@
 
 import unittest
 
+import path_utils
+path_utils.fix_sys_path()
 from webtest import TestApp
 
 import app_engine_test_utils
 from gae import main
-from gae.room import staff
 from test import route_lister
 from test import test_models
 
@@ -96,7 +97,11 @@ class StatefulTestRoutesWithProgramAuto(StatefulTestRoutesWithProgram):
         if not url_params:
           _self.skipTest("GET route {0} is parametrized, requires test url_params".format(name))
           return
-        raise NotImplementedError("")
+        model_id = _self.keys[url_params['test_models_key']].integer_id()
+        path = url_params['base_path']
+
+
+
 
       response = _self._get(path)
       _self.assertEquals('200 OK', response.status, msg=str(response))
@@ -124,7 +129,8 @@ class StatefulTestRoutesWithProgramAuto(StatefulTestRoutesWithProgram):
       for method in r['allowed_methods']:
         testFunc = StatefulTestRoutesWithProgramAuto.get_test_function(r, method)
         testFunc.__name__ = 'test_{}_{}'.format(method, r['name'])
-        setattr(StatefulTestRoutesWithProgramAuto, testFunc.__name__, testFunc)
+        if r['name'] == 'Staff':
+          setattr(StatefulTestRoutesWithProgramAuto, testFunc.__name__, testFunc)
 
 
 class StatefulTestRoutesWithProgramCustom(StatefulTestRoutesWithProgram):
@@ -150,7 +156,7 @@ class StatefulTestRoutesWithProgramCustom(StatefulTestRoutesWithProgram):
     self.assertIn('Miss Captain', str(response))
 
   def testSiteView(self):
-    response = self._get('/room/site/view/{:d}/'.format(self.keys['SITE'].integer_id()))
+    response = self._get('/room/site/view?id={:d}'.format(self.keys['SITE'].integer_id()))
     self.assertEquals('200 OK', response.status)
     self.assertIn('2011 Test', response.body)
     self.assertIn('110TEST', response.body)
@@ -163,10 +169,10 @@ class StatefulTestRoutesWithProgramCustom(StatefulTestRoutesWithProgram):
     self.assertIn('My First Item', response.body)
     self.assertIn('Acorn City', response.body)
 
-    def testOrderReconcile(self):
-        response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
-        self.assertEquals('200 OK', response.status)
-        self.assertIn('Being Filled', response.body)
+  def testOrderReconcile(self):
+    response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
+    self.assertEquals('200 OK', response.status)
+    self.assertIn('Being Filled', response.body)
 
         
 StatefulTestRoutesWithProgramAuto.build()
