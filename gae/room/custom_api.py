@@ -154,18 +154,29 @@ class CustomApi(base_api.BaseApi):
         ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
       
     if request.pickup:
-      pickup = protorpc_messages.PickupMessageToModel(
-        request.pickup,
-        ndb_models.Pickup(site=order.site))
+      if request.pickup.id:
+        pickup = ndb.Key(ndb_models.Pickup, request.pickup.id).get()
+        logging.info(pickup)
+      else:
+        pickup = ndb_models.Pickup(site=order.site)
+        
+      protorpc_messages.PickupMessageToModel(request.pickup, pickup)
       pickup.put()
-      ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
+      if not request.pickup.id:
+        ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
+      
     if request.retrieval:
-      retrieval = protorpc_messages.RetrievalMessageToModel(
-        request.retrieval,
-        ndb_models.Retrieval(site=order.site))
+      if request.retrieval.id:
+        retrieval = ndb.Key(ndb_models.Retrieval, request.retrieval.id).get()
+        logging.info(retrieval)
+      else:
+        retrieval = ndb_models.Retrieval(site=order.site)
+        
+      protorpc_messages.RetrievalMessageToModel(request.retrieval, retrieval)
       retrieval.put()
-      ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
-
+      if not request.retrieval.id:
+        ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
+      
     for oimsg in request.order_items:
       oimsg.order = order.key.integer_id()
       protorpc_messages.OrderItemMessageToModel(

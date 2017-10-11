@@ -841,6 +841,8 @@ def PickupModelToMessage(mdl):
 
 
 def PickupMessageToModel(msg, mdl):
+  if msg.id:
+    mdl.id = msg.id
   mdl.pickup_date = msg.pickup_date  # is a string in the datastore!
   mdl.return_date = msg.return_date  # is a string in the datastore!
   mdl.notes = msg.notes
@@ -876,6 +878,8 @@ def RetrievalModelToMessage(mdl):
 
 
 def RetrievalMessageToModel(msg, mdl):
+  if msg.id:
+    mdl.id = msg.id
   mdl.retrieval_date = msg.retrieval_date  # is a string in the datastore!
   mdl.dropoff_date = msg.dropoff_date  # is a string in the datastore!
   mdl.notes = msg.notes
