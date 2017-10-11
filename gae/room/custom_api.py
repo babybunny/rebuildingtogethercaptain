@@ -144,6 +144,9 @@ class CustomApi(base_api.BaseApi):
     if request.delivery:
       if request.delivery.id:
         delivery = ndb.Key(ndb_models.Delivery, request.delivery.id).get()
+        if not delivery:
+          logging.error('no Delivery found with id {}'.format(request.delivery.id))
+          webapp2.abort(404)
       else:
         delivery = ndb_models.Delivery(site=order.site)
         
@@ -155,6 +158,9 @@ class CustomApi(base_api.BaseApi):
     if request.pickup:
       if request.pickup.id:
         pickup = ndb.Key(ndb_models.Pickup, request.pickup.id).get()
+        if not pickup:
+          logging.error('no Pickup found with id {}'.format(request.pickup.id))
+          webapp2.abort(404)
       else:
         pickup = ndb_models.Pickup(site=order.site)
         
@@ -166,6 +172,9 @@ class CustomApi(base_api.BaseApi):
     if request.retrieval:
       if request.retrieval.id:
         retrieval = ndb.Key(ndb_models.Retrieval, request.retrieval.id).get()
+        if not retrieval:
+          logging.error('no Retrieval found with id {}'.format(request.retrieval.id))
+          webapp2.abort(404)
       else:
         retrieval = ndb_models.Retrieval(site=order.site)
         
