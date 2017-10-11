@@ -168,6 +168,7 @@ class OrderSheet(ndb.Model):
   visibility = ndb.StringProperty(choices=('Everyone', 'Staff Only'),
                                   default='Everyone')
   supports_extra_name_on_order = ndb.BooleanProperty(default=False)
+  supports_internal_invoice = ndb.BooleanProperty(default=False)
   code = ndb.StringProperty()
   code.verbose_name = 'Three-letter code like LUM for Lumber'
   instructions = ndb.TextProperty(default='')
@@ -523,6 +524,7 @@ class Order(ndb.Model):
   actual_total = ndb.FloatProperty()
   reconciliation_notes = ndb.TextProperty(default='')
   invoice_date = ndb.DateProperty()
+  internal_invoice = ndb.StringProperty()  # ID of "invoice" for RTP warehouse orders
   vendor = ndb.KeyProperty(kind=Supplier)
   logistics_start = ndb.StringProperty()
   logistics_end = ndb.StringProperty()
