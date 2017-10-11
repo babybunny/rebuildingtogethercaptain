@@ -373,6 +373,11 @@ def CreateAll():
     available_on=datetime.date(2011, 3, 4)
   ).put()
 
+  KEYS['INVOICENUMBER'] = ndb_models.InvoiceNumber(
+    id='global',
+    next_invoice_number=10000
+  ).put()
+
   KEYS['ORDER'] = ndb_models.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],

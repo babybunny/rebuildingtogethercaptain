@@ -39,6 +39,8 @@ class ModelsTest(unittest.TestCase):
   def testOrderInvoice(self):
     o = self.keys['ORDER3'].get()
     self.assertEquals(u'110TEST Fixme Center Safety Materials 0 items $0.00', unicode(o))
-    self.assertIsNull(o.internal_invoice)
-
+    self.assertIsNone(o.internal_invoice)
+    o.SetInvoiceNumber()
+    self.assertIsNotNone(o.internal_invoice)
+    self.assertEquals(10000, o.internal_invoice.get().invoice_number)
     

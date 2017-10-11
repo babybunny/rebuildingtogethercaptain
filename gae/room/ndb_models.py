@@ -513,6 +513,22 @@ class SiteCaptain(ndb.Model):
   ))
 
 
+class InvoiceNumber(ndb.Model):
+  """Simple counter for invoice numbers.
+
+  Currently there's a singleton with a Key(InvoiceNumber, 'global')
+  """
+  next_invoice_number = ndb.IntegerProperty()
+
+
+class OrderInvoice(ndb.Model):
+  """An internal invoice number that an Order can point at.
+
+  Parent is the InvoiceNumber that generates the invoice_number value.
+  """
+  invoice_number = ndb.IntegerProperty()
+
+
 class Order(ndb.Model):
   """A Captain can make an Order for a list of Items."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
@@ -524,7 +540,7 @@ class Order(ndb.Model):
   actual_total = ndb.FloatProperty()
   reconciliation_notes = ndb.TextProperty(default='')
   invoice_date = ndb.DateProperty()
-  internal_invoice = ndb.StringProperty()  # ID of "invoice" for RTP warehouse orders
+  internal_invoice = ndb.KeyProperty(kind=OrderInvoice)
   vendor = ndb.KeyProperty(kind=Supplier)
   logistics_start = ndb.StringProperty()
   logistics_end = ndb.StringProperty()
@@ -558,9 +574,22 @@ class Order(ndb.Model):
     self.program = self.site.get().program
     me = super(Order, self).put(*a, **k)
     self.site.get().RecomputeExpenses()
-    if self.order_sheet.get().supports_internal_invoice:
-      pass
     return me
+
+  @ndb.transactional()
+  def SetInvoiceNumber(self):
+    """Sets order_invoice field to an OrderInvoice with a unique invoice_number."""
+    if self.internal_invoice:
+      return
+    ink = ndb.Key(InvoiceNumber, 'global')
+    ino = ink.get()
+    oio = OrderInvoice(invoice_number=ino.next_invoice_number,
+                       parent=ink)
+    oio.put()
+    ino.next_invoice_number += 1
+    ino.put()
+    self.internal_invoice = oio.key
+
 
   def __unicode__(self):
     return ' '.join((self.site.get().number, self.site.get().name,
