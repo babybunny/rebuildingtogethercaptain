@@ -56,8 +56,8 @@
 	</a>
 	{% endif %}
 	-
-	<a href="{{ webapp2.uri_for('Order', site_id=order.site.integer_id(), id=order.key.integer_id()) }}">
-	  Edit
+	<a href="{{ webapp2.uri_for('OrderFlow', site_id=order.site.integer_id(), id=order.key.integer_id()) }}">
+	  Change
 	</a>
 	</span>
 	{{ order.state }}	
