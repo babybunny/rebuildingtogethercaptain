@@ -1,6 +1,7 @@
 """Non-CRU API and composite messages"""
 
 import logging
+import webapp2
 
 from google.appengine.ext import ndb
 from protorpc import message_types
