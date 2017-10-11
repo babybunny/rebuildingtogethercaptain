@@ -131,6 +131,11 @@ editable columns</span> and change the status to "Reconciled".
       <th>
 	Invoice Date
       </th>
+      {% if order_sheet.supports_internal_invoice %}
+      <th>
+	Internal Invoice 
+      </th>
+      {% endif %}
       <th>
 	Vendor
       </th>
@@ -186,6 +191,13 @@ editable columns</span> and change the status to "Reconciled".
 	           name="{{ order.key.integer_id() }}"
 	           >{% if order.invoice_date %}{{ order.invoice_date.strftime("%m/%d/%Y") }}{% endif %}</div>
       </td>
+      {% if order_sheet.supports_internal_invoice %}
+      <td class="editable">
+        <button class="internal-invoice" name="{{ order.key.integer_id() }}">
+          Create Invoice
+        </button>
+      </td>
+      {% endif %}
       <td class="editable">
 	      <span class="sortorder">{% if order.vendor %}{{ order.vendor.get().name }}{% endif %}</span>
 	      <div class="jeditable-vendor"

@@ -325,6 +325,7 @@ def OrderSheetModelToMessage(mdl):
     code=mdl.code,
     name=mdl.name,
     visibility=mdl.visibility,
+    supports_internal_invoice=mdl.supports_internal_invoice,
     instructions=mdl.instructions,
     logistics_instructions=mdl.logistics_instructions,
     delivery_options=mdl.delivery_options,
@@ -341,6 +342,7 @@ def OrderSheetMessageToModel(msg, mdl):
   mdl.code = msg.code
   mdl.name = msg.name
   mdl.visibility = msg.visibility
+  mdl.supports_internal_invoice = msg.supports_internal_invoice
   mdl.instructions = msg.instructions
   mdl.logistics_instructions = msg.logistics_instructions
   mdl.delivery_options = msg.delivery_options
@@ -360,6 +362,7 @@ class OrderSheet(messages.Message):
   default_supplier = messages.IntegerField(4)
   visibility = messages.StringField(5)
   instructions = messages.StringField(6)
+  supports_internal_invoice = messages.BooleanField(11)
   logistics_instructions = messages.StringField(7)
   delivery_options = messages.StringField(8)
   retrieval_options = messages.StringField(9)

@@ -36,6 +36,11 @@ define(
 		            control: "checkbox"
             },
             {
+                name: "supports_internal_invoice",
+                label: "Supports internal invoice numbers",
+		            control: "checkbox"
+            },
+            {
                 name: "code",
                 label: "Code",
                 control: "input",
