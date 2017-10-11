@@ -198,7 +198,7 @@ class CustomApi(base_api.BaseApi):
     mdl = ndb.Key(ndb_models.Order, request.id).get()
     if not mdl:
       raise remote.ApplicationError(
-        'No {} found with key {}'.format(Order, request.id))
+        'No Order found with key {}'.format(request.id))
     self._order_full_put(request, mdl)
     return message_types.VoidMessage()
 
