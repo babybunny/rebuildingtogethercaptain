@@ -10,7 +10,7 @@
 <h2>Make an Order</h2>
 <p>
   <a id='rooms-form-after-save' href='{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}'>Back to Site #{{ site.number }}</a>
-  {% if user.staff %}
+  {% if user.staff and order %}
   |
 	<a href="{{ webapp2.uri_for('Order', site_id=order.site.integer_id(), id=order.key.integer_id()) }}">
 		Edit Raw Order
