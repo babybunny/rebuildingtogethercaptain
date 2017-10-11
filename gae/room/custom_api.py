@@ -125,9 +125,11 @@ class CustomApi(base_api.BaseApi):
 
     return res
 
-  def _order_full_put(self, request):
+  def _order_full_put(self, request, order=None):
     # TODO ndb.start_transaction ...
-    order = protorpc_messages.OrderMessageToModel(request.order, ndb_models.Order())
+    if order is None:
+      order = ndb_models.Order()
+    order = protorpc_messages.OrderMessageToModel(request.order, order)
     sub_total = 0.
     for oimsg in request.order_items:
       if oimsg.quantity:
@@ -140,24 +142,41 @@ class CustomApi(base_api.BaseApi):
     order.put()
 
     if request.delivery:
-      delivery = protorpc_messages.DeliveryMessageToModel(
-        request.delivery,
-        ndb_models.Delivery(site=order.site))
+      if request.delivery.id:
+        delivery = ndb.Key(ndb_models.Delivery, request.delivery.id).get()
+        logging.info(delivery)
+      else:
+        delivery = ndb_models.Delivery(site=order.site)
+        
+      protorpc_messages.DeliveryMessageToModel(request.delivery, delivery)
       delivery.put()
-      ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+      if not request.delivery.id:
+        ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+      
     if request.pickup:
-      pickup = protorpc_messages.PickupMessageToModel(
-        request.pickup,
-        ndb_models.Pickup(site=order.site))
+      if request.pickup.id:
+        pickup = ndb.Key(ndb_models.Pickup, request.pickup.id).get()
+        logging.info(pickup)
+      else:
+        pickup = ndb_models.Pickup(site=order.site)
+        
+      protorpc_messages.PickupMessageToModel(request.pickup, pickup)
       pickup.put()
-      ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
+      if not request.pickup.id:
+        ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
+      
     if request.retrieval:
-      retrieval = protorpc_messages.RetrievalMessageToModel(
-        request.retrieval,
-        ndb_models.Retrieval(site=order.site))
+      if request.retrieval.id:
+        retrieval = ndb.Key(ndb_models.Retrieval, request.retrieval.id).get()
+        logging.info(retrieval)
+      else:
+        retrieval = ndb_models.Retrieval(site=order.site)
+        
+      protorpc_messages.RetrievalMessageToModel(request.retrieval, retrieval)
       retrieval.put()
-      ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
-
+      if not request.retrieval.id:
+        ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
+      
     for oimsg in request.order_items:
       oimsg.order = order.key.integer_id()
       protorpc_messages.OrderItemMessageToModel(
@@ -180,7 +199,7 @@ class CustomApi(base_api.BaseApi):
     if not mdl:
       raise remote.ApplicationError(
         'No {} found with key {}'.format(Order, request.id))
-    self._order_full_put(request)
+    self._order_full_put(request, mdl)
     return message_types.VoidMessage()
 
   @remote.method(protorpc_messages.SimpleId, SiteCaptains)

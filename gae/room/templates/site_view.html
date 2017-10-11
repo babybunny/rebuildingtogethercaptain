@@ -366,21 +366,14 @@
 	              </td>
 	              <td>
 	                {{ order.state }}
-	                {% if order.CanMakeChanges %}
-                  {#
+	                {% if order.CanMakeChanges() %}
 	                <br>
-	                <a href="{{ webapp2.uri_for('OrderEdit', args=[order.key.integer_id()]) }}">
-		                make changes
+	                <a href="{{ webapp2.uri_for('OrderFlow', site_id=site.key.integer_id(), id=order.key.integer_id()) }}">
+	                  make changes
 	                </a>
-                  #}
-	                {% if user.staff %}
-	                <a href="{{ webapp2.uri_for('OrderView', id=order.key.integer_id()) }}">
-		                view
-	                </a>
-	                {% endif %}
 	                {% else %}
 	                <br>
-	                <a href="{{ webapp2.uri_for('OrderView', args=[order.key.integer_id()]) }}">
+	                <a href="{{ webapp2.uri_for('OrderView', id=order.key.integer_id()) }}">
 		                view
 	                </a>
 	                {% endif %}

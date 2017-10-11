@@ -33,6 +33,10 @@ $(function() {
 {%block about_this_page %}
 <h2>View an Order</h2>
 <p>
+  <a href="{{ webapp2.uri_for('OrderFlow', site_id=site.key.integer_id(), id=order.key.integer_id()) }}">Make Changes</a>
+  |
+  <a href="{{ webapp2.uri_for('Order', site_id=site.key.integer_id(), id=order.key.integer_id()) }}">Edit Raw Order</a>
+  |
   <a id='rooms-form-after-save' href='{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}'>Back to Site #{{ site.number }}</a>
 </p>
 {% endblock %}
