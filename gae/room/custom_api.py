@@ -144,7 +144,6 @@ class CustomApi(base_api.BaseApi):
     if request.delivery:
       if request.delivery.id:
         delivery = ndb.Key(ndb_models.Delivery, request.delivery.id).get()
-        logging.info(delivery)
       else:
         delivery = ndb_models.Delivery(site=order.site)
         
@@ -156,7 +155,6 @@ class CustomApi(base_api.BaseApi):
     if request.pickup:
       if request.pickup.id:
         pickup = ndb.Key(ndb_models.Pickup, request.pickup.id).get()
-        logging.info(pickup)
       else:
         pickup = ndb_models.Pickup(site=order.site)
         
@@ -168,7 +166,6 @@ class CustomApi(base_api.BaseApi):
     if request.retrieval:
       if request.retrieval.id:
         retrieval = ndb.Key(ndb_models.Retrieval, request.retrieval.id).get()
-        logging.info(retrieval)
       else:
         retrieval = ndb_models.Retrieval(site=order.site)
         
