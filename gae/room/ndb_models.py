@@ -558,6 +558,8 @@ class Order(ndb.Model):
     self.program = self.site.get().program
     me = super(Order, self).put(*a, **k)
     self.site.get().RecomputeExpenses()
+    if self.order_sheet.get().supports_internal_invoice:
+      pass
     return me
 
   def __unicode__(self):

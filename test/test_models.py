@@ -276,6 +276,17 @@ def CreateAll():
     pickup_options='No',
     visibility='Staff Only'
   ).put()
+  KEYS['ORDERSHEET5'] = ndb_models.OrderSheet(
+    # no default_supplier
+    name='Safety Materials',
+    code='SAF',
+    instructions='These are safety materials from RTP warehouse',
+    delivery_options='No',
+    retrieval_options='No',
+    pickup_options='Yes',
+    visibility='Everyone',
+    supports_internal_invoice=True
+  ).put()
 
   KEYS['ITEM'] = ndb_models.Item(
     bar_code_number=1234,
@@ -391,6 +402,14 @@ def CreateAll():
     logistics_start='a logistic start',
     logistics_end='a logistic end',
     logistics_instructions='''another logistic instruction'''
+  ).put()
+
+  KEYS['ORDER3'] = ndb_models.Order(
+    site=KEYS['SITE'],
+    order_sheet=KEYS['ORDERSHEET5'],
+    program='2011 Test',
+    notes='''These are nice.''',
+    state='Being Filled',
   ).put()
 
   KEYS['DELIVERY'] = ndb_models.Delivery(
