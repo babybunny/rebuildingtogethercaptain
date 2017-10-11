@@ -597,7 +597,14 @@ class OrderView(StaffHandler):
 class OrderFlow(StaffHandler):
   def get(self, site_id, id=None):
     site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
+    if not site:
+      webapp2.abort(404)
     d = dict(site=site)
+    if id:
+      order = ndb.Key(ndb_models.Order, int(id)).get()
+      if not order:
+        webapp2.abort(404)
+      d['order'] = order
     return common.Respond(self.request, 'order_flow', d)
 
 
