@@ -806,6 +806,8 @@ def DeliveryModelToMessage(mdl):
 
 
 def DeliveryMessageToModel(msg, mdl):
+  if msg.id:
+    mdl.id = msg.id
   mdl.delivery_date = msg.delivery_date  # is a string in the datastore!
   mdl.notes = msg.notes
   mdl.contact = msg.contact

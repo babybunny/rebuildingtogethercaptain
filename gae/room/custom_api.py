@@ -125,9 +125,11 @@ class CustomApi(base_api.BaseApi):
 
     return res
 
-  def _order_full_put(self, request):
+  def _order_full_put(self, request, order=None):
     # TODO ndb.start_transaction ...
-    order = protorpc_messages.OrderMessageToModel(request.order, ndb_models.Order())
+    if order is None:
+      order = ndb_models.Order()
+    order = protorpc_messages.OrderMessageToModel(request.order, order)
     sub_total = 0.
     for oimsg in request.order_items:
       if oimsg.quantity:
@@ -140,11 +142,17 @@ class CustomApi(base_api.BaseApi):
     order.put()
 
     if request.delivery:
-      delivery = protorpc_messages.DeliveryMessageToModel(
-        request.delivery,
-        ndb_models.Delivery(site=order.site))
+      if request.delivery.id:
+        delivery = ndb.Key(ndb_models.Delivery, request.delivery.id).get()
+        logging.info(delivery)
+      else:
+        delivery = ndb_models.Delivery(site=order.site)
+        
+      protorpc_messages.DeliveryMessageToModel(request.delivery, delivery)
       delivery.put()
-      ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+      if not request.delivery.id:
+        ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+      
     if request.pickup:
       pickup = protorpc_messages.PickupMessageToModel(
         request.pickup,
@@ -180,7 +188,7 @@ class CustomApi(base_api.BaseApi):
     if not mdl:
       raise remote.ApplicationError(
         'No {} found with key {}'.format(Order, request.id))
-    self._order_full_put(request)
+    self._order_full_put(request, mdl)
     return message_types.VoidMessage()
 
   @remote.method(protorpc_messages.SimpleId, SiteCaptains)
