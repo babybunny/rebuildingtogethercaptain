@@ -2,7 +2,8 @@
 
 import os
 import unittest
-
+import path_utils
+path_utils.fix_sys_path()
 from webtest import TestApp
 
 import app_engine_test_utils
