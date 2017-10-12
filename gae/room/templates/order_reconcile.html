@@ -192,10 +192,8 @@ editable columns</span> and change the status to "Reconciled".
 	           >{% if order.invoice_date %}{{ order.invoice_date.strftime("%m/%d/%Y") }}{% endif %}</div>
       </td>
       {% if order_sheet.supports_internal_invoice %}
-      <td class="editable">
-        <button class="internal-invoice" name="{{ order.key.integer_id() }}">
-          Create Invoice
-        </button>
+      <td>
+        <a target="_print" href="{{ webapp2.uri_for('OrderInvoice', order_id=order.key.integer_id()) }}">Print Invoice</a>
       </td>
       {% endif %}
       <td class="editable">

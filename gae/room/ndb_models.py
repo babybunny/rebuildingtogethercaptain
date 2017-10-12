@@ -576,19 +576,24 @@ class Order(ndb.Model):
     self.site.get().RecomputeExpenses()
     return me
 
-  @ndb.transactional()
   def SetInvoiceNumber(self):
     """Sets order_invoice field to an OrderInvoice with a unique invoice_number."""
     if self.internal_invoice:
       return
-    ink = ndb.Key(InvoiceNumber, 'global')
-    ino = ink.get()
-    oio = OrderInvoice(invoice_number=ino.next_invoice_number,
-                       parent=ink)
-    oio.put()
-    ino.next_invoice_number += 1
-    ino.put()
-    self.internal_invoice = oio.key
+
+    @ndb.transactional()
+    def _NewInvoiceNumber():
+      ink = ndb.Key(InvoiceNumber, 'global')
+      ino = ink.get()
+      oio = OrderInvoice(invoice_number=ino.next_invoice_number,
+                         parent=ink)
+      oio.put()
+      ino.next_invoice_number += 1
+      ino.put()
+      return oio.key
+
+    self.internal_invoice = _NewInvoiceNumber()
+    self.put()
 
 
   def __unicode__(self):

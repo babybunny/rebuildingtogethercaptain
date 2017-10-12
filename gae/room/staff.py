@@ -789,6 +789,23 @@ class OrderReconcile(StaffHandler):
     return common.Respond(self.request, 'order_reconcile', d)
 
 
+class OrderInvoice(StaffHandler):
+  def get(self, order_id):
+    """Print an internal invoice for an order."""
+    order = ndb.Key(ndb_models.Order, int(order_id)).get()
+    if not order:
+      return webapp2.abort(400)
+    q = ndb_models.OrderItem.query(ndb_models.OrderItem.order == order.key)
+    order_items = [oi for oi in q if oi.FloatQuantity()]
+    _SortOrderItemsWithSections(order_items)
+    order.SetInvoiceNumber()
+    d = {'order': order,
+         'order_items': order_items,
+         'site': order.site.get(),
+         }
+    return common.Respond(self.request, 'order_invoice', d)
+    
+
 def _ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
   """Changes an order field based on POST data from jeditable."""
   user, _ = common.GetUser(request)
