@@ -595,7 +595,6 @@ class Order(ndb.Model):
     self.internal_invoice = _NewInvoiceNumber()
     self.put()
 
-
   def __unicode__(self):
     return ' '.join((self.site.get().number, self.site.get().name,
                      self.order_sheet.get().name,
