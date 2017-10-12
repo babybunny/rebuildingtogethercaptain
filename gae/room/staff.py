@@ -808,7 +808,6 @@ class OrderInvoice(StaffHandler):
 
 def _ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
   """Changes an order field based on POST data from jeditable."""
-  user, _ = common.GetUser(request)
   if not request.POST:
     return webapp2.abort(400)
   order = ndb.Key(ndb_models.Order, int(order_id)).get()
