@@ -7,7 +7,7 @@ from webtest import TestApp
 
 import app_engine_test_utils
 from gae import main
-from test import test_models
+from test import test_models_v1
 
 app = TestApp(main.app)
 
@@ -37,7 +37,7 @@ class StatefulTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-    self.keys = test_models.CreateAll()
+    self.keys = test_models_v1.CreateAll()
 
   def testRootXHeaderStaff(self):
     response = app.get('/', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})

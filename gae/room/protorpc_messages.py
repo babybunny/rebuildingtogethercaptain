@@ -14,7 +14,7 @@ from google.appengine.ext import ndb
 from protorpc import messages
 from protorpc import remote
 
-import ndb_models
+import models_v2
 
 
 class SimpleId(messages.Message):
@@ -255,7 +255,7 @@ def NewSiteMessageToModel(msg, mdl):
   # search_prefixes
 
   if msg.jurisdiction_choice:
-    mdl.jurisdiction_choice = ndb.Key(ndb_models.Jurisdiction, msg.jurisdiction_choice)
+    mdl.jurisdiction_choice = ndb.Key(models_v2.Jurisdiction, msg.jurisdiction_choice)
 
   return mdl
 
@@ -351,7 +351,7 @@ def OrderSheetMessageToModel(msg, mdl):
   # can't set automatic fields:
   # TODO
   if msg.default_supplier:
-    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.default_supplier)
+    mdl.supplier = ndb.Key(models_v2.Supplier, msg.default_supplier)
   return mdl
 
 
@@ -397,11 +397,11 @@ def StaffTimeModelToMessage(mdl):
 def StaffTimeMessageToModel(msg, mdl):
   mdl.program = msg.program
   mdl.description = msg.description
-  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.site = ndb.Key(models_v2.Site, msg.site)
   mdl.hours = msg.hours
   mdl.state = msg.state
   mdl.miles = msg.miles
-  mdl.position = ndb.Key(ndb_models.StaffPosition, msg.position)
+  mdl.position = ndb.Key(models_v2.StaffPosition, msg.position)
   # can't set automatic fields:
   # captain.
 
@@ -457,7 +457,7 @@ def CheckRequestModelToMessage(mdl):
 
 def CheckRequestMessageToModel(msg, mdl):
   mdl.description = msg.description
-  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.site = ndb.Key(models_v2.Site, msg.site)
   mdl.labor_amount = msg.labor_amount
   mdl.materials_amount = msg.materials_amount
   mdl.food_amount = msg.food_amount
@@ -471,7 +471,7 @@ def CheckRequestMessageToModel(msg, mdl):
   if mdl.state == 'new':
     mdl.state = 'submitted'
   if msg.captain:
-    mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+    mdl.captain = ndb.Key(models_v2.Captain, msg.captain)
   try:
     mdl.payment_date = datetime.date(*map(int, msg.payment_date.split('-')))
   except Exception, e:
@@ -525,7 +525,7 @@ def VendorReceiptModelToMessage(mdl):
 def VendorReceiptMessageToModel(msg, mdl):
   mdl.vendor = msg.vendor
   mdl.description = msg.description
-  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.site = ndb.Key(models_v2.Site, msg.site)
   mdl.amount = msg.amount
   mdl.state = msg.state
   # can't set automatic fields
@@ -533,9 +533,9 @@ def VendorReceiptMessageToModel(msg, mdl):
   if mdl.state == 'new':
     mdl.state = 'submitted'
   if msg.captain:
-    mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+    mdl.captain = ndb.Key(models_v2.Captain, msg.captain)
   if msg.supplier:
-    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
+    mdl.supplier = ndb.Key(models_v2.Supplier, msg.supplier)
   try:
     mdl.purchase_date = datetime.date(*map(int, msg.purchase_date.split('-')))
   except Exception, e:
@@ -588,7 +588,7 @@ def InKindDonationMessageToModel(msg, mdl):
   mdl.donor_phone = msg.donor_phone
   mdl.description = msg.description
   mdl.donor_info = msg.donor_info
-  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  mdl.site = ndb.Key(models_v2.Site, msg.site)
   mdl.materials_amount = msg.materials_amount
   mdl.state = msg.state
   mdl.budget = msg.budget
@@ -598,7 +598,7 @@ def InKindDonationMessageToModel(msg, mdl):
   if mdl.state == 'new':
     mdl.state = 'submitted'
   if msg.captain:
-    mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+    mdl.captain = ndb.Key(models_v2.Captain, msg.captain)
   try:
     mdl.donation_date = datetime.date(*map(int, msg.donation_date.split('-')))
   except Exception, e:
@@ -660,9 +660,9 @@ def ItemMessageToModel(msg, mdl):
   mdl.order_form_section = msg.order_form_section
   # can't set automatic fields:
   if msg.appears_on_order_form:
-    mdl.appears_on_order_form = ndb.Key(ndb_models.OrderSheet, msg.appears_on_order_form)
+    mdl.appears_on_order_form = ndb.Key(models_v2.OrderSheet, msg.appears_on_order_form)
   if msg.supplier:
-    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
+    mdl.supplier = ndb.Key(models_v2.Supplier, msg.supplier)
   return mdl
 
 
@@ -712,8 +712,8 @@ def OrderModelToMessage(mdl):
 
 
 def OrderMessageToModel(msg, mdl):
-  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
-  mdl.order_sheet = ndb.Key(ndb_models.OrderSheet, msg.order_sheet)
+  mdl.site = ndb.Key(models_v2.Site, msg.site)
+  mdl.order_sheet = ndb.Key(models_v2.OrderSheet, msg.order_sheet)
   mdl.notes = msg.notes
   mdl.reconciliation_notes = msg.reconciliation_notes
   mdl.logistics_end = msg.logistics_end
@@ -725,7 +725,7 @@ def OrderMessageToModel(msg, mdl):
     mdl.state = msg.state
 
   if msg.vendor:
-    mdl.vendor = ndb.Key(ndb_models.Supplier, msg.vendor)
+    mdl.vendor = ndb.Key(models_v2.Supplier, msg.vendor)
 
   if msg.invoice_date:
     try:
@@ -776,11 +776,11 @@ def OrderItemModelToMessage(mdl):
 def OrderItemMessageToModel(msg, mdl):
   mdl.name = msg.name
   mdl.quantity_float = msg.quantity
-  mdl.item = ndb.Key(ndb_models.Item, msg.item)
-  mdl.order = ndb.Key(ndb_models.Order, msg.order)
+  mdl.item = ndb.Key(models_v2.Item, msg.item)
+  mdl.order = ndb.Key(models_v2.Order, msg.order)
   # can't set automatic fields:
   if msg.supplier:
-    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
+    mdl.supplier = ndb.Key(models_v2.Supplier, msg.supplier)
   return mdl
 
 
@@ -917,8 +917,8 @@ def SiteCaptainModelToMessage(mdl):
 
 
 def SiteCaptainMessageToModel(msg, mdl):
-  mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
-  mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+  mdl.site = ndb.Key(models_v2.Site, msg.site)
+  mdl.captain = ndb.Key(models_v2.Captain, msg.captain)
   mdl.type = msg.type
   # can't set automatic fields:
   # TODO

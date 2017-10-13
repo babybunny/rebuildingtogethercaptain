@@ -7,7 +7,7 @@ path_utils.fix_sys_path()
 from google.appengine.ext import ndb
 from google.appengine.ext.remote_api import remote_api_stub
 
-from test import test_models
+from test import test_models_v1
 
 
 def parse_port_from_command_line_args(default_port=8082):
@@ -38,7 +38,7 @@ def init_stubs_and_models(port=None):
   for key in keys:
     print(key)
 
-  test_models.CreateAll()
+  test_models_v1.CreateAll()
 
 
 if __name__ == '__main__':

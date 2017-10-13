@@ -9,7 +9,7 @@ import webapp2
 from google.appengine.api import mail
 from google.appengine.api import users
 
-import ndb_models
+import models_v2
 
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
@@ -144,10 +144,10 @@ def GetUser(request):
   logging.info(status)
 
   if user and user.email():
-    user.captain = ndb_models.Captain.query(
-      ndb_models.Captain.email == user.email().lower()).get()
-    user.staff = ndb_models.Staff.query(
-      ndb_models.Staff.email == user.email().lower()).get()
+    user.captain = models_v2.Captain.query(
+      models_v2.Captain.email == user.email().lower()).get()
+    user.staff = models_v2.Staff.query(
+      models_v2.Staff.email == user.email().lower()).get()
 
     if user.staff:
       user.programs = PROGRAMS

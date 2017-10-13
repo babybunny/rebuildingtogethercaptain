@@ -11,7 +11,7 @@ import logging
 import unittest
 
 import app_engine_test_utils
-from gae.room import ndb_models
+from gae.room import models_v1
 
 
 def CreateAll():
@@ -20,34 +20,35 @@ def CreateAll():
   Returns: a dict of key name strings to ndb.Model instances. 
   """
   KEYS = dict()
-  KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
+  KEYS['STAFFPOSITION'] = models_v1.StaffPosition(
     position_name="position one",
     hourly_rate=19.19,
     mileage_rate_after_date=["2016-01-01 0.54"],
   ).put()
-  KEYS['STAFFPOSITION2'] = ndb_models.StaffPosition(
+  KEYS['STAFFPOSITION2'] = models_v1.StaffPosition(
     position_name="position two",
     hourly_rate=19.19,
     mileage_rate_after_date=["2016-01-05 0.54"],
   ).put()
-  KEYS['STAFFPOSITION3'] = ndb_models.StaffPosition(
+  KEYS['STAFFPOSITION3'] = models_v1.StaffPosition(
     position_name="position three",
     hourly_rate_after_date=["2016-01-01 10.00", "2017-01-10 20.00"],
     mileage_rate_after_date=["2016-01-01 0.54", "2017-01-10 0.58"],
   ).put()
 
-  KEYS['STAFF'] = ndb_models.Staff(
+  KEYS['STAFF'] = models_v1.Staff(
     name="Mister Staff",
     email="rebuildingtogether.staff@gmail.com",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3),
     program_selected="2011 Test",
   ).put()
-  KEYS['STAFF2'] = ndb_models.Staff(
+  KEYS['STAFF2'] = models_v1.Staff(
     name="Mister Staff",
     email="rebuildingtogether.staff2@gmail.com",
+    program_selected="2012 Test"
   ).put()
 
-  KEYS['CAPTAIN'] = ndb_models.Captain(
+  KEYS['CAPTAIN'] = models_v1.Captain(
     name="Miss Captain",
     email="rebuildingtogether.capn@gmail.com",
     rooms_id="R00001",
@@ -57,27 +58,27 @@ def CreateAll():
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
   ).put()
 
-  KEYS['PROGRAM'] = ndb_models.Program(
+  KEYS['PROGRAM'] = models_v1.Program(
     year=2011,
     name="TEST",
     site_number_prefix="110",
     status="Active"
   ).put()
-  KEYS['PROGRAM2'] = ndb_models.Program(
+  KEYS['PROGRAM2'] = models_v1.Program(
     year=2012,
     name="TEST",
     site_number_prefix="120",
     status="Active"
   ).put()
 
-  KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
+  KEYS['JURISDICTION'] = models_v1.Jurisdiction(
     name="FunkyTown"
   ).put()
-  KEYS['JURISDICTION2'] = ndb_models.Jurisdiction(
+  KEYS['JURISDICTION2'] = models_v1.Jurisdiction(
     name="Unicorn Town"
   ).put()
 
-  KEYS['SUPPLIER'] = ndb_models.Supplier(
+  KEYS['SUPPLIER'] = models_v1.Supplier(
     name='House of Supply',
     email='supplier@example.com',
     address='123 Supplier St, Main City, CA 99999',
@@ -85,7 +86,7 @@ def CreateAll():
     phone2='650 555 2222',
     notes="""Supplier notes value""",
   ).put()
-  KEYS['SUPPLIER2'] = ndb_models.Supplier(
+  KEYS['SUPPLIER2'] = models_v1.Supplier(
     name='Joe\'s Home of Paint',
     email='paint@example.com',
     address='888 Paint Pl, Main City, CA 99999',
@@ -94,7 +95,7 @@ def CreateAll():
     notes="""Paint supplier notes""",
   ).put()
 
-  KEYS['SITE'] = ndb_models.NewSite(
+  KEYS['SITE'] = models_v1.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION'],
     number='110TEST',
     program='2011 Test',
@@ -117,7 +118,7 @@ def CreateAll():
     volunteer_signup_link='volunteer signup link value',
   ).put()
 
-  KEYS['SITE2'] = ndb_models.NewSite(
+  KEYS['SITE2'] = models_v1.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION'],
     number='120TEST',
     program='2010 NRD',
@@ -140,7 +141,7 @@ def CreateAll():
     volunteer_signup_link='volunteer signup link value',
   ).put()
 
-  KEYS['SITE3'] = ndb_models.NewSite(
+  KEYS['SITE3'] = models_v1.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION2'],
     number='111TEST',
     program='2011 Test',
@@ -163,13 +164,13 @@ def CreateAll():
     volunteer_signup_link='volunteer signup link value',
   ).put()
 
-  KEYS['SITECAPTAIN'] = ndb_models.SiteCaptain(
+  KEYS['SITECAPTAIN'] = models_v1.SiteCaptain(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     type='Construction'
   ).put()
 
-  KEYS['STAFFTIME'] = ndb_models.StaffTime(
+  KEYS['STAFFTIME'] = models_v1.StaffTime(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     position=KEYS['STAFFPOSITION'],
@@ -181,7 +182,7 @@ def CreateAll():
     description="""Description of the time that staff spent."""
   ).put()
 
-  KEYS['STAFFTIME2'] = ndb_models.StaffTime(
+  KEYS['STAFFTIME2'] = models_v1.StaffTime(
     site=KEYS['SITE'],
     # captain=None,
     # position=None,
@@ -193,7 +194,7 @@ def CreateAll():
     description="""This is a legacy record for an uninitialized object."""
   ).put()
 
-  KEYS['CHECKREQUEST'] = ndb_models.CheckRequest(
+  KEYS['CHECKREQUEST'] = models_v1.CheckRequest(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     program='2011 Test',
@@ -209,12 +210,12 @@ def CreateAll():
     state='submitted',
   ).put()
 
-  KEYS['CHECKREQUEST2'] = ndb_models.CheckRequest(
+  KEYS['CHECKREQUEST2'] = models_v1.CheckRequest(
     site=KEYS['SITE'],
     state='new',
   ).put()
 
-  KEYS['VENDORRECEIPT'] = ndb_models.VendorReceipt(
+  KEYS['VENDORRECEIPT'] = models_v1.VendorReceipt(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     program='2011 Test',
@@ -225,7 +226,7 @@ def CreateAll():
     state='submitted',
   ).put()
 
-  KEYS['INKINDDONATION'] = ndb_models.InKindDonation(
+  KEYS['INKINDDONATION'] = models_v1.InKindDonation(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     program='2011 Test',
@@ -239,7 +240,7 @@ def CreateAll():
     state='submitted',
   ).put()
 
-  KEYS['ORDERSHEET'] = ndb_models.OrderSheet(
+  KEYS['ORDERSHEET'] = models_v1.OrderSheet(
     default_supplier=KEYS['SUPPLIER'],
     name='Some Supplies',
     code='SOM',
@@ -247,7 +248,7 @@ def CreateAll():
     logistics_instructions="""Pick these up somewhere nice.""",
     delivery_options='Yes',
   ).put()
-  KEYS['ORDERSHEET2'] = ndb_models.OrderSheet(
+  KEYS['ORDERSHEET2'] = models_v1.OrderSheet(
     # no default_supplier
     name='Some More Supplies',
     code='SMS',
@@ -255,7 +256,7 @@ def CreateAll():
     logistics_instructions="""Pick these up somewhere nice.""",
     delivery_options='Yes',
   ).put()
-  KEYS['ORDERSHEET3'] = ndb_models.OrderSheet(
+  KEYS['ORDERSHEET3'] = models_v1.OrderSheet(
     # no default_supplier
     name='Debris Box',
     code='DEB',
@@ -266,7 +267,7 @@ def CreateAll():
     pickup_options='No',
     visibility='Everyone'
   ).put()
-  KEYS['ORDERSHEET4'] = ndb_models.OrderSheet(
+  KEYS['ORDERSHEET4'] = models_v1.OrderSheet(
     # no default_supplier
     name='VOID',
     code='VOI',
@@ -276,7 +277,7 @@ def CreateAll():
     pickup_options='No',
     visibility='Staff Only'
   ).put()
-  KEYS['ORDERSHEET5'] = ndb_models.OrderSheet(
+  KEYS['ORDERSHEET5'] = models_v1.OrderSheet(
     # no default_supplier
     name='Safety Materials',
     code='SAF',
@@ -288,7 +289,7 @@ def CreateAll():
     supports_internal_invoice=True
   ).put()
 
-  KEYS['ITEM'] = ndb_models.Item(
+  KEYS['ITEM'] = models_v1.Item(
     bar_code_number=1234,
     name='My First Item',
     appears_on_order_form=KEYS['ORDERSHEET'],
@@ -302,7 +303,7 @@ def CreateAll():
     supports_extra_name_on_order=False,
   ).put()
 
-  KEYS['ITEM2'] = ndb_models.Item(
+  KEYS['ITEM2'] = models_v1.Item(
     bar_code_number=1234,
     name='My Second Item',
     appears_on_order_form=KEYS['ORDERSHEET'],
@@ -316,7 +317,7 @@ def CreateAll():
     supports_extra_name_on_order=True,
   ).put()
 
-  KEYS['ITEM3'] = ndb_models.Item(
+  KEYS['ITEM3'] = models_v1.Item(
     bar_code_number=1255,
     name='My Third Item',
     appears_on_order_form=KEYS['ORDERSHEET'],
@@ -330,7 +331,7 @@ def CreateAll():
     supports_extra_name_on_order=False,
   ).put()
 
-  KEYS['ITEM4'] = ndb_models.Item(
+  KEYS['ITEM4'] = models_v1.Item(
     bar_code_number=1256,
     name='My Fourth Item',
     appears_on_order_form=KEYS['ORDERSHEET'],
@@ -344,7 +345,7 @@ def CreateAll():
     supports_extra_name_on_order=False,
   ).put()
 
-  KEYS['ITEM5'] = ndb_models.Item(
+  KEYS['ITEM5'] = models_v1.Item(
     bar_code_number=1256,
     name='Some More Item',
     appears_on_order_form=KEYS['ORDERSHEET2'],
@@ -356,7 +357,7 @@ def CreateAll():
     # None url='http://example.com/item4',
     supports_extra_name_on_order=True,
   ).put()
-  KEYS['ITEM6'] = ndb_models.Item(
+  KEYS['ITEM6'] = models_v1.Item(
     name='A deleted Item',
     appears_on_order_form=KEYS['ORDERSHEET4'],
     description="""This item has been discontinued.""",
@@ -365,7 +366,7 @@ def CreateAll():
     supplier=KEYS['SUPPLIER'],
   ).put()
 
-  KEYS['INVENTORYITEM'] = ndb_models.InventoryItem(
+  KEYS['INVENTORYITEM'] = models_v1.InventoryItem(
     item=KEYS['ITEM'],
     quantity=0,
     quantity_float=0.0,
@@ -373,12 +374,12 @@ def CreateAll():
     available_on=datetime.date(2011, 3, 4)
   ).put()
 
-  KEYS['INVOICENUMBER'] = ndb_models.InvoiceNumber(
+  KEYS['INVOICENUMBER'] = models_v1.InvoiceNumber(
     id='global',
     next_invoice_number=10000
   ).put()
 
-  KEYS['ORDER'] = ndb_models.Order(
+  KEYS['ORDER'] = models_v1.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
     program='2011 Test',
@@ -393,7 +394,7 @@ def CreateAll():
     logistics_instructions='''a logistic instruction'''
   ).put()
 
-  KEYS['ORDER2'] = ndb_models.Order(
+  KEYS['ORDER2'] = models_v1.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
     program='2011 Test',
@@ -409,7 +410,7 @@ def CreateAll():
     logistics_instructions='''another logistic instruction'''
   ).put()
 
-  KEYS['ORDER3'] = ndb_models.Order(
+  KEYS['ORDER3'] = models_v1.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET5'],
     program='2011 Test',
@@ -417,19 +418,19 @@ def CreateAll():
     state='Being Filled',
   ).put()
 
-  KEYS['DELIVERY'] = ndb_models.Delivery(
+  KEYS['DELIVERY'] = models_v1.Delivery(
     site=KEYS['SITE'],
     delivery_date='Apr 12',
     contact='Joe Delivery',
     notes='''meet me at the side door''',
   ).put()
 
-  KEYS['ORDERDELIVERY'] = ndb_models.OrderDelivery(
+  KEYS['ORDERDELIVERY'] = models_v1.OrderDelivery(
     order=KEYS['ORDER'],
     delivery=KEYS['DELIVERY'],
   ).put()
 
-  KEYS['PICKUP'] = ndb_models.Pickup(
+  KEYS['PICKUP'] = models_v1.Pickup(
     site=KEYS['SITE'],
     pickup_date='Apr 13',
     return_date='Apr 19',
@@ -437,12 +438,12 @@ def CreateAll():
     notes='''meet me at the side door for pickup''',
   ).put()
 
-  KEYS['ORDERPICKUP'] = ndb_models.OrderPickup(
+  KEYS['ORDERPICKUP'] = models_v1.OrderPickup(
     order=KEYS['ORDER'],
     pickup=KEYS['PICKUP'],
   ).put()
 
-  KEYS['RETRIEVAL'] = ndb_models.Retrieval(
+  KEYS['RETRIEVAL'] = models_v1.Retrieval(
     site=KEYS['SITE'],
     dropoff_date='Apr 14',
     retrieval_date='Apr 21',
@@ -451,19 +452,19 @@ def CreateAll():
     notes='''meet me at the side door for retrieval''',
   ).put()
 
-  KEYS['ORDERRETRIEVAL'] = ndb_models.OrderRetrieval(
+  KEYS['ORDERRETRIEVAL'] = models_v1.OrderRetrieval(
     order=KEYS['ORDER'],
     retrieval=KEYS['RETRIEVAL'],
   ).put()
 
-  KEYS['ORDERITEM'] = ndb_models.OrderItem(
+  KEYS['ORDERITEM'] = models_v1.OrderItem(
     order=KEYS['ORDER'],
     item=KEYS['ITEM'],
     supplier=KEYS['SUPPLIER'],
     quantity_float=1.1,
   ).put()
 
-  KEYS['ORDERITEM2'] = ndb_models.OrderItem(
+  KEYS['ORDERITEM2'] = models_v1.OrderItem(
     order=KEYS['ORDER'],
     item=KEYS['ITEM2'],
     supplier=KEYS['SUPPLIER'],
@@ -471,7 +472,7 @@ def CreateAll():
     name='extra name',
   ).put()
 
-  KEYS['ORDERITEM4'] = ndb_models.OrderItem(
+  KEYS['ORDERITEM4'] = models_v1.OrderItem(
     order=KEYS['ORDER'],
     item=KEYS['ITEM4'],
     supplier=KEYS['SUPPLIER'],
@@ -479,7 +480,7 @@ def CreateAll():
   ).put()
 
   """template
-  KEYS['ORDER'] = ndb_models.Order(
+  KEYS['ORDER'] = models_v1.Order(
 
   ).put()
   """

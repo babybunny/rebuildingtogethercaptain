@@ -2,17 +2,17 @@
 import unittest
 
 import app_engine_test_utils
-import test_models
+import test_models_v1
 
 
 class ModelsTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-    self.keys = test_models.CreateAll()
+    self.keys = test_models_v1.CreateAll()
 
   def tearDown(self):
-    test_models.DeleteAll(self.keys)
+    test_models_v1.DeleteAll(self.keys)
 
   def testOrder(self):
     o = self.keys['ORDER'].get()

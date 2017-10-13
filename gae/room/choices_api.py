@@ -6,7 +6,7 @@ from protorpc import remote
 from protorpc.wsgi import service
 
 import base_api
-import ndb_models
+import models_v2
 
 package = 'rooms'
 
@@ -31,7 +31,7 @@ class ChoicesApi(base_api.BaseApi):
   def captain_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.Captain.query().order(ndb_models.Captain.name):
+    for mdl in models_v2.Captain.query().order(models_v2.Captain.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
@@ -40,7 +40,7 @@ class ChoicesApi(base_api.BaseApi):
   def supplier_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.Supplier.query(ndb_models.Supplier.active == 'Active').order(ndb_models.Supplier.name):
+    for mdl in models_v2.Supplier.query(models_v2.Supplier.active == 'Active').order(models_v2.Supplier.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
@@ -49,7 +49,7 @@ class ChoicesApi(base_api.BaseApi):
   def staffposition_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.StaffPosition.query().order(ndb_models.StaffPosition.position_name):
+    for mdl in models_v2.StaffPosition.query().order(models_v2.StaffPosition.position_name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.position_name))
     return choices
 
@@ -58,7 +58,7 @@ class ChoicesApi(base_api.BaseApi):
   def jurisdiction_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.Jurisdiction.query().order(ndb_models.Jurisdiction.name):
+    for mdl in models_v2.Jurisdiction.query().order(models_v2.Jurisdiction.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
@@ -67,7 +67,7 @@ class ChoicesApi(base_api.BaseApi):
   def ordersheet_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name):
+    for mdl in models_v2.OrderSheet.query().order(models_v2.OrderSheet.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 
