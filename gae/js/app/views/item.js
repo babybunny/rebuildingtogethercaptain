@@ -1,7 +1,7 @@
 define(
     [
         'app/views/rooms_form',
-	    'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/supplier_choices',
         'app/models/ordersheet_choices',
         'text!app/templates/simple_form.html'
@@ -13,19 +13,19 @@ define(
                 name: "id",
                 label: "ID",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "bar_code_number",
                 label: "Bar code number",
                 control: "input",
-                    type: "number"
+                type: "number"
             },
             {
                 name: "name",
                 label: "Name",
                 control: "input",
-                    required: true
+                required: true
             },
             {
                 name: "appears_on_order_form",
@@ -37,13 +37,13 @@ define(
                 name: "order_form_section",
                 label: "Order form section",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "description",
                 label: "Description",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "measure",
@@ -92,37 +92,37 @@ define(
                 name: "picture",
                 label: "Picture",
                 control: "input",
-                    type: "file"
+                type: "file"
             },
             {
                 name: "thumbnail",
                 label: "Thumbnail",
                 control: "input",
-                    type: "file"
+                type: "file"
             },
             {
                 name: "supplier",
                 label: "Supplier",
-                    control: ModelSelectControl,
-                    room_model_module: SupplierChoices,
+                control: ModelSelectControl,
+                room_model_module: SupplierChoices,
             },
             {
                 name: "supplier_part_number",
                 label: "Supplier part number",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "url",
                 label: "Url",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "supports_extra_name_on_order",
                 label: "Supports extra name on order",
 		            control: "checkbox",
-                    default: false
+                default: false
             },
             {
                 id: "submit",
