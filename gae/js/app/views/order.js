@@ -12,27 +12,27 @@ define(
                 name: "id",
                 label: "ID",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "site",
                 label: "Site",
                 control: "input",
-                    disabled: true,
-                    required: true
+                disabled: true,
+                required: true
             },
             {
                 name: "order_sheet",
                 label: "Order sheet",
                 control: "input",
-                    disabled: true,
-                    required: true
+                disabled: true,
+                required: true
             },
             {
                 name: "program",
                 label: "Program",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "sub_total",
@@ -43,43 +43,43 @@ define(
                 name: "state",
                 label: "State",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "actual_total",
                 label: "Actual total",
                 control: "input",
-                    helpMessage: "Use this in the rare case when the order's actual total can't be automatically computed correctly."
+                helpMessage: "Use this in the rare case when the order's actual total can't be automatically computed correctly."
             },
             {
                 name: "reconciliation_notes",
                 label: "Reconciliation notes",
                 control: "textarea",
-                    default: ""
+                default: ""
             },
             {
                 name: "invoice_date",
                 label: "Invoice date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"},
+                options: {format: "yyyy-mm-dd"},
             },
             {
                 name: "vendor",
                 label: "Vendor",
-                    control: ModelSelectControl,
-                    room_model_module: SupplierChoices,
+                control: ModelSelectControl,
+                room_model_module: SupplierChoices,
             },
             {
                 name: "logistics_start",
                 label: "Logistics start",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "logistics_end",
                 label: "Logistics end",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "logistics_instructions",

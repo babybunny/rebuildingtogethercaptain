@@ -15,40 +15,40 @@ define(
                 name: "since",
                 label: "Since",
                 control: "input",
-                    type: "date",
-                    format: "yyyy-mm-dd",
-                    disabled: true
+                type: "date",
+                format: "yyyy-mm-dd",
+                disabled: true
             },
             {
                 name: "name",
                 label: "Name",
                 control: "input",
-                    type: "text",
-                    required: true
+                type: "text",
+                required: true
             },
             {
                 name: "email",
                 label: "Email",
                 control: "input",
-                    type: "email"
+                type: "email"
             },
             {
                 name: "address",
                 label: "Address",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "phone1",
                 label: "Phone1",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "phone2",
                 label: "Phone2",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "notes",

@@ -1,8 +1,8 @@
 define(
     [
-	    'bootstrap-datepicker',
+	      'bootstrap-datepicker',
         'app/views/rooms_form',
-	    'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/captain_choices',
         'text!app/templates/simple_form.html'
     ],
@@ -12,7 +12,7 @@ define(
                 name: "id",
                 label: "ID",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "site",
@@ -24,49 +24,49 @@ define(
                 name: "program",
                 label: "Program",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "captain",
                 label: "Captain",
-                    control: ModelSelectControl,
-                    room_model_module: CaptainChoices
+                control: ModelSelectControl,
+                room_model_module: CaptainChoices
             },
             {
                 name: "donation_date",
                 label: "Donation date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"}
+                options: {format: "yyyy-mm-dd"}
             },
             {
                 name: "donor",
                 label: "Donor",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "donor_phone",
                 label: "Donor phone",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "donor_info",
                 label: "Donor info",
                 control: "textarea",
-                    helpMessage: 'Include as much of the following donor information as possible:<br>donor name, company, address, phone, email.'
+                helpMessage: 'Include as much of the following donor information as possible:<br>donor name, company, address, phone, email.'
             },
             {
                 name: "labor_amount",
                 label: "Labor Value ($)",
                 control: "input",
-                    default: 0.0,
+                default: 0.0,
             },
             {
                 name: "materials_amount",
                 label: "Materials Value ($)",
                 control: "input",
-                    default: 0.0
+                default: 0.0
             },
             {
                 name: "description",

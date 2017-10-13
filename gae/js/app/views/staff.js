@@ -9,20 +9,20 @@ define(
                 name: "id",
                 label: "ID",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "name",
                 label: "Name",
                 control: "input",
-                    type: "text"
+                type: "text"
             },
             {
                 name: "email",
                 label: "Email",
                 control: "input",
-                    type: "email",
-                    required: true
+                type: "email",
+                required: true
             },
             {
                 name: "notes",
@@ -33,23 +33,23 @@ define(
                 name: "program_selected",
                 label: "Program selected",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "last_welcome",
                 label: "Last welcome",
                 control: "input",
-                    type: "date",
-                    disabled: true,
-                    format: "yyyy-mm-dd"
+                type: "date",
+                disabled: true,
+                format: "yyyy-mm-dd"
             },
             {
                 name: "since",
                 label: "Since",
                 control: "input",
-                    type: "date",
-                    disabled: true,
-                    format: "yyyy-mm-dd"
+                type: "date",
+                disabled: true,
+                format: "yyyy-mm-dd"
             },
             {
                 id: "submit",

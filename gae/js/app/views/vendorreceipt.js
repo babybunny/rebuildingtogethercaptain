@@ -1,26 +1,30 @@
 define(
     [
-	    'bootstrap-datepicker',
+	      'bootstrap-datepicker',
         'app/views/rooms_form',
-	    'app/views/model_select_control',
+	      'app/views/model_select_control',
         'app/models/captain_choices',
         'app/models/supplier_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(bsdp, RoomFormView, ModelSelectControl,
-             CaptainChoice, SupplierChoice, template) {
+    function(bsdp,
+             RoomFormView,
+             ModelSelectControl,
+             CaptainChoice,
+             SupplierChoice,
+             template) {
         var fields = [
             {
                 name: "id",
                 label: "ID",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "site",
                 label: "Site",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "state",
@@ -43,20 +47,20 @@ define(
                 name: "purchase_date",
                 label: "Purchase Date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"},
-                    required: true
+                options: {format: "yyyy-mm-dd"},
+                required: true
             },
             {
                 name: "captain",
                 label: "Captain",
-                    control: ModelSelectControl,
-                    room_model_module: CaptainChoice
+                control: ModelSelectControl,
+                room_model_module: CaptainChoice
             },
             {
                 name: "supplier",
                 label: "Vendor",
-                    control: ModelSelectControl,
-                    room_model_module: SupplierChoice
+                control: ModelSelectControl,
+                room_model_module: SupplierChoice
             },
             {
                 name: "description",

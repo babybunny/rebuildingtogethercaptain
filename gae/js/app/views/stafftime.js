@@ -3,24 +3,30 @@ define(
         'bootstrap-datepicker',
         'app/views/rooms_form',
 	      'app/views/model_select_control',
-          'app/models/captain_choices',
+        'app/models/captain_choices',
         'app/models/staffposition_choice',
         'text!app/templates/simple_form.html'
     ],
-    function(bsdp, RoomFormView, ModelSelectControl, CaptainChoice, StaffPositionChoice, template) {
+    function(
+        bsdp,
+        RoomFormView,
+        ModelSelectControl,
+        CaptainChoice,
+        StaffPositionChoice,
+        template) {
         var fields = [
             {
                 name: "id",
                 label: "ID",
                 control: "input",
-                    disabled: true
+                disabled: true
             },
             {
                 name: "site",
                 label: "Site",
                 control: "input",
-                    disabled: true,
-                    required: true
+                disabled: true,
+                required: true
             },
             {
                 name: "program",
@@ -30,8 +36,8 @@ define(
             {
                 name: "captain",
                 label: "Captain",
-                    control: ModelSelectControl,
-                    room_model_module: CaptainChoice
+                control: ModelSelectControl,
+                room_model_module: CaptainChoice
             },
             {
                 name: "position",
@@ -64,8 +70,8 @@ define(
                 name: "activity_date",
                 label: "Activity date",
                 control: "datepicker",
-                    options: {format: "yyyy-mm-dd"},
-                    required: true
+                options: {format: "yyyy-mm-dd"},
+                required: true
             },
             {
                 name: "description",

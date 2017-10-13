@@ -29,8 +29,8 @@ define(
             {
                 name: "captain",
                 label: "Captain",
-                    control: ModelSelectControl,
-                    room_model_module: CaptainChoices
+                control: ModelSelectControl,
+                room_model_module: CaptainChoices
             },
             {
                 name: "name",
@@ -43,7 +43,7 @@ define(
                 label: "Payment date",
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
-		           required: true
+		            required: true
             },
             {
                 name: "labor_amount",

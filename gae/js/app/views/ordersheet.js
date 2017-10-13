@@ -13,8 +13,6 @@ define(
                 control: "input",
                 disabled: true
             },
-            // boilerplate
-
             {
                 name: "name",
                 label: "Name",
@@ -65,13 +63,13 @@ define(
                 label: "Default supplier",
                 control: ModelSelectControl,
 		            room_model_module: SupplierChoices,
-                    helpMessage: "Default Supplier, used if Item's supplier is not set."
+                helpMessage: "Default Supplier, used if Item's supplier is not set."
             },
             {
                 name: "delivery_options",
                 label: "Delivery options",
                 control: "select",
-                    default: "No",
+                default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
@@ -82,7 +80,7 @@ define(
                 name: "pickup_options",
                 label: "Pickup options",
                 control: "select",
-                    default: "No",
+                default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
@@ -93,7 +91,7 @@ define(
                 name: "retrieval_options",
                 label: "Retrieval options",
                 control: "select",
-                    default: "No",
+                default: "No",
                 options: [
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
