@@ -168,6 +168,11 @@
         <% if (order_form.retrieval_options == 'Yes') { %>
         <button id="order-proceed-retrieval">Proceed to Retrieval Options</button>
         <% } %>
+        <% if (order_form.delivery_options != 'Yes' &&
+               order_form.pickup_options != 'Yes' &&
+               order_form.retrieval_options != 'Yes') { %>
+        <button id="order-proceed-no-logistics">Save</button>
+        <% } %>
       </td>
     </tr>
 </tbody></table>

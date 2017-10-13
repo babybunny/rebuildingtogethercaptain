@@ -140,6 +140,7 @@ define(
                 'click #order-proceed-pickup': 'renderPickup',
                 'click #order-proceed-retrieval': 'renderRetrieval',
                 'click #order-submit': 'save',
+                'click #order-proceed-no-logistics': 'save',
             },
             savenotes: function(e) {
                 this.order.set('notes', e.target.value);                
