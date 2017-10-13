@@ -158,6 +158,13 @@
     </tr>
     <tr>
       <td>
+        <% if (order_form.delivery_options != 'Yes' &&
+               order_form.pickup_options != 'Yes' &&
+               order_form.retrieval_options != 'Yes') { %>
+        No logistics for this type of order. 
+        <button id="order-proceed-no-logistics">Save</button>
+        <span class="status"></span>
+        <% } else { %>
         Next, set up logistics: 
         <% if (order_form.delivery_options == 'Yes') { %>
         <button id="order-proceed-delivery">Proceed to Delivery Options</button>
@@ -168,10 +175,6 @@
         <% if (order_form.retrieval_options == 'Yes') { %>
         <button id="order-proceed-retrieval">Proceed to Retrieval Options</button>
         <% } %>
-        <% if (order_form.delivery_options != 'Yes' &&
-               order_form.pickup_options != 'Yes' &&
-               order_form.retrieval_options != 'Yes') { %>
-        <button id="order-proceed-no-logistics">Save</button>
         <% } %>
       </td>
     </tr>
