@@ -8,7 +8,7 @@ import app_engine_test_utils
 from gae import main
 from gae.room import staff
 from test import route_lister
-from test import test_models
+from test import test_models_v1
 
 APP = TestApp(main.app)
 
@@ -28,10 +28,10 @@ class StatefulTestNoProgram(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-    self.keys = test_models.CreateAll()
+    self.keys = test_models_v1.CreateAll()
 
   def tearDown(self):
-    test_models.DeleteAll(self.keys)
+    test_models_v1.DeleteAll(self.keys)
 
   def testHomeXHeaderStaff(self):
     response = APP.get('/room/staff_home', headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff2@gmail.com'})
@@ -43,13 +43,13 @@ class StatefulTestCaptain(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-    self.keys = test_models.CreateAll()
+    self.keys = test_models_v1.CreateAll()
     s = self.keys['STAFF'].get()
     s.program_selected = '2011 Test'
     s.put()
 
   def tearDown(self):
-    test_models.DeleteAll(self.keys)
+    test_models_v1.DeleteAll(self.keys)
 
   def _get(self, path):
     return APP.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.capn@gmail.com'})
@@ -63,13 +63,13 @@ class StatefulTestStaffWithProgram(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-    self.keys = test_models.CreateAll()
+    self.keys = test_models_v1.CreateAll()
     s = self.keys['STAFF'].get()
     s.program_selected = '2011 Test'
     s.put()
 
   def tearDown(self):
-    test_models.DeleteAll(self.keys)
+    test_models_v1.DeleteAll(self.keys)
 
   def _get(self, path):
     return APP.get(path, headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})

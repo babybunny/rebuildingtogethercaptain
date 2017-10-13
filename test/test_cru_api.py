@@ -6,7 +6,7 @@ from webtest import TestApp
 
 import app_engine_test_utils
 from gae.room import cru_api
-from test import test_models
+from test import test_models_v1
 
 app = TestApp(cru_api.application)
 
@@ -25,10 +25,10 @@ class BasicCrudTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-    self.keys = test_models.CreateAll()
+    self.keys = test_models_v1.CreateAll()
 
   def tearDown(self):
-    test_models.DeleteAll(self.keys)
+    test_models_v1.DeleteAll(self.keys)
 
 
 def makeTestMethods(name, fields):
@@ -142,10 +142,10 @@ class BugsTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-    self.keys = test_models.CreateAll()
+    self.keys = test_models_v1.CreateAll()
 
   def tearDown(self):
-    test_models.DeleteAll(self.keys)
+    test_models_v1.DeleteAll(self.keys)
 
   def testCheckRequest(self):
     post_json_body = {

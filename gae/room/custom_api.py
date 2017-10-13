@@ -10,7 +10,7 @@ from protorpc import remote
 from protorpc.wsgi import service
 
 import base_api
-import ndb_models
+import models_v2
 import protorpc_messages
 
 package = 'rooms'
@@ -65,14 +65,14 @@ class CustomApi(base_api.BaseApi):
   @remote.method(protorpc_messages.SimpleId, message_types.VoidMessage)
   def sitecaptain_delete(self, request):
     self._authorize_staff()
-    ndb.Key(ndb_models.SiteCaptain, request.id).delete()
+    ndb.Key(models_v2.SiteCaptain, request.id).delete()
     return message_types.VoidMessage()
 
   @remote.method(message_types.VoidMessage,
                  OrderFormChoices)
   def order_form_choices(self, request):
     res = OrderFormChoices()
-    for m in ndb_models.OrderSheet.query():
+    for m in models_v2.OrderSheet.query():
       f = OrderFormChoice(
         id=m.key.integer_id(), name=m.name,
         code=m.code, visibility=m.visibility)
@@ -84,14 +84,14 @@ class CustomApi(base_api.BaseApi):
     res = OrderFormDetail()
     if not request.id:
       raise remote.ApplicationError('id is required')
-    key = ndb.Key(ndb_models.OrderSheet, request.id)
+    key = ndb.Key(models_v2.OrderSheet, request.id)
     mdl = key.get()
     if not mdl:
       raise remote.ApplicationError(
         'No OrderSheet found with key {}'.format(request.id))
     res.order_sheet = protorpc_messages.OrderSheetModelToMessage(mdl)
-    ims = list(ndb_models.Item.query(ndb_models.Item.appears_on_order_form == key))
-    ndb_models._SortItemsWithSections(ims)
+    ims = list(models_v2.Item.query(models_v2.Item.appears_on_order_form == key))
+    models_v2._SortItemsWithSections(ims)
     for im in ims:
       i = protorpc_messages.ItemModelToMessage(im)
       res.sorted_items.append(i)
@@ -101,7 +101,7 @@ class CustomApi(base_api.BaseApi):
   def order_full_read(self, request):
     self._authorize_staff()
     res = OrderFull()
-    order_key = ndb.Key(ndb_models.Order, request.id)
+    order_key = ndb.Key(models_v2.Order, request.id)
     order_mdl = order_key.get()
     if order_mdl is None:
       raise remote.ApplicationError(
@@ -109,18 +109,18 @@ class CustomApi(base_api.BaseApi):
     res.id = order_key.integer_id()
     res.order = protorpc_messages.OrderModelToMessage(order_mdl)
 
-    for oi_mdl in ndb_models.OrderItem.query(ndb_models.OrderItem.order == order_key):
+    for oi_mdl in models_v2.OrderItem.query(models_v2.OrderItem.order == order_key):
       res.order_items.append(protorpc_messages.OrderItemModelToMessage(oi_mdl))
 
-    join_mdl = ndb_models.OrderDelivery.query(ndb_models.OrderDelivery.order == order_key).get()
+    join_mdl = models_v2.OrderDelivery.query(models_v2.OrderDelivery.order == order_key).get()
     if join_mdl is not None:
       res.delivery = protorpc_messages.DeliveryModelToMessage(join_mdl.delivery.get())
 
-    join_mdl = ndb_models.OrderPickup.query(ndb_models.OrderPickup.order == order_key).get()
+    join_mdl = models_v2.OrderPickup.query(models_v2.OrderPickup.order == order_key).get()
     if join_mdl is not None:
       res.pickup = protorpc_messages.PickupModelToMessage(join_mdl.pickup.get())
 
-    join_mdl = ndb_models.OrderRetrieval.query(ndb_models.OrderRetrieval.order == order_key).get()
+    join_mdl = models_v2.OrderRetrieval.query(models_v2.OrderRetrieval.order == order_key).get()
     if join_mdl is not None:
       res.retrieval = protorpc_messages.RetrievalModelToMessage(join_mdl.retrieval.get())
 
@@ -129,12 +129,12 @@ class CustomApi(base_api.BaseApi):
   def _order_full_put(self, request, order=None):
     # TODO ndb.start_transaction ...
     if order is None:
-      order = ndb_models.Order()
+      order = models_v2.Order()
     order = protorpc_messages.OrderMessageToModel(request.order, order)
     sub_total = 0.
     for oimsg in request.order_items:
       if oimsg.quantity:
-        item = ndb.Key(ndb_models.Item, oimsg.item).get()  # TODO: get_multi
+        item = ndb.Key(models_v2.Item, oimsg.item).get()  # TODO: get_multi
         if item.unit_cost:
           sub_total += oimsg.quantity * item.unit_cost
     order.sub_total = sub_total
@@ -144,50 +144,50 @@ class CustomApi(base_api.BaseApi):
 
     if request.delivery:
       if request.delivery.id:
-        delivery = ndb.Key(ndb_models.Delivery, request.delivery.id).get()
+        delivery = ndb.Key(models_v2.Delivery, request.delivery.id).get()
         if not delivery:
           logging.error('no Delivery found with id {}'.format(request.delivery.id))
           webapp2.abort(404)
       else:
-        delivery = ndb_models.Delivery(site=order.site)
+        delivery = models_v2.Delivery(site=order.site)
         
       protorpc_messages.DeliveryMessageToModel(request.delivery, delivery)
       delivery.put()
       if not request.delivery.id:
-        ndb_models.OrderDelivery(order=order.key, delivery=delivery.key).put()
+        models_v2.OrderDelivery(order=order.key, delivery=delivery.key).put()
       
     if request.pickup:
       if request.pickup.id:
-        pickup = ndb.Key(ndb_models.Pickup, request.pickup.id).get()
+        pickup = ndb.Key(models_v2.Pickup, request.pickup.id).get()
         if not pickup:
           logging.error('no Pickup found with id {}'.format(request.pickup.id))
           webapp2.abort(404)
       else:
-        pickup = ndb_models.Pickup(site=order.site)
+        pickup = models_v2.Pickup(site=order.site)
         
       protorpc_messages.PickupMessageToModel(request.pickup, pickup)
       pickup.put()
       if not request.pickup.id:
-        ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
+        models_v2.OrderPickup(order=order.key, pickup=pickup.key).put()
       
     if request.retrieval:
       if request.retrieval.id:
-        retrieval = ndb.Key(ndb_models.Retrieval, request.retrieval.id).get()
+        retrieval = ndb.Key(models_v2.Retrieval, request.retrieval.id).get()
         if not retrieval:
           logging.error('no Retrieval found with id {}'.format(request.retrieval.id))
           webapp2.abort(404)
       else:
-        retrieval = ndb_models.Retrieval(site=order.site)
+        retrieval = models_v2.Retrieval(site=order.site)
         
       protorpc_messages.RetrievalMessageToModel(request.retrieval, retrieval)
       retrieval.put()
       if not request.retrieval.id:
-        ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
+        models_v2.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
       
     for oimsg in request.order_items:
       oimsg.order = order.key.integer_id()
       protorpc_messages.OrderItemMessageToModel(
-        oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
+        oimsg, models_v2.OrderItem()).put()  # TODO: put_multi
 
   @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_create(self, request):
@@ -202,7 +202,7 @@ class CustomApi(base_api.BaseApi):
     self._authorize_staff()
     if not request.id:
       raise remote.ApplicationError('id is required')
-    mdl = ndb.Key(ndb_models.Order, request.id).get()
+    mdl = ndb.Key(models_v2.Order, request.id).get()
     if not mdl:
       raise remote.ApplicationError(
         'No Order found with key {}'.format(request.id))
@@ -213,10 +213,10 @@ class CustomApi(base_api.BaseApi):
   def sitecaptains_for_site(self, request):
     res = SiteCaptains()
     sitecaptain_models = list(
-      ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))
+      models_v2.SiteCaptain.query(models_v2.SiteCaptain.site == ndb.Key(models_v2.Site, request.id)))
     for m in sitecaptain_models:
       f = protorpc_messages.SiteCaptainModelToMessage(m)
-      captain_model = ndb.Key(ndb_models.Captain, f.captain).get()  # TODO: get_multi
+      captain_model = ndb.Key(models_v2.Captain, f.captain).get()  # TODO: get_multi
       detail = SiteCaptainDetail(sitecaptain=f, name=captain_model.name)
       res.sitecaptain_detail.append(detail)
     return res

@@ -1,7 +1,7 @@
 import webapp2
 
 import common
-import ndb_models
+import models_v2
 
 
 def _AnnotateSitesWithEditability(entries, captain, staff):
@@ -34,11 +34,11 @@ class CaptainHome(CaptainHandler):
       return webapp2.redirect_to('Start')
     captain = user.captain
     if captain_id is not None:
-      captain = ndb_models.Captain.get_by_id(int(captain_id))
-    order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
+      captain = models_v2.Captain.get_by_id(int(captain_id))
+    order_sheets = models_v2.OrderSheet.query().order(models_v2.OrderSheet.name)
     sites = []
-    for sitecaptain in ndb_models.SiteCaptain.query(
-            ndb_models.SiteCaptain.captain == captain.key):
+    for sitecaptain in models_v2.SiteCaptain.query(
+            models_v2.SiteCaptain.captain == captain.key):
       site = sitecaptain.site.get()
       # if site.program != common.DEFAULT_CAPTAIN_PROGRAM:
       #   continue
