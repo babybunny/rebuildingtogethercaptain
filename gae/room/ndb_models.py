@@ -64,6 +64,95 @@ class Jurisdiction(ndb.Model):
     return self.name
 
 
+class ProgramType(ndb.Model):
+  """
+  names are like NRD, Teambuild and Safe
+  """
+  IN_MEMORY_CACHE = {}
+  name = ndb.StringProperty()
+
+  @staticmethod
+  def get_or_create(name, code=None):
+    """
+    returns a tuple of the (possibly new) instance and a boolean indicating whether
+    it was created
+
+    WARNING: This method puts the new model if it does not yet exist
+
+    :param name: name of the program type
+    :type name: str
+    :param code: unique code, auto-generated as capitalized first three characters of name
+    :type name: str
+    :return: tuple of instance and boolean (true if created, false otherwise)
+    :rtype: tuple[ProgramType, bool]
+    """
+    created = False
+    result = ProgramType.IN_MEMORY_CACHE.get(name)
+    if result is None:
+      assert isinstance(name, str) or isinstance(name, unicode)
+      result = ProgramType.query().filter(ProgramType.name == name).get()
+      if result is None:
+        created = True
+        result = ProgramType(name=name)
+        result.key = ndb.Key(ProgramType, name)
+        result.put()
+        ProgramType.IN_MEMORY_CACHE[name] = result
+    return result, created
+
+
+class Program(ndb.Model):
+  """Identifies a program type like "National Rebuilding Day" and its year.
+
+  Programs with status 'Active' will be visible to Captains.
+
+  Keys are shorthand like "2012 NRD".
+  """
+  ACTIVE_STATUS = "Active"
+  INACTIVE_STATUS = "Inactive"
+  STATUSES = (ACTIVE_STATUS, INACTIVE_STATUS)
+
+  program_type = ndb.KeyProperty(ProgramType)
+  year = ndb.IntegerProperty(choices=range(1987, 2500))
+  status = ndb.StringProperty(choices=STATUSES, default=STATUSES[0])
+  fully_qualified_name = ndb.StringProperty()
+
+  IN_MEMORY_CACHE = {}
+
+  @staticmethod
+  def get_or_create(program_type_key, year, status=INACTIVE_STATUS):
+    """
+    returns a tuple of the (possibly new) instance and a boolean indicating whether
+    it was created
+
+    WARNING: This method puts the new model if it does not yet exist
+
+    :param program_type_key: program type
+    :type program_type_key: ProgramType
+    :param year: year
+    :type year: int
+    :param deprecated_code: code from before October 2017 data migration, eg 0 for NRD etc
+    :type deprecated_code: str or NoneType
+    :return: tuple of instance and boolean (true if created, false otherwise)
+    :rtype: tuple[Program, bool]
+    """
+    created = False
+    cache_key = (year, program_type_key)
+    result = Program.IN_MEMORY_CACHE.get(cache_key)
+    if result is None:
+      assert isinstance(year, int) or isinstance(year, long)
+      query = Program.query()
+      query = query.filter(Program.program_type == program_type_key)
+      query = query.filter(Program.year == year)
+      result = query.get()
+      if result is None:
+        created = True
+        result = Program(program_type=program_type_key, year=year)
+        result.fully_qualified_name = "{} {}".format(year, program_type_key)
+        result.put()
+        Program.IN_MEMORY_CACHE[cache_key] = result
+    return result, created
+
+
 class Staff(ndb.Model):
   """Minimal variant of the Staff model.
 
@@ -72,6 +161,7 @@ class Staff(ndb.Model):
   name = ndb.StringProperty()
   email = ndb.StringProperty(required=True)
   program_selected = ndb.StringProperty()
+  program_selected_key = ndb.KeyProperty(kind=Program)
   last_welcome = ndb.DateProperty(auto_now=True)
   notes = ndb.TextProperty()
   since = ndb.DateProperty(auto_now_add=True)
@@ -123,20 +213,6 @@ class Captain(ndb.Model):
 
   def Label(self):
     return "%s <%s>" % (self.name, self.email)
-
-
-class Program(ndb.Model):
-  """Identifies a program like "National Rebuilding Day".
-
-  Programs with status 'Active' will be visible to Captains.
-
-  Keys are shorthand like "2012 NRD".
-  """
-  year = ndb.IntegerProperty()
-  name = ndb.StringProperty()
-  site_number_prefix = ndb.StringProperty()
-  status = ndb.StringProperty(choices=('Active', 'Inactive'),
-                              default='Inactive')
 
 
 class Supplier(ndb.Model):
@@ -256,10 +332,18 @@ class Item(ndb.Model):
 
 
 class NewSite(ndb.Model):
-  """A work site."""
-  # "10001DAL" reads: 2010, #001, Daly City
+  """
+  A work site.
+
+  number "17001DAL" reads:
+    year=2017
+    program=NRD (encoded as 0)
+    site=01
+    jurisdiction=Daly City
+  """
   number = ndb.StringProperty(required=True)  # unique
   program = ndb.StringProperty()  # reference
+  program_key = ndb.KeyProperty(kind=Program)  # TODO: Set to required after migration
   name = ndb.StringProperty()  # "Belle Haven"
   name.verbose_name = 'Recipient Name'
   applicant = ndb.StringProperty()
@@ -356,32 +440,6 @@ class NewSite(ndb.Model):
     self.put()
     return sow
 
-  def ProgramFromNumber(self):
-    year = '20' + self.number[0:2]
-    mode = self.number[2]
-    program = None
-    if mode == '0':
-      program = year + ' NRD'
-    elif mode == '1':
-      program = year + ' NRD'
-    elif mode == '3':
-      program = year + ' Misc'
-    elif mode == '5':
-      program = year + ' Safe'
-    elif mode == '6':
-      program = year + ' Safe'
-    elif mode == '7':
-      program = year + ' Energy'
-    elif mode == '8':
-      program = year + ' Teambuild'
-    elif mode == '9':
-      program = year + ' Youth'
-    elif mode == 'Z':
-      program = year + ' Test'
-    else:
-      logging.warn('no program for site number %s', self.number)
-    return program
-
   def SaveTheChildren(self):
     for child in (self.Orders, self.CheckRequests,
                   self.VendorReceipts, self.InKindDonations,
@@ -393,8 +451,10 @@ class NewSite(ndb.Model):
     if self.jurisdiction_choice:
       self.jurisdiction = self.jurisdiction_choice.get().name
     # issue213: program should be configurable
+
     if not self.program:
-      self.program = self.ProgramFromNumber()
+      program = Program.query().filter(Program.key == self.program_key).get()
+      self.program = program.fully_qualified_name
     prefixes = set()
     for f in self.name, self.applicant, self.street_number, self.jurisdiction:
       if not f:
@@ -534,6 +594,7 @@ class Order(ndb.Model):
   site = ndb.KeyProperty(kind=NewSite, required=True)
   order_sheet = ndb.KeyProperty(kind=OrderSheet, required=True)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   sub_total = ndb.FloatProperty()
   notes = ndb.TextProperty()
   state = ndb.StringProperty()
@@ -877,6 +938,7 @@ class CheckRequest(ndb.Model):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   payment_date = ndb.DateProperty()
   labor_amount = ndb.FloatProperty(default=0.0)
   labor_amount.verbose_name = 'Labor Amount ($)'
@@ -914,6 +976,7 @@ class VendorReceipt(ndb.Model):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   purchase_date = ndb.DateProperty()
   vendor = ndb.StringProperty()
   supplier = ndb.KeyProperty(kind=Supplier)
@@ -945,6 +1008,7 @@ class InKindDonation(ndb.Model):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   donation_date = ndb.DateProperty()
   donor = ndb.StringProperty()
   donor_phone = ndb.StringProperty()
@@ -982,6 +1046,7 @@ class StaffTime(ndb.Model):
   captain = ndb.KeyProperty(kind=Captain)
   position = ndb.KeyProperty(kind=StaffPosition)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   state = ndb.StringProperty()
   hours = ndb.FloatProperty(default=0.0)
   hours.verbose_name = 'Hours'
@@ -1035,6 +1100,7 @@ class Expense(ndb.Model):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   date = ndb.DateProperty()
   amount = ndb.FloatProperty()
   amount.verbose_name = 'Purchase Amount ($)'

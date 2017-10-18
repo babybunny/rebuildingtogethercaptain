@@ -56,20 +56,21 @@ def CreateAll():
     notes="You may say I'm a dreamer",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
   ).put()
-
-  KEYS['PROGRAM'] = ndb_models.Program(
+  KEYS['PROGRAM_TYPE'] = ndb_models.ProgramType.get_or_create(
+    name="Hare",
+  )[0].key
+  KEYS['PROGRAM_TYPE2'] = ndb_models.ProgramType.get_or_create(
+    name="Tortoise"
+  )[0].key
+  KEYS['PROGRAM'] = ndb_models.Program.get_or_create(
+    program_type_key=KEYS['PROGRAM_TYPE'],
+    year=2020
+  )[0].key
+  KEYS['PROGRAM2'] = ndb_models.Program.get_or_create(
+    program_type_key=KEYS['PROGRAM_TYPE'],
     year=2011,
-    name="TEST",
-    site_number_prefix="110",
-    status="Active"
-  ).put()
-  KEYS['PROGRAM2'] = ndb_models.Program(
-    year=2012,
-    name="TEST",
-    site_number_prefix="120",
-    status="Active"
-  ).put()
-
+    status=ndb_models.Program.INACTIVE_STATUS
+  )[0].key
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
   ).put()
