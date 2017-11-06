@@ -68,7 +68,6 @@ class ProgramType(ndb.Model):
   """
   names are like NRD, Teambuild and Safe
   """
-  IN_MEMORY_CACHE = {}
   name = ndb.StringProperty()
 
   @staticmethod
@@ -87,16 +86,13 @@ class ProgramType(ndb.Model):
     :rtype: tuple[ProgramType, bool]
     """
     created = False
-    result = ProgramType.IN_MEMORY_CACHE.get(name)
+    assert isinstance(name, str) or isinstance(name, unicode)
+    result = ProgramType.query().filter(ProgramType.name == name).get()
     if result is None:
-      assert isinstance(name, str) or isinstance(name, unicode)
-      result = ProgramType.query().filter(ProgramType.name == name).get()
-      if result is None:
-        created = True
-        result = ProgramType(name=name)
-        result.key = ndb.Key(ProgramType, name)
-        result.put()
-        ProgramType.IN_MEMORY_CACHE[name] = result
+      created = True
+      result = ProgramType(name=name)
+      result.key = ndb.Key(ProgramType, name)
+      result.put()
     return result, created
 
 
@@ -116,8 +112,6 @@ class Program(ndb.Model):
   status = ndb.StringProperty(choices=STATUSES, default=STATUSES[0])
   fully_qualified_name = ndb.StringProperty()
 
-  IN_MEMORY_CACHE = {}
-
   @staticmethod
   def get_or_create(program_type_key, year, status=INACTIVE_STATUS):
     """
@@ -136,20 +130,16 @@ class Program(ndb.Model):
     :rtype: tuple[Program, bool]
     """
     created = False
-    cache_key = (year, program_type_key)
-    result = Program.IN_MEMORY_CACHE.get(cache_key)
+    assert isinstance(year, int) or isinstance(year, long)
+    query = Program.query()
+    query = query.filter(Program.program_type == program_type_key)
+    query = query.filter(Program.year == year)
+    result = query.get()
     if result is None:
-      assert isinstance(year, int) or isinstance(year, long)
-      query = Program.query()
-      query = query.filter(Program.program_type == program_type_key)
-      query = query.filter(Program.year == year)
-      result = query.get()
-      if result is None:
-        created = True
-        result = Program(program_type=program_type_key, year=year)
-        result.fully_qualified_name = "{} {}".format(year, program_type_key)
-        result.put()
-        Program.IN_MEMORY_CACHE[cache_key] = result
+      created = True
+      result = Program(program_type=program_type_key, year=year)
+      result.fully_qualified_name = "{} {}".format(year, program_type_key)
+      result.put()
     return result, created
 
 
@@ -453,7 +443,7 @@ class NewSite(ndb.Model):
     # issue213: program should be configurable
 
     if not self.program:
-      program = Program.query().filter(Program.key == self.program_key).get()
+      program = self.program_key.get()
       self.program = program.fully_qualified_name
     prefixes = set()
     for f in self.name, self.applicant, self.street_number, self.jurisdiction:
