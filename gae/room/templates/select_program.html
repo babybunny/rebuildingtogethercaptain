@@ -9,8 +9,8 @@ Hard-coded programs
 {% for program in user.programs %}
 <li>
   Click to select
-  <a href="{{ program_url_base }}?program={{ program }}">
-    {{ program }}
+  <a href="{{ program_url_base }}?program={{ program.fully_qualified_name }}">
+    {{ program.fully_qualified_name }}
   </a>
 </li>
 {% endfor %}

@@ -20,7 +20,7 @@ class CaptainHandler(webapp2.RequestHandler):
   """
 
   def dispatch(self, *a, **k):
-    user, status = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     if user and (user.staff or user.captain):
       super(CaptainHandler, self).dispatch(*a, **k)
     else:
@@ -29,7 +29,7 @@ class CaptainHandler(webapp2.RequestHandler):
 
 class CaptainHome(CaptainHandler):
   def get(self, captain_id=None):
-    user, _ = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     if user is None or user.captain is None:
       return webapp2.redirect_to('Start')
     captain = user.captain

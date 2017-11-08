@@ -314,8 +314,6 @@ class Site(messages.Message):
 
 
 ############
-
-
 # OrderSheet #
 ############
 

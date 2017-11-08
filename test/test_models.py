@@ -13,6 +13,62 @@ import unittest
 import app_engine_test_utils
 from gae.room import ndb_models
 
+TEST_PROGRAMS = [
+  '2018 NRD',
+  '2018 Safe',
+  '2018 Teambuild',
+
+  '2017 NRD',
+  '2017 Safe',
+  '2017 Teambuild',
+
+  '2016 NRD',
+  '2016 Misc',
+  '2016 Safe',
+  '2016 Energy',
+  '2016 Teambuild',
+  '2016 Youth',
+
+  '2015 NRD',
+  '2015 Misc',
+  '2015 Safe',
+  '2015 Energy',
+  '2015 Teambuild',
+  '2015 Youth',
+
+  '2014 NRD',
+  '2014 Misc',
+  '2014 Safe',
+  '2014 Energy',
+  '2014 Teambuild',
+  '2014 Youth',
+
+  '2013 NRD',
+  '2013 Misc',
+  '2013 Safe',
+  '2013 Energy',
+  '2013 Teambuild',
+  '2013 Youth',
+
+  '2012 NRD',
+  '2012 Misc',
+  '2012 Safe',
+  '2012 Energy',
+  '2012 Teambuild',
+  '2012 Youth',
+
+  '2011 NRD',
+  '2011 Misc',
+  '2011 Safe',
+  '2011 Energy',
+  '2011 Teambuild',
+  '2011 Youth',
+
+  '2011 Test',
+
+  '2010 NRD',
+]
+
 
 def CreateAll():
   """Creates all the models in this module.
@@ -71,6 +127,20 @@ def CreateAll():
     year=2011,
     status=ndb_models.Program.INACTIVE_STATUS
   )[0].key
+  current_year = datetime.datetime.today().year
+  for program_string in TEST_PROGRAMS:
+    year, program_type = program_string.split(" ")
+    key = "_".join([year.upper(), program_type.upper()])
+    KEYS[program_type] = ndb_models.ProgramType.get_or_create(
+      name=program_type
+    )[0].key
+    status = ndb_models.Program.ACTIVE_STATUS if year == current_year else ndb_models.Program.INACTIVE_STATUS
+    KEYS[key] = ndb_models.Program.get_or_create(
+      program_type_key=KEYS[program_type],
+      year=int(year),
+      status=status
+    )[0].key
+
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
   ).put()
@@ -499,10 +569,45 @@ def DeleteAll(KEYS):
 class ModelsTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+    self.keys = CreateAll()
 
   def testCreate(self):
-    KEYS = CreateAll()
-    self.assertTrue(KEYS)
-    self.assertIn('ORDERITEM', KEYS)
-    DeleteAll(KEYS)
-    self.assertFalse(KEYS)
+    self.assertTrue(self.keys)
+    self.assertIn('ORDERITEM', self.keys)
+    DeleteAll(self.keys)
+    self.assertFalse(self.keys)
+
+  def testGetOrCreateProgram(self):
+    program_type_key = self.keys['PROGRAM_TYPE']
+    prog, created = ndb_models.Program.get_or_create(
+      program_type_key=program_type_key,
+      year=2020
+    )
+    self.assertFalse(created)
+    self.assertEqual(prog.key, self.keys['PROGRAM'])
+    _, created = ndb_models.Program.get_or_create(
+      program_type_key=program_type_key,
+      year=2021
+    )
+    self.assertTrue(created)
+    current_year = datetime.datetime.today().year
+    for fully_qualified_name in TEST_PROGRAMS:
+      expected_year, program_type_key = fully_qualified_name.split(" ")
+
+      # program type expectations
+      self.assertIn(program_type_key, self.keys)
+      program_type = self.keys[program_type_key].get()
+      self.assertEqual(program_type.name, program_type_key)
+
+      # program expectations
+      program_key = "_".join([expected_year.upper(), program_type_key.upper()])
+      self.assertIn(program_key, self.keys)
+      program = self.keys[program_key].get()
+      if expected_year == current_year:
+        expected_status = ndb_models.Program.ACTIVE_STATUS
+      else:
+        expected_status = ndb_models.Program.INACTIVE_STATUS
+      self.assertEqual(program.status, expected_status)
+      self.assertEqual(program.year, int(expected_year))
+      self.assertEqual(program.program_type, program_type.key)
+      self.assertEqual(program.fully_qualified_name, fully_qualified_name)

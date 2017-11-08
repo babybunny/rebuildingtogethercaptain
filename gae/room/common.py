@@ -16,55 +16,6 @@ import ndb_models
 # TODO: merge into PROGRAMS
 NRD = '04/29/2017'
 
-DEFAULT_CAPTAIN_PROGRAM = '2017 NRD'
-
-PROGRAMS = [
-  '2018 NRD',
-  '2018 Safe',
-  '2018 Teambuild',
-  '2017 NRD',
-  '2017 Safe',
-  '2017 Teambuild',
-  '2016 NRD',
-  '2016 Misc',
-  '2016 Safe',
-  '2016 Energy',
-  '2016 Teambuild',
-  '2016 Youth',
-  '2015 NRD',
-  '2015 Misc',
-  '2015 Safe',
-  '2015 Energy',
-  '2015 Teambuild',
-  '2015 Youth',
-  '2014 NRD',
-  '2014 Misc',
-  '2014 Safe',
-  '2014 Energy',
-  '2014 Teambuild',
-  '2014 Youth',
-  '2013 NRD',
-  '2013 Misc',
-  '2013 Safe',
-  '2013 Energy',
-  '2013 Teambuild',
-  '2013 Youth',
-  '2012 NRD',
-  '2012 Misc',
-  '2012 Safe',
-  '2012 Energy',
-  '2012 Teambuild',
-  '2012 Youth',
-  '2011 NRD',
-  '2011 Misc',
-  '2011 Safe',
-  '2011 Energy',
-  '2011 Teambuild',
-  '2011 Youth',
-  '2011 Test',
-  '2010 NRD',
-]
-
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
 HELP_PERSON = 'Cari Pang Chen'
@@ -92,72 +43,92 @@ def IsDev():
   return os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
 
 
-def GetUser(request):
-  """Determines the current user and loads some state.
+class RoomsUser(users.User):
 
-  In production, gets user from appengine.api.users.get_current_user(). So,
-  it should be used in App Engine handlers with login: required.
+  @staticmethod
+  def from_request(request):
+    """
+      Determines the current user and loads some state.
 
-  Special handling for development server (dev_appserver.py):
+      In production, gets user from appengine.api.users.get_current_user(). So,
+      it should be used in App Engine handlers with login: required.
 
-  First, try to get user from the request, expecting an email address as
-  the value of the X-ROOMS_DEV_SIGNIN_EMAIL header.
+      Special handling for development server (dev_appserver.py):
 
-  Fall back to pre-configured identify from environment, meaning it was
-  probably set in app.yaml or unit test initialization like nose2-gae config.
+      First, try to get user from the request, expecting an email address as
+      the value of the X-ROOMS_DEV_SIGNIN_EMAIL header.
 
-  Args:
-    request: the current WSGI request.
+      Fall back to pre-configured identify from environment, meaning it was
+      probably set in app.yaml or unit test initialization like nose2-gae config.
 
-  Returns:
-    user: appengine.api.users.User object, or None if user can not be determined
-    status: string describing how user was determined, for logging and debugging
-  """
-  if not hasattr(request, 'registry'):
-    request.registry = {}
-  if 'user' in request.registry:
-    return request.registry.get('user'), request.registry.get('status')
+    :param request: the current WSGI request.
+    :type request: webapp2.Request
+    :return: a RoomsUser, see above
+    :rtype: RoomsUser
+    """
+    if not hasattr(request, 'registry'):
+      request.registry = {}
+    if 'user' in request.registry:
+      user = request.registry.get('user')
+      user.status = request.registry.get('status')
+      return user
 
-  user = users.get_current_user()
-  if user and user.email():
-    status = 'User from get_current_user %s' % user.email()
-  else:
-    status = 'User not available with users.get_current_user'
+    try:
+      user = RoomsUser()
+      user.status = 'User from get_current_user %s' % user.email()
+    except users.UserNotFoundError:
+      user = RoomsUser.handle_user_not_found(request)
 
-  if not user and IsDev():
+    if user and user.email():
+      user.captain = ndb_models.Captain.query(
+        ndb_models.Captain.email == user.email().lower()).get()
+      user.staff = ndb_models.Staff.query(
+        ndb_models.Staff.email == user.email().lower()).get()
+
+      if user.staff:
+        user.programs = sorted(ndb_models.Program.query().fetch(), key=lambda p: p.get_sort_key())
+        user.program_selected = user.staff.program_selected
+
+    request.registry['user'], request.registry['status'] = user, user.status
+    return user
+
+  @staticmethod
+  def handle_user_not_found(request):
+    if not IsDev():
+      return None
+
     if type(request.headers) is list:
       headers = {k: v for (k, v) in request.headers}
     else:
       headers = request.headers
 
     email = headers.get('x-rooms-dev-signin-email')
-    if email:
-      status = 'DEV, using user from x-rooms-dev-signin-email header %s' % email
-    else:
+    status = 'DEV, using user from x-rooms-dev-signin-email header %s' % email
+    if not email:
       email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
-      if email:
-        status = 'DEV, using configured user from env var ROOMS_DEV_SIGNIN_EMAIL %s' % email
+      status = 'DEV, using configured user from env var ROOMS_DEV_SIGNIN_EMAIL %s' % email
+    if not email:
+      return None
 
-    if email:
-      user = users.User(email=email)
+    user = RoomsUser(email=email)
+    user.status = status
+    return user
 
-  logging.info(status)
+  def __init__(self, *args, **kwds):
+    """
+    a google.appengine.api.users.User with added state for rooms
+    """
+    super(RoomsUser, self).__init__(*args, **kwds)
+    self.captain = None
+    self.staff = None
+    self.programs = []
+    self.program_selected = None
+    self.status = None
 
-  if user and user.email():
-    user.captain = ndb_models.Captain.query(
-      ndb_models.Captain.email == user.email().lower()).get()
-    user.staff = ndb_models.Staff.query(
-      ndb_models.Staff.email == user.email().lower()).get()
 
-    if user.staff:
-      user.programs = PROGRAMS
-      user.program_selected = user.staff.program_selected
-    else:
-      user.programs = []
-      user.program_selected = None
-
-  request.registry['user'], request.registry['status'] = user, status
-  return user, status
+def GetUser(request):
+  user = RoomsUser.from_request(request)
+  return user, user.status
 
 
 # unused?

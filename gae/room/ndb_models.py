@@ -66,12 +66,17 @@ class Jurisdiction(ndb.Model):
 
 class ProgramType(ndb.Model):
   """
+  year-independent representation of a program
+
   names are like NRD, Teambuild and Safe
+
+  there should only be a handful of these and
+  they should be relatively static
   """
   name = ndb.StringProperty()
 
   @staticmethod
-  def get_or_create(name, code=None):
+  def get_or_create(name):
     """
     returns a tuple of the (possibly new) instance and a boolean indicating whether
     it was created
@@ -79,8 +84,6 @@ class ProgramType(ndb.Model):
     WARNING: This method puts the new model if it does not yet exist
 
     :param name: name of the program type
-    :type name: str
-    :param code: unique code, auto-generated as capitalized first three characters of name
     :type name: str
     :return: tuple of instance and boolean (true if created, false otherwise)
     :rtype: tuple[ProgramType, bool]
@@ -112,8 +115,17 @@ class Program(ndb.Model):
   status = ndb.StringProperty(choices=STATUSES, default=STATUSES[0])
   fully_qualified_name = ndb.StringProperty()
 
+  def get_sort_key(self):
+    return -self.year, self.program_type
+
   @staticmethod
-  def get_or_create(program_type_key, year, status=INACTIVE_STATUS):
+  def from_fully_qualified_name(fully_qualified_name):
+    query = Program.query()
+    query = query.filter(Program.fully_qualified_name == fully_qualified_name)
+    return query.get()
+
+  @staticmethod
+  def get_or_create(program_type_key, year, status=ACTIVE_STATUS):
     """
     returns a tuple of the (possibly new) instance and a boolean indicating whether
     it was created
@@ -121,24 +133,28 @@ class Program(ndb.Model):
     WARNING: This method puts the new model if it does not yet exist
 
     :param program_type_key: program type
-    :type program_type_key: ProgramType
+    :type program_type_key: ndb.Key
     :param year: year
     :type year: int
-    :param deprecated_code: code from before October 2017 data migration, eg 0 for NRD etc
-    :type deprecated_code: str or NoneType
+    :param status: status
+    :type status: str
     :return: tuple of instance and boolean (true if created, false otherwise)
     :rtype: tuple[Program, bool]
     """
-    created = False
     assert isinstance(year, int) or isinstance(year, long)
+    assert status in Program.STATUSES
+    created = False
     query = Program.query()
     query = query.filter(Program.program_type == program_type_key)
     query = query.filter(Program.year == year)
+    query = query.filter(Program.status == status)
     result = query.get()
     if result is None:
       created = True
+      program_type_name = program_type_key.get().name
       result = Program(program_type=program_type_key, year=year)
-      result.fully_qualified_name = "{} {}".format(year, program_type_key)
+      result.fully_qualified_name = "{} {}".format(year, program_type_name)
+      result.status = status
       result.put()
     return result, created
 
