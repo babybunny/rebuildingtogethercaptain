@@ -104,7 +104,7 @@ class Program(ndb.Model):
 
   Programs with status 'Active' will be visible to Captains.
 
-  Keys are shorthand like "2012 NRD".
+  The name property is shorthand for the year and program type like "2012 NRD".
   """
   ACTIVE_STATUS = "Active"
   INACTIVE_STATUS = "Inactive"
@@ -113,7 +113,7 @@ class Program(ndb.Model):
   program_type = ndb.KeyProperty(ProgramType)
   year = ndb.IntegerProperty(choices=range(1987, 2500))
   status = ndb.StringProperty(choices=STATUSES, default=STATUSES[0])
-  fully_qualified_name = ndb.StringProperty()
+  name = ndb.StringProperty()
 
   def get_sort_key(self):
     return -self.year, self.program_type
@@ -121,11 +121,11 @@ class Program(ndb.Model):
   @staticmethod
   def from_fully_qualified_name(fully_qualified_name):
     query = Program.query()
-    query = query.filter(Program.fully_qualified_name == fully_qualified_name)
+    query = query.filter(Program.name == fully_qualified_name)
     return query.get()
 
   @staticmethod
-  def get_or_create(program_type_key, year, status=ACTIVE_STATUS):
+  def get_or_create(program_type_key, year, status=None):
     """
     returns a tuple of the (possibly new) instance and a boolean indicating whether
     it was created
@@ -142,20 +142,21 @@ class Program(ndb.Model):
     :rtype: tuple[Program, bool]
     """
     assert isinstance(year, int) or isinstance(year, long)
-    assert status in Program.STATUSES
+    assert status is None or status in Program.STATUSES
     created = False
     query = Program.query()
     query = query.filter(Program.program_type == program_type_key)
     query = query.filter(Program.year == year)
-    query = query.filter(Program.status == status)
     result = query.get()
     if result is None:
       created = True
       program_type_name = program_type_key.get().name
       result = Program(program_type=program_type_key, year=year)
-      result.fully_qualified_name = "{} {}".format(year, program_type_name)
-      result.status = status
+      result.name = "{} {}".format(year, program_type_name)
+      result.status = status or Program.ACTIVE_STATUS
       result.put()
+    elif status is not None:
+      assert result.status == status
     return result, created
 
 

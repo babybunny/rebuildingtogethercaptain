@@ -12,63 +12,7 @@ import unittest
 
 import app_engine_test_utils
 from gae.room import ndb_models
-
-TEST_PROGRAMS = [
-  '2018 NRD',
-  '2018 Safe',
-  '2018 Teambuild',
-
-  '2017 NRD',
-  '2017 Safe',
-  '2017 Teambuild',
-
-  '2016 NRD',
-  '2016 Misc',
-  '2016 Safe',
-  '2016 Energy',
-  '2016 Teambuild',
-  '2016 Youth',
-
-  '2015 NRD',
-  '2015 Misc',
-  '2015 Safe',
-  '2015 Energy',
-  '2015 Teambuild',
-  '2015 Youth',
-
-  '2014 NRD',
-  '2014 Misc',
-  '2014 Safe',
-  '2014 Energy',
-  '2014 Teambuild',
-  '2014 Youth',
-
-  '2013 NRD',
-  '2013 Misc',
-  '2013 Safe',
-  '2013 Energy',
-  '2013 Teambuild',
-  '2013 Youth',
-
-  '2012 NRD',
-  '2012 Misc',
-  '2012 Safe',
-  '2012 Energy',
-  '2012 Teambuild',
-  '2012 Youth',
-
-  '2011 NRD',
-  '2011 Misc',
-  '2011 Safe',
-  '2011 Energy',
-  '2011 Teambuild',
-  '2011 Youth',
-
-  '2011 Test',
-
-  '2010 NRD',
-]
-
+from gae.room import common
 
 def CreateAll():
   """Creates all the models in this module.
@@ -112,34 +56,16 @@ def CreateAll():
     notes="You may say I'm a dreamer",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
   ).put()
-  KEYS['PROGRAM_TYPE'] = ndb_models.ProgramType.get_or_create(
-    name="Hare",
-  )[0].key
-  KEYS['PROGRAM_TYPE2'] = ndb_models.ProgramType.get_or_create(
-    name="Tortoise"
-  )[0].key
-  KEYS['PROGRAM'] = ndb_models.Program.get_or_create(
-    program_type_key=KEYS['PROGRAM_TYPE'],
-    year=2020
-  )[0].key
-  KEYS['PROGRAM2'] = ndb_models.Program.get_or_create(
-    program_type_key=KEYS['PROGRAM_TYPE'],
-    year=2011,
-    status=ndb_models.Program.INACTIVE_STATUS
-  )[0].key
-  current_year = datetime.datetime.today().year
-  for program_string in TEST_PROGRAMS:
-    year, program_type = program_string.split(" ")
-    key = "_".join([year.upper(), program_type.upper()])
-    KEYS[program_type] = ndb_models.ProgramType.get_or_create(
-      name=program_type
-    )[0].key
-    status = ndb_models.Program.ACTIVE_STATUS if year == current_year else ndb_models.Program.INACTIVE_STATUS
-    KEYS[key] = ndb_models.Program.get_or_create(
-      program_type_key=KEYS[program_type],
-      year=int(year),
-      status=status
-    )[0].key
+  for program in common.get_all_programs_and_seed_data_if_necessary():
+    expected_year, program_type_name = program.name.split()
+    assert int(expected_year) == program.year
+    program_type_key_string = "PROGRAM TYPE: {}".format(program_type_name)
+    if program_type_key_string not in KEYS:
+      KEYS[program_type_key_string] = program.program_type
+
+    program_key_string = "PROGRAM: {}".format(program.name)
+    assert program_key_string not in KEYS
+    KEYS[program_key_string] = program.key
 
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
@@ -577,37 +503,24 @@ class ModelsTest(unittest.TestCase):
     DeleteAll(self.keys)
     self.assertFalse(self.keys)
 
-  def testGetOrCreateProgram(self):
-    program_type_key = self.keys['PROGRAM_TYPE']
-    prog, created = ndb_models.Program.get_or_create(
-      program_type_key=program_type_key,
-      year=2020
-    )
-    self.assertFalse(created)
-    self.assertEqual(prog.key, self.keys['PROGRAM'])
-    _, created = ndb_models.Program.get_or_create(
-      program_type_key=program_type_key,
-      year=2021
-    )
-    self.assertTrue(created)
-    current_year = datetime.datetime.today().year
-    for fully_qualified_name in TEST_PROGRAMS:
-      expected_year, program_type_key = fully_qualified_name.split(" ")
+  def testPrograms(self):
+    for expected_program in common.get_all_programs_and_seed_data_if_necessary():
+      expected_year, program_type_name = expected_program.name.split(" ")
+      expected_year = int(expected_year)
+      program_type_string_key = 'PROGRAM TYPE: ' + program_type_name
 
       # program type expectations
-      self.assertIn(program_type_key, self.keys)
-      program_type = self.keys[program_type_key].get()
-      self.assertEqual(program_type.name, program_type_key)
+      self.assertIn(program_type_string_key, self.keys)
+      program_type = self.keys[program_type_string_key].get()
+      self.assertEqual(program_type.name, program_type_name)
 
       # program expectations
-      program_key = "_".join([expected_year.upper(), program_type_key.upper()])
-      self.assertIn(program_key, self.keys)
-      program = self.keys[program_key].get()
-      if expected_year == current_year:
-        expected_status = ndb_models.Program.ACTIVE_STATUS
-      else:
-        expected_status = ndb_models.Program.INACTIVE_STATUS
-      self.assertEqual(program.status, expected_status)
-      self.assertEqual(program.year, int(expected_year))
-      self.assertEqual(program.program_type, program_type.key)
-      self.assertEqual(program.fully_qualified_name, fully_qualified_name)
+      program_string_key = 'PROGRAM: ' + expected_program.name
+      self.assertIn(program_string_key, self.keys)
+      test_program = self.keys[program_string_key].get()
+      self.assertEqual(test_program.key, expected_program.key)
+
+      # test get or create
+      program, created = ndb_models.Program.get_or_create(program_type_key=program_type.key, year=expected_year)
+      self.assertFalse(created)
+      self.assertEqual(program.key, expected_program.key)
