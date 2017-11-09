@@ -166,11 +166,27 @@ class RoomsUser(users.User):
       user.status = request.registry.get('status')
       return user
 
+    user = None
     try:
       user = RoomsUser()
       user.status = 'User from get_current_user %s' % user.email()
     except users.UserNotFoundError:
-      user = RoomsUser.handle_user_not_found(request)
+      if IsDev():
+        if type(request.headers) is list:
+          headers = {k: v for (k, v) in request.headers}
+        else:
+          headers = request.headers
+
+        email = headers.get('x-rooms-dev-signin-email')
+        status = 'DEV, using user from x-rooms-dev-signin-email header %s' % email
+        if not email:
+          email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
+          status = 'DEV, using configured user from env var ROOMS_DEV_SIGNIN_EMAIL %s' % email
+          if not email:
+            return None
+
+          user = RoomsUser(email=email)
+        user.status = status
 
     if user and user.email():
       user.captain = ndb_models.Captain.query(
@@ -183,28 +199,6 @@ class RoomsUser(users.User):
         user.program_selected = user.staff.program_selected
 
     request.registry['user'], request.registry['status'] = user, user.status
-    return user
-
-  @staticmethod
-  def handle_user_not_found(request):
-    if not IsDev():
-      return None
-
-    if type(request.headers) is list:
-      headers = {k: v for (k, v) in request.headers}
-    else:
-      headers = request.headers
-
-    email = headers.get('x-rooms-dev-signin-email')
-    status = 'DEV, using user from x-rooms-dev-signin-email header %s' % email
-    if not email:
-      email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
-      status = 'DEV, using configured user from env var ROOMS_DEV_SIGNIN_EMAIL %s' % email
-    if not email:
-      return None
-
-    user = RoomsUser(email=email)
-    user.status = status
     return user
 
   def __init__(self, *args, **kwds):

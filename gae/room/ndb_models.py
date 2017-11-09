@@ -77,6 +77,7 @@ class SearchableModel(ndb.Model):
 
       elif prop_type == ndb.UserProperty:
         search_type = search.TextField
+        value_processor = lambda v: v.email()
 
       elif prop_type == ndb.KeyProperty:
         search_type = search.TextField

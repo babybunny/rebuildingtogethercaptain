@@ -5,7 +5,7 @@ to create a known set of models in a throwaway namespace for integration testing
 
 Also, these models may be used in unit tests.
 """
-
+import os
 import datetime
 import logging
 import unittest
@@ -21,6 +21,9 @@ def CreateAll():
 
   Returns: a dict of key name strings to ndb.Model instances.
   """
+  USER_EMAIL = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
+  assert USER_EMAIL is not None, "Environment variable ROOMS_DEV_SIGNIN_EMAIL must be supplied"
+  USER = common.RoomsUser(email=USER_EMAIL)
   KEYS = dict()
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
@@ -390,7 +393,8 @@ def CreateAll():
     vendor=KEYS['SUPPLIER'],
     logistics_start='a logistic start',
     logistics_end='a logistic end',
-    logistics_instructions='''a logistic instruction'''
+    logistics_instructions='''a logistic instruction''',
+    created_by=USER
   ).put()
 
   KEYS['ORDER2'] = ndb_models.Order(
