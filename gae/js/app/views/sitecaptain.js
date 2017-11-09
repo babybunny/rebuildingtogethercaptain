@@ -40,12 +40,12 @@ define(
                 label: "Add Captain"
             }
         ];
-        
+
         var View = Backbone.View.extend({
             el: '#sitecaptain-form-view',
             events: {
                 'click button.remove-sitecaptain': 'removeCaptain',
-                'click button[name=addCaptain]': 'addCaptain',
+                'click button[name=addCaptain]': 'before_save',
             },
             initialize: function(options) {
                 this.options = options;
@@ -68,11 +68,18 @@ define(
                 m.destroy();
                 this.render();
             },
+            before_save: function(e){
+                e.preventDefault();
+                var id_value = Number(this.$el.find('select').val());
+                var choices = this.form.fields.models[1].changed.options;
+                this.filtered_captain = _.findWhere(choices, {value: id_value});
+                this.addCaptain();
+            },
             addCaptain: function() {
                 console.log('add captain ', this);
                 var self = this;
                 this.model.save().then(function() {
-                    // TODO self.model.set('name', 
+                    self.model.set({name: self.filtered_captain.label});
                     self.sitecaptains.add(self.model);
                     self.model = new SiteCaptainModel({site: self.options.site_id});
                     self.makeForm();
