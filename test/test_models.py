@@ -13,11 +13,13 @@ import unittest
 import app_engine_test_utils
 from gae.room import ndb_models
 from gae.room import common
+from google.appengine.api import search
+
 
 def CreateAll():
   """Creates all the models in this module.
 
-  Returns: a dict of key name strings to ndb.Model instances. 
+  Returns: a dict of key name strings to ndb.Model instances.
   """
   KEYS = dict()
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
@@ -56,6 +58,7 @@ def CreateAll():
     notes="You may say I'm a dreamer",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
   ).put()
+
   for program in common.get_all_programs_and_seed_data_if_necessary():
     expected_year, program_type_name = program.name.split()
     assert int(expected_year) == program.year
@@ -524,3 +527,26 @@ class ModelsTest(unittest.TestCase):
       program, created = ndb_models.Program.get_or_create(program_type_key=program_type.key, year=expected_year)
       self.assertFalse(created)
       self.assertEqual(program.key, expected_program.key)
+
+  def testSearchStaff(self):
+    """
+    ref: https://cloud.google.com/appengine/docs/standard/python/search/query_strings
+    """
+    index = search.Index('Staff')
+    results = index.search('name: Mister Staff').results
+    self.assertEqual(2, len(results))
+    email_fields = [s.fields[-1] for s in results]
+    self.assertTrue(all(isinstance(f, search.TextField) for f in email_fields))
+    self.assertTrue(all(f.name == 'email' for f in email_fields))
+
+  def testSearchNumericallyAndByDate(self):
+    """
+    ref: https://cloud.google.com/appengine/docs/standard/python/search/query_strings
+    """
+    index = search.Index('NewSite')
+    self.assertEqual(2, len(index.search('budget < 1').results))
+    self.assertEqual(1, len(index.search('budget = 5000').results))
+
+    index = search.Index('Captain')
+    self.assertEqual(0, len(index.search('last_welcome < 2017-01-01').results))
+    self.assertEqual(1, len(index.search('last_welcome = 2017-01-30 ').results))
