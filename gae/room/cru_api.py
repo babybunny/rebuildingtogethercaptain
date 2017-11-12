@@ -1,5 +1,6 @@
 import six
 from google.appengine.ext import ndb
+from protorpc import message_types
 from protorpc import remote
 from protorpc.wsgi import service
 
@@ -167,7 +168,12 @@ class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metacl
 
 class RoomApi(six.with_metaclass(_GeneratedCruApi, base_api.BaseApi)):
   """Protorpc service implementing a CRUD API for ROOM models"""
-  pass
+
+  @remote.method(protorpc_messages.SimpleId, message_types.VoidMessage)
+  def sitecaptain_delete(self, request):
+    self._authorize_staff()
+    ndb.Key(ndb_models.SiteCaptain, request.id).delete()
+    return message_types.VoidMessage()
 
 
 application = service.service_mapping(RoomApi, r'/cru_api')
