@@ -45,7 +45,7 @@ define(
             el: '#sitecaptain-form-view',
             events: {
                 'click button.remove-sitecaptain': 'removeCaptain',
-                'click button[name=addCaptain]': 'before_save',
+                'click button[name=addCaptain]': 'addCaptain',
             },
             initialize: function(options) {
                 this.options = options;
@@ -68,18 +68,15 @@ define(
                 m.destroy();
                 this.render();
             },
-            before_save: function(e){
+            addCaptain: function(e) {
                 e.preventDefault();
-                var id_value = Number(this.$el.find('select').val());
-                var choices = this.form.fields.models[1].changed.options;
-                this.filtered_captain = _.findWhere(choices, {value: id_value});
-                this.addCaptain();
-            },
-            addCaptain: function() {
-                console.log('add captain ', this);
                 var self = this;
+                var choices = this.form.fields.models.find(function(model){return model.attributes.name == 'captain';});
+                var captain_id = this.model.attributes.captain;
+                this.captain  = _.findWhere(choices.changed.options, {value: captain_id});
+
                 this.model.save().then(function() {
-                    self.model.set({name: self.filtered_captain.label});
+                    self.model.set({name: self.captain.label});
                     self.sitecaptains.add(self.model);
                     self.model = new SiteCaptainModel({site: self.options.site_id});
                     self.makeForm();
