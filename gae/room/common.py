@@ -1,10 +1,9 @@
 """Methods common to all handlers."""
 
-import logging
+import inspect
 import os
 import pprint
 
-import datetime
 import jinja2
 import webapp2
 from google.appengine.api import mail
@@ -16,6 +15,55 @@ import ndb_models
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
 NRD = '04/29/2017'
+
+DEFAULT_CAPTAIN_PROGRAM = '2017 NRD'
+
+PROGRAMS = [
+  '2018 NRD',
+  '2018 Safe',
+  '2018 Teambuild',
+  '2017 NRD',
+  '2017 Safe',
+  '2017 Teambuild',
+  '2016 NRD',
+  '2016 Misc',
+  '2016 Safe',
+  '2016 Energy',
+  '2016 Teambuild',
+  '2016 Youth',
+  '2015 NRD',
+  '2015 Misc',
+  '2015 Safe',
+  '2015 Energy',
+  '2015 Teambuild',
+  '2015 Youth',
+  '2014 NRD',
+  '2014 Misc',
+  '2014 Safe',
+  '2014 Energy',
+  '2014 Teambuild',
+  '2014 Youth',
+  '2013 NRD',
+  '2013 Misc',
+  '2013 Safe',
+  '2013 Energy',
+  '2013 Teambuild',
+  '2013 Youth',
+  '2012 NRD',
+  '2012 Misc',
+  '2012 Safe',
+  '2012 Energy',
+  '2012 Teambuild',
+  '2012 Youth',
+  '2011 NRD',
+  '2011 Misc',
+  '2011 Safe',
+  '2011 Energy',
+  '2011 Teambuild',
+  '2011 Youth',
+  '2011 Test',
+  '2010 NRD',
+]
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
@@ -39,104 +87,11 @@ MAP_HEIGHT = 200
 # CLEANUP this can probably be removed.
 START_NEW_ORDER_SUBMIT = 'Start New Order'
 
-
-def get_all_programs_and_seed_data_if_necessary():
-  """
-  this method's raison d'etre is to create previously hard-coded programs and program types:
-    (a) in the prod datastore during the data migration of November of 2017, and
-    (b) in test datastores for test classes
-
-  :return: tuple of program types created and programs created
-  :rtype: list[ndb_models.Program]
-  """
-  PROGRAMS = [
-    '2018 NRD',
-    '2018 Safe',
-    '2018 Teambuild',
-
-    '2017 NRD',
-    '2017 Safe',
-    '2017 Teambuild',
-
-    '2016 NRD',
-    '2016 Misc',
-    '2016 Safe',
-    '2016 Energy',
-    '2016 Teambuild',
-    '2016 Youth',
-
-    '2015 NRD',
-    '2015 Misc',
-    '2015 Safe',
-    '2015 Energy',
-    '2015 Teambuild',
-    '2015 Youth',
-
-    '2014 NRD',
-    '2014 Misc',
-    '2014 Safe',
-    '2014 Energy',
-    '2014 Teambuild',
-    '2014 Youth',
-
-    '2013 NRD',
-    '2013 Misc',
-    '2013 Safe',
-    '2013 Energy',
-    '2013 Teambuild',
-    '2013 Youth',
-
-    '2012 NRD',
-    '2012 Misc',
-    '2012 Safe',
-    '2012 Energy',
-    '2012 Teambuild',
-    '2012 Youth',
-
-    '2011 NRD',
-    '2011 Misc',
-    '2011 Safe',
-    '2011 Energy',
-    '2011 Teambuild',
-    '2011 Youth',
-
-    '2011 Test',
-
-    '2010 NRD',
-  ]
-
-  programs = ndb_models.Program.query().fetch()
-  if not programs:
-    # no programs exist yet, must seed
-    programs = []
-    assert not ndb_models.ProgramType.query().get()
-    program_data = dict()
-    for program_name in PROGRAMS:
-      year, program_type_name = program_name.split()
-      year = int(year)
-      status = ndb_models.Program.INACTIVE_STATUS
-      if year >= datetime.datetime.today().year:
-        status = ndb_models.Program.ACTIVE_STATUS
-      program_data[program_type_name] = {'year': year, 'status': status, 'program_type_key': None}
-
-    for program_type_name in program_data:
-      program_type, created = ndb_models.ProgramType.get_or_create(program_type_name)
-      assert created
-      program_data[program_type_name]['program_type_key'] = program_type.key
-
-    for program_type_name, program_datum in program_data.items():
-
-      program, created = ndb_models.Program.get_or_create(**program_datum)
-      assert created
-      programs.append(program)
-
-  return programs
-
 def IsDev():
   return os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
 
 
-class RoomsUser(users.User):
+class RoomsUser(object):
 
   @staticmethod
   def from_request(request):
@@ -195,17 +150,33 @@ class RoomsUser(users.User):
         ndb_models.Staff.email == user.email().lower()).get()
 
       if user.staff:
-        user.programs = sorted(ndb_models.Program.query().fetch(), key=lambda p: p.get_sort_key())
+        user.programs = PROGRAMS
         user.program_selected = user.staff.program_selected
 
     request.registry['user'], request.registry['status'] = user, user.status
     return user
 
-  def __init__(self, *args, **kwds):
+  @staticmethod
+  def from_google_user(google_user):
+    return RoomsUser(google_user.email(), google_user)
+
+  def __init__(self, provider, email=None):
     """
-    a google.appengine.api.users.User with added state for rooms
+    encapsulates a user in the rooms system, usually a google.appengine.api.users.User with some added state
+    but choosing non-inheritance pattern in order to provide flexibility going forward
+
+    NOTE: We expect the provider object allows parameterless instantiation as well as with an email parameter
+
+    :param provider: Object used to seed the user, eg a google.appengine.api.users.User.
+    :type provider: object
+    :param email: str email address of the user
+    :type email: str or unicode or NoneType
     """
-    super(RoomsUser, self).__init__(*args, **kwds)
+    assert callable(provider), "provider argument for {} should be callable".format(RoomsUser.__name__)
+    assert 'email' in inspect.getargspec(provider).args, "provider {} missing required email kwarg".format(provider)
+    self.ancestor = provider(email=email)
+    self.provider = provider
+    self.email = email
     self.captain = None
     self.staff = None
     self.programs = []
