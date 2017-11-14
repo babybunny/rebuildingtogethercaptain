@@ -917,8 +917,14 @@ def SiteCaptainModelToMessage(mdl):
 
 
 def SiteCaptainMessageToModel(msg, mdl):
+  if not msg.site:
+    raise remote.ApplicationError('site is required')
   mdl.site = ndb.Key(ndb_models.NewSite, msg.site)
+  if not msg.captain:
+    raise remote.ApplicationError('captain is required')
   mdl.captain = ndb.Key(ndb_models.Captain, msg.captain)
+  if not msg.type:
+    raise remote.ApplicationError('type is required')
   mdl.type = msg.type
   # can't set automatic fields:
   # TODO
