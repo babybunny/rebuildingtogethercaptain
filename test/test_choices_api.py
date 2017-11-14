@@ -1,7 +1,6 @@
 """Functional tests for WSGI app for Protocol RPC service API."""
 
 import unittest
-
 from webtest import TestApp
 
 import app_engine_test_utils
@@ -14,7 +13,6 @@ app = TestApp(choices_api.application)
 class ChoicesTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
     self.keys = test_models.CreateAll()
 
   def tearDown(self):
@@ -29,6 +27,7 @@ class ChoicesTest(unittest.TestCase):
     self.assertEquals('400 Bad Request', response.status)
 
   def testCaptain(self):
+
     post_json_body = {}
     response = app.post_json('/choices_api.captain_choices_read',
                              post_json_body,
@@ -72,7 +71,8 @@ class ChoicesTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
     self.assertIn(u'choice', response.json)
-    self.assertEquals(4, len(response.json['choice']))
+    choices = response.json['choice']
+    self.assertEquals(5, len(choices))
     self.assertDictContainsSubset({u'label': u'Debris Box'},
                                   response.json['choice'][0])
 

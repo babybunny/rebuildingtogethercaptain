@@ -3,10 +3,10 @@
 import unittest
 
 from webtest import TestApp
-
+import os
 import app_engine_test_utils
 from gae import main
-from gae.room import staff
+from gae.room import staff, common
 from test import route_lister
 from test import test_models
 
@@ -15,6 +15,7 @@ APP = TestApp(main.app)
 
 class LoggedInTest(unittest.TestCase):
   def setUp(self):
+    os.environ[common.RoomsUser.DEV_EMAIL_ENVVAR] = 'rebuildingtogether.staff@gmail.com'
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
   def testStaffHome(self):

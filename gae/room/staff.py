@@ -257,7 +257,7 @@ class SiteBudgetExport(StaffHandler):
     if self.request.POST['submit'] == EXPORT_CSV:
       self.response.content_type = 'text/csv'
       self.response.headers['Content-Disposition'] = (
-        'attachment; filename=%s_site_budget.csv' % user.email())
+        'attachment; filename=%s_site_budget.csv' % user.email)
       _SiteBudgetExportInternal(self.response, self.request.POST)
       return self.response
 

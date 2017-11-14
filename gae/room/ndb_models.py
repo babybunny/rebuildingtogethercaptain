@@ -4,16 +4,14 @@ Many of these are similar to models in models.py, which are Django models.  We
 need these ndb versions for use with runtime: python27, which is required by
 endpoints.
 """
-import os
 import collections
 import logging
 import math
 
 from google.appengine.ext import ndb
-from google.appengine.api import search
 
 # TODO: move to global config
-SALES_TAX_RATE = float(os.environ.get('SALES_TAX_RATE', 0.0925))
+SALES_TAX_RATE = 0.0925
 
 
 def _SortItemsWithSections(items):
@@ -55,60 +53,6 @@ class _ActiveItems(object):
     return self.Items()
 
 
-class SearchableModel(ndb.Model):
-
-  def _post_put_hook(self, future):
-    fields = []
-    for prop_name, prop in self._properties.items():
-      value = getattr(self, prop_name)
-      if value is None:
-        continue
-
-      prop_type = type(prop)
-      value_processor = lambda v: v
-      if prop_type in (ndb.TextProperty, ndb.StringProperty):
-        search_type = search.TextField
-
-      elif prop_type in (ndb.FloatProperty, ndb.IntegerProperty):
-        search_type = search.NumberField
-
-      elif prop_type in (ndb.DateProperty, ndb.DateTimeProperty):
-        search_type = search.DateField
-
-      elif prop_type == ndb.UserProperty:
-        search_type = search.TextField
-        value_processor = lambda v: v.email()
-
-      elif prop_type == ndb.KeyProperty:
-        search_type = search.TextField
-        value_processor = lambda v: unicode(v.id())
-
-      elif prop_type == ndb.BooleanProperty:
-        search_type = search.AtomField
-        value_processor = lambda v: unicode(v)
-
-      else:
-        logging.warning("type {} not supported {}".format(prop_type, SearchableModel.__name__))
-        continue
-
-
-      if prop._repeated:
-        for s in value:
-          fields.append(search_type(name=prop_name, value=value_processor(s)))
-      else:
-        try:
-          fields.append(search_type(name=prop_name, value=value_processor(value)))
-        except TypeError:
-          raise
-
-    doc = search.Document(doc_id=unicode(self.key.id()), fields=fields)
-    search.Index(self.__class__.__name__).put(doc)
-
-  @classmethod
-  def _post_delete_hook(cls, key, future):
-    search.Index(cls._class_name()).delete(unicode(key.id()))
-
-
 class Jurisdiction(ndb.Model):
   """A jurisdiction name for reporting purposes."""
   name = ndb.StringProperty()
@@ -120,104 +64,7 @@ class Jurisdiction(ndb.Model):
     return self.name
 
 
-class ProgramType(SearchableModel):
-  """
-  year-independent representation of a program
-
-  names are like NRD, Teambuild and Safe
-
-  there should only be a handful of these and
-  they should be relatively static
-  """
-
-  name = ndb.StringProperty()
-
-  @staticmethod
-  def get_or_create(name):
-    """
-    returns a tuple of the (possibly new) instance and a boolean indicating whether
-    it was created
-
-    WARNING: This method puts the new model if it does not yet exist
-
-    :param name: name of the program type
-    :type name: str
-    :return: tuple of instance and boolean (true if created, false otherwise)
-    :rtype: tuple[ProgramType, bool]
-    """
-    created = False
-    assert isinstance(name, str) or isinstance(name, unicode)
-    result = ProgramType.query().filter(ProgramType.name == name).get()
-    if result is None:
-      created = True
-      result = ProgramType(name=name)
-      result.key = ndb.Key(ProgramType, name)
-      result.put()
-    return result, created
-
-
-class Program(SearchableModel):
-  """Identifies a program type like "National Rebuilding Day" and its year.
-
-  Programs with status 'Active' will be visible to Captains.
-
-  The name property is shorthand for the year and program type like "2012 NRD".
-  """
-  ACTIVE_STATUS = "Active"
-  INACTIVE_STATUS = "Inactive"
-  STATUSES = (ACTIVE_STATUS, INACTIVE_STATUS)
-
-  program_type = ndb.KeyProperty(ProgramType)
-  year = ndb.IntegerProperty(choices=range(1987, 2500))
-  status = ndb.StringProperty(choices=STATUSES, default=STATUSES[0])
-  name = ndb.StringProperty()
-
-  def get_sort_key(self):
-    return -self.year, self.program_type
-
-  @staticmethod
-  def from_fully_qualified_name(fully_qualified_name):
-    query = Program.query()
-    query = query.filter(Program.name == fully_qualified_name)
-    return query.get()
-
-  @staticmethod
-  def get_or_create(program_type_key, year, status=None):
-    """
-    returns a tuple of the (possibly new) instance and a boolean indicating whether
-    it was created
-
-    WARNING: This method puts the new model if it does not yet exist
-
-    :param program_type_key: program type
-    :type program_type_key: ndb.Key
-    :param year: year
-    :type year: int
-    :param status: status
-    :type status: str
-    :return: tuple of instance and boolean (true if created, false otherwise)
-    :rtype: tuple[Program, bool]
-    """
-    assert isinstance(year, int) or isinstance(year, long)
-    assert status is None or status in Program.STATUSES
-    created = False
-    query = Program.query()
-    query = query.filter(Program.program_type == program_type_key)
-    query = query.filter(Program.year == year)
-    result = query.get()
-    if result is None:
-      created = True
-      program_type_name = program_type_key.get().name
-      result = Program(program_type=program_type_key, year=year)
-      result.name = "{} {}".format(year, program_type_name)
-      result.status = status or Program.ACTIVE_STATUS
-      result.put()
-    elif status is not None:
-      assert result.status == status
-    return result, created
-
-
-class Staff(SearchableModel):
+class Staff(ndb.Model):
   """Minimal variant of the Staff model.
 
   For use in authorization within endpoints.
@@ -225,13 +72,12 @@ class Staff(SearchableModel):
   name = ndb.StringProperty()
   email = ndb.StringProperty(required=True)
   program_selected = ndb.StringProperty()
-  program_selected_key = ndb.KeyProperty(kind=Program)
   last_welcome = ndb.DateProperty(auto_now=True)
   notes = ndb.TextProperty()
   since = ndb.DateProperty(auto_now_add=True)
 
 
-class Captain(SearchableModel):
+class Captain(ndb.Model):
   """A work captain."""
   name = ndb.StringProperty(required=True)  # "Joe User"
   # Using the UserProperty seems to be more hassle than it's worth.
@@ -279,7 +125,21 @@ class Captain(SearchableModel):
     return "%s <%s>" % (self.name, self.email)
 
 
-class Supplier(SearchableModel):
+class Program(ndb.Model):
+  """Identifies a program like "National Rebuilding Day".
+
+  Programs with status 'Active' will be visible to Captains.
+
+  Keys are shorthand like "2012 NRD".
+  """
+  year = ndb.IntegerProperty()
+  name = ndb.StringProperty()
+  site_number_prefix = ndb.StringProperty()
+  status = ndb.StringProperty(choices=('Active', 'Inactive'),
+                              default='Inactive')
+
+
+class Supplier(ndb.Model):
   """A supplier of Items."""
   name = ndb.StringProperty(required=True)
   email = ndb.StringProperty()
@@ -300,7 +160,7 @@ class Supplier(SearchableModel):
     return self.name
 
 
-class OrderSheet(SearchableModel):
+class OrderSheet(ndb.Model):
   """Set of items commonly ordered together.
   Corresponds to one of the old paper forms, like the Cleaning Supplies form.
   """
@@ -344,7 +204,7 @@ class OrderSheet(SearchableModel):
     return Item.query(Item.appears_on_order_form == self.key)
 
 
-class Item(SearchableModel):
+class Item(ndb.Model):
   """Represents a type of thing that may in the inventory."""
   bar_code_number = ndb.IntegerProperty()
   # bar_code_number.unique = True
@@ -395,19 +255,11 @@ class Item(SearchableModel):
     return self.VisibleSortableLabel(self.order_form_section)
 
 
-class NewSite(SearchableModel):
-  """
-  A work site.
-
-  number "17001DAL" reads:
-    year=2017
-    program=NRD (encoded as 0)
-    site=01
-    jurisdiction=Daly City
-  """
+class NewSite(ndb.Model):
+  """A work site."""
+  # "10001DAL" reads: 2010, #001, Daly City
   number = ndb.StringProperty(required=True)  # unique
   program = ndb.StringProperty()  # reference
-  program_key = ndb.KeyProperty(kind=Program)  # TODO: Set to required after migration
   name = ndb.StringProperty()  # "Belle Haven"
   name.verbose_name = 'Recipient Name'
   applicant = ndb.StringProperty()
@@ -504,6 +356,32 @@ class NewSite(SearchableModel):
     self.put()
     return sow
 
+  def ProgramFromNumber(self):
+    year = '20' + self.number[0:2]
+    mode = self.number[2]
+    program = None
+    if mode == '0':
+      program = year + ' NRD'
+    elif mode == '1':
+      program = year + ' NRD'
+    elif mode == '3':
+      program = year + ' Misc'
+    elif mode == '5':
+      program = year + ' Safe'
+    elif mode == '6':
+      program = year + ' Safe'
+    elif mode == '7':
+      program = year + ' Energy'
+    elif mode == '8':
+      program = year + ' Teambuild'
+    elif mode == '9':
+      program = year + ' Youth'
+    elif mode == 'Z':
+      program = year + ' Test'
+    else:
+      logging.warn('no program for site number %s', self.number)
+    return program
+
   def SaveTheChildren(self):
     for child in (self.Orders, self.CheckRequests,
                   self.VendorReceipts, self.InKindDonations,
@@ -515,10 +393,8 @@ class NewSite(SearchableModel):
     if self.jurisdiction_choice:
       self.jurisdiction = self.jurisdiction_choice.get().name
     # issue213: program should be configurable
-
     if not self.program:
-      program = self.program_key.get()
-      self.program = program.fully_qualified_name
+      self.program = self.ProgramFromNumber()
     prefixes = set()
     for f in self.name, self.applicant, self.street_number, self.jurisdiction:
       if not f:
@@ -626,7 +502,7 @@ class NewSite(SearchableModel):
       return ''
 
 
-class SiteCaptain(SearchableModel):
+class SiteCaptain(ndb.Model):
   """Associates a site and a Captain."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   captain = ndb.KeyProperty(kind=Captain, required=True)
@@ -637,7 +513,7 @@ class SiteCaptain(SearchableModel):
   ))
 
 
-class InvoiceNumber(SearchableModel):
+class InvoiceNumber(ndb.Model):
   """Simple counter for invoice numbers.
 
   Currently there's a singleton with a Key(InvoiceNumber, 'global')
@@ -645,7 +521,7 @@ class InvoiceNumber(SearchableModel):
   next_invoice_number = ndb.IntegerProperty()
 
 
-class OrderInvoice(SearchableModel):
+class OrderInvoice(ndb.Model):
   """An internal invoice number that an Order can point at.
 
   Parent is the InvoiceNumber that generates the invoice_number value.
@@ -653,12 +529,11 @@ class OrderInvoice(SearchableModel):
   invoice_number = ndb.IntegerProperty()
 
 
-class Order(SearchableModel):
+class Order(ndb.Model):
   """A Captain can make an Order for a list of Items."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   order_sheet = ndb.KeyProperty(kind=OrderSheet, required=True)
   program = ndb.StringProperty()
-  program_key = ndb.KeyProperty(kind=Program)
   sub_total = ndb.FloatProperty()
   notes = ndb.TextProperty()
   state = ndb.StringProperty()
@@ -820,7 +695,7 @@ class Order(SearchableModel):
     self.put()
 
 
-class OrderItem(SearchableModel):
+class OrderItem(ndb.Model):
   """The Items that are in a given Order."""
   item = ndb.KeyProperty(kind=Item)
   order = ndb.KeyProperty(kind=Order)
@@ -867,7 +742,7 @@ class OrderItem(SearchableModel):
       return ''
 
 
-class Delivery(SearchableModel):
+class Delivery(ndb.Model):
   """Delivery to a site (no retrieval)."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   delivery_date = ndb.StringProperty()
@@ -880,13 +755,13 @@ class Delivery(SearchableModel):
     'Instructions for delivery person')
 
 
-class OrderDelivery(SearchableModel):
+class OrderDelivery(ndb.Model):
   """Maps Order to Delivery."""
   order = ndb.KeyProperty(kind=Order, required=True)
   delivery = ndb.KeyProperty(kind=Delivery, required=True)
 
 
-class Pickup(SearchableModel):
+class Pickup(ndb.Model):
   """Pick up from RTP warehouse."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   pickup_date = ndb.StringProperty()
@@ -901,13 +776,13 @@ class Pickup(SearchableModel):
     'Instructions for warehouse staff')
 
 
-class OrderPickup(SearchableModel):
+class OrderPickup(ndb.Model):
   """Maps Order to Pickup."""
   order = ndb.KeyProperty(kind=Order, required=True)
   pickup = ndb.KeyProperty(kind=Pickup, required=True)
 
 
-class Retrieval(SearchableModel):
+class Retrieval(ndb.Model):
   """Delivery and retrieval to and from a site."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   dropoff_date = ndb.StringProperty()
@@ -922,13 +797,13 @@ class Retrieval(SearchableModel):
     'Instructions for delivery person')
 
 
-class OrderRetrieval(SearchableModel):
+class OrderRetrieval(ndb.Model):
   """Maps Order to Retrieval."""
   order = ndb.KeyProperty(kind=Order, required=True)
   retrieval = ndb.KeyProperty(kind=Retrieval, required=True)
 
 
-class InventoryItem(SearchableModel):
+class InventoryItem(ndb.Model):
   """The Items that are in the inventory."""
   item = ndb.KeyProperty(kind=Item)
   quantity = ndb.IntegerProperty(default=0)
@@ -951,7 +826,7 @@ def _GetRateFromArray(default, array, activity_date):
   return rate
 
 
-class StaffPosition(SearchableModel):
+class StaffPosition(ndb.Model):
   """Staff positions that have hourly billing."""
   position_name = ndb.StringProperty()
 
@@ -997,12 +872,11 @@ class StaffPosition(SearchableModel):
     return '%s' % self.position_name
 
 
-class CheckRequest(SearchableModel):
+class CheckRequest(ndb.Model):
   """A Check Request is a request for reimbursement."""
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
-  program_key = ndb.KeyProperty(kind=Program)
   payment_date = ndb.DateProperty()
   labor_amount = ndb.FloatProperty(default=0.0)
   labor_amount.verbose_name = 'Labor Amount ($)'
@@ -1035,12 +909,11 @@ class CheckRequest(SearchableModel):
     return self.labor_amount + self.materials_amount + self.food_amount
 
 
-class VendorReceipt(SearchableModel):
+class VendorReceipt(ndb.Model):
   """A Vendor Receipt is a report of a purchase outside of ROOMS."""
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
-  program_key = ndb.KeyProperty(kind=Program)
   purchase_date = ndb.DateProperty()
   vendor = ndb.StringProperty()
   supplier = ndb.KeyProperty(kind=Supplier)
@@ -1067,12 +940,11 @@ class VendorReceipt(SearchableModel):
     return self.amount or 0
 
 
-class InKindDonation(SearchableModel):
+class InKindDonation(ndb.Model):
   """An In-kind donation to a site."""
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
-  program_key = ndb.KeyProperty(kind=Program)
   donation_date = ndb.DateProperty()
   donor = ndb.StringProperty()
   donor_phone = ndb.StringProperty()
@@ -1104,13 +976,12 @@ class InKindDonation(SearchableModel):
     return self.labor_amount + self.materials_amount
 
 
-class StaffTime(SearchableModel):
+class StaffTime(ndb.Model):
   """Expense type that represents hourly staff time."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   captain = ndb.KeyProperty(kind=Captain)
   position = ndb.KeyProperty(kind=StaffPosition)
   program = ndb.StringProperty()
-  program_key = ndb.KeyProperty(kind=Program)
   state = ndb.StringProperty()
   hours = ndb.FloatProperty(default=0.0)
   hours.verbose_name = 'Hours'
@@ -1156,7 +1027,7 @@ class StaffTime(SearchableModel):
 # I think this can be removed.  There is a template and view called "Expense"
 # but I don't see anything that references this model.   And there are no
 # entities in the prod datastore.
-class Expense(SearchableModel):
+class Expense(ndb.Model):
   """A generic expense."""
   payee = ndb.KeyProperty(kind=Supplier)
   action = ndb.StringProperty(choices=('on account', 'need reimbursement'))
@@ -1164,7 +1035,6 @@ class Expense(SearchableModel):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
-  program_key = ndb.KeyProperty(kind=Program)
   date = ndb.DateProperty()
   amount = ndb.FloatProperty()
   amount.verbose_name = 'Purchase Amount ($)'

@@ -5,15 +5,13 @@ to create a known set of models in a throwaway namespace for integration testing
 
 Also, these models may be used in unit tests.
 """
-import os
+
 import datetime
 import logging
 import unittest
 
 import app_engine_test_utils
 from gae.room import ndb_models
-from gae.room import common
-from google.appengine.api import search
 
 
 def CreateAll():
@@ -21,9 +19,6 @@ def CreateAll():
 
   Returns: a dict of key name strings to ndb.Model instances.
   """
-  USER_EMAIL = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
-  assert USER_EMAIL is not None, "Environment variable ROOMS_DEV_SIGNIN_EMAIL must be supplied"
-  USER = common.RoomsUser(email=USER_EMAIL)
   KEYS = dict()
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
@@ -62,16 +57,18 @@ def CreateAll():
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
   ).put()
 
-  for program in common.get_all_programs_and_seed_data_if_necessary():
-    expected_year, program_type_name = program.name.split()
-    assert int(expected_year) == program.year
-    program_type_key_string = "PROGRAM TYPE: {}".format(program_type_name)
-    if program_type_key_string not in KEYS:
-      KEYS[program_type_key_string] = program.program_type
-
-    program_key_string = "PROGRAM: {}".format(program.name)
-    assert program_key_string not in KEYS
-    KEYS[program_key_string] = program.key
+  KEYS['PROGRAM'] = ndb_models.Program(
+    year=2011,
+    name="TEST",
+    site_number_prefix="110",
+    status="Active"
+  ).put()
+  KEYS['PROGRAM2'] = ndb_models.Program(
+    year=2012,
+    name="TEST",
+    site_number_prefix="120",
+    status="Active"
+  ).put()
 
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
@@ -393,8 +390,7 @@ def CreateAll():
     vendor=KEYS['SUPPLIER'],
     logistics_start='a logistic start',
     logistics_end='a logistic end',
-    logistics_instructions='''a logistic instruction''',
-    created_by=USER
+    logistics_instructions='''a logistic instruction'''
   ).put()
 
   KEYS['ORDER2'] = ndb_models.Order(
@@ -502,55 +498,10 @@ def DeleteAll(KEYS):
 class ModelsTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-    self.keys = CreateAll()
 
   def testCreate(self):
-    self.assertTrue(self.keys)
-    self.assertIn('ORDERITEM', self.keys)
-    DeleteAll(self.keys)
-    self.assertFalse(self.keys)
-
-  def testPrograms(self):
-    for expected_program in common.get_all_programs_and_seed_data_if_necessary():
-      expected_year, program_type_name = expected_program.name.split(" ")
-      expected_year = int(expected_year)
-      program_type_string_key = 'PROGRAM TYPE: ' + program_type_name
-
-      # program type expectations
-      self.assertIn(program_type_string_key, self.keys)
-      program_type = self.keys[program_type_string_key].get()
-      self.assertEqual(program_type.name, program_type_name)
-
-      # program expectations
-      program_string_key = 'PROGRAM: ' + expected_program.name
-      self.assertIn(program_string_key, self.keys)
-      test_program = self.keys[program_string_key].get()
-      self.assertEqual(test_program.key, expected_program.key)
-
-      # test get or create
-      program, created = ndb_models.Program.get_or_create(program_type_key=program_type.key, year=expected_year)
-      self.assertFalse(created)
-      self.assertEqual(program.key, expected_program.key)
-
-  def testSearchStaff(self):
-    """
-    ref: https://cloud.google.com/appengine/docs/standard/python/search/query_strings
-    """
-    index = search.Index('Staff')
-    results = index.search('name: Mister Staff').results
-    self.assertEqual(2, len(results))
-    email_fields = [s.fields[-1] for s in results]
-    self.assertTrue(all(isinstance(f, search.TextField) for f in email_fields))
-    self.assertTrue(all(f.name == 'email' for f in email_fields))
-
-  def testSearchNumericallyAndByDate(self):
-    """
-    ref: https://cloud.google.com/appengine/docs/standard/python/search/query_strings
-    """
-    index = search.Index('NewSite')
-    self.assertEqual(2, len(index.search('budget < 1').results))
-    self.assertEqual(1, len(index.search('budget = 5000').results))
-
-    index = search.Index('Captain')
-    self.assertEqual(0, len(index.search('last_welcome < 2017-01-01').results))
-    self.assertEqual(1, len(index.search('last_welcome = 2017-01-30 ').results))
+    KEYS = CreateAll()
+    self.assertTrue(KEYS)
+    self.assertIn('ORDERITEM', KEYS)
+    DeleteAll(KEYS)
+    self.assertFalse(KEYS)

@@ -45,7 +45,7 @@
       {% block breadcrumb %}{%endblock%}
     </span>
     <span class="userinfo">
-      {{ user.nickname() }}
+      {{ user.nickname }}
       | <a href="{{ logout_url }}" alt="sign out">Sign Out</a>
       {%if show_admin_link%}
       | <a href="/_ah/admin">Admin</a>
