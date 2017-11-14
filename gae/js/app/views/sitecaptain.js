@@ -72,11 +72,13 @@ define(
                 e.preventDefault();
                 var self = this;
                 var choices = this.form.fields.models.find(function(model){return model.get('name') == 'captain';});
-                var captain_id = this.model.get('captain');
-                var captain  = _.findWhere(choices.get('options'), {value: captain_id});
+                var captain_label  = function(){
+                    var captain =  _.findWhere(choices.get('options'), {value: self.model.get('captain')});
+                    return captain.label;
+                }();
 
                 this.model.save().then(function() {
-                    self.model.set({name: captain.label});
+                    self.model.set({name: captain_label});
                     self.sitecaptains.add(self.model);
                     self.model = new SiteCaptainModel({site: self.options.site_id});
                     self.makeForm();
