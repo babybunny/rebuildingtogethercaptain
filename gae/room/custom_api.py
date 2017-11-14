@@ -62,12 +62,6 @@ class CustomApi(base_api.BaseApi):
     logging.info('ehlo')
     return message_types.VoidMessage()
 
-  @remote.method(protorpc_messages.SimpleId, message_types.VoidMessage)
-  def sitecaptain_delete(self, request):
-    self._authorize_staff()
-    ndb.Key(ndb_models.SiteCaptain, request.id).delete()
-    return message_types.VoidMessage()
-
   @remote.method(message_types.VoidMessage,
                  OrderFormChoices)
   def order_form_choices(self, request):
