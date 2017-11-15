@@ -109,7 +109,7 @@ class SearchableModel(ndb.Model):
     search.Index(cls._class_name()).delete(unicode(key.id()))
 
 
-class Jurisdiction(ndb.Model):
+class Jurisdiction(SearchableModel):
   """A jurisdiction name for reporting purposes."""
   name = ndb.StringProperty()
 
