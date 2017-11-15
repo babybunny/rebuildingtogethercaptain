@@ -134,11 +134,14 @@ class RoomsUser(object):
       user.status = request.registry.get('status')
       return user
 
-    if IsDev():
-      user = RoomsUser.get_dev_user(request)
-    else:
+    try:
       user = RoomsUser()
       user.status = 'User from get_current_user %s' % user.email
+    except users.UserNotFoundError:
+      if IsDev():
+        user = RoomsUser.get_dev_user(request)
+      else:
+        raise
 
     request.registry['user'], request.registry['status'] = user, user.status
     return user
