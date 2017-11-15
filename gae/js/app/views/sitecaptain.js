@@ -40,7 +40,7 @@ define(
                 label: "Add Captain"
             }
         ];
-        
+
         var View = Backbone.View.extend({
             el: '#sitecaptain-form-view',
             events: {
@@ -71,12 +71,14 @@ define(
             addCaptain: function() {
                 console.log('add captain ', this);
                 var self = this;
-                this.model.save().then(function() {
-                    // TODO self.model.set('name', 
-                    self.sitecaptains.add(self.model);
-                    self.model = new SiteCaptainModel({site: self.options.site_id});
-                    self.makeForm();
-                    self.render();
+                this.model.save(null, {
+                    'success': function(){
+                        // TODO self.model.set('name',
+                        self.sitecaptains.add(self.model);
+                        self.model = new SiteCaptainModel({site: self.options.site_id});
+                        self.makeForm();
+                        self.render();
+                    }
                 });
             },
             render: function() {

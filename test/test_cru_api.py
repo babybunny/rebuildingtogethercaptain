@@ -206,3 +206,14 @@ class BugsTest(unittest.TestCase):
     self.assertIn(u'email', response.json)
     self.assertEquals('mister@captain.com', response.json['email'])
 
+  def testSiteCaptainMissingType(self):
+    post_json_body = {
+      "site": self.keys['SITE'].integer_id(),
+      "captain": self.keys['CAPTAIN'].integer_id(),
+      }
+    response = app.post_json('/cru_api.sitecaptain_create',
+                             post_json_body,
+                             status=400,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertIn('type is required', response.body)
+
