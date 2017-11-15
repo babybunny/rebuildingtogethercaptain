@@ -29,19 +29,15 @@ class SelectProgram(webapp2.RequestHandler):
     user = common.RoomsUser.from_request(self.request)
     if not user and not user.staff:
       return webapp2.redirect_to('Start')
-    program_fqn = self.request.get('program')
-    if not program_fqn:
-      what_you_are_doing = "Select a Program to work on"
-      program_url_base = webapp2.uri_for('SelectProgram')
-      return common.Respond(self.request, 'select_program', locals())
-
-    program = ndb_models.Program.from_fully_qualified_name(program_fqn)
+    program = self.request.get('program')
     if not program:
       what_you_are_doing = "Select a Program to work on"
       program_url_base = webapp2.uri_for('SelectProgram')
       return common.Respond(self.request, 'select_program', locals())
 
-    user.staff.program_selected = program.fully_qualified_name
+    if program not in common.PROGRAMS:
+      return http.HttpResponseError('program %s not in PROGRAMS' % program)
+    user.staff.program_selected = program
     user.staff.put()
     return webapp2.redirect_to('StaffHome')
 

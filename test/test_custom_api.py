@@ -20,7 +20,7 @@ class CustomApiTest(unittest.TestCase):
     test_models.DeleteAll(self.keys)
 
   def testSiteCaptainDelete(self):
-    post_json_body = {"id": self.keys['SITECAPTAIN'].integer_id()};
+    post_json_body = {"id": self.keys['SITECAPTAIN'].integer_id()}
     response = app.post_json('/custom_api.sitecaptain_delete',
                              post_json_body,
                              status=200,
