@@ -22,7 +22,7 @@ class MainPage(webapp2.RequestHandler):
 
   def get(self):
     """Renders the main page."""
-    user, status = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     if user and user.staff:
       self.redirect_to('StaffHome')
     if user and user.captain:

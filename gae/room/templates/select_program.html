@@ -4,13 +4,12 @@
 {% endblock %}
 {% block body %}
 <p>
-Hard-coded programs
 <ul>
 {% for program in user.programs %}
 <li>
   Click to select
-  <a href="{{ program_url_base }}?program={{ program }}">
-    {{ program }}
+  <a href="{{ program_url_base }}?program_id={{ program.id }}">
+    {{ program.name }}
   </a>
 </li>
 {% endfor %}
