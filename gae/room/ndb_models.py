@@ -4,6 +4,7 @@ Many of these are similar to models in models.py, which are Django models.  We
 need these ndb versions for use with runtime: python27, which is required by
 endpoints.
 """
+import os
 import collections
 import logging
 import math
@@ -12,7 +13,7 @@ from google.appengine.ext import ndb
 from google.appengine.api import search
 
 # TODO: move to global config
-SALES_TAX_RATE = 0.0925
+SALES_TAX_RATE = float(os.environ.get('SALES_TAX_RATE', 0.0925))
 
 
 def _SortItemsWithSections(items):
@@ -108,7 +109,7 @@ class SearchableModel(ndb.Model):
     search.Index(cls._class_name()).delete(unicode(key.id()))
 
 
-class Jurisdiction(SearchableModel):
+class Jurisdiction(ndb.Model):
   """A jurisdiction name for reporting purposes."""
   name = ndb.StringProperty()
 
@@ -119,6 +120,103 @@ class Jurisdiction(SearchableModel):
     return self.name
 
 
+class ProgramType(SearchableModel):
+  """
+  year-independent representation of a program
+
+  names are like NRD, Teambuild and Safe
+
+  there should only be a handful of these and
+  they should be relatively static
+  """
+
+  name = ndb.StringProperty()
+
+  @staticmethod
+  def get_or_create(name):
+    """
+    returns a tuple of the (possibly new) instance and a boolean indicating whether
+    it was created
+
+    WARNING: This method puts the new model if it does not yet exist
+
+    :param name: name of the program type
+    :type name: str
+    :return: tuple of instance and boolean (true if created, false otherwise)
+    :rtype: tuple[ProgramType, bool]
+    """
+    created = False
+    assert isinstance(name, str) or isinstance(name, unicode)
+    result = ProgramType.query().filter(ProgramType.name == name).get()
+    if result is None:
+      created = True
+      result = ProgramType(name=name)
+      result.key = ndb.Key(ProgramType, name)
+      result.put()
+    return result, created
+
+
+class Program(SearchableModel):
+  """Identifies a program type like "National Rebuilding Day" and its year.
+
+  Programs with status 'Active' will be visible to Captains.
+
+  The name property is shorthand for the year and program type like "2012 NRD".
+  """
+  ACTIVE_STATUS = "Active"
+  INACTIVE_STATUS = "Inactive"
+  STATUSES = (ACTIVE_STATUS, INACTIVE_STATUS)
+
+  program_type = ndb.KeyProperty(ProgramType)
+  year = ndb.IntegerProperty(choices=range(1987, 2500))
+  status = ndb.StringProperty(choices=STATUSES, default=STATUSES[0])
+  name = ndb.StringProperty()
+
+  def get_sort_key(self):
+    return -self.year, self.program_type
+
+  @staticmethod
+  def from_fully_qualified_name(fully_qualified_name):
+    query = Program.query()
+    query = query.filter(Program.name == fully_qualified_name)
+    return query.get()
+
+  @staticmethod
+  def get_or_create(program_type_key, year, status=None):
+    """
+    returns a tuple of the (possibly new) instance and a boolean indicating whether
+    it was created
+
+    WARNING: This method puts the new model if it does not yet exist
+
+    :param program_type_key: program type
+    :type program_type_key: ndb.Key
+    :param year: year
+    :type year: int
+    :param status: status
+    :type status: str
+    :return: tuple of instance and boolean (true if created, false otherwise)
+    :rtype: tuple[Program, bool]
+    """
+    assert isinstance(year, int) or isinstance(year, long)
+    assert status is None or status in Program.STATUSES
+    created = False
+    query = Program.query()
+    query = query.filter(Program.program_type == program_type_key)
+    query = query.filter(Program.year == year)
+    result = query.get()
+    if result is None:
+      created = True
+      program_type_name = program_type_key.get().name
+      result = Program(program_type=program_type_key, year=year)
+      result.name = "{} {}".format(year, program_type_name)
+      result.status = status or Program.ACTIVE_STATUS
+      result.put()
+    elif status is not None:
+      assert result.status == status
+    return result, created
+
+
 class Staff(SearchableModel):
   """Minimal variant of the Staff model.
 
@@ -127,6 +225,7 @@ class Staff(SearchableModel):
   name = ndb.StringProperty()
   email = ndb.StringProperty(required=True)
   program_selected = ndb.StringProperty()
+  program_selected_key = ndb.KeyProperty(kind=Program)
   last_welcome = ndb.DateProperty(auto_now=True)
   notes = ndb.TextProperty()
   since = ndb.DateProperty(auto_now_add=True)
@@ -178,20 +277,6 @@ class Captain(SearchableModel):
 
   def Label(self):
     return "%s <%s>" % (self.name, self.email)
-
-
-class Program(SearchableModel):
-  """Identifies a program like "National Rebuilding Day".
-
-  Programs with status 'Active' will be visible to Captains.
-
-  Keys are shorthand like "2012 NRD".
-  """
-  year = ndb.IntegerProperty()
-  name = ndb.StringProperty()
-  site_number_prefix = ndb.StringProperty()
-  status = ndb.StringProperty(choices=('Active', 'Inactive'),
-                              default='Inactive')
 
 
 class Supplier(SearchableModel):
@@ -311,10 +396,18 @@ class Item(SearchableModel):
 
 
 class NewSite(SearchableModel):
-  """A work site."""
-  # "10001DAL" reads: 2010, #001, Daly City
+  """
+  A work site.
+
+  number "17001DAL" reads:
+    year=2017
+    program=NRD (encoded as 0)
+    site=01
+    jurisdiction=Daly City
+  """
   number = ndb.StringProperty(required=True)  # unique
   program = ndb.StringProperty()  # reference
+  program_key = ndb.KeyProperty(kind=Program)  # TODO: Set to required after migration
   name = ndb.StringProperty()  # "Belle Haven"
   name.verbose_name = 'Recipient Name'
   applicant = ndb.StringProperty()
@@ -411,32 +504,6 @@ class NewSite(SearchableModel):
     self.put()
     return sow
 
-  def ProgramFromNumber(self):
-    year = '20' + self.number[0:2]
-    mode = self.number[2]
-    program = None
-    if mode == '0':
-      program = year + ' NRD'
-    elif mode == '1':
-      program = year + ' NRD'
-    elif mode == '3':
-      program = year + ' Misc'
-    elif mode == '5':
-      program = year + ' Safe'
-    elif mode == '6':
-      program = year + ' Safe'
-    elif mode == '7':
-      program = year + ' Energy'
-    elif mode == '8':
-      program = year + ' Teambuild'
-    elif mode == '9':
-      program = year + ' Youth'
-    elif mode == 'Z':
-      program = year + ' Test'
-    else:
-      logging.warn('no program for site number %s', self.number)
-    return program
-
   def SaveTheChildren(self):
     for child in (self.Orders, self.CheckRequests,
                   self.VendorReceipts, self.InKindDonations,
@@ -448,8 +515,10 @@ class NewSite(SearchableModel):
     if self.jurisdiction_choice:
       self.jurisdiction = self.jurisdiction_choice.get().name
     # issue213: program should be configurable
+
     if not self.program:
-      self.program = self.ProgramFromNumber()
+      program = self.program_key.get()
+      self.program = program.fully_qualified_name
     prefixes = set()
     for f in self.name, self.applicant, self.street_number, self.jurisdiction:
       if not f:
@@ -589,6 +658,7 @@ class Order(SearchableModel):
   site = ndb.KeyProperty(kind=NewSite, required=True)
   order_sheet = ndb.KeyProperty(kind=OrderSheet, required=True)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   sub_total = ndb.FloatProperty()
   notes = ndb.TextProperty()
   state = ndb.StringProperty()
@@ -932,6 +1002,7 @@ class CheckRequest(SearchableModel):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   payment_date = ndb.DateProperty()
   labor_amount = ndb.FloatProperty(default=0.0)
   labor_amount.verbose_name = 'Labor Amount ($)'
@@ -969,6 +1040,7 @@ class VendorReceipt(SearchableModel):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   purchase_date = ndb.DateProperty()
   vendor = ndb.StringProperty()
   supplier = ndb.KeyProperty(kind=Supplier)
@@ -1000,6 +1072,7 @@ class InKindDonation(SearchableModel):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   donation_date = ndb.DateProperty()
   donor = ndb.StringProperty()
   donor_phone = ndb.StringProperty()
@@ -1037,6 +1110,7 @@ class StaffTime(SearchableModel):
   captain = ndb.KeyProperty(kind=Captain)
   position = ndb.KeyProperty(kind=StaffPosition)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   state = ndb.StringProperty()
   hours = ndb.FloatProperty(default=0.0)
   hours.verbose_name = 'Hours'
@@ -1090,6 +1164,7 @@ class Expense(SearchableModel):
   site = ndb.KeyProperty(kind=NewSite)
   captain = ndb.KeyProperty(kind=Captain)
   program = ndb.StringProperty()
+  program_key = ndb.KeyProperty(kind=Program)
   date = ndb.DateProperty()
   amount = ndb.FloatProperty()
   amount.verbose_name = 'Purchase Amount ($)'
