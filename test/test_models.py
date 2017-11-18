@@ -12,6 +12,7 @@ import unittest
 
 import app_engine_test_utils
 from gae.room import ndb_models
+from gae.room.data_migrations import issue147_program_as_model
 
 
 def CreateAll():
@@ -20,6 +21,7 @@ def CreateAll():
   Returns: a dict of key name strings to ndb.Model instances.
   """
   KEYS = dict()
+  KEYS['PROGRAMS'] = issue147_program_as_model.get_all_programs()
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
     hourly_rate=19.19,
@@ -56,20 +58,6 @@ def CreateAll():
     notes="You may say I'm a dreamer",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
   ).put()
-
-  KEYS['PROGRAM'] = ndb_models.Program(
-    year=2011,
-    name="TEST",
-    site_number_prefix="110",
-    status="Active"
-  ).put()
-  KEYS['PROGRAM2'] = ndb_models.Program(
-    year=2012,
-    name="TEST",
-    site_number_prefix="120",
-    status="Active"
-  ).put()
-
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
   ).put()
