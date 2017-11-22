@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block jquery %}
+<link
+   type="text/css"
+   href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css"
+   rel="Stylesheet" />
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+</script>
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
+</script>
+{% endblock %}
+{% block body%}
+ <h2>Magic Search</h2>
+{% if failed_search %}
+ {% if exception %}
+  <h5 style="color:red;">Search "{{failed_search}}" was invalid: {{exception}}</h5>
+ {% else %}
+   <h5 style="color:red;">No results were found for search "{{failed_search}}"</h5>
+ {% endif %}
+ <h5 style="color:red;">Please try again</h5>
+{% endif %}
+    {% if user.staff %}
+        <form
+	         method="GET"
+	         action="{{ webapp2.uri_for('MagicSearch') }}">
+            <input name="search_string" type="text" size="25">
+            <input type="submit" value="Search">
+        </form>
+    {% endif %}
+{% endblock %}

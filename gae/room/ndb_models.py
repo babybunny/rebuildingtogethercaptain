@@ -12,6 +12,8 @@ from google.appengine.ext import ndb
 from google.appengine.api import search
 
 # TODO: move to global config
+from gae.room import general_utils
+
 SALES_TAX_RATE = 0.0925
 
 
@@ -56,7 +58,16 @@ class _ActiveItems(object):
 
 class SearchableModel(ndb.Model):
 
-  def _post_put_hook(self, future):
+  @staticmethod
+  def get_search_order():
+    """override with lower number to search this index first"""
+    return 1e10
+
+  def get_canonical_request_response(self, request):
+    """override to build a default response to requests whose search resolve to this model"""
+    raise NotImplementedError("{} has no canonical request response defined".format(self.__class__.__name__))
+
+  def get_indexed_fields(self):
     fields = []
     for prop_name, prop in self._properties.items():
       value = getattr(self, prop_name)
@@ -99,7 +110,15 @@ class SearchableModel(ndb.Model):
           fields.append(search_type(name=prop_name, value=value_processor(value)))
         except TypeError:
           raise
+    return fields
 
+  def _post_put_hook(self, future):
+    put_result = future.get_result()  # blocks on put but not a bad idea anyway
+    fields = [
+      search.AtomField(name="model_name", value=self.__class__.__name__),
+      search.AtomField(name="model_key_id", value=str(put_result.integer_id()))
+    ]
+    fields.extend(self.get_indexed_fields())
     doc = search.Document(doc_id=unicode(self.key.id()), fields=fields)
     search.Index(self.__class__.__name__).put(doc)
 
@@ -343,6 +362,10 @@ class NewSite(SearchableModel):
   photo_link = ndb.StringProperty()
   volunteer_signup_link = ndb.StringProperty()
   latest_computed_expenses = ndb.FloatProperty()
+
+  @staticmethod
+  def get_search_order():
+    return 0
 
   @property
   def IsCDBG(self):
@@ -604,6 +627,10 @@ class Order(SearchableModel):
   created_by = ndb.UserProperty(auto_current_user_add=True)
   modified = ndb.DateTimeProperty(auto_now=True)
   last_editor = ndb.UserProperty(auto_current_user=True)
+
+  @staticmethod
+  def get_search_order():
+    return 1
 
   @property
   def name(self):
@@ -1097,3 +1124,20 @@ class Expense(SearchableModel):
   state = ndb.StringProperty()
   last_editor = ndb.UserProperty()
   modified = ndb.DateTimeProperty(auto_now=True)
+
+
+def get_all_searchable_models():
+  searchable_models = general_utils.get_all_subclasses(SearchableModel)
+  searchable_models.sort(key=lambda m: m.get_search_order())
+  return searchable_models
+
+
+def model_from_search_document(doc):
+  name_to_model_type_map = {m.__name__: m for m in get_all_searchable_models()}
+  key_ids = doc['model_key_id']
+  assert len(key_ids) == 1
+  model_type_names = doc['model_name']
+  assert len(model_type_names) == 1
+  model_type = name_to_model_type_map.get(model_type_names[0].value)
+  assert model_type is not None
+  return model_type.get_by_id(int(key_ids[0].value))

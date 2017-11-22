@@ -6,11 +6,13 @@ import webapp2
 from google.appengine.api import users
 from webapp2_extras import routes
 
+import dev_utilities
 from room import captain
 from room import common
 from room import staff
 
 # from room import views
+from test import test_models
 
 EXPENSE_KINDS = (
   # 'CheckRequest',
@@ -291,6 +293,9 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/help',
                 Placeholder,
                 name='StaffNew'),  # TODO
+  webapp2.Route(r'/magicsearch',
+                staff.MagicSearch,
+                name='MagicSearch')
 ])
 
 post_routes = routes.PathPrefixRoute('/room', [

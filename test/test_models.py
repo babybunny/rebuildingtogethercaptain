@@ -484,7 +484,6 @@ def CreateAll():
   ).put()
   """
 
-  logging.info('added keys: {}', KEYS.keys())
   return KEYS
 
 

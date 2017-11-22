@@ -7,9 +7,10 @@ import logging
 
 import webapp2
 from google.appengine.ext import ndb
-
+from google.appengine.api import search
 import common
 import ndb_models
+from gae.room import general_utils
 
 TEST_SITE_NUMBER = '11999ZZZ'
 EXPORT_CSV = 'Export CSV'
@@ -48,6 +49,13 @@ class StaffHandler(webapp2.RequestHandler):
   - user matches an existing Staff record
   - Staff record has a selected Program
   """
+
+  model_class = None
+  searchable_model_class = None
+
+  @staticmethod
+  def handle_model_based_request(request, model):
+    raise NotImplementedError()
 
   def dispatch(self, *a, **k):
     user = common.RoomsUser.from_request(self.request)
@@ -89,7 +97,7 @@ class SiteScopeOfWork(StaffHandler):
 
 
 class AutocompleteHandler(StaffHandler):
-  model_class = None
+
   program_filter = False
 
   def get(self):
@@ -121,10 +129,18 @@ class CaptainAutocomplete(AutocompleteHandler):
 
 
 class SiteView(StaffHandler):
-  def get(self, id=None):
-    if id:
-      id = int(id)
-      site = ndb.Key(ndb_models.NewSite, id).get()
+
+  searchable_model_class = ndb_models.NewSite
+
+  @staticmethod
+  def handle_model_based_request(request, model):
+    return SiteView(request).get(site=model)
+
+  def get(self, id=None, site=None):
+    if site is None:
+      if id is not None:
+        id = int(id)
+        site = ndb.Key(ndb_models.NewSite, id).get()
     d = dict(
       map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
     )
@@ -852,3 +868,46 @@ class Vendor(StaffHandler):
 
     return _ChangeOrder(self.request, order_id, input_sanitizer=_GetSupplier,
                         output_filter=lambda(k):k.get().name)
+
+
+search_handler_map = {}
+for clazz in general_utils.get_all_subclasses(StaffHandler):
+  if clazz.searchable_model_class:
+    search_handler_map[clazz.searchable_model_class] = clazz
+
+
+class MagicSearch(StaffHandler):
+
+  @staticmethod  # exposed for testing
+  def get_top_model_and_handler_for_search_string(search_string):
+    searchable_models = ndb_models.get_all_searchable_models()
+    for model_class in searchable_models:
+      if model_class not in search_handler_map:
+        continue
+      index = search.Index(model_class.__name__)
+      query = search.Query(
+        query_string=search_string,
+        options=search.QueryOptions(limit=1)
+      )
+      results = index.search(query).results
+      if results:
+
+        model = ndb_models.model_from_search_document(results[0])
+        handler = search_handler_map[model_class]
+        return model, handler
+    return None, None
+
+  def get(self):
+    search_string = self.request.get('search_string')
+    if not search_string:
+      return common.Respond(self.request, 'magic_search', {})
+    model, handler, exception = None, None, None
+    try:
+      model, handler = self.get_top_model_and_handler_for_search_string(search_string)
+    except Exception as ex:
+      logging.exception("Failed search:")
+      exception = ex
+    if model is None:
+      return common.Respond(self.request, 'magic_search', {'failed_search': search_string,
+                                                           'exception': exception})
+    return handler.handle_model_based_request(self.request, model)
