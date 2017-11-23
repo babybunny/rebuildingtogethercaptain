@@ -376,6 +376,9 @@ class CaptainList(StaffHandler):
 
 
 class Captain(EditView):
+
+  searchable_model_class = ndb_models.Captain
+
   model_class = ndb_models.Captain
   list_view = 'CaptainList'
   template_value = 'captain'
@@ -388,6 +391,7 @@ class SupplierList(StaffHandler):
 
 
 class Supplier(EditView):
+  searchable_model_class = ndb_models.Supplier
   model_class = ndb_models.Supplier
   list_view = 'SupplierList'
   template_value = 'supplier'
@@ -409,6 +413,7 @@ class OrderSheetList(StaffHandler):
 
 
 class OrderSheet(EditView):
+  searchable_model_class = ndb_models.OrderSheet
   model_class = ndb_models.OrderSheet
   list_view = 'OrderSheetList'
   template_value = 'ordersheet'
@@ -479,6 +484,7 @@ class StaffTimeList(SiteExpenseList):
 
 
 class StaffTimeView(StaffHandler):
+  searchable_model_class = ndb_models.StaffTime
   def get(self, id):
     """Printable static view of an expense."""
     entity = ndb.Key(ndb_models.StaffTime, int(id)).get()
@@ -500,6 +506,7 @@ class CheckRequestList(SiteExpenseList):
 
 
 class CheckRequestView(StaffHandler):
+  searchable_model_class = ndb_models.CheckRequest
   def get(self, id):
     entity = ndb.Key(ndb_models.CheckRequest, int(id)).get()
     return common.Respond(self.request, 'checkrequest_view',
@@ -520,6 +527,7 @@ class VendorReceiptList(SiteExpenseList):
 
 
 class VendorReceiptView(StaffHandler):
+  searchable_model_class = ndb_models.VendorReceipt
   def get(self, id):
     entity = ndb.Key(ndb_models.VendorReceipt, int(id)).get()
     return common.Respond(self.request, 'vendorreceipt_view',
@@ -541,6 +549,7 @@ class InKindDonationList(SiteExpenseList):
 
 
 class InKindDonationView(StaffHandler):
+  searchable_model_class = ndb_models.InKindDonation
   def get(self, id):
     entity = ndb.Key(ndb_models.InKindDonation, int(id)).get()
     return common.Respond(self.request, 'inkinddonation_view',
@@ -574,6 +583,7 @@ class OrderList(SiteExpenseList):
 
 
 class OrderView(StaffHandler):
+  searchable_model_class = ndb_models.Order
   def get(self, id):
     order = ndb.Key(ndb_models.Order, int(id)).get()
     order.UpdateSubTotal()
@@ -867,6 +877,10 @@ class Vendor(StaffHandler):
 model_type_string_to_handler_map = {}
 for clazz in general_utils.get_all_subclasses(StaffHandler):
   if clazz.searchable_model_class:
+    name = clazz.searchable_model_class.__name__
+    if name in model_type_string_to_handler_map:
+      logging.error("Model {} is defined as searchable model class on more than one handler".format(name))
+      continue
     model_type_string_to_handler_map[clazz.searchable_model_class.__name__] = clazz
 
 
