@@ -58,6 +58,12 @@ class _ActiveItems(object):
 
 class SearchableModel(ndb.Model):
 
+  def get_search_result_headline(self):
+    return "type={} id={}".format(type(self), self.key.integer_id())
+
+  def get_search_result_detail_lines(self):
+    return ["{}={}".format(a, b) for a, b in self._properties.items()]
+
   @staticmethod
   def get_search_order():
     """override with lower number to search this index first"""
@@ -114,17 +120,30 @@ class SearchableModel(ndb.Model):
 
   def _post_put_hook(self, future):
     put_result = future.get_result()  # blocks on put but not a bad idea anyway
+    model_key_id = put_result.integer_id()
+    index_name = self.__class__.__name__
+    index = search.Index(index_name)
+    self.delete_by_model_key_id(model_key_id)
     fields = [
-      search.AtomField(name="model_name", value=self.__class__.__name__),
-      search.AtomField(name="model_key_id", value=str(put_result.integer_id()))
+      search.AtomField(name="model_name", value=index_name),
+      search.AtomField(name="model_key_id", value=unicode(model_key_id)),
+      search.TextField(name='headline', value=self.get_search_result_headline())
     ]
+    for detail in self.get_search_result_detail_lines():
+      fields.append(search.TextField(name='details', value=detail))
     fields.extend(self.get_indexed_fields())
-    doc = search.Document(doc_id=unicode(self.key.id()), fields=fields)
-    search.Index(self.__class__.__name__).put(doc)
+    doc = search.Document(doc_id=unicode(self.key.integer_id()), fields=fields)
+    index.put(doc)
+
+  @classmethod
+  def delete_by_model_key_id(cls, model_key_id):
+    index_name = cls.__name__
+    index = search.Index(index_name)
+    index.delete(document_ids=map(lambda d: d.doc_id, index.search("model_key_id={}".format(model_key_id))))
 
   @classmethod
   def _post_delete_hook(cls, key, future):
-    search.Index(cls._class_name()).delete(unicode(key.id()))
+    cls.delete_by_model_key_id(key.id())
 
 
 class Jurisdiction(SearchableModel):
@@ -366,6 +385,12 @@ class NewSite(SearchableModel):
   @staticmethod
   def get_search_order():
     return 0
+
+  def get_search_result_headline(self):
+    return "Site {}".format(self.number)
+
+  def get_search_result_detail_lines(self):
+    return [self.street_number or "N/A", self.city_state_zip]
 
   @property
   def IsCDBG(self):

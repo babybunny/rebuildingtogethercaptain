@@ -4,6 +4,7 @@ import csv
 import datetime
 import json
 import logging
+import collections
 
 import webapp2
 from google.appengine.ext import ndb
@@ -54,7 +55,7 @@ class StaffHandler(webapp2.RequestHandler):
   searchable_model_class = None
 
   @staticmethod
-  def handle_model_based_request(request, model):
+  def handle_model_based_request(request, model_id):
     raise NotImplementedError()
 
   def dispatch(self, *a, **k):
@@ -133,21 +134,19 @@ class SiteView(StaffHandler):
   searchable_model_class = ndb_models.NewSite
 
   @staticmethod
-  def handle_model_based_request(request, model):
-    return SiteView(request).get(site=model)
+  def handle_model_based_request(request, model_id):
+    return SiteView(request).get(id=model_id)
 
-  def get(self, id=None, site=None):
-    if site is None:
-      if id is not None:
-        id = int(id)
-        site = ndb.Key(ndb_models.NewSite, id).get()
+  def get(self, id):
     d = dict(
       map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
     )
-    entries = [site]
+    site = ndb.Key(ndb_models.NewSite, int(id)).get()
+    if not site:
+      webapp2.abort(404)
     d['site_list_detail'] = True
     d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
-    d['entries'] = entries
+    d['entries'] = [site]
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     d['order_sheets'] = order_sheets
     return common.Respond(self.request, 'site_list_one', d)
@@ -870,44 +869,71 @@ class Vendor(StaffHandler):
                         output_filter=lambda(k):k.get().name)
 
 
-search_handler_map = {}
+model_type_string_to_handler_map = {}
 for clazz in general_utils.get_all_subclasses(StaffHandler):
   if clazz.searchable_model_class:
-    search_handler_map[clazz.searchable_model_class] = clazz
+    model_type_string_to_handler_map[clazz.searchable_model_class.__name__] = clazz
 
 
 class MagicSearch(StaffHandler):
 
   @staticmethod  # exposed for testing
-  def get_top_model_and_handler_for_search_string(search_string):
+  def search_models(search_string, max_results=10):
     searchable_models = ndb_models.get_all_searchable_models()
     for model_class in searchable_models:
-      if model_class not in search_handler_map:
+      if model_class.__name__ not in model_type_string_to_handler_map:
         continue
       index = search.Index(model_class.__name__)
       query = search.Query(
         query_string=search_string,
-        options=search.QueryOptions(limit=1)
+        options=search.QueryOptions(limit=max_results)
       )
-      results = index.search(query).results
-      if results:
-
-        model = ndb_models.model_from_search_document(results[0])
-        handler = search_handler_map[model_class]
-        return model, handler
-    return None, None
+      return index.search(query).results
 
   def get(self):
     search_string = self.request.get('search_string')
     if not search_string:
       return common.Respond(self.request, 'magic_search', {})
-    model, handler, exception = None, None, None
+    results, exception = None, None
     try:
-      model, handler = self.get_top_model_and_handler_for_search_string(search_string)
+      results = self.search_models(search_string) or None
     except Exception as ex:
       logging.exception("Failed search:")
       exception = ex
-    if model is None:
-      return common.Respond(self.request, 'magic_search', {'failed_search': search_string,
-                                                           'exception': exception})
-    return handler.handle_model_based_request(self.request, model)
+    serialized_results = []
+    if results:
+      denominator = None
+      for search_document in results:
+        if not search_document or not search_document['headline']:
+          continue
+        denominator = denominator or float(search_document.rank)
+        obj = collections.namedtuple(
+          typename='DocumentNamespace',
+          field_names='short_description long_description model_type model_id'
+        )
+        obj.headline = search_document['headline'][0].value
+        obj.details = [d.value for d in search_document['details']]
+        obj.model_type = search_document['model_name'][0].value
+        obj.model_id = search_document['model_key_id'][0].value
+        obj.uri = webapp2.uri_for('LoadSearchResult', model_type=obj.model_type, model_id=obj.model_id)
+        obj.score = "{}%".format(round(100 * search_document.rank / denominator))
+        serialized_results.append(obj)
+    d = {'search_string': search_string, 'exception': exception, 'results': serialized_results}
+    return common.Respond(self.request, 'magic_search', d)
+
+
+class LoadSearchResult(StaffHandler):
+
+  def get(self):
+    model_type_string = self.request.GET.get('model_type')
+    model_id = self.request.GET.get('model_id')
+    if not model_type_string or not model_id:
+      self.response.set_status(500)
+      self.response.write("model type and/or model id were not found")
+      return
+    handler = model_type_string_to_handler_map.get(model_type_string)
+    if handler is None:
+      self.response.set_status(500)
+      self.response.write("model {} does not have a default handler defined in {}".format(model_type_string, __file__))
+      return
+    return handler.handle_model_based_request(self.request, model_id)

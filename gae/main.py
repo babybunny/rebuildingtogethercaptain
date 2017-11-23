@@ -12,7 +12,7 @@ from room import common
 from room import staff
 
 # from room import views
-from test import test_models
+from test import test_models, app_engine_test_utils
 
 EXPENSE_KINDS = (
   # 'CheckRequest',
@@ -295,7 +295,10 @@ login_required = routes.PathPrefixRoute('/room', [
                 name='StaffNew'),  # TODO
   webapp2.Route(r'/magicsearch',
                 staff.MagicSearch,
-                name='MagicSearch')
+                name='MagicSearch'),
+  webapp2.Route(r'/load_search_result',
+                staff.LoadSearchResult,
+                name='LoadSearchResult')
 ])
 
 post_routes = routes.PathPrefixRoute('/room', [
