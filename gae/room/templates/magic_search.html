@@ -24,7 +24,11 @@
         </form>
     {% endif %}
     {% if exception %}
-      <h5 style="color:red;">Search "{{failed_search}}" produced an error: {{exception}}</h5>
+      <h5 style="color:red;">Search "{{search_string}}" produced an error</h5>
+      {% for line in exception %}
+         <h5 style="color:red;">&nbsp;&nbsp;{{line}}</h5>
+      {% endfor %}
+      <br>
     {% endif%}
     {% if results %}
       {% for result in results %}
@@ -36,7 +40,7 @@
       {% endfor %}
     {% else %}
       {% if search_string %}
-        <h5 style="color:red;">No results were found for search "{{failed_search}}"</h5>
+        <h5 style="color:red;">No results were found for search "{{search_string}}"</h5>
         <h5 style="color:red;">Please try again</h5>
       {% endif %}
     {% endif %}

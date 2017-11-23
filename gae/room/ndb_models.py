@@ -59,10 +59,10 @@ class _ActiveItems(object):
 class SearchableModel(ndb.Model):
 
   def get_search_result_headline(self):
-    return "type={} id={}".format(type(self), self.key.integer_id())
+    return "{} id={}".format(type(self), self.key.integer_id())
 
   def get_search_result_detail_lines(self):
-    return ["{}={}".format(a, b) for a, b in self._properties.items()]
+    return ["{}: {}".format(prop, getattr(self, prop)) for prop in self._properties]
 
   @staticmethod
   def get_search_order():

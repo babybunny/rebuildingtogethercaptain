@@ -5,7 +5,7 @@ import datetime
 import json
 import logging
 import collections
-
+import traceback
 import webapp2
 from google.appengine.ext import ndb
 from google.appengine.api import search
@@ -53,10 +53,6 @@ class StaffHandler(webapp2.RequestHandler):
 
   model_class = None
   searchable_model_class = None
-
-  @staticmethod
-  def handle_model_based_request(request, model_id):
-    raise NotImplementedError()
 
   def dispatch(self, *a, **k):
     user = common.RoomsUser.from_request(self.request)
@@ -132,10 +128,6 @@ class CaptainAutocomplete(AutocompleteHandler):
 class SiteView(StaffHandler):
 
   searchable_model_class = ndb_models.NewSite
-
-  @staticmethod
-  def handle_model_based_request(request, model_id):
-    return SiteView(request).get(id=model_id)
 
   def get(self, id):
     d = dict(
@@ -369,6 +361,9 @@ class StaffList(StaffHandler):
 
 
 class Staff(EditView):
+
+  searchable_model_class = ndb_models.Staff
+
   model_class = ndb_models.Staff
   list_view = 'StaffList'
   template_value = 'staff'
@@ -880,6 +875,7 @@ class MagicSearch(StaffHandler):
   @staticmethod  # exposed for testing
   def search_models(search_string, max_results=10):
     searchable_models = ndb_models.get_all_searchable_models()
+    results = []
     for model_class in searchable_models:
       if model_class.__name__ not in model_type_string_to_handler_map:
         continue
@@ -888,18 +884,20 @@ class MagicSearch(StaffHandler):
         query_string=search_string,
         options=search.QueryOptions(limit=max_results)
       )
-      return index.search(query).results
+      results.extend(index.search(query).results)
+    results.sort(key=lambda d: d.rank, reverse=True)
+    return results
 
-  def get(self):
+  def get(self, max_results=10):
     search_string = self.request.get('search_string')
     if not search_string:
       return common.Respond(self.request, 'magic_search', {})
-    results, exception = None, None
+    results, exc = None, None
     try:
-      results = self.search_models(search_string) or None
-    except Exception as ex:
+      results = MagicSearch.search_models(search_string=search_string, max_results=max_results)
+    except:
       logging.exception("Failed search:")
-      exception = ex
+      exc = traceback.format_exc().splitlines(False)[-3:]
     serialized_results = []
     if results:
       denominator = None
@@ -918,7 +916,7 @@ class MagicSearch(StaffHandler):
         obj.uri = webapp2.uri_for('LoadSearchResult', model_type=obj.model_type, model_id=obj.model_id)
         obj.score = "{}%".format(round(100 * search_document.rank / denominator))
         serialized_results.append(obj)
-    d = {'search_string': search_string, 'exception': exception, 'results': serialized_results}
+    d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
     return common.Respond(self.request, 'magic_search', d)
 
 
@@ -936,4 +934,4 @@ class LoadSearchResult(StaffHandler):
       self.response.set_status(500)
       self.response.write("model {} does not have a default handler defined in {}".format(model_type_string, __file__))
       return
-    return handler.handle_model_based_request(self.request, model_id)
+    self.redirect_to(handler.__name__, id=model_id)
