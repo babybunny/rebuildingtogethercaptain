@@ -293,9 +293,9 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/help',
                 Placeholder,
                 name='StaffNew'),  # TODO
-  webapp2.Route(r'/magicsearch',
-                staff.MagicSearch,
-                name='MagicSearch'),
+  webapp2.Route(r'/search',
+                staff.Search,
+                name='Search'),
   webapp2.Route(r'/load_search_result',
                 staff.LoadSearchResult,
                 name='LoadSearchResult')

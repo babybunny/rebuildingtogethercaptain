@@ -1,7 +1,7 @@
 import unittest
 
 from gae.room import ndb_models, staff
-from gae.room.staff import MagicSearch
+from gae.room.staff import Search
 from test import app_engine_test_utils
 from test import test_models
 
@@ -38,7 +38,7 @@ class TestSearch(unittest.TestCase):
     self.assertEqual(1, len(index.search('last_welcome = 2017-01-30 ').results))
 
   def testMagicSearch(self):
-    results = MagicSearch.search_models(u'110TEST')
+    results = Search.search_models(u'110TEST')
     self.assertIsNotNone(results)
     self.assertEqual(len(results), 1)
     model = ndb_models.model_from_search_document(results[0])

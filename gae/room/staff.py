@@ -884,14 +884,16 @@ for clazz in general_utils.get_all_subclasses(StaffHandler):
     model_type_string_to_handler_map[clazz.searchable_model_class.__name__] = clazz
 
 
-class MagicSearch(StaffHandler):
+class Search(StaffHandler):
 
   @staticmethod  # exposed for testing
-  def search_models(search_string, max_results=10):
+  def search_models(search_string, model_type_string=None, max_results=10):
     searchable_models = ndb_models.get_all_searchable_models()
     results = []
     for model_class in searchable_models:
       if model_class.__name__ not in model_type_string_to_handler_map:
+        continue
+      if model_type_string is not None and model_class.__name__ != model_type_string:
         continue
       index = search.Index(model_class.__name__)
       query = search.Query(
@@ -904,11 +906,22 @@ class MagicSearch(StaffHandler):
 
   def get(self, max_results=10):
     search_string = self.request.get('search_string')
-    if not search_string:
-      return common.Respond(self.request, 'magic_search', {})
+    go_to_site = self.request.get('go_to_site')
+    model_type_string = None
+    if not search_string and not go_to_site:
+      return common.Respond(self.request, 'search', {})
+    if go_to_site and search_string:
+      return common.Respond(self.request, 'search', {'exc': ['cannot submit both search and go to site']})
+    if go_to_site:
+      max_results = 1
+      model_type_string = 'NewSite'
+      search_string = "number={}".format(go_to_site)
     results, exc = None, None
     try:
-      results = MagicSearch.search_models(search_string=search_string, max_results=max_results)
+      results = Search.search_models(
+        search_string=search_string,
+        model_type_string=model_type_string,
+        max_results=max_results)
     except:
       logging.exception("Failed search:")
       exc = traceback.format_exc().splitlines(False)[-3:]
@@ -930,8 +943,15 @@ class MagicSearch(StaffHandler):
         obj.uri = webapp2.uri_for('LoadSearchResult', model_type=obj.model_type, model_id=obj.model_id)
         obj.score = "{}%".format(round(100 * search_document.rank / denominator))
         serialized_results.append(obj)
+        if go_to_site:
+          handler = model_type_string_to_handler_map.get(obj.model_type)
+          if handler is None:
+            self.response.set_status(500)
+            self.response.write("model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
+            return
+          return self.redirect_to(handler.__name__, id=obj.model_id)
     d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
-    return common.Respond(self.request, 'magic_search', d)
+    return common.Respond(self.request, 'search', d)
 
 
 class LoadSearchResult(StaffHandler):
@@ -948,4 +968,4 @@ class LoadSearchResult(StaffHandler):
       self.response.set_status(500)
       self.response.write("model {} does not have a default handler defined in {}".format(model_type_string, __file__))
       return
-    self.redirect_to(handler.__name__, id=model_id)
+    return self.redirect_to(handler.__name__, id=model_id)

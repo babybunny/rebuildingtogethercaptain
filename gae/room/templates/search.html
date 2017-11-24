@@ -14,11 +14,11 @@
 </script>
 {% endblock %}
 {% block body%}
- <h2>Magic Search</h2>
+ <h2>Search</h2>
     {% if user.staff %}
         <form
 	         method="GET"
-	         action="{{ webapp2.uri_for('MagicSearch') }}">
+	         action="{{ webapp2.uri_for('Search') }}">
             <input name="search_string" type="text" size="25">
             <input type="submit" value="Search">
         </form>
