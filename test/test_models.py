@@ -12,7 +12,15 @@ import unittest
 
 import app_engine_test_utils
 from gae.room import ndb_models
+from gae.room import general_utils
 from gae.room.data_migrations import issue147_program_as_model
+from google.appengine.api import search
+
+
+def ClearSearchIndices():
+  for model in ndb_models.get_all_searchable_models():
+    index = search.Index(model.__name__)
+    general_utils.delete_all_in_index(index)
 
 
 def CreateAll():
@@ -472,7 +480,6 @@ def CreateAll():
   ).put()
   """
 
-  logging.info('added keys: {}', KEYS.keys())
   return KEYS
 
 

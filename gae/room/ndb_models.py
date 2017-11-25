@@ -12,6 +12,9 @@ import math
 from google.appengine.ext import ndb
 from google.appengine.api import search
 
+from gae.room import general_utils
+
+
 # TODO: move to global config
 SALES_TAX_RATE = float(os.environ.get('SALES_TAX_RATE', 0.0925))
 
@@ -57,7 +60,22 @@ class _ActiveItems(object):
 
 class SearchableModel(ndb.Model):
 
-  def _post_put_hook(self, future):
+  def get_search_result_headline(self):
+    return "{} id={}".format(type(self), self.key.integer_id())
+
+  def get_search_result_detail_lines(self):
+    return ["{}: {}".format(prop, getattr(self, prop)) for prop in self._properties]
+
+  @staticmethod
+  def get_search_order():
+    """override with lower number to search this index first"""
+    return 1e10
+
+  def get_canonical_request_response(self, request):
+    """override to build a default response to requests whose search resolve to this model"""
+    raise NotImplementedError("{} has no canonical request response defined".format(self.__class__.__name__))
+
+  def get_indexed_fields(self):
     fields = []
     for prop_name, prop in self._properties.items():
       value = getattr(self, prop_name)
@@ -100,13 +118,34 @@ class SearchableModel(ndb.Model):
           fields.append(search_type(name=prop_name, value=value_processor(value)))
         except TypeError:
           raise
+    return fields
 
-    doc = search.Document(doc_id=unicode(self.key.id()), fields=fields)
-    search.Index(self.__class__.__name__).put(doc)
+  def _post_put_hook(self, future):
+    put_result = future.get_result()  # blocks on put but not a bad idea anyway
+    model_key_id = put_result.integer_id()
+    index_name = self.__class__.__name__
+    index = search.Index(index_name)
+    self.delete_by_model_key_id(model_key_id)
+    fields = [
+      search.AtomField(name="model_name", value=index_name),
+      search.AtomField(name="model_key_id", value=unicode(model_key_id)),
+      search.TextField(name='headline', value=self.get_search_result_headline())
+    ]
+    for detail in self.get_search_result_detail_lines():
+      fields.append(search.TextField(name='details', value=detail))
+    fields.extend(self.get_indexed_fields())
+    doc = search.Document(doc_id=unicode(self.key.integer_id()), fields=fields)
+    index.put(doc)
+
+  @classmethod
+  def delete_by_model_key_id(cls, model_key_id):
+    index_name = cls.__name__
+    index = search.Index(index_name)
+    index.delete(document_ids=map(lambda d: d.doc_id, index.search("model_key_id={}".format(model_key_id))))
 
   @classmethod
   def _post_delete_hook(cls, key, future):
-    search.Index(cls._class_name()).delete(unicode(key.id()))
+    cls.delete_by_model_key_id(key.id())
 
 
 class Jurisdiction(SearchableModel):
@@ -437,6 +476,16 @@ class NewSite(SearchableModel):
   volunteer_signup_link = ndb.StringProperty()
   latest_computed_expenses = ndb.FloatProperty()
 
+  @staticmethod
+  def get_search_order():
+    return 0
+
+  def get_search_result_headline(self):
+    return "Site {}".format(self.number)
+
+  def get_search_result_detail_lines(self):
+    return [self.street_number or "N/A", self.city_state_zip]
+
   @property
   def IsCDBG(self):
     return 'CDBG' in self.jurisdiction
@@ -674,6 +723,10 @@ class Order(SearchableModel):
   created_by = ndb.UserProperty(auto_current_user_add=True)
   modified = ndb.DateTimeProperty(auto_now=True)
   last_editor = ndb.UserProperty(auto_current_user=True)
+
+  @staticmethod
+  def get_search_order():
+    return 1
 
   @property
   def name(self):
@@ -1172,3 +1225,20 @@ class Expense(SearchableModel):
   state = ndb.StringProperty()
   last_editor = ndb.UserProperty()
   modified = ndb.DateTimeProperty(auto_now=True)
+
+
+def get_all_searchable_models():
+  searchable_models = general_utils.get_all_subclasses(SearchableModel)
+  searchable_models.sort(key=lambda m: m.get_search_order())
+  return searchable_models
+
+
+def model_from_search_document(doc):
+  name_to_model_type_map = {m.__name__: m for m in get_all_searchable_models()}
+  key_ids = doc['model_key_id']
+  assert len(key_ids) == 1
+  model_type_names = doc['model_name']
+  assert len(model_type_names) == 1
+  model_type = name_to_model_type_map.get(model_type_names[0].value)
+  assert model_type is not None
+  return model_type.get_by_id(int(key_ids[0].value))

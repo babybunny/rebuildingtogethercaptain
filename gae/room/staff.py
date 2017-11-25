@@ -4,12 +4,14 @@ import csv
 import datetime
 import json
 import logging
-
+import collections
+import traceback
 import webapp2
 from google.appengine.ext import ndb
-
+from google.appengine.api import search
 import common
 import ndb_models
+from gae.room import general_utils
 
 TEST_SITE_NUMBER = '11999ZZZ'
 EXPORT_CSV = 'Export CSV'
@@ -48,6 +50,9 @@ class StaffHandler(webapp2.RequestHandler):
   - user matches an existing Staff record
   - Staff record has a selected Program
   """
+
+  model_class = None
+  searchable_model_class = None
 
   def dispatch(self, *a, **k):
     user = common.RoomsUser.from_request(self.request)
@@ -89,7 +94,7 @@ class SiteScopeOfWork(StaffHandler):
 
 
 class AutocompleteHandler(StaffHandler):
-  model_class = None
+
   program_filter = False
 
   def get(self):
@@ -121,44 +126,22 @@ class CaptainAutocomplete(AutocompleteHandler):
 
 
 class SiteView(StaffHandler):
-  def get(self, id=None):
-    if id:
-      id = int(id)
-      site = ndb.Key(ndb_models.NewSite, id).get()
+
+  searchable_model_class = ndb_models.NewSite
+
+  def get(self, id):
     d = dict(
       map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
     )
-    entries = [site]
+    site = ndb.Key(ndb_models.NewSite, int(id)).get()
+    if not site:
+      webapp2.abort(404)
     d['site_list_detail'] = True
     d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
-    d['entries'] = entries
+    d['entries'] = [site]
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     d['order_sheets'] = order_sheets
     return common.Respond(self.request, 'site_list_one', d)
-
-
-class SiteLookup(StaffHandler):
-  def get(self, site_number=None):
-    if site_number is not None:
-      site_number = site_number.upper()
-      query = ndb_models.NewSite.query(ndb_models.NewSite.number == site_number)
-      results = list(query)
-      if not results:
-        logging.warn("Requested site with number {0} not found".format(site_number))
-        self.response.set_status(404)
-        self.response.write("Could not find site # {0}".format(site_number))
-        return
-      if len(results) > 1:
-        logging.error("Found more than one site with number {0}".format(site_number))
-        self.response.set_status(500)
-        self.response.write("Data corruption issue, more than one site with number {0}".format(site_number))
-        return
-      site = results[0]
-      user = common.RoomsUser.from_request(self.request)
-      if user.program_selected != site.program:
-        user.staff.program_selected = site.program
-        user.staff.put()
-      return self.redirect_to('SiteView', id=site.key.integer_id())
 
 
 class SiteExpenses(StaffHandler):
@@ -354,6 +337,9 @@ class StaffList(StaffHandler):
 
 
 class Staff(EditView):
+
+  searchable_model_class = ndb_models.Staff
+
   model_class = ndb_models.Staff
   list_view = 'StaffList'
   template_value = 'staff'
@@ -366,6 +352,9 @@ class CaptainList(StaffHandler):
 
 
 class Captain(EditView):
+
+  searchable_model_class = ndb_models.Captain
+
   model_class = ndb_models.Captain
   list_view = 'CaptainList'
   template_value = 'captain'
@@ -378,6 +367,7 @@ class SupplierList(StaffHandler):
 
 
 class Supplier(EditView):
+  searchable_model_class = ndb_models.Supplier
   model_class = ndb_models.Supplier
   list_view = 'SupplierList'
   template_value = 'supplier'
@@ -399,6 +389,7 @@ class OrderSheetList(StaffHandler):
 
 
 class OrderSheet(EditView):
+  searchable_model_class = ndb_models.OrderSheet
   model_class = ndb_models.OrderSheet
   list_view = 'OrderSheetList'
   template_value = 'ordersheet'
@@ -469,6 +460,7 @@ class StaffTimeList(SiteExpenseList):
 
 
 class StaffTimeView(StaffHandler):
+  searchable_model_class = ndb_models.StaffTime
   def get(self, id):
     """Printable static view of an expense."""
     entity = ndb.Key(ndb_models.StaffTime, int(id)).get()
@@ -490,6 +482,7 @@ class CheckRequestList(SiteExpenseList):
 
 
 class CheckRequestView(StaffHandler):
+  searchable_model_class = ndb_models.CheckRequest
   def get(self, id):
     entity = ndb.Key(ndb_models.CheckRequest, int(id)).get()
     return common.Respond(self.request, 'checkrequest_view',
@@ -510,6 +503,7 @@ class VendorReceiptList(SiteExpenseList):
 
 
 class VendorReceiptView(StaffHandler):
+  searchable_model_class = ndb_models.VendorReceipt
   def get(self, id):
     entity = ndb.Key(ndb_models.VendorReceipt, int(id)).get()
     return common.Respond(self.request, 'vendorreceipt_view',
@@ -531,6 +525,7 @@ class InKindDonationList(SiteExpenseList):
 
 
 class InKindDonationView(StaffHandler):
+  searchable_model_class = ndb_models.InKindDonation
   def get(self, id):
     entity = ndb.Key(ndb_models.InKindDonation, int(id)).get()
     return common.Respond(self.request, 'inkinddonation_view',
@@ -564,6 +559,7 @@ class OrderList(SiteExpenseList):
 
 
 class OrderView(StaffHandler):
+  searchable_model_class = ndb_models.Order
   def get(self, id):
     order = ndb.Key(ndb_models.Order, int(id)).get()
     order.UpdateSubTotal()
@@ -852,3 +848,100 @@ class Vendor(StaffHandler):
 
     return _ChangeOrder(self.request, order_id, input_sanitizer=_GetSupplier,
                         output_filter=lambda(k):k.get().name)
+
+
+model_type_string_to_handler_map = {}
+for clazz in general_utils.get_all_subclasses(StaffHandler):
+  if clazz.searchable_model_class:
+    name = clazz.searchable_model_class.__name__
+    if name in model_type_string_to_handler_map:
+      logging.error("Model {} is defined as searchable model class on more than one handler".format(name))
+      continue
+    model_type_string_to_handler_map[clazz.searchable_model_class.__name__] = clazz
+
+
+class Search(StaffHandler):
+
+  @staticmethod  # exposed for testing
+  def search_models(search_string, model_type_string=None, max_results=10):
+    searchable_models = ndb_models.get_all_searchable_models()
+    results = []
+    for model_class in searchable_models:
+      if model_class.__name__ not in model_type_string_to_handler_map:
+        continue
+      if model_type_string is not None and model_class.__name__ != model_type_string:
+        continue
+      index = search.Index(model_class.__name__)
+      query = search.Query(
+        query_string=search_string,
+        options=search.QueryOptions(limit=max_results)
+      )
+      results.extend(index.search(query).results)
+    results.sort(key=lambda d: d.rank, reverse=True)
+    return results
+
+  def get(self, max_results=10):
+    search_string = self.request.get('search_string')
+    go_to_site = self.request.get('go_to_site')
+    model_type_string = None
+    if not search_string and not go_to_site:
+      return common.Respond(self.request, 'search', {})
+    if go_to_site and search_string:
+      return common.Respond(self.request, 'search', {'exc': ['cannot submit both search and go to site']})
+    if go_to_site:
+      max_results = 1
+      model_type_string = 'NewSite'
+      search_string = "number={}".format(go_to_site)
+    results, exc = None, None
+    try:
+      results = Search.search_models(
+        search_string=search_string,
+        model_type_string=model_type_string,
+        max_results=max_results)
+    except:
+      logging.exception("Failed search:")
+      exc = traceback.format_exc().splitlines(False)[-3:]
+    serialized_results = []
+    if results:
+      denominator = None
+      for search_document in results:
+        if not search_document or not search_document['headline']:
+          continue
+        denominator = denominator or float(search_document.rank)
+        obj = collections.namedtuple(
+          typename='DocumentNamespace',
+          field_names='short_description long_description model_type model_id'
+        )
+        obj.headline = search_document['headline'][0].value
+        obj.details = [d.value for d in search_document['details']]
+        obj.model_type = search_document['model_name'][0].value
+        obj.model_id = search_document['model_key_id'][0].value
+        obj.uri = webapp2.uri_for('LoadSearchResult', model_type=obj.model_type, model_id=obj.model_id)
+        obj.score = "{}%".format(round(100 * search_document.rank / denominator))
+        serialized_results.append(obj)
+        if go_to_site:
+          handler = model_type_string_to_handler_map.get(obj.model_type)
+          if handler is None:
+            self.response.set_status(500)
+            self.response.write("model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
+            return
+          return self.redirect_to(handler.__name__, id=obj.model_id)
+    d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
+    return common.Respond(self.request, 'search', d)
+
+
+class LoadSearchResult(StaffHandler):
+
+  def get(self):
+    model_type_string = self.request.GET.get('model_type')
+    model_id = self.request.GET.get('model_id')
+    if not model_type_string or not model_id:
+      self.response.set_status(500)
+      self.response.write("model type and/or model id were not found")
+      return
+    handler = model_type_string_to_handler_map.get(model_type_string)
+    if handler is None:
+      self.response.set_status(500)
+      self.response.write("model {} does not have a default handler defined in {}".format(model_type_string, __file__))
+      return
+    return self.redirect_to(handler.__name__, id=model_id)

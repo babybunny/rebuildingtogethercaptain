@@ -1,5 +1,7 @@
 import unittest
 
+from gae.room import ndb_models, staff
+from gae.room.staff import Search
 from test import app_engine_test_utils
 from test import test_models
 
@@ -35,6 +37,15 @@ class TestSearch(unittest.TestCase):
     self.assertEqual(0, len(index.search('last_welcome < 2017-01-01').results))
     self.assertEqual(1, len(index.search('last_welcome = 2017-01-30 ').results))
 
+  def testMagicSearch(self):
+    results = Search.search_models(u'110TEST')
+    self.assertIsNotNone(results)
+    self.assertEqual(len(results), 1)
+    model = ndb_models.model_from_search_document(results[0])
+    self.assertIsInstance(model, ndb_models.NewSite)
+    self.assertEqual(model.number, '110TEST')
+    self.assertIn(model.__class__.__name__, staff.model_type_string_to_handler_map)
+    self.assertEqual(staff.model_type_string_to_handler_map[model.__class__.__name__], staff.SiteView)
 
 if __name__ == '__main__':
   unittest.main()

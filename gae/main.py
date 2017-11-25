@@ -6,11 +6,13 @@ import webapp2
 from google.appengine.api import users
 from webapp2_extras import routes
 
+import dev_utilities
 from room import captain
 from room import common
 from room import staff
 
 # from room import views
+from test import test_models, app_engine_test_utils
 
 EXPENSE_KINDS = (
   # 'CheckRequest',
@@ -206,9 +208,6 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/site/view/<id:\d+>/',
                 staff.SiteView,
                 name='SiteView'),
-  webapp2.Route(r'/site/lookup/<site_number:\w+>',
-                staff.SiteLookup,
-                name='SiteLookup'),
   webapp2.Route(r'/site/list/<id:\d+>/',  # back compat
                 staff.SiteView,
                 name='SiteViewBackCompat'),
@@ -291,6 +290,12 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/help',
                 Placeholder,
                 name='StaffNew'),  # TODO
+  webapp2.Route(r'/search',
+                staff.Search,
+                name='Search'),
+  webapp2.Route(r'/load_search_result',
+                staff.LoadSearchResult,
+                name='LoadSearchResult')
 ])
 
 post_routes = routes.PathPrefixRoute('/room', [
