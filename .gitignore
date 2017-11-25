@@ -1,7 +1,10 @@
 virtualenv/
 build/
+gae/js/lib
+gae/css/lib
 node_modules/
 *.pyc
 .idea/*
 package-lock.json
 nose2.cfg
+*.#*

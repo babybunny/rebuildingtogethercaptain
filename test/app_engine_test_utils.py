@@ -12,6 +12,7 @@ def activate_app_engine_testbed_and_clear_cache():
   tb = testbed.Testbed()
   tb.activate()
   tb.init_datastore_v3_stub()
+  tb.init_search_stub()
   tb.init_user_stub()
   tb.init_memcache_stub()
   tb.init_images_stub(enable=False)

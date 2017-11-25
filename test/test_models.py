@@ -11,13 +11,20 @@ import logging
 import unittest
 
 import app_engine_test_utils
-from room import ndb_models
+from gae.room import ndb_models, general_utils
+from google.appengine.api import search
+
+
+def ClearSearchIndices():
+  for model in ndb_models.get_all_searchable_models():
+    index = search.Index(model.__name__)
+    general_utils.delete_all_in_index(index)
 
 
 def CreateAll():
   """Creates all the models in this module.
 
-  Returns: a dict of key name strings to ndb.Model instances. 
+  Returns: a dict of key name strings to ndb.Model instances.
   """
   KEYS = dict()
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
@@ -276,6 +283,17 @@ def CreateAll():
     pickup_options='No',
     visibility='Staff Only'
   ).put()
+  KEYS['ORDERSHEET5'] = ndb_models.OrderSheet(
+    # no default_supplier
+    name='Safety Materials',
+    code='SAF',
+    instructions='These are safety materials from RTP warehouse',
+    delivery_options='No',
+    retrieval_options='No',
+    pickup_options='Yes',
+    visibility='Everyone',
+    supports_internal_invoice=True
+  ).put()
 
   KEYS['ITEM'] = ndb_models.Item(
     bar_code_number=1234,
@@ -362,6 +380,11 @@ def CreateAll():
     available_on=datetime.date(2011, 3, 4)
   ).put()
 
+  KEYS['INVOICENUMBER'] = ndb_models.InvoiceNumber(
+    id='global',
+    next_invoice_number=10000
+  ).put()
+
   KEYS['ORDER'] = ndb_models.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
@@ -391,6 +414,14 @@ def CreateAll():
     logistics_start='a logistic start',
     logistics_end='a logistic end',
     logistics_instructions='''another logistic instruction'''
+  ).put()
+
+  KEYS['ORDER3'] = ndb_models.Order(
+    site=KEYS['SITE'],
+    order_sheet=KEYS['ORDERSHEET5'],
+    program='2011 Test',
+    notes='''These are nice.''',
+    state='Being Filled',
   ).put()
 
   KEYS['DELIVERY'] = ndb_models.Delivery(
@@ -460,7 +491,6 @@ def CreateAll():
   ).put()
   """
 
-  logging.info('added keys: {}', KEYS.keys())
   return KEYS
 
 

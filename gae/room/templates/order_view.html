@@ -1,0 +1,48 @@
+{%extends "base.html"%}
+{% block script %}
+<script
+   type="text/javascript"
+   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+</script>
+<script type="text/javascript" src="/static/room.js"></script>
+<script
+   type="text/javascript"
+   src="/static/jquery.jeditable.mini.js">
+</script>
+<script type="text/javascript">
+$(function() {
+  {% for order_item in order_items %}
+  $(".jeditable-order-item-name").editable(
+     "{# url room.order.OrderItemName #}", {
+         onblur    : 'submit',
+         indicator : '<img src="/static/ajax-loader.gif">',
+         tooltip   : 'Click to edit...',
+         placeholder   : '<i>Click to add a name to this item.</i>',
+         }
+  ).hover(
+    function(){$(this).css('background-color', '#FBFFAB')},
+    function(){$(this).css('background-color', 'inherit')}
+  );
+  {% endfor %}
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | Make an Order
+{% endblock %}
+{%block about_this_page %}
+<h2>View an Order</h2>
+<p>
+  <a href="{{ webapp2.uri_for('OrderFlow', site_id=site.key.integer_id(), id=order.key.integer_id()) }}">Make Changes</a>
+  |
+  <a href="{{ webapp2.uri_for('Order', site_id=site.key.integer_id(), id=order.key.integer_id()) }}">Edit Raw Order</a>
+  |
+  <a id='rooms-form-after-save' href='{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}'>Back to Site #{{ site.number }}</a>
+</p>
+{% endblock %}
+{%block body%}
+
+<h1 class="page-break-before">&nbsp;</h1>
+{% include "order_layout.html" %}
+
+{%endblock%}

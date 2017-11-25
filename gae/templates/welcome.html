@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Rebuilding Together, Peninsula - ROOM System</title>
+    <link type="text/css" rel="stylesheet" href="/static/styles.css">
+    <script type="text/javascript" async>
+      
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-31770226-1']);
+      _gaq.push(['_trackPageview']);
+      
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+    <table>
+      <tr>
+	      <td>
+	        <a href="http://www.rebuildingtogetherpeninsula.org">
+	          <img src="/static/rtplogosm.gif" alt="RTP logo" 
+	               width="208" height="126">
+	        </a>
+	      </td>
+	      <td class="about_this_page">
+	        <h1>Welcome to ROOMS</h1>
+	        <h2>RTP Online Order Management System</h2>
+	      </td>
+      </tr>
+    </table>
+    <div id="login_div">
+      If you have a ROOMS account, sign in now.
+      <br>
+      <br>
+      <br>
+      <a id="login_button" href="{{ login_url }}">SIGN IN TO ROOMS</a>
+      <br>
+      <br>
+      {% if user %}
+      <br>You're signed in as <b>{{ user.email }}</b>
+      <br>but this email is not
+      associated with a ROOMS account.
+      {% endif %}
+      <br>
+      Please contact RTP Staff if you are a Captain
+      <br>
+      but you don't yet have an account.
+      {% if user %}
+      <br>
+      <a href="{{ logout_url }}">
+        Click here
+      </a>
+      to sign in with a different account.
+      {% endif %}
+    </div>
+    <p class="announcement">
+      This is the online order system for <a href="http://www.rebuildingtogetherpeninsula.org">Rebuilding Together Peninsula</a>.   It enables ordering materials and services from forms that are similar to some of the ones in the Captain's Binder.  ROOMS keeps Captains up to date with their order status and helps RTP Staff to expedite the order fulfillment process.  
+    </p>
+
+    
+    
+    <h3>New Captains - Getting Started</h3>
+    {# include "templates/tutorials.html" #}
+
+    <div class="footer">
+      © 2011 Rebuilding Together Peninsula
+    </div>
+    <!-- <script type="text/javascript" src="js/app/main.js"></script> -->
+  </body>
+</html>
+

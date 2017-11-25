@@ -1,0 +1,301 @@
+{%extends "base.html"%}
+{%block breadcrumb%}
+{%endblock%}
+{%block script%}
+
+<script type="text/javascript">
+
+function numKeys(o) {
+  var n = 0;
+  for (var k in o) {
+    if (o.hasOwnProperty(k)) {
+      n++;
+    }
+  }
+  return n;
+}
+
+function autocomplete(request, callback, url, input_selector, error_selector) {
+  $(error_selector).html('<i>Searching {{ user.program_selected }} for <b>'
+    + request.term + '</b></i>');
+  $.getJSON(url, {term: request.term},
+    function (data) {
+      var len = numKeys(data);
+      if (len == 0) {
+        $(error_selector).html(
+          '<i>Sorry, no results in {{ user.program_selected }} for <b>' +
+          request.term + '</b></i>');
+      } else {
+        $(error_selector).html(
+          '<i>Found ' + len + ' results for <strong>' +
+          request.term + '</strong></i>');
+      }
+      $(input_selector).data('data', data);
+      var autocomplete_data = [];
+      for (value in data) {
+        autocomplete_data.push(value);
+      }
+      autocomplete_data.sort();
+      callback(autocomplete_data);
+    }
+  );
+}
+
+function autocompleteCaptain(request, callback) {
+  return autocomplete(request, callback,
+                      '{{ webapp2.uri_for('CaptainAutocomplete') }}',
+                      '#captain_term',
+                      '#captain_error');
+}
+
+function autocompleteSite(request, callback) {
+  return autocomplete(request, callback,
+                      '{{ webapp2.uri_for('SiteAutocomplete') }}',
+                      '#site_term',
+                      '#site_error');
+}
+
+function sendToCaptainEdit() {
+  var values = $('#captain_term').data('data');
+  var autocomplete_value = $('#captain_term').val();
+  var id = values[autocomplete_value];
+  if (id == undefined) {
+    return;
+  }
+  $('#captain_error').html('<i>Loading Captain, ' +
+    autocomplete_value +
+    ', please wait a second...</i>');
+  $('#captain_term').hide();
+  var loc = window.location;
+  var new_loc = loc.protocol + '//' + loc.host +
+                '{{ webapp2.uri_for('Captain', id=999) }}';
+  new_loc = new_loc.replace('999', id);
+  window.location = new_loc;
+}
+
+function sendToSiteView() {
+  var values = $('#site_term').data('data');
+  var autocomplete_value = $('#site_term').val();
+  var id = values[autocomplete_value];
+  if (id == undefined) {
+    return;
+  }
+  $('#site_error').html('<i>Loading Site, ' +
+    autocomplete_value +
+    ', please wait a second...</i>');
+  $('#site_term').hide();
+  var loc = window.location;
+  var new_loc = loc.protocol + '//' + loc.host +
+                '{{ webapp2.uri_for('SiteView', id=99999) }}';
+  new_loc = new_loc.replace('99999', id);
+  window.location = new_loc;
+}
+
+$(function() {
+  $('#captain_term').autocomplete({
+    minLength: 1,
+    delay: 500,
+    source: autocompleteCaptain,
+    close: sendToCaptainEdit,
+  });
+  $('#site_term').autocomplete({
+    minLength: 1,
+    delay: 500,
+    source: autocompleteSite,
+    close: sendToSiteView,
+  });
+});
+</script>
+{%endblock%}
+{%block about_this_page %}
+<h1>Hello RTP Staff!</h1>
+<p>
+  Check out the
+  <a href="{{ webapp2.uri_for('Scoreboard') }}">
+    {{ user.staff.program_selected }} Scoreboard
+  </a>
+  or the
+  <a href="{{ webapp2.uri_for('AllProgramsScoreboard') }}">
+    All Programs Scoreboard
+  </a> for your data fun.
+</p>
+<p>
+  Administrators:
+  <a href="https://github.com/babybunny/rebuildingtogethercaptain/issues">list of issues</a>
+  | <a href="https://appengine.google.com/dashboard?&app_id=s~rebuildingtogethercaptain-hrd">AppEngine dashboard</a>
+</p>
+  {% endblock %}
+{%block body%}
+
+<table class="layout">
+  <tr>
+    <td class="layout">
+      <div class="panel">
+      <h2>Sites</h2>
+	    <span id="site_error">
+	      Start typing a site number, name, city, jurisdiction
+	    </span>
+	    <br>
+	    <input type="text" id="site_term" size="25">
+	    <p>
+	      <a href="{{ webapp2.uri_for('SitesAndCaptains') }}">List all Sites and their Captains</a>.
+	      <br>
+	      <a href="{{ webapp2.uri_for('Site', id='') }}">Add a new Site</a>.
+        <hr>
+        <form
+	         method="GET"
+	         action="{{ webapp2.uri_for('SiteBudget') }}">
+          <input type="submit" value="Expenses">
+          <select name="j">
+            <option value="">All Jurisdictions</option>
+            {% for j in jurisdictions %}
+            <option value="{{ j }}">{{ j }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+
+      <div class="panel">
+	<h2>Captains</h2>
+	<span id="captain_error">Start typing a Captain's name or email</span>
+	<br>
+	<input type="text" id="captain_term" size="25">
+	<p>
+	<a href="{{ webapp2.uri_for('CaptainList') }}">View a list</a>
+	of all Captains.
+	<br>
+	<a href="{{ webapp2.uri_for('Captain', id='') }}">Add a new Captain</a>
+	.
+	</p>
+      </div>
+
+      <div class="panel">
+      <h2>Staff</h2>
+	<a href="{{ webapp2.uri_for('StaffList') }}">View a list</a>
+	of all Staff.
+	<br>
+	<a href="{{ webapp2.uri_for('Staff', id='') }}">Add a new Staff</a>
+	.
+      </div>
+
+      <div class="panel">
+      <h2>Suppliers</h2>
+	<a href="{{ webapp2.uri_for('SupplierList') }}">View a list</a>
+	of all Suppliers.
+	<br>
+	<a href="{{ webapp2.uri_for('Supplier', id='') }}">Add a new Supplier</a>
+	.
+      </div>
+
+
+    </td><td class="layout">
+      <div class="panel">
+      <h2>Email Captains</h2>
+      <form class="order_type"
+	    method="GET"
+	    action="{{ webapp2.uri_for('SitesWithoutOrder') }}">
+	To email captains of sites that have not placed a specific type of
+	order, select the order type
+	<br>
+      <select class="order_sheet">
+      {% for os in order_sheets %}
+      <option name="order_sheet_id" value="{{ os.key.integer_id() }}">
+	{{ os.name }}
+      </option>
+      {% endfor %}
+      </select>
+      <br>
+      ... then click
+      <input type="submit" value="Compose Email">
+      </form>
+      <p>
+	<a href="http://groups.google.com/group/rebuildingtogethercaptain">
+	  Click here
+	</a>
+	to view the email archive
+	(new messages may take a few minutes to appear).
+	</p>
+      </div>
+
+      <div class="panel">
+      <h2>Orders</h2>
+      <form class="order_type"
+	    method="GET"
+	    action="{{ webapp2.uri_for('OrderBySheet') }}">
+	To view a list of Orders, select Order Form(s):
+	<br>
+      <select name="order_sheet_id" class="order_sheet">
+	      <option value="">All Order Forms</option>
+      {% for os in order_sheets %}
+      <option value="{{ os.key.integer_id() }}">
+	{{ os.name }}
+      </option>
+      {% endfor %}
+      </select>
+      <br>
+      ... then click
+      <input type="submit" value="List Orders">
+      </form>
+      </div>
+
+      <div class="panel">
+      <h2>Order Forms</h2>
+      <a href="{{ webapp2.uri_for('OrderSheetList') }}">View a list</a>
+      of all Order Forms.
+      <br>
+      <a href="{{ webapp2.uri_for('OrderSheet', id='') }}">Add a new Order Form</a>.
+      </div>
+
+      <div class="panel">
+      <h2>Items</h2>
+      <a href="{{ webapp2.uri_for('ItemList') }}">View a list</a>
+      of all Items.
+      <br>
+      <a href="{{ webapp2.uri_for('Item', id='') }}">Add a new Item</a>
+      </div>
+
+      <div class="panel">
+      <h2>Check Requests</h2>
+      <a href="{{ webapp2.uri_for('CheckRequestByProgram') }}">
+	View a list of all Check Request entries for {{ user.program_selected }}.
+      </a>
+      <br>
+      Add a new Check Request from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>Vendor Receipts</h2>
+      <a href="{{ webapp2.uri_for('VendorReceiptByProgram') }}">
+	View a list of all Vendor Receipts for {{ user.program_selected }}.
+      </a>
+      <br>
+      Add a new Vendor Receipt from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>In-kind Donations</h2>
+      <a href="{{ webapp2.uri_for('InKindDonationByProgram') }}">
+	View a list of all In-kind Donations for {{ user.program_selected }}.
+      </a>
+      <br>
+      Add a new In-kind Donation from the site's page.
+      </div>
+
+      <div class="panel">
+      <h2>Staff time</h2>
+      <a href="{{ webapp2.uri_for('StaffTimeByProgram') }}">
+	View a list of all Staff Time entries for {{ user.program_selected }}.
+      </a>
+      <br>
+      Add a new Staff Time entry from the site's page.
+      </div>
+    </td>
+  </tr>
+</table>
+
+<p>Contact Luke if you need to delete something, there's a way to do it in the back end.
+</p>
+
+
+
+{%endblock%}

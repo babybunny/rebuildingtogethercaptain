@@ -1,0 +1,629 @@
+<table class="site">
+  <tbody>
+    {% for site in entries %}
+    <tr>
+      <td>
+        <span class=big>
+	        <a name="site_{{ site.number }}"></a>
+	        {{ site.name }}
+        </span>
+        <br>Site #{{ site.number }}
+        <br>
+        {{ site.street_number }}
+        <br/>
+        {{ site.city_state_zip }}
+
+        <p>
+          {% if site.applicant != site.name %}
+          <i>Applicant's main contact</i>
+          <br>
+          <strong>
+            {{ site.ContactPerson }}
+          </strong>
+          {% endif %}
+          {% if site.applicant_home_phone %}
+          <br>{{ site.applicant_home_phone }} <i>home</i>
+          {% endif %}
+          {% if site.applicant_work_phone %}
+          <br>{{ site.applicant_work_phone }} <i>work</i>
+          {% endif %}
+          {% if site.applicant_mobile_phone %}
+          <br>{{ site.applicant_mobile_phone }} <i>mobile</i>
+          {% endif %}
+          {% if site.applicant_email %}
+          <br><a href="mailto:{{ site.applicant_email }}">
+            {{ site.applicant_email }}
+          </a>
+          {% endif %}
+        </p>
+
+        {% if site.sponsor %}
+        <p><i>Sponsored by:</i>
+          <br><strong>{{ site.sponsor }}</strong>
+        </p>
+        {% endif %}
+
+        {% if site.jurisdiction %}
+        <p><i>Jurisdiction:</i>
+          <br><strong>{{ site.jurisdiction }}</strong>
+        </p>
+        {% endif %}
+
+        {% if site.rrp_test == "Yes" %}
+        <p><i>RRP Info:</i>
+          <br/>
+          <span class="tiny">
+          <a href="http://www.epa.gov/lead/pubs/renovation.htm">
+            US EPA Renovation, Repair and Painting (RRP)
+          </a> requires training and testing for sites with lead-based paint.
+          </span>
+          <br/>
+          <strong>
+            RRP test required? {{ site.rrp_test }}
+            {% if site.rrp_level %}
+            <br/>
+            RRP level is {{ site.rrp_level }}
+            {% endif %}
+          </strong>
+        </p>
+        {% endif %}
+            
+        {% if not site.sitecaptain_set %}
+        <p>
+	        No captains assigned yet!
+        </p>
+        {% else %}
+        {% for sitecaptain in site.sitecaptain_set %}
+        {% set captain = sitecaptain.captain.get() %}
+        <p>
+	        <strong>{{ captain.name }}</strong>
+	        {% if user.staff %}
+	        (
+	        <a href="{{ webapp2.uri_for('CaptainEdit', args=[sitecaptain.captain.integer_id()]) }}">
+	          edit
+	        </a>
+	        )
+	        {% endif %}
+	        <br>{{ sitecaptain.type }} Captain
+	        {% if site_list_detail %}
+	        <br>
+	        <a href="mailto:{{ captain.email }}">
+	          {{ captain.email }}
+	        </a>
+	        {% if captain.phone1 %}
+	        <br>{{ captain.phone1 }} <i>primary</i>
+	        {% endif %}
+	        {% if captain.phone2 %}
+	        <br>{{ captain.phone2 }} <i>secondary</i>
+	        {% endif %}
+	        {% if captain.phone_mobile %}
+	        <br>{{ captain.phone_mobile }} <i>mobile</i>
+	        {% endif %}
+	        {% if captain.phone_home %}
+	        <br>{{ captain.phone_home }} <i>home</i>
+	        {% endif %}
+	        {% if captain.phone_work %}
+	        <br>{{ captain.phone_work }} <i>work</i>
+	        {% endif %}
+	        {% if captain.phone_fax %}
+	        <br>{{ captain.phone_fax }} <i>fax</i>
+	        {% endif %}
+	        {% if captain.phone_other %}
+	        <br>{{ captain.phone_other }} <i>other</i>
+	        {% endif %}
+	        {% endif %}
+        </p>
+        {% endfor %}
+        {% endif %}
+      </td>
+      <td>
+        <div class="big jeditable"
+	           id="announcement_subject"
+	           name="{{ site.key.integer_id() }}">{{ site.announcement_subject }}</div>
+        <div class="panel">
+	        <div class="padded jeditable-text"
+	             id="announcement_body"
+	             name="{{ site.key.integer_id() }}">{{ site.announcement_body }}</div>
+        </div>
+        {% if site_list_detail %}
+        <p>{{ site.StreetAddress() }}
+          <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress() }}&ie=UTF8&z=14" target="_blank">
+	          <img src="https://maps.google.com/maps/api/staticmap?center={{ site.StreetAddress() }}&markers=size:mid|color:red|{{ site.StreetAddress() }}&zoom=11&size={{ map_width }}x{{ map_height }}&sensor=false&key=ABQIAAAAocapnBGvqx6JkB2K9HNychQhv5EN3SOvE9MJZZkkyl7jkpoomxR8v4PeXRpH7B7kzknEvwpb_hu-Jg" alt="map of {{ site.StreetAddress() }}" width="{{ map_width }}" height="{{ map_height }}">
+	          <br>(click to view on Google Maps)
+          </a>
+        </p>
+        {% if site.photo_link %}
+        <p>
+          <a target="_blank" href="{{ site.photo_link }}" alt="Link to photos on another website">Site Photos</a>
+        </p>
+        {% endif %}
+        {% if site.notes %}
+        <strong>Notes:</strong>
+        <p>
+	        {{ site.notes }}
+        </p>
+        {% endif %}
+        {% else %}
+        {{ site.street }}
+        <br>{{ site.city }}
+        {% endif %}
+      </td>      
+      <td>
+        <span class="big">
+	        {{ site.BudgetStatement() }}
+        </span>
+        <div class="panel">
+          <table class="budget">
+	    <tbody>
+	      {% if site.budget %}
+	            <tr>
+	              <td class="budget">
+	                <strong>Starting Budget</strong>
+	              </td>
+	              <td class="value">
+	                ${{ "%0.2f" % site.budget }}
+	              </td>
+	              <td>
+	              </td>
+	              <td>
+	              </td>
+	            </tr>
+		    {% endif %}
+	            <tr>
+	              <td>
+	                <strong>Orders</strong>
+	                <br>
+	                <span class="budget-item-note">
+		                materials and services ordered through ROOMS
+	                </span>
+	              </td>
+	              <td class="value">
+	                {% if site.OrderTotal() %}
+	                (${{ "%0.2f" % site.OrderTotal() }})
+	                {% else %}
+	                -
+	                {% endif %}
+	              </td>
+	              <td class="action">
+	                <a href="{{ webapp2.uri_for('OrderFlow', site_id=site.key.integer_id(), id='') }}">
+	                  Place an Order
+	                </a>
+	              </td>
+	              <td class="action">
+	                {% if site.Orders.Count() %}
+	                <a href="#order_panel">
+		                Review
+	                </a>
+	                {% endif %}
+	              </td>
+	            </tr>
+	            <tr>
+	              <td>
+	                <strong>Check Requests</strong>
+	                <br>
+	                <span class="budget-item-note">
+		                reimbursement for other expenses
+	                </span>
+	              </td>
+	              <td class="value">
+	                {% if site.CheckRequests.Count() %}
+	                (${{ "%0.2f" % site.CheckRequestTotal() }})
+	                {% else %}
+	                -
+	                {% endif %}
+	              </td>
+	              <td class="action">
+	                <a href="{{ webapp2.uri_for('CheckRequest', id='', site_id=site.key.integer_id()) }}">
+		                Submit a Request
+	                </a>
+	              </td>
+	              <td class="action">
+	                {% if site.CheckRequests.Count() %}
+	                <a href="#checkrequests_panel">
+		                Review
+	                </a>
+	                {% endif %}
+	              </td>
+	            </tr>
+	            <tr>
+	              <td>
+	                <strong>Vendor Receipts</strong>
+	                <br>
+	                <span class="budget-item-note">
+		                purchases from vendors on RTP account
+	                </span>
+	              </td>
+	              <td class="value">
+	                {% if site.VendorReceipts.Count() %}
+	                (${{ "%0.2f" % site.VendorReceiptTotal() }})
+	                {% else %}
+	                -
+	                {% endif %}
+	              </td>
+	              <td class="action">
+	                <a href="{{ webapp2.uri_for('VendorReceipt', id='', site_id=site.key.integer_id()) }}">
+		                Add a Receipt
+	                </a>
+	              </td>
+	              <td class="action">
+	                {% if site.VendorReceipts.Count() %}
+	                <a href="#vendorreceipts_panel">
+		                Review
+	                </a>
+	                {% endif %}
+	              </td>
+	            </tr>
+              {% if user.staff %}
+	            <tr>
+	              <td>
+	                <strong>Staff Time</strong>
+	                <br>
+	                <span class="budget-item-note">
+		                hourly labor from RTP staff
+	                </span>
+	              </td>
+	              <td class="value">
+	                {% if site.StaffTimes.Count() %}
+	                (${{ "%0.2f" % site.StaffTimeTotal() }})
+	                {% else %}
+	                -
+	                {% endif %}
+	              </td>
+	              <td class="action">
+	                <a href="{{ webapp2.uri_for('StaffTime', id='', site_id=site.key.integer_id()) }}">
+		                Add Staff Time
+	                </a>
+	              </td>
+	              <td class="action">
+	                {% if site.StaffTimes.Count() %}
+	                <a href="#stafftime_panel">
+		                Review
+	                </a>
+	                {% endif %}
+	              </td>
+	            </tr>
+              {% endif %}
+	            <tr>
+	              <td class="budget">
+	                <strong>Unspent Budget</strong>
+	              </td>
+	              <td class="value">
+	                ${{ "%0.2f" % site.BudgetRemaining() }}
+	              </td>
+	              <td>
+	              </td>
+	              <td>
+	              </td>
+	            </tr>
+	            <tr class="inkinddonation">
+	              <td>
+	              <strong>In-kind Donations</strong>
+	              <br>
+	              <span class="budget-item-note">
+		              not included in budgeting
+	              </span>
+	              </td>
+	              <td class="value">
+	                {% if site.InKindDonations.Count() %}
+	                ${{ "%0.2f" % site.InKindDonationTotal() }}
+	                {% else %}
+	                -
+	                {% endif %}
+	              </td>
+	              <td class="action">
+	                <a href="{{ webapp2.uri_for('InKindDonation', id='', site_id=site.key.integer_id()) }}">
+		                Add a Donation
+	                </a>
+	              </td>
+	              <td class="action">
+	                {% if site.InKindDonations.Count() %}
+	                <a href="#inkinddonations_panel">
+		                Review
+	                </a>
+	                {% endif %}
+	              </td>
+	            </tr>
+	          </tbody>
+          </table>
+        </div>
+
+        {% if site.Orders.Count() %}
+        <a name="order_panel"></a>
+        <div class="panel">
+	        <span class="actions">
+	          <a href="{{ webapp2.uri_for('OrderBySite', site_id=site.key.integer_id()) }}">
+	            list all
+	          </a>
+	        </span>
+          <h3>Orders in progress</h3>
+          <table id="orders" class="list tablesorter">
+	          <thead>
+	            <tr>
+	              <th>Order</th>
+	              <th>Logistics</th>
+	              <th>Status</th>
+	              <th>Total</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+              {% for order in site.Orders.Items() %}
+	            <tr>
+	              <td>
+	                <b>{{ order.order_sheet.get().name }}</b>
+	              </td>
+	              <td>
+	                {% for od in order.orderdelivery_set %}
+	                {{ od.delivery.get().delivery_date }} (Delivery)
+	                {% endfor %}
+	                {% for od in order.orderpickup_set %}
+	                {{ od.pickup.get().pickup_date }} (Pickup)
+	                {% endfor %}
+	                {% for od in order.orderretrieval_set %}
+	                {{ od.retrieval.get().dropoff_date }} (Drop-off)
+	                <br/>
+	                {{ od.retrieval.get().retrieval_date }} (Retrieval)
+	                {% endfor %}
+	              </td>
+	              <td>
+	                {{ order.state }}
+	                {% if order.CanMakeChanges() %}
+	                <br>
+	                <a href="{{ webapp2.uri_for('OrderFlow', site_id=site.key.integer_id(), id=order.key.integer_id()) }}">
+	                  make changes
+	                </a>
+	                {% else %}
+	                <br>
+	                <a href="{{ webapp2.uri_for('OrderView', id=order.key.integer_id()) }}">
+		                view
+	                </a>
+	                {% endif %}
+	              </td>
+	              <td class="dollar">
+	                ${{ "%0.2f" % order.GrandTotal() }}
+	              </td>
+	            </tr>
+	            {% endfor %}              
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+
+        {% if site.CheckRequests.Count() %}
+        <a name="checkrequests_panel"></a>
+        <div class="panel">
+	        <span class="actions">
+	          <a href="{{ webapp2.uri_for('CheckRequestBySite', site_id=site.key.integer_id()) }}">
+	            list all
+	          </a>
+	        </span>
+	        <h3>Check Requests</h3>
+	        <table id="checkrequests" class="list tablesorter">
+	          {% for entity in site.CheckRequests.Items() %}
+	          {% if loop.first %}
+	          <thead>
+	            <tr>
+	              <th>Captain</th>
+	              <th>Payable To</th>
+	              <th>Amount</th>
+	              <th>Status</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	            {% endif %}
+	            <tr>
+	              <td>
+			{% if entity.captain %}
+			{{ entity.captain.get().name|escape }}
+			{% endif %}
+	              </td>
+	              <td>
+		              {{ entity.name|escape }}
+	              </td>
+	              <td class="dollar">
+		              ${{ "%0.2f" % entity.Total() }}
+	              </td>
+	              <td>
+	                {{ entity.state }}
+                  <br/>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('CheckRequestView', id=entity.key.integer_id()) }}">
+		                view</a>
+		              {% if user.staff %}
+		              <span> or </span>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('CheckRequest', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
+		                edit
+		              </a>
+		              {% endif %}
+	              </td>
+	            </tr>
+	            {% endfor %}
+	          </tbody>
+	        </table>
+        </div>
+        {% endif %}
+
+        {% if site.VendorReceipts.Count() %}
+        <a name="vendorreceipts_panel"></a>
+        <div class="panel">
+	        <span class="actions">
+	          <a href="{{ webapp2.uri_for('VendorReceiptBySite', site_id=site.key.integer_id()) }}">
+	            list all
+	          </a>
+	        </span>
+	        <h3>Vendor Receipts</h3>
+	        <table id="vendorreceipts" class="list tablesorter">
+	          {% for entity in site.VendorReceipts.Items() %}
+	          {% if loop.first %}
+	          <thead>
+	            <tr>
+	              <th>Captain</th>
+	              <th>Vendor</th>
+	              <th>Amount</th>
+	              <th>Status</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	            {% endif %}
+	            <tr>
+	              <td>
+			{% if entity.captain %}
+			{{ entity.captain.get().name|escape }}
+			{% endif %}
+	              </td>
+	              <td>
+		              {{ entity.name|escape }}
+	              </td>
+	              <td class="dollar">
+		              ${{ "%0.2f" % entity.Total() }}
+	              </td>
+	              <td>
+	                {{ entity.state }}
+                  <br/>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('VendorReceiptView', id=entity.key.integer_id()) }}">
+		                view</a>
+		              {% if user.staff %}
+		              <span> or </span>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('VendorReceipt', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
+		                edit
+		              </a>
+		              {% endif %}
+	              </td>
+	            </tr>
+	            {% endfor %}
+	          </tbody>
+	        </table>
+        </div>
+	      {% endif %}
+
+        {% if user.staff %}
+        {% if site.StaffTimes.Count() %}
+        <a name="stafftime_panel"></a>
+        <div class="panel">
+	        <span class="actions">
+	          <a href="{{ webapp2.uri_for('StaffTimeBySite', site_id=site.key.integer_id()) }}">
+	            list all
+	          </a>
+	        </span>
+	        <h3>Staff Time</h3>
+	        <table id="stafftime" class="list tablesorter">
+	          {% for entity in site.StaffTimes.Items() %}
+	          {% if loop.first %}
+	          <thead>
+	            <tr>
+	              <th>Staff Position</th>
+	              <th>Hours</th>
+	              <th>Miles</th>
+	              <th>Total</th>
+	              <th>Activity Date</th>
+	              <th>Description</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	            {% endif %}
+	            <tr>
+	              <td>
+		              {{ entity.position.get().position_name|escape }}
+	              </td>
+	              <td>
+		              {{ entity.hours|escape }}
+	              </td>
+	              <td>
+		              {{ entity.miles|escape }}
+	              </td>
+	              <td class="dollar">
+		              ${{ "%0.2f" % entity.Total() }}
+	              </td>
+	              <td>
+		              {{ entity.activity_date|escape }}
+	              </td>
+	              <td>
+	                {{ entity.description }}
+                  <br/>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('StaffTimeView', id=entity.key.integer_id()) }}">
+		                view</a>
+		              {% if user.staff %}
+		              <span> or </span>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('StaffTime', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
+		                edit
+		              </a>
+		              {% endif %}
+	              </td>
+	            </tr>
+	            {% endfor %}
+	          </tbody>
+	        </table>
+        </div>
+	      {% endif %}
+	      {% endif %}
+        
+        {% if site.InKindDonations.Count() %}
+        <a name="inkinddonations_panel"></a>
+        <div class="panel">
+	        <span class="actions">
+	          <a href="{{ webapp2.uri_for('InKindDonationBySite', site_id=site.key.integer_id()) }}">
+	            list all
+	          </a>
+	        </span>
+	        <h3>In-kind Donations</h3>
+	        <table id="inkinddonations" class="list tablesorter">
+	          {% for entity in site.InKindDonations.Items() %}
+	          {% if loop.first %}
+	          <thead>
+	            <tr>
+	              <th>Captain</th>
+	              <th>Donor</th>
+	              <th>Amount</th>
+	              <th>Status</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	            {% endif %}
+	            <tr>
+	              <td>
+			{% if entity.captain %}
+			{{ entity.captain.get().name|escape }}
+			{% endif %}
+	              </td>
+	              <td>
+		              {{ entity.donor|escape }}
+	              </td>
+	              <td class="dollar">
+		              ${{ "%0.2f" % entity.Total() }}
+	              </td>
+	              <td>
+	                {{ entity.state }}
+                  <br/>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('InKindDonationView', id=entity.key.integer_id()) }}">
+		                view
+		              </a>
+		              {% if user.staff %}
+		              <span> or </span>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('InKindDonation', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
+		                edit
+		              </a>
+		              {% endif %}
+	              </td>
+	            </tr>
+	            {% endfor %}
+	          </tbody>
+	        </table>
+	        {% endif %}
+        </div>
+        
+      </td>
+    </tr>
+    <tr>
+      <td colspan=10>
+        <hr>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

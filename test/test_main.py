@@ -6,7 +6,7 @@ import unittest
 from webtest import TestApp
 
 import app_engine_test_utils
-import main
+from gae import main
 from test import test_models
 
 app = TestApp(main.app)

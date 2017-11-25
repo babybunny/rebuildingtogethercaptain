@@ -35,3 +35,12 @@ class ModelsTest(unittest.TestCase):
   def testSiteBudget(self):
     mdl = self.keys['SITE'].get()
     self.assertEquals('$4838.09 unspent budget', mdl.BudgetStatement())
+
+  def testOrderInvoice(self):
+    o = self.keys['ORDER3'].get()
+    self.assertEquals(u'110TEST Fixme Center Safety Materials 0 items $0.00', unicode(o))
+    self.assertIsNone(o.internal_invoice)
+    o.SetInvoiceNumber()
+    self.assertIsNotNone(o.internal_invoice)
+    self.assertEquals(10000, o.internal_invoice.get().invoice_number)
+    

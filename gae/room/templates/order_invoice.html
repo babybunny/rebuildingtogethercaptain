@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Rebuilding Together, Peninsula - ROOM System</title>
+    <link href="/css/lib/bootstrap.css" rel="stylesheet" media="screen">
+    <link type="text/css" rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+<table>
+      <tr>
+	      <td>
+	        <a href="http://www.rebuildingtogetherpeninsula.org">
+	          <img src="/static/rtplogosm.gif" alt="RTP logo" 
+	               width="208" height="126">
+	        </a>
+	      </td>
+	      <td class="about_this_page">
+          <h2>Rebuilding Together Peninsula Invoice</h2>
+	      </td>
+      </tr>
+    </table>
+    <div class="body">
+      
+      <h3>Invoice # {{ order.internal_invoice.get().invoice_number }}</h3>
+      {% if order.invoice_date %}
+      <p>Invoice date: {{ order.invoice_date }}</p>
+      {% endif %}
+      
+      {% include "order_layout.html" %}
+    </div>
+    <div class="footer">
+      © 2011 Rebuilding Together Peninsula
+    </div>
+  </body>
+</html>
+    
