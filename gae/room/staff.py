@@ -31,15 +31,14 @@ class SelectProgram(webapp2.RequestHandler):
     user = common.RoomsUser.from_request(self.request)
     if not user and not user.staff:
       return webapp2.redirect_to('Start')
-    program = self.request.get('program')
-    if not program:
+    program_key_id = self.request.get('program_key_id')
+    if not program_key_id:
       what_you_are_doing = "Select a Program to work on"
       program_url_base = webapp2.uri_for('SelectProgram')
       return common.Respond(self.request, 'select_program', locals())
-
-    if program not in common.PROGRAMS:
-      return http.HttpResponseError('program %s not in PROGRAMS' % program)
-    user.staff.program_selected = program
+    program = ndb_models.Program.get_by_id(int(program_key_id))
+    user.staff.program_selected = program.name
+    user.staff.program_selected_key = program.key
     user.staff.put()
     return webapp2.redirect_to('StaffHome')
 
@@ -71,10 +70,11 @@ class StaffHome(StaffHandler):
     order_sheets.sort(key=lambda x: x.name)
     jurisdictions = list(ndb_models.Jurisdiction.query())
     jurisdictions.sort(key=lambda x: x.name)
-    d = {'order_sheets': order_sheets,
-         'test_site_number': TEST_SITE_NUMBER,
-         'jurisdictions': jurisdictions,
-         }
+    d = {
+      'order_sheets': order_sheets,
+      'test_site_number': TEST_SITE_NUMBER,
+      'jurisdictions': jurisdictions
+    }
     return common.Respond(self.request, 'staff_home', d)
 
 
@@ -916,7 +916,7 @@ class Search(StaffHandler):
         obj.details = [d.value for d in search_document['details']]
         obj.model_type = search_document['model_name'][0].value
         obj.model_id = search_document['model_key_id'][0].value
-        obj.uri = webapp2.uri_for('LoadSearchResult', model_type=obj.model_type, model_id=obj.model_id)
+        obj.uri = webapp2.uri_for('LoadModel', model_type=obj.model_type, model_id=obj.model_id)
         obj.score = "{}%".format(round(100 * search_document.rank / denominator))
         serialized_results.append(obj)
         if go_to_site:
@@ -930,18 +930,12 @@ class Search(StaffHandler):
     return common.Respond(self.request, 'search', d)
 
 
-class LoadSearchResult(StaffHandler):
+class LoadModel(StaffHandler):
 
-  def get(self):
-    model_type_string = self.request.GET.get('model_type')
-    model_id = self.request.GET.get('model_id')
-    if not model_type_string or not model_id:
-      self.response.set_status(500)
-      self.response.write("model type and/or model id were not found")
-      return
-    handler = model_type_string_to_handler_map.get(model_type_string)
+  def get(self, model_type, model_id):
+    handler = model_type_string_to_handler_map.get(model_type)
     if handler is None:
       self.response.set_status(500)
-      self.response.write("model {} does not have a default handler defined in {}".format(model_type_string, __file__))
+      self.response.write("model {} does not have a default handler defined in {}".format(model_type, __file__))
       return
     return self.redirect_to(handler.__name__, id=model_id)

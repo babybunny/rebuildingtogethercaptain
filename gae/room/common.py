@@ -13,6 +13,7 @@ import ndb_models
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
+from gae.room.data_migrations import issue147_program_as_model
 from test import test_models
 
 NRD = '04/29/2017'
@@ -165,7 +166,7 @@ class RoomsUser(object):
     self.staff = ndb_models.Staff.query(
       ndb_models.Staff.email == self.email.lower()).get()
     if self.staff:
-      self.programs = PROGRAMS
+      self.programs = issue147_program_as_model.get_all_programs()
       self.program_selected = self.staff.program_selected
 
 

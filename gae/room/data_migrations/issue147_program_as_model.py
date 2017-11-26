@@ -36,4 +36,5 @@ def create_programs():
 
 
 def get_all_programs():
-  return ndb_models.Program.query().fetch() or create_programs()
+  programs = ndb_models.Program.query().fetch() or create_programs()
+  return sorted(programs, key=lambda p: p.get_sort_key())

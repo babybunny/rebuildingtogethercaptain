@@ -29,7 +29,24 @@ def CreateAll():
   Returns: a dict of key name strings to ndb.Model instances.
   """
   KEYS = dict()
-  KEYS['PROGRAMS'] = issue147_program_as_model.get_all_programs()
+  KEYS['PROGRAM_TYPE_NRD'] = ndb_models.ProgramType.get_or_create(
+    name='NRD'
+  )[0].key
+  KEYS['PROGRAM_TYPE_TEST'] = ndb_models.ProgramType.get_or_create(
+    name='TEST'
+  )[0].key
+  KEYS['PROGRAM_2010_TEST'] = ndb_models.Program.get_or_create(
+    program_type_key=KEYS['PROGRAM_TYPE_TEST'],
+    year=2010
+  )[0].key
+  KEYS['PROGRAM_2011_TEST'] = ndb_models.Program.get_or_create(
+    program_type_key=KEYS['PROGRAM_TYPE_TEST'],
+    year=2011
+  )[0].key
+  KEYS['PROGRAM_2012_TEST'] = ndb_models.Program.get_or_create(
+    program_type_key=KEYS['PROGRAM_TYPE_TEST'],
+    year=2012
+  )[0].key
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
     hourly_rate=19.19,
@@ -50,7 +67,7 @@ def CreateAll():
     name="Mister Staff",
     email="rebuildingtogether.staff@gmail.com",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3),
-    program_selected="2011 Test",
+    program_selected=KEYS['PROGRAM_2011_TEST'].get().name,
   ).put()
   KEYS['STAFF2'] = ndb_models.Staff(
     name="Mister Staff",
@@ -93,7 +110,8 @@ def CreateAll():
   KEYS['SITE'] = ndb_models.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION'],
     number='110TEST',
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
+    program_key=KEYS['PROGRAM_2011_TEST'],
     name='Fixme Center',
     applicant='Mister Applicant',
     applicant_home_phone='650 555 9999',
@@ -116,7 +134,8 @@ def CreateAll():
   KEYS['SITE2'] = ndb_models.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION'],
     number='120TEST',
-    program='2010 NRD',
+    program=KEYS['PROGRAM_2012_TEST'].get().name,
+    program_key=KEYS['PROGRAM_2012_TEST'],
     name='Fixyou Center',
     applicant='Mister Applicant, Sr.',
     applicant_home_phone='650 555 9999',
@@ -139,7 +158,8 @@ def CreateAll():
   KEYS['SITE3'] = ndb_models.NewSite(
     jurisdiction_choice=KEYS['JURISDICTION2'],
     number='111TEST',
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
+    program_key=KEYS['PROGRAM_2011_TEST'],
     name='Rainbows',
     applicant='Jordy Carolina',
     applicant_home_phone='650 1357205',
@@ -169,7 +189,7 @@ def CreateAll():
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     position=KEYS['STAFFPOSITION'],
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     state='submitted',
     hours=1.5,
     miles=11.1,
@@ -179,9 +199,7 @@ def CreateAll():
 
   KEYS['STAFFTIME2'] = ndb_models.StaffTime(
     site=KEYS['SITE'],
-    # captain=None,
-    # position=None,
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     state='new',
     hours=0,
     miles=0,
@@ -192,7 +210,7 @@ def CreateAll():
   KEYS['CHECKREQUEST'] = ndb_models.CheckRequest(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     payment_date=datetime.date(2011, 2, 3),
     labor_amount=45.67,
     materials_amount=23.45,
@@ -213,7 +231,7 @@ def CreateAll():
   KEYS['VENDORRECEIPT'] = ndb_models.VendorReceipt(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     purchase_date=datetime.date(2011, 2, 3),
     amount=45.67,
     supplier=KEYS['SUPPLIER'],
@@ -224,7 +242,7 @@ def CreateAll():
   KEYS['INKINDDONATION'] = ndb_models.InKindDonation(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     donation_date=datetime.date(2011, 2, 3),
     donor='Miss Donor',
     donor_phone='555-1212',
@@ -377,7 +395,7 @@ def CreateAll():
   KEYS['ORDER'] = ndb_models.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     sub_total=9.99,
     notes='''These are very very nice order notes.''',
     state='Received',
@@ -392,7 +410,7 @@ def CreateAll():
   KEYS['ORDER2'] = ndb_models.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     sub_total=8.00,  # a BS number
     notes='''These are very very nice order2 notes.''',
     state='Being Filled',
@@ -408,7 +426,7 @@ def CreateAll():
   KEYS['ORDER3'] = ndb_models.Order(
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET5'],
-    program='2011 Test',
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
     notes='''These are nice.''',
     state='Being Filled',
   ).put()
@@ -500,3 +518,12 @@ class ModelsTest(unittest.TestCase):
     self.assertIn('ORDERITEM', KEYS)
     DeleteAll(KEYS)
     self.assertFalse(KEYS)
+
+  def testCaptainAssociation(self):
+    KEYS = CreateAll()
+    site = KEYS['SITE'].get()
+    site_captain = KEYS['SITECAPTAIN'].get()
+    captain = KEYS['CAPTAIN'].get()
+    print(site)
+    print(site_captain)
+    print(captain)
