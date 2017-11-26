@@ -518,12 +518,3 @@ class ModelsTest(unittest.TestCase):
     self.assertIn('ORDERITEM', KEYS)
     DeleteAll(KEYS)
     self.assertFalse(KEYS)
-
-  def testCaptainAssociation(self):
-    KEYS = CreateAll()
-    site = KEYS['SITE'].get()
-    site_captain = KEYS['SITECAPTAIN'].get()
-    captain = KEYS['CAPTAIN'].get()
-    print(site)
-    print(site_captain)
-    print(captain)
