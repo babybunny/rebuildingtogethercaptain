@@ -77,12 +77,14 @@ define(
                     return captain.label;
                 }();
 
-                this.model.save().then(function() {
-                    self.model.set({name: captain_label});
-                    self.sitecaptains.add(self.model);
-                    self.model = new SiteCaptainModel({site: self.options.site_id});
-                    self.makeForm();
-                    self.render();
+                this.model.save(null, {
+                    'success': function(){
+                        self.model.set({name: captain_label});
+                        self.sitecaptains.add(self.model);
+                        self.model = new SiteCaptainModel({site: self.options.site_id});
+                        self.makeForm();
+                        self.render();
+                    }
                 });
             },
             render: function() {
