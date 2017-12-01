@@ -927,8 +927,8 @@ class Search(StaffHandler):
               "model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
             return
           return self.redirect_to(handler.__name__, id=obj.model_id)
-      d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
-      return common.Respond(self.request, 'search', d)
+    d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
+    return common.Respond(self.request, 'search', d)
 
 
 class LoadModel(StaffHandler):
