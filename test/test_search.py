@@ -37,7 +37,7 @@ class TestSearch(unittest.TestCase):
     self.assertEqual(0, len(index.search('last_welcome < 2017-01-01').results))
     self.assertEqual(1, len(index.search('last_welcome = 2017-01-30 ').results))
 
-  def testMagicSearch(self):
+  def testSearch(self):
     results = Search.search_models(u'110TEST')
     self.assertIsNotNone(results)
     self.assertEqual(len(results), 1)

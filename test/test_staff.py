@@ -28,7 +28,6 @@ class LoggedInTest(unittest.TestCase):
 class StatefulTestNoProgram(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
     self.keys = test_models.CreateAll()
 
   def tearDown(self):
@@ -46,7 +45,7 @@ class StatefulTestCaptain(unittest.TestCase):
 
     self.keys = test_models.CreateAll()
     s = self.keys['STAFF'].get()
-    s.program_selected = '2011 Test'
+    s.program_selected = '2011 TEST'
     s.put()
 
   def tearDown(self):
@@ -66,7 +65,7 @@ class StatefulTestStaffWithProgram(unittest.TestCase):
 
     self.keys = test_models.CreateAll()
     s = self.keys['STAFF'].get()
-    s.program_selected = '2011 Test'
+    s.program_selected = '2011 TEST'
     s.put()
 
   def tearDown(self):
@@ -132,26 +131,28 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
   def testStaffHome(self):
     response = self._get('/room/staff_home')
     self.assertEquals('200 OK', response.status)
-    self.assertIn('2011 Test', str(response))
+    self.assertIn('2011 TEST', str(response))
     self.assertIn('Hello RTP Staff', str(response))
 
   def testSelectProgram(self):
     response = self._get('/room/select_program')
     self.assertEquals('200 OK', response.status)
     self.assertIn('Select a Program', str(response))
-    self.assertIn('2011 Test', str(response))
-    self.assertIn('/room/select_program?program=2011 Test', str(response))
+    self.assertIn('2011 TEST', str(response))
+    self.assertIn('/room/select_program?program_key_id=3', str(response))
+    self.assertIn('/room/select_program?program_key_id=2', str(response))
+    self.assertIn('/room/select_program?program_key_id=1', str(response))
 
   def testSitesAndCaptains(self):
     response = self._get('/room/sites_and_captains')
     self.assertEquals('200 OK', response.status)
-    self.assertIn('2011 Test', str(response))
+    self.assertIn('2011 TEST', str(response))
     self.assertIn('Miss Captain', str(response))
 
   def testSiteView(self):
     response = self._get('/room/site/view/{:d}/'.format(self.keys['SITE'].integer_id()))
     self.assertEquals('200 OK', response.status)
-    self.assertIn('2011 Test', response.body)
+    self.assertIn('2011 TEST', response.body)
     self.assertIn('110TEST', response.body)
     self.assertIn('Miss Captain', response.body)
 
@@ -167,7 +168,7 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     self.assertEquals('200 OK', response.status)
     self.assertIn('Being Filled', response.body)
 
-        
+
 StatefulTestStaffWithProgramAuto.build()
 
 if __name__ == '__main__':

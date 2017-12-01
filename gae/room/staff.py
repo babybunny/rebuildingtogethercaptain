@@ -31,15 +31,14 @@ class SelectProgram(webapp2.RequestHandler):
     user = common.RoomsUser.from_request(self.request)
     if not user and not user.staff:
       return webapp2.redirect_to('Start')
-    program = self.request.get('program')
-    if not program:
+    program_key_id = self.request.get('program_key_id')
+    if not program_key_id:
       what_you_are_doing = "Select a Program to work on"
       program_url_base = webapp2.uri_for('SelectProgram')
       return common.Respond(self.request, 'select_program', locals())
-
-    if program not in common.PROGRAMS:
-      return http.HttpResponseError('program %s not in PROGRAMS' % program)
-    user.staff.program_selected = program
+    program = ndb_models.Program.get_by_id(int(program_key_id))
+    user.staff.program_selected = program.name
+    user.staff.program_selected_key = program.key
     user.staff.put()
     return webapp2.redirect_to('StaffHome')
 
@@ -71,10 +70,11 @@ class StaffHome(StaffHandler):
     order_sheets.sort(key=lambda x: x.name)
     jurisdictions = list(ndb_models.Jurisdiction.query())
     jurisdictions.sort(key=lambda x: x.name)
-    d = {'order_sheets': order_sheets,
-         'test_site_number': TEST_SITE_NUMBER,
-         'jurisdictions': jurisdictions,
-         }
+    d = {
+      'order_sheets': order_sheets,
+      'test_site_number': TEST_SITE_NUMBER,
+      'jurisdictions': jurisdictions
+    }
     return common.Respond(self.request, 'staff_home', d)
 
 
@@ -930,8 +930,8 @@ class Search(StaffHandler):
       d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
       return common.Respond(self.request, 'search', d)
 
-class LoadModel(StaffHandler):
 
+class LoadModel(StaffHandler):
   def get(self, model_type, model_id):
     handler = model_type_string_to_handler_map.get(model_type)
     if handler is None:

@@ -13,64 +13,10 @@ import ndb_models
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
+from gae.room.data_migrations import issue147_program_as_model
 
 NRD = '04/29/2017'
 
-
-PROGRAMS = [
-  '2018 NRD',
-  '2018 Safe',
-  '2018 Teambuild',
-
-  '2017 NRD',
-  '2017 Safe',
-  '2017 Teambuild',
-
-  '2016 NRD',
-  '2016 Misc',
-  '2016 Safe',
-  '2016 Energy',
-  '2016 Teambuild',
-  '2016 Youth',
-
-  '2015 NRD',
-  '2015 Misc',
-  '2015 Safe',
-  '2015 Energy',
-  '2015 Teambuild',
-  '2015 Youth',
-
-  '2014 NRD',
-  '2014 Misc',
-  '2014 Safe',
-  '2014 Energy',
-  '2014 Teambuild',
-  '2014 Youth',
-
-  '2013 NRD',
-  '2013 Misc',
-  '2013 Safe',
-  '2013 Energy',
-  '2013 Teambuild',
-  '2013 Youth',
-
-  '2012 NRD',
-  '2012 Misc',
-  '2012 Safe',
-  '2012 Energy',
-  '2012 Teambuild',
-  '2012 Youth',
-
-  '2011 NRD',
-  '2011 Misc',
-  '2011 Safe',
-  '2011 Energy',
-  '2011 Teambuild',
-  '2011 Youth',
-  '2011 Test',
-
-  '2010 NRD',
-]
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
@@ -213,7 +159,7 @@ class RoomsUser(object):
     self.staff = ndb_models.Staff.query(
       ndb_models.Staff.email == self.email.lower()).get()
     if self.staff:
-      self.programs = PROGRAMS
+      self.programs = issue147_program_as_model.get_all_programs()
       self.program_selected = self.staff.program_selected
 
 
