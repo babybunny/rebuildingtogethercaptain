@@ -106,8 +106,6 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
     for r in route_lister.get_route_list(main.login_required):
       if '<' in r['template']:
         continue  # TODO: figure out how to test paths with id segments.
-      if 'load_search_result' not in r['template']:
-        continue
       testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r['template'], 'GET')
       testFunc.__name__ = 'test{}'.format(r['name'])
       setattr(StatefulTestStaffWithProgramAuto, testFunc.__name__, testFunc)
