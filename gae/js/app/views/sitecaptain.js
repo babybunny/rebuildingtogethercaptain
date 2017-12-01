@@ -76,7 +76,14 @@ define(
                 var self = this;
 
                 var choices = this.form.fields.models.find(function(model){return model.get('name') == 'captain';});
-                var captain_label  = _.findWhere(choices.get('options'), {value: self.model.get('captain')}).label;
+                var captain_label  = function(){
+                    var captain =  _.findWhere(choices.get('options'), {value: self.model.get('captain')});
+                    if(captain){
+                        return captain.label;
+                    }else{
+                        return undefined;
+                    }
+                }();
 
                 this.model.save(null, {
                     'success': function(){
