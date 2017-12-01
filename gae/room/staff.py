@@ -910,7 +910,7 @@ class Search(StaffHandler):
         denominator = denominator or float(search_document.rank)
         obj = collections.namedtuple(
           typename='DocumentNamespace',
-          field_names='short_description long_description model_type model_id'
+          field_names='headline details model_type model_id'
         )
         obj.headline = search_document['headline'][0].value
         obj.details = [d.value for d in search_document['details']]
