@@ -123,6 +123,9 @@ class SearchableModel(ndb.Model):
   def _post_put_hook(self, future):
     put_result = future.get_result()  # blocks on put but not a bad idea anyway
     model_key_id = put_result.integer_id()
+    self.index(model_key_id)
+
+  def index(self, model_key_id):
     index_name = self.__class__.__name__
     index = search.Index(index_name)
     self.delete_by_model_key_id(model_key_id)
