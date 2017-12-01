@@ -8,16 +8,16 @@ define(
 		            var ModelModule = this.field.get('room_model_module');
 		            var modl = new ModelModule();
 		            this.field.set('room_model', modl);  // just for debugging
-		            modl.on('change', function(m) {		    
+		            modl.on('change', function(m) {
 		                var new_options = _.map(m.get('choice'), function(e) {
                         return {label: e.label, value: e.id};
                     });
 		                new_options.unshift({label: '--- please select one ---',
                                          value: null});
 		                self.field.set('options', new_options);
-		                self.render();
+		                self.render().$el.find('label.control-label:contains("*")').addClass('required');
 		            });
-		            modl.fetch();		
+		            modl.fetch();
 	          },
 	          render: function() {
 		            return Backform.SelectControl.prototype.render.apply(this, arguments);

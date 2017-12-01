@@ -19,6 +19,7 @@ define(
             {
                 name: "captain",
                 label: "Captain",
+                required: true,
                 control: ModelSelectControl,
                 room_model_module: CaptainChoice
             },
@@ -26,6 +27,7 @@ define(
                 name: "type",
                 label: "Type",
                 control: "select",
+                required: true,
                 options: [
                     {label: "--- please select one ---", value: ""},
                     {label: "Volunteer", value: "Volunteer"},
@@ -59,6 +61,7 @@ define(
                 this.form = new Backform.Form({
                     model: this.model,
                     fields: fields,
+                    showRequiredAsAsterisk: true,
                 });
             },
             removeCaptain: function(e) {
@@ -85,10 +88,11 @@ define(
                     }
                 });
             },
+
             render: function() {
                 this.$el.html(this.template({sitecaptains: this.sitecaptains.models}));
                 this.form.setElement(this.$el.find('#sitecaptain-form-backform'));
-                this.form.render();
+                this.form.render().$el.find('label.control-label:contains("*")').addClass('required');
                 return this;
             }
         });

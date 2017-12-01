@@ -50,6 +50,7 @@ define(
                 this.form = new Backform.Form({
                     model: this.model,
                     fields: options.fields,
+                    showRequiredAsAsterisk: true,
                     events: {
                         'submit': function(e) {
                             e.preventDefault();
@@ -93,7 +94,7 @@ define(
                     this.$('button').on('mousedown mouseup', function() {
                         $(this).toggleClass('white');
                     });
-
+                    this.$('label.control-label:contains("*")').addClass('required');
                 }
                 return this;
             },
