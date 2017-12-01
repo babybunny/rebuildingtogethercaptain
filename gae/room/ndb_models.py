@@ -64,7 +64,7 @@ class SearchableModel(ndb.Model):
     return "{} id={}".format(type(self), self.key.integer_id())
 
   def get_search_result_detail_lines(self):
-    return ["{}: {}".format(prop, getattr(self, prop)) for prop in self._properties]
+    return ["{}: {}".format(prop, getattr(self, prop)) for prop in self._properties if hasattr(self, prop)]
 
   @staticmethod
   def get_search_order():
@@ -78,7 +78,10 @@ class SearchableModel(ndb.Model):
   def get_indexed_fields(self):
     fields = []
     for prop_name, prop in self._properties.items():
+      if not hasattr(self, prop_name):
+        continue
       value = getattr(self, prop_name)
+
       if value is None:
         continue
 
