@@ -6,7 +6,7 @@ from webtest import TestApp
 import os
 import app_engine_test_utils
 from gae import main
-from gae.room import staff, common
+from gae.room import staff, common, ndb_models
 from test import route_lister
 from test import test_models
 
@@ -122,6 +122,13 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
 class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
   """Test specific routes with a certain degree of intelligence."""
 
+  def testLoadModel(self):
+    model_type = ndb_models.NewSite.__name__
+    model_id = self.keys['SITE'].integer_id()
+    response = self._get('/room/load_model/{}/{}'.format(model_type, model_id))
+    self.assertEquals('302 Moved Temporarily', response.status)
+    self.assertIn('/room/site/view/{}/'.format(model_id), str(response))
+
   def testStaffHome(self):
     response = self._get('/room/staff_home')
     self.assertEquals('200 OK', response.status)
@@ -155,10 +162,10 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     self.assertIn('My First Item', response.body)
     self.assertIn('Acorn City', response.body)
 
-    def testOrderReconcile(self):
-        response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
-        self.assertEquals('200 OK', response.status)
-        self.assertIn('Being Filled', response.body)
+  def testOrderReconcile(self):
+    response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
+    self.assertEquals('200 OK', response.status)
+    self.assertIn('Being Filled', response.body)
 
         
 StatefulTestStaffWithProgramAuto.build()

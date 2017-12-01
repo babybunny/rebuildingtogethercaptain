@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block body%}
+ <h2>Search</h2>
+    {% if user.staff %}
+        <form
+	         method="GET"
+	         action="{{ webapp2.uri_for('Search') }}">
+            <input name="search_string" type="text" size="25">
+            <input type="submit" value="Search">
+        </form>
+    {% endif %}
+    {% if exception %}
+      <h5 style="color:red;">Search "{{search_string}}" produced an error</h5>
+      {% for line in exception %}
+         <h5 style="color:red;">&nbsp;&nbsp;{{line}}</h5>
+      {% endfor %}
+      <br>
+    {% endif%}
+    {% if results %}
+      {% for result in results %}
+        <h4><a href="{{result.uri}}">{{result.headline}}</a></h4>
+        {% for detail in result.details %}
+           <p>{{detail}}</p>
+        {% endfor %}
+        <br>
+      {% endfor %}
+    {% else %}
+      {% if search_string %}
+        <h5 style="color:red;">No results were found for search "{{search_string}}"</h5>
+        <h5 style="color:red;">Please try again</h5>
+      {% endif %}
+    {% endif %}
+{% endblock %}

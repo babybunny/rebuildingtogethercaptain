@@ -38,6 +38,7 @@ def init_stubs_and_models(port=None):
   for key in keys:
     print(key)
 
+  test_models.ClearSearchIndices()
   test_models.CreateAll()
 
 

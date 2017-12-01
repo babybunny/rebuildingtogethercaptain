@@ -13,6 +13,7 @@ import ndb_models
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
+
 NRD = '04/29/2017'
 
 
@@ -96,7 +97,6 @@ START_NEW_ORDER_SUBMIT = 'Start New Order'
 
 def IsDev():
   return os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
-
 
 class InvalidUserError(Exception):
   pass

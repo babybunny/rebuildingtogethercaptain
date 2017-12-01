@@ -10,8 +10,6 @@ from room import captain
 from room import common
 from room import staff
 
-# from room import views
-
 EXPENSE_KINDS = (
   # 'CheckRequest',
   'VendorReceipt', 'InKindDonation', 'StaffTime')
@@ -206,9 +204,6 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/site/view/<id:\d+>/',
                 staff.SiteView,
                 name='SiteView'),
-  webapp2.Route(r'/site/lookup/<site_number:\w+>',
-                staff.SiteLookup,
-                name='SiteLookup'),
   webapp2.Route(r'/site/list/<id:\d+>/',  # back compat
                 staff.SiteView,
                 name='SiteViewBackCompat'),
@@ -291,6 +286,12 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/help',
                 Placeholder,
                 name='StaffNew'),  # TODO
+  webapp2.Route(r'/search',
+                staff.Search,
+                name='Search'),
+  webapp2.Route(r'/load_model/<model_type:\w+>/<model_id:\d+>',
+                staff.LoadModel,
+                name='LoadModel')
 ])
 
 post_routes = routes.PathPrefixRoute('/room', [
