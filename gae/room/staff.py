@@ -11,7 +11,7 @@ from google.appengine.ext import ndb
 from google.appengine.api import search
 import common
 import ndb_models
-from gae.room import general_utils
+import general_utils
 
 TEST_SITE_NUMBER = '11999ZZZ'
 EXPORT_CSV = 'Export CSV'

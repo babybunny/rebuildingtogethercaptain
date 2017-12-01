@@ -10,11 +10,11 @@ import datetime
 import logging
 import unittest
 
-import app_engine_test_utils
-from gae.room import ndb_models
-from gae.room import general_utils
-from gae.room.data_migrations import issue147_program_as_model
 from google.appengine.api import search
+
+import app_engine_test_utils
+from gae.room import general_utils
+from gae.room import ndb_models
 
 
 def ClearSearchIndices():

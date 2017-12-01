@@ -1,6 +1,5 @@
 import datetime
-
-from gae.room import ndb_models
+import ndb_models
 
 
 PROGRAMS = {

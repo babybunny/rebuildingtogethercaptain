@@ -9,11 +9,10 @@ from google.appengine.api import mail
 from google.appengine.api import users
 
 import ndb_models
-
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
-from gae.room.data_migrations import issue147_program_as_model
+import issue147_program_as_model
 
 NRD = '04/29/2017'
 

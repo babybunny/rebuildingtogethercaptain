@@ -12,7 +12,7 @@ import math
 from google.appengine.ext import ndb
 from google.appengine.api import search
 
-from gae.room import general_utils
+import general_utils
 
 
 # TODO: move to global config
