@@ -1233,8 +1233,11 @@ def get_all_searchable_models():
   return searchable_models
 
 
+SEARCHABLE_MODELS = get_all_searchable_models()
+
+
 def model_from_search_document(doc):
-  name_to_model_type_map = {m.__name__: m for m in get_all_searchable_models()}
+  name_to_model_type_map = {m.__name__: m for m in SEARCHABLE_MODELS}
   key_ids = doc['model_key_id']
   assert len(key_ids) == 1
   model_type_names = doc['model_name']

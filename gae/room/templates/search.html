@@ -1,18 +1,4 @@
 {% extends "base.html" %}
-{% block jquery %}
-<link
-   type="text/css"
-   href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css"
-   rel="Stylesheet" />
-<script
-   type="text/javascript"
-   src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
-</script>
-<script
-   type="text/javascript"
-   src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js">
-</script>
-{% endblock %}
 {% block body%}
  <h2>Search</h2>
     {% if user.staff %}
@@ -32,7 +18,7 @@
     {% endif%}
     {% if results %}
       {% for result in results %}
-        <h4><a href="{{result.uri}}">{{result.headline}}   ({{result.score}} search match)</a></h4>
+        <h4><a href="{{result.uri}}">{{result.headline}}</a></h4>
         {% for detail in result.details %}
            <p>{{detail}}</p>
         {% endfor %}
