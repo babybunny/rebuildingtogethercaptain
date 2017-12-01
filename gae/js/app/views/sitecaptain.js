@@ -71,6 +71,7 @@ define(
             addCaptain: function(e) {
                 e.preventDefault();
                 var self = this;
+
                 var choices = this.form.fields.models.find(function(model){return model.get('name') == 'captain';});
                 var captain_label  = _.findWhere(choices.get('options'), {value: self.model.get('captain')}).label;
 

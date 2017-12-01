@@ -3,10 +3,10 @@
 import unittest
 
 from webtest import TestApp
-
+import os
 import app_engine_test_utils
 from gae import main
-from gae.room import staff
+from gae.room import staff, common, ndb_models
 from test import route_lister
 from test import test_models
 
@@ -15,6 +15,7 @@ APP = TestApp(main.app)
 
 class LoggedInTest(unittest.TestCase):
   def setUp(self):
+    os.environ[common.RoomsUser.DEV_EMAIL_ENVVAR] = 'rebuildingtogether.staff@gmail.com'
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
   def testStaffHome(self):
@@ -27,7 +28,6 @@ class LoggedInTest(unittest.TestCase):
 class StatefulTestNoProgram(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
     self.keys = test_models.CreateAll()
 
   def tearDown(self):
@@ -45,7 +45,7 @@ class StatefulTestCaptain(unittest.TestCase):
 
     self.keys = test_models.CreateAll()
     s = self.keys['STAFF'].get()
-    s.program_selected = '2011 Test'
+    s.program_selected = '2011 TEST'
     s.put()
 
   def tearDown(self):
@@ -65,7 +65,7 @@ class StatefulTestStaffWithProgram(unittest.TestCase):
 
     self.keys = test_models.CreateAll()
     s = self.keys['STAFF'].get()
-    s.program_selected = '2011 Test'
+    s.program_selected = '2011 TEST'
     s.put()
 
   def tearDown(self):
@@ -121,29 +121,38 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
 class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
   """Test specific routes with a certain degree of intelligence."""
 
+  def testLoadModel(self):
+    model_type = ndb_models.NewSite.__name__
+    model_id = self.keys['SITE'].integer_id()
+    response = self._get('/room/load_model/{}/{}'.format(model_type, model_id))
+    self.assertEquals('302 Moved Temporarily', response.status)
+    self.assertIn('/room/site/view/{}/'.format(model_id), str(response))
+
   def testStaffHome(self):
     response = self._get('/room/staff_home')
     self.assertEquals('200 OK', response.status)
-    self.assertIn('2011 Test', str(response))
+    self.assertIn('2011 TEST', str(response))
     self.assertIn('Hello RTP Staff', str(response))
 
   def testSelectProgram(self):
     response = self._get('/room/select_program')
     self.assertEquals('200 OK', response.status)
     self.assertIn('Select a Program', str(response))
-    self.assertIn('2011 Test', str(response))
-    self.assertIn('/room/select_program?program=2011 Test', str(response))
+    self.assertIn('2011 TEST', str(response))
+    self.assertIn('/room/select_program?program_key_id=3', str(response))
+    self.assertIn('/room/select_program?program_key_id=2', str(response))
+    self.assertIn('/room/select_program?program_key_id=1', str(response))
 
   def testSitesAndCaptains(self):
     response = self._get('/room/sites_and_captains')
     self.assertEquals('200 OK', response.status)
-    self.assertIn('2011 Test', str(response))
+    self.assertIn('2011 TEST', str(response))
     self.assertIn('Miss Captain', str(response))
 
   def testSiteView(self):
     response = self._get('/room/site/view/{:d}/'.format(self.keys['SITE'].integer_id()))
     self.assertEquals('200 OK', response.status)
-    self.assertIn('2011 Test', response.body)
+    self.assertIn('2011 TEST', response.body)
     self.assertIn('110TEST', response.body)
     self.assertIn('Miss Captain', response.body)
 
@@ -154,12 +163,12 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     self.assertIn('My First Item', response.body)
     self.assertIn('Acorn City', response.body)
 
-    def testOrderReconcile(self):
-        response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
-        self.assertEquals('200 OK', response.status)
-        self.assertIn('Being Filled', response.body)
+  def testOrderReconcile(self):
+    response = self._get('/room/order_reconcile/{:d}'.format(self.keys['ORDERSHEET'].integer_id()))
+    self.assertEquals('200 OK', response.status)
+    self.assertIn('Being Filled', response.body)
 
-        
+
 StatefulTestStaffWithProgramAuto.build()
 
 if __name__ == '__main__':

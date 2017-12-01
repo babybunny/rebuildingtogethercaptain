@@ -1,6 +1,5 @@
 """Methods common to all handlers."""
 
-import logging
 import os
 import pprint
 
@@ -10,60 +9,13 @@ from google.appengine.api import mail
 from google.appengine.api import users
 
 import ndb_models
-
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
+import issue147_program_as_model
+
 NRD = '04/29/2017'
 
-DEFAULT_CAPTAIN_PROGRAM = '2017 NRD'
-
-PROGRAMS = [
-  '2018 NRD',
-  '2018 Safe',
-  '2018 Teambuild',
-  '2017 NRD',
-  '2017 Safe',
-  '2017 Teambuild',
-  '2016 NRD',
-  '2016 Misc',
-  '2016 Safe',
-  '2016 Energy',
-  '2016 Teambuild',
-  '2016 Youth',
-  '2015 NRD',
-  '2015 Misc',
-  '2015 Safe',
-  '2015 Energy',
-  '2015 Teambuild',
-  '2015 Youth',
-  '2014 NRD',
-  '2014 Misc',
-  '2014 Safe',
-  '2014 Energy',
-  '2014 Teambuild',
-  '2014 Youth',
-  '2013 NRD',
-  '2013 Misc',
-  '2013 Safe',
-  '2013 Energy',
-  '2013 Teambuild',
-  '2013 Youth',
-  '2012 NRD',
-  '2012 Misc',
-  '2012 Safe',
-  '2012 Energy',
-  '2012 Teambuild',
-  '2012 Youth',
-  '2011 NRD',
-  '2011 Misc',
-  '2011 Safe',
-  '2011 Energy',
-  '2011 Teambuild',
-  '2011 Youth',
-  '2011 Test',
-  '2010 NRD',
-]
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
 HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
@@ -91,79 +43,123 @@ START_NEW_ORDER_SUBMIT = 'Start New Order'
 def IsDev():
   return os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
 
+class InvalidUserError(Exception):
+  pass
 
-def GetUser(request):
-  """Determines the current user and loads some state.
 
-  In production, gets user from appengine.api.users.get_current_user(). So,
-  it should be used in App Engine handlers with login: required.
+class RoomsUser(object):
 
-  Special handling for development server (dev_appserver.py):
+  DEV_EMAIL_ENVVAR = 'ROOMS_DEV_SIGNIN_EMAIL'
 
-  First, try to get user from the request, expecting an email address as
-  the value of the X-ROOMS_DEV_SIGNIN_EMAIL header.
+  @staticmethod
+  def from_request(request):
+    """
+      Determines the current user and loads some state.
 
-  Fall back to pre-configured identify from environment, meaning it was
-  probably set in app.yaml or unit test initialization like nose2-gae config.
+      In production, gets user from appengine.api.users.get_current_user(). So,
+      it should be used in App Engine handlers with login: required.
 
-  Args:
-    request: the current WSGI request.
+      Special handling for development server (dev_appserver.py):
 
-  Returns:
-    user: appengine.api.users.User object, or None if user can not be determined
-    status: string describing how user was determined, for logging and debugging
-  """
-  if not hasattr(request, 'registry'):
-    request.registry = {}
-  if 'user' in request.registry:
-    return request.registry.get('user'), request.registry.get('status')
+      First, try to get user from the request, expecting an email address as
+      the value of the X-ROOMS_DEV_SIGNIN_EMAIL header.
 
-  user = users.get_current_user()
-  if user and user.email():
-    status = 'User from get_current_user %s' % user.email()
-  else:
-    status = 'User not available with users.get_current_user'
+      Fall back to pre-configured identify from environment, meaning it was
+      probably set in app.yaml or unit test initialization like nose2-gae config.
 
-  if not user and IsDev():
+    :param request: the current WSGI request.
+    :type request: webapp2.Request
+    :return: a RoomsUser, see above
+    :rtype: RoomsUser
+    """
+    if not hasattr(request, 'registry'):
+      request.registry = {}
+    if 'user' in request.registry:
+      user = request.registry.get('user')
+      user.status = request.registry.get('status')
+      return user
+
+    try:
+      user = RoomsUser()
+      user.status = 'User from get_current_user %s' % user.email
+    except users.UserNotFoundError:
+      if IsDev():
+        user = RoomsUser.get_dev_user(request)
+      else:
+        raise
+
+    request.registry['user'], request.registry['status'] = user, user.status
+    return user
+
+  @staticmethod
+  def get_dev_user(request):
     if type(request.headers) is list:
       headers = {k: v for (k, v) in request.headers}
     else:
       headers = request.headers
 
     email = headers.get('x-rooms-dev-signin-email')
-    if email:
-      status = 'DEV, using user from x-rooms-dev-signin-email header %s' % email
-    else:
+    status = 'DEV, using user from x-rooms-dev-signin-email header %s' % email
+    if not email:
       email = os.environ.get('ROOMS_DEV_SIGNIN_EMAIL')
-      if email:
-        status = 'DEV, using configured user from env var ROOMS_DEV_SIGNIN_EMAIL %s' % email
+      status = 'DEV, using configured user from env var ROOMS_DEV_SIGNIN_EMAIL %s' % email
+      if not email:
+        raise users.UserNotFoundError("Could not parse dev user from headers or environment variable")
 
-    if email:
-      user = users.User(email=email)
+    user = RoomsUser(provider=users.User, email=email)
+    user.status = status
+    return user
 
-  logging.info(status)
+  def __init__(self, provider=users.User, *args, **kwargs):
+    """
+    encapsulates a user in the rooms system, usually a google.appengine.api.users.User with some added state
+    but choosing non-inheritance pattern in order to provide flexibility going forward
 
-  if user and user.email():
-    user.captain = ndb_models.Captain.query(
-      ndb_models.Captain.email == user.email().lower()).get()
-    user.staff = ndb_models.Staff.query(
-      ndb_models.Staff.email == user.email().lower()).get()
+    NOTE: We expect the provider object allows parameterless instantiation as well as with an email parameter
 
-    if user.staff:
-      user.programs = PROGRAMS
-      user.program_selected = user.staff.program_selected
-    else:
-      user.programs = []
-      user.program_selected = None
+    :param provider: Object used to seed the user, default is google.appengine.api.users.User
+    :type provider: object
+    :param args and kwargs: arguments for provider constructor, eg email for google.appengine.api.users.User
+    """
+    assert callable(provider), "provider argument for {} should be callable".format(RoomsUser.__name__)
+    self.provider = provider
+    self.captain = None
+    self.staff = None
+    self.programs = []
+    self.program_selected = None
+    self.status = None
+    self.email = None
+    self.nickname = None
+    self.provided_user = provider(*args, **kwargs)
+    self._validate_provided_user_and_set_email()
+    self._set_role_atributes()
 
-  request.registry['user'], request.registry['status'] = user, status
-  return user, status
+  def _validate_provided_user_and_set_email(self):
+    if self.provided_user is None:
+      raise users.UserNotFoundError("provider {} returned None".format(self.provider))
+    if not hasattr(self.provided_user, 'email'):
+      raise InvalidUserError("Provided user {} does not have an email attribute".format(self.provided_user))
+    email_attr = self.provided_user.email
+    if callable(email_attr):
+      self.email = email_attr()
+    elif isinstance(email_attr, basestring):
+      self.email = email_attr
+    if not self.email or not isinstance(self.email, basestring):
+      raise InvalidUserError("email attribute for provided user {} is invalid".format(self.provided_user))
+    if not hasattr(self.provided_user, 'nickname'):
+      raise InvalidUserError("Provided user {} does not have an nickname attribute".format(self.provided_user))
+    self.nickname = self.provided_user.nickname
+    if callable(self.nickname):
+      self.nickname = self.nickname()
 
-
-# unused?
-def GetStaffCaptain():
-  """Returns a Captain record which represents the RTP Staff."""
-  return models.Captain.all().filter('email = ', STAFF_CAPTAIN_EMAIL).get()
+  def _set_role_atributes(self):
+    self.captain = ndb_models.Captain.query(
+      ndb_models.Captain.email == self.email.lower()).get()
+    self.staff = ndb_models.Staff.query(
+      ndb_models.Staff.email == self.email.lower()).get()
+    if self.staff:
+      self.programs = issue147_program_as_model.get_all_programs()
+      self.program_selected = self.staff.program_selected
 
 
 jinja_environment = jinja2.Environment(

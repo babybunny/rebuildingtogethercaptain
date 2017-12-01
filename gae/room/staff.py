@@ -4,12 +4,14 @@ import csv
 import datetime
 import json
 import logging
-
+import collections
+import traceback
 import webapp2
 from google.appengine.ext import ndb
-
+from google.appengine.api import search
 import common
 import ndb_models
+import general_utils
 
 TEST_SITE_NUMBER = '11999ZZZ'
 EXPORT_CSV = 'Export CSV'
@@ -26,18 +28,17 @@ class SelectProgram(webapp2.RequestHandler):
   """
 
   def get(self):
-    user, _ = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     if not user and not user.staff:
       return webapp2.redirect_to('Start')
-    program = self.request.get('program')
-    if not program:
+    program_key_id = self.request.get('program_key_id')
+    if not program_key_id:
       what_you_are_doing = "Select a Program to work on"
       program_url_base = webapp2.uri_for('SelectProgram')
       return common.Respond(self.request, 'select_program', locals())
-
-    if program not in common.PROGRAMS:
-      return http.HttpResponseError('program %s not in PROGRAMS' % program)
-    user.staff.program_selected = program
+    program = ndb_models.Program.get_by_id(int(program_key_id))
+    user.staff.program_selected = program.name
+    user.staff.program_selected_key = program.key
     user.staff.put()
     return webapp2.redirect_to('StaffHome')
 
@@ -49,8 +50,11 @@ class StaffHandler(webapp2.RequestHandler):
   - Staff record has a selected Program
   """
 
+  model_class = None
+  searchable_model_class = None
+
   def dispatch(self, *a, **k):
-    user, status = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     if user and user.staff:
       if not user.staff.program_selected:
         logging.info(self.request)
@@ -66,10 +70,11 @@ class StaffHome(StaffHandler):
     order_sheets.sort(key=lambda x: x.name)
     jurisdictions = list(ndb_models.Jurisdiction.query())
     jurisdictions.sort(key=lambda x: x.name)
-    d = {'order_sheets': order_sheets,
-         'test_site_number': TEST_SITE_NUMBER,
-         'jurisdictions': jurisdictions,
-         }
+    d = {
+      'order_sheets': order_sheets,
+      'test_site_number': TEST_SITE_NUMBER,
+      'jurisdictions': jurisdictions
+    }
     return common.Respond(self.request, 'staff_home', d)
 
 
@@ -89,7 +94,7 @@ class SiteScopeOfWork(StaffHandler):
 
 
 class AutocompleteHandler(StaffHandler):
-  model_class = None
+
   program_filter = False
 
   def get(self):
@@ -97,7 +102,7 @@ class AutocompleteHandler(StaffHandler):
     logging.info(prefix)
     items = self.model_class.query(self.model_class.search_prefixes == prefix)
     if self.program_filter:
-      user, _ = common.GetUser(self.request)
+      user = common.RoomsUser.from_request(self.request)
       items = items.filter(self.model_class.program == user.program_selected)
     matches = {}
     for i in items.iter():
@@ -121,44 +126,22 @@ class CaptainAutocomplete(AutocompleteHandler):
 
 
 class SiteView(StaffHandler):
-  def get(self, id=None):
-    if id:
-      id = int(id)
-      site = ndb.Key(ndb_models.NewSite, id).get()
+
+  searchable_model_class = ndb_models.NewSite
+
+  def get(self, id):
     d = dict(
       map_width=common.MAP_WIDTH, map_height=common.MAP_HEIGHT
     )
-    entries = [site]
+    site = ndb.Key(ndb_models.NewSite, int(id)).get()
+    if not site:
+      webapp2.abort(404)
     d['site_list_detail'] = True
     d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
-    d['entries'] = entries
+    d['entries'] = [site]
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     d['order_sheets'] = order_sheets
     return common.Respond(self.request, 'site_list_one', d)
-
-
-class SiteLookup(StaffHandler):
-  def get(self, site_number=None):
-    if site_number is not None:
-      site_number = site_number.upper()
-      query = ndb_models.NewSite.query(ndb_models.NewSite.number == site_number)
-      results = list(query)
-      if not results:
-        logging.warn("Requested site with number {0} not found".format(site_number))
-        self.response.set_status(404)
-        self.response.write("Could not find site # {0}".format(site_number))
-        return
-      if len(results) > 1:
-        logging.error("Found more than one site with number {0}".format(site_number))
-        self.response.set_status(500)
-        self.response.write("Data corruption issue, more than one site with number {0}".format(site_number))
-        return
-      site = results[0]
-      user, _ = common.GetUser(self.request)
-      if user.program_selected != site.program:
-        user.staff.program_selected = site.program
-        user.staff.put()
-      return self.redirect_to('SiteView', id=site.key.integer_id())
 
 
 class SiteExpenses(StaffHandler):
@@ -185,27 +168,15 @@ SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
 
 class SiteExpenseState(StaffHandler):
   def get(self, item_cls, item_id):
-    """Updates a site expense's state field."""
-    user, _ = common.GetUser(self.request)
-    if not user.staff:
-      return webapp2.abort(403)
-    if not request.POST:
-      return webapp2.abort(400)
-    cls = SITE_EXPENSE_TYPES[item_cls]
-    modl = ndb.Key(cls, int(item_id))
-    if not modl:
-      return webapp2.abort(404)
-    value = request.POST['value']
-    modl.state = value
-    modl.put()
-    return self.request
+    """had unresolved imports so replacing with quick 403"""
+    return webapp2.abort(403)
 
 
 class SitesAndCaptains(StaffHandler):
   """Show all Sites and their associated captains in a big list"""
 
   def get(self):
-    user, _ = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     if not user.program_selected:
       webapp2.abort(400)
     query = ndb_models.NewSite.query(ndb_models.NewSite.program == user.program_selected)
@@ -231,7 +202,7 @@ class SiteBudget(StaffHandler):
   """List all Sites with a "Budget" view."""
 
   def get(self):
-    user, _ = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     params = {
       'export_csv': EXPORT_CSV,
       'export_checkbox_prefix': POSTED_ID_PREFIX
@@ -261,11 +232,11 @@ class SiteBudget(StaffHandler):
 class SiteBudgetExport(StaffHandler):
   def post(self):
     """Export Site budget rows as CSV."""
-    user, _ = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     if self.request.POST['submit'] == EXPORT_CSV:
       self.response.content_type = 'text/csv'
       self.response.headers['Content-Disposition'] = (
-        'attachment; filename=%s_site_budget.csv' % user.email())
+        'attachment; filename=%s_site_budget.csv' % user.email)
       _SiteBudgetExportInternal(self.response, self.request.POST)
       return self.response
 
@@ -366,6 +337,9 @@ class StaffList(StaffHandler):
 
 
 class Staff(EditView):
+
+  searchable_model_class = ndb_models.Staff
+
   model_class = ndb_models.Staff
   list_view = 'StaffList'
   template_value = 'staff'
@@ -378,6 +352,9 @@ class CaptainList(StaffHandler):
 
 
 class Captain(EditView):
+
+  searchable_model_class = ndb_models.Captain
+
   model_class = ndb_models.Captain
   list_view = 'CaptainList'
   template_value = 'captain'
@@ -390,6 +367,7 @@ class SupplierList(StaffHandler):
 
 
 class Supplier(EditView):
+  searchable_model_class = ndb_models.Supplier
   model_class = ndb_models.Supplier
   list_view = 'SupplierList'
   template_value = 'supplier'
@@ -411,6 +389,7 @@ class OrderSheetList(StaffHandler):
 
 
 class OrderSheet(EditView):
+  searchable_model_class = ndb_models.OrderSheet
   model_class = ndb_models.OrderSheet
   list_view = 'OrderSheetList'
   template_value = 'ordersheet'
@@ -449,7 +428,7 @@ class SiteExpenseList(StaffHandler):
       params['which_site'] = 'Site ' + site.number
       params['next_key'] = site_key.urlsafe()
     else:
-      user, _ = common.GetUser(self.request)
+      user = common.RoomsUser.from_request(self.request)
       if user.program_selected:
         query = query.filter(mdl_cls.program == user.program_selected)
     return _EntryList(self.request, mdl_cls, 'site_expense_list',
@@ -481,6 +460,7 @@ class StaffTimeList(SiteExpenseList):
 
 
 class StaffTimeView(StaffHandler):
+  searchable_model_class = ndb_models.StaffTime
   def get(self, id):
     """Printable static view of an expense."""
     entity = ndb.Key(ndb_models.StaffTime, int(id)).get()
@@ -502,6 +482,7 @@ class CheckRequestList(SiteExpenseList):
 
 
 class CheckRequestView(StaffHandler):
+  searchable_model_class = ndb_models.CheckRequest
   def get(self, id):
     entity = ndb.Key(ndb_models.CheckRequest, int(id)).get()
     return common.Respond(self.request, 'checkrequest_view',
@@ -522,6 +503,7 @@ class VendorReceiptList(SiteExpenseList):
 
 
 class VendorReceiptView(StaffHandler):
+  searchable_model_class = ndb_models.VendorReceipt
   def get(self, id):
     entity = ndb.Key(ndb_models.VendorReceipt, int(id)).get()
     return common.Respond(self.request, 'vendorreceipt_view',
@@ -543,6 +525,7 @@ class InKindDonationList(SiteExpenseList):
 
 
 class InKindDonationView(StaffHandler):
+  searchable_model_class = ndb_models.InKindDonation
   def get(self, id):
     entity = ndb.Key(ndb_models.InKindDonation, int(id)).get()
     return common.Respond(self.request, 'inkinddonation_view',
@@ -576,6 +559,7 @@ class OrderList(SiteExpenseList):
 
 
 class OrderView(StaffHandler):
+  searchable_model_class = ndb_models.Order
   def get(self, id):
     order = ndb.Key(ndb_models.Order, int(id)).get()
     order.UpdateSubTotal()
@@ -649,7 +633,7 @@ FULFILL_MULTIPLE = 'Fulfill Multiple Orders'
 class OrderPicklist(StaffHandler):
   def get(self):
     """Request / -- show all orders."""
-    user, _ = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     program = user.program_selected
     query = ndb_models.Order.query(
       ndb_models.Order.state != 'Deleted',
@@ -772,7 +756,7 @@ class OrderFulfill(_OrderFulfillInternal):
 class OrderReconcile(StaffHandler):
   def get(self, order_sheet_id):
     """Reconcile filled orders."""
-    user, _ = common.GetUser(self.request)
+    user = common.RoomsUser.from_request(self.request)
     query = ndb_models.Order.query(
         ndb_models.Order.state.IN(['Being Filled', 'Reconciled']))
     order_sheet = ndb.Key(ndb_models.OrderSheet, int(order_sheet_id)).get()
@@ -864,3 +848,94 @@ class Vendor(StaffHandler):
 
     return _ChangeOrder(self.request, order_id, input_sanitizer=_GetSupplier,
                         output_filter=lambda(k):k.get().name)
+
+
+model_type_string_to_handler_map = {}
+for clazz in general_utils.get_all_subclasses(StaffHandler):
+  if clazz.searchable_model_class:
+    name = clazz.searchable_model_class.__name__
+    if name in model_type_string_to_handler_map:
+      logging.error("Model {} is defined as searchable model class on more than one handler".format(name))
+      continue
+    model_type_string_to_handler_map[clazz.searchable_model_class.__name__] = clazz
+
+
+class Search(StaffHandler):
+
+  @staticmethod  # exposed for testing
+  def search_models(search_string, model_type_string=None, max_results=10):
+    searchable_models = ndb_models.get_all_searchable_models()
+    results = []
+    for model_class in searchable_models:
+      if model_class.__name__ not in model_type_string_to_handler_map:
+        continue
+      if model_type_string is not None and model_class.__name__ != model_type_string:
+        continue
+      index = search.Index(model_class.__name__)
+      query = search.Query(
+        query_string=search_string,
+        options=search.QueryOptions(limit=max_results)
+      )
+      results.extend(index.search(query).results)
+    results.sort(key=lambda d: d.rank, reverse=True)
+    return results
+
+  def get(self, max_results=10):
+    search_string = self.request.get('search_string')
+    go_to_site = self.request.get('go_to_site')
+    model_type_string = None
+    if not search_string and not go_to_site:
+      return common.Respond(self.request, 'search', {})
+    if go_to_site and search_string:
+      return common.Respond(self.request, 'search', {'exc': ['cannot submit both search and go to site']})
+    if go_to_site:
+      max_results = 1
+      model_type_string = 'NewSite'
+      search_string = "number={}".format(go_to_site)
+    results, exc = None, None
+    try:
+      results = Search.search_models(
+        search_string=search_string,
+        model_type_string=model_type_string,
+        max_results=max_results)
+    except:
+      logging.exception("Failed search:")
+      exc = traceback.format_exc().splitlines(False)[-3:]
+    serialized_results = []
+    if results:
+      denominator = None
+      for search_document in results:
+        if not search_document or not search_document['headline']:
+          continue
+        denominator = denominator or float(search_document.rank)
+        obj = collections.namedtuple(
+          typename='DocumentNamespace',
+          field_names='headline details model_type model_id'
+        )
+        obj.headline = search_document['headline'][0].value
+        obj.details = [d.value for d in search_document['details']]
+        obj.model_type = search_document['model_name'][0].value
+        obj.model_id = search_document['model_key_id'][0].value
+        obj.uri = webapp2.uri_for('LoadModel', model_type=obj.model_type, model_id=obj.model_id)
+        obj.score = "{}%".format(round(100 * search_document.rank / denominator))
+        serialized_results.append(obj)
+        if go_to_site:
+          handler = model_type_string_to_handler_map.get(obj.model_type)
+          if handler is None:
+            self.response.set_status(500)
+            self.response.write(
+              "model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
+            return
+          return self.redirect_to(handler.__name__, id=obj.model_id)
+    d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
+    return common.Respond(self.request, 'search', d)
+
+
+class LoadModel(StaffHandler):
+  def get(self, model_type, model_id):
+    handler = model_type_string_to_handler_map.get(model_type)
+    if handler is None:
+      self.response.set_status(500)
+      self.response.write("model {} does not have a default handler defined in {}".format(model_type, __file__))
+      return
+    return self.redirect_to(handler.__name__, id=model_id)

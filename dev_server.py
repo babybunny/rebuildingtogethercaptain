@@ -1,14 +1,17 @@
 import subprocess
 import sys
 import time
-
+import os
 import dev_utilities
+
+my_path = os.path.realpath(__file__)
+app_yaml = os.path.join(os.path.dirname(my_path), 'gae', 'app.yaml')
 
 command = ['dev_appserver.py',
            '--clear_datastore=yes',
            '--admin_port', '8081',
            '--api_port', '8082',
-           'app.yaml', '&']
+           app_yaml, '&']
 try:
   return_code = subprocess.call(' '.join(command), shell=True)
 except OSError:
