@@ -916,32 +916,26 @@ class Search(StaffHandler):
         obj.details = [d.value for d in search_document['details']]
         obj.model_type = search_document['model_name'][0].value
         obj.model_id = search_document['model_key_id'][0].value
-        obj.uri = webapp2.uri_for('LoadSearchResult', model_type=obj.model_type, model_id=obj.model_id)
+        obj.uri = webapp2.uri_for('LoadModel', model_type=obj.model_type, model_id=obj.model_id)
         obj.score = "{}%".format(round(100 * search_document.rank / denominator))
         serialized_results.append(obj)
         if go_to_site:
           handler = model_type_string_to_handler_map.get(obj.model_type)
           if handler is None:
             self.response.set_status(500)
-            self.response.write("model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
+            self.response.write(
+              "model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
             return
           return self.redirect_to(handler.__name__, id=obj.model_id)
-    d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
-    return common.Respond(self.request, 'search', d)
+      d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
+      return common.Respond(self.request, 'search', d)
 
+class LoadModel(StaffHandler):
 
-class LoadSearchResult(StaffHandler):
-
-  def get(self):
-    model_type_string = self.request.GET.get('model_type')
-    model_id = self.request.GET.get('model_id')
-    if not model_type_string or not model_id:
-      self.response.set_status(500)
-      self.response.write("model type and/or model id were not found")
-      return
-    handler = model_type_string_to_handler_map.get(model_type_string)
+  def get(self, model_type, model_id):
+    handler = model_type_string_to_handler_map.get(model_type)
     if handler is None:
       self.response.set_status(500)
-      self.response.write("model {} does not have a default handler defined in {}".format(model_type_string, __file__))
+      self.response.write("model {} does not have a default handler defined in {}".format(model_type, __file__))
       return
     return self.redirect_to(handler.__name__, id=model_id)

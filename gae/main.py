@@ -289,9 +289,9 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/search',
                 staff.Search,
                 name='Search'),
-  webapp2.Route(r'/load_search_result',
-                staff.LoadSearchResult,
-                name='LoadSearchResult')
+  webapp2.Route(r'/load_model/<model_type:\w+>/<model_id:\d+>',
+                staff.LoadModel,
+                name='LoadModel')
 ])
 
 post_routes = routes.PathPrefixRoute('/room', [
