@@ -923,15 +923,15 @@ class Search(StaffHandler):
           handler = model_type_string_to_handler_map.get(obj.model_type)
           if handler is None:
             self.response.set_status(500)
-            self.response.write("model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
+            self.response.write(
+              "model {} does not have a default handler defined in {}".format(obj.model_type, __file__))
             return
           return self.redirect_to(handler.__name__, id=obj.model_id)
-    d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
-    return common.Respond(self.request, 'search', d)
+      d = {'search_string': search_string, 'exception': exc, 'results': serialized_results}
+      return common.Respond(self.request, 'search', d)
 
 
 class LoadModel(StaffHandler):
-
   def get(self, model_type, model_id):
     handler = model_type_string_to_handler_map.get(model_type)
     if handler is None:
