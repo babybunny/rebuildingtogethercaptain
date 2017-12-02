@@ -144,6 +144,30 @@ class SiteView(StaffHandler):
     return common.Respond(self.request, 'site_list_one', d)
 
 
+class SiteLookup(StaffHandler):
+  def get(self, site_number=None):
+    if site_number is not None:
+      site_number = site_number.upper()
+      query = ndb_models.NewSite.query(ndb_models.NewSite.number == site_number)
+      results = list(query)
+      if not results:
+        logging.warn("Requested site with number {0} not found".format(site_number))
+        self.response.set_status(404)
+        self.response.write("Could not find site # {0}".format(site_number))
+        return
+      if len(results) > 1:
+        logging.error("Found more than one site with number {0}".format(site_number))
+        self.response.set_status(500)
+        self.response.write("Data corruption issue, more than one site with number {0}".format(site_number))
+        return
+      site = results[0]
+      user = common.RoomsUser.from_request(self.request)
+      if user.program_selected != site.program:
+        user.staff.program_selected = site.program
+        user.staff.put()
+      return self.redirect_to('SiteView', id=site.key.integer_id())
+
+
 class SiteExpenses(StaffHandler):
   def get(self, id=None):
     id = int(id)
