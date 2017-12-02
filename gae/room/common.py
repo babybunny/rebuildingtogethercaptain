@@ -86,7 +86,7 @@ class RoomsUser(object):
       if IsDev():
         user = RoomsUser.get_dev_user(request)
       else:
-        raise
+        return None
 
     request.registry['user'], request.registry['status'] = user, user.status
     return user
