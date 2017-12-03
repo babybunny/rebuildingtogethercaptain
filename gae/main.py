@@ -43,6 +43,9 @@ jinja_environment = jinja2.Environment(
 # Be sure to also configure the /room path with login: required in app.yaml.
 login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/staff_home',
+                staff.StaffHomeee,
+                name='StaffHomeee'),
+  webapp2.Route(r'/staff_home',
                 staff.StaffHome,
                 name='StaffHome'),
   webapp2.Route(r'/select_program',
