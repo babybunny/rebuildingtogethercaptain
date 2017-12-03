@@ -14,4 +14,6 @@ assert os.path.isdir(TEST_DIRECTORY) and os.path.exists(os.path.join(TEST_DIRECT
 loader = unittest.TestLoader()
 suite = loader.discover(TEST_DIRECTORY)
 runner = unittest.TextTestRunner(verbosity=2)
-runner.run(suite)
+success = runner.run(suite).wasSuccessful()
+if not success:
+  raise SystemExit("Tests failed")
