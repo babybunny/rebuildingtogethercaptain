@@ -21,10 +21,6 @@ jobs:
           command: ~/venv/bin/pip install -r requirements.txt
 
       - run:
-          name: set google install non-interactive env var
-          command: export CLOUDSDK_CORE_DISABLE_PROMPTS=1
-
-      - run:
           name: curl google app engine
           command: curl https://sdk.cloud.google.com > /tmp/foo && . /tmp/foo --disable-prompts
 
@@ -37,12 +33,8 @@ jobs:
           key: v1-dependencies-{{ checksum "requirements.txt" }}
         
       - run:
-          name: set up PYTHONPATH
-          command: export PYTHONPATH=/home/circleci/google-cloud-sdk/platform/google_appengine
-            
-      - run:
           name: run tests
-          command: ~/venv/bin/python run_tests.py
+          command: export PYTHONPATH=/home/circleci/google-cloud-sdk/platform/google_appengine && ~/venv/bin/python run_tests.py
       
       - store_artifacts:
           path: test-reports
