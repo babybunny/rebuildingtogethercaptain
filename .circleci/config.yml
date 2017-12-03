@@ -18,7 +18,7 @@ jobs:
 
       - run:
           name: install requirements.txt
-          command: ./venv/bin/pip install -r requirements.txt
+          command: ~/venv/bin/pip install -r requirements.txt
 
       - run:
           name: set google install non-interactive env var
