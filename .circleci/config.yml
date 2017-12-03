@@ -21,12 +21,16 @@ jobs:
           command: ./venv/bin/pip install -r requirements.txt
 
       - run:
+          name: set google install non-interactive env var
+          command: export CLOUDSDK_CORE_DISABLE_PROMPTS=1
+
+      - run:
           name: curl google app engine
           command: curl https://sdk.cloud.google.com | bash
 
       - run:
           name: install app-engine-python gcloud component
-          command: bash -e "gcloud components install app-engine-python"
+          command: ./google-cloud-sdk/bin/gcloud components install app-engine-python
 
       - save_cache:
           paths: [./venv]
