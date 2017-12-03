@@ -14,7 +14,7 @@ jobs:
 
       - run:
           name: install virtual env
-          command: virtualenv venv
+          command: virtualenv ~/venv
 
       - run:
           name: install requirements.txt
@@ -30,10 +30,10 @@ jobs:
 
       - run:
           name: install app-engine-python gcloud component
-          command: ./google-cloud-sdk/bin/gcloud components install app-engine-python
+          command: ~/google-cloud-sdk/bin/gcloud components install app-engine-python
 
       - save_cache:
-          paths: [./venv]
+          paths: [~/venv]
           key: v1-dependencies-{{ checksum "requirements.txt" }}
         
       - run:
@@ -42,7 +42,7 @@ jobs:
             
       - run:
           name: run tests
-          command: ./venv/bin/python run_tests.py
+          command: ~/venv/bin/python run_tests.py
       
       - store_artifacts:
           path: test-reports
