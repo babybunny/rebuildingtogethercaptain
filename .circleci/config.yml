@@ -26,7 +26,7 @@ jobs:
 
       - run:
           name: curl google app engine
-          command: curl https://sdk.cloud.google.com | bash
+          command: curl https://sdk.cloud.google.com > /tmp/foo && . /tmp/foo --disable-prompts
 
       - run:
           name: install app-engine-python gcloud component
@@ -47,4 +47,4 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
-          
+
