@@ -1,51 +1,45 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:2.7
       
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
-
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "requirements.txt" }}
-          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
       - run:
-          name: install dependencies
-          # . venv/bin/activate
-          command: |
-            virtualenv venv
-            ./venv/bin/pip install -r requirements.txt
+          name: install virtual env
+          command: virtualenv venv
+
+      - run:
+          name: install requirements.txt
+          command: ./venv/bin/pip install -r requirements.txt
+
+      - run:
+          name: curl google app engine
+          command: curl https://sdk.cloud.google.com | bash
+
+      - run:
+          name: install app-engine-python gcloud component
+          command: bash -e "gcloud components install app-engine-python"
 
       - save_cache:
-          paths:
-            - ./venv
+          paths: [./venv]
           key: v1-dependencies-{{ checksum "requirements.txt" }}
         
-      # run tests!
+      - run:
+          name: set up PYTHONPATH
+          command: export PYTHONPATH=/home/circleci/google-cloud-sdk/platform/google_appengine
+            
       - run:
           name: run tests
-          # . venv/bin/activate 
-          command: |
-            ./venv/bin/python run_tests.py
-
+          command: ./venv/bin/python run_tests.py
+      
       - store_artifacts:
           path: test-reports
           destination: test-reports
