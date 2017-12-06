@@ -61,7 +61,7 @@ class _ActiveItems(object):
 class SearchableModel(ndb.Model):
 
   def get_search_result_headline(self):
-    return "{} id={}".format(type(self), self.key.integer_id())
+    return str(self.key)
 
   def get_search_result_detail_lines(self):
     return ["{}: {}".format(prop, getattr(self, prop)) for prop in self._properties if hasattr(self, prop)]
@@ -125,13 +125,12 @@ class SearchableModel(ndb.Model):
 
   def _post_put_hook(self, future):
     put_result = future.get_result()  # blocks on put but not a bad idea anyway
-    model_key_id = put_result.integer_id()
+    model_key_id = put_result.integer_id() or put_result.string_id()
     self.index(model_key_id)
 
   def index(self, model_key_id):
     index_name = self.__class__.__name__
     index = search.Index(index_name)
-    self.delete_by_model_key_id(model_key_id)
     fields = [
       search.AtomField(name="model_name", value=index_name),
       search.AtomField(name="model_key_id", value=unicode(model_key_id)),
@@ -192,11 +191,12 @@ class ProgramType(SearchableModel):
     """
     created = False
     assert isinstance(name, str) or isinstance(name, unicode)
-    result = ProgramType.query().filter(ProgramType.name == name).get()
+    key = ndb.Key(ProgramType, name)
+    result = key.get()
     if result is None:
       created = True
       result = ProgramType(name=name)
-      result.key = ndb.Key(ProgramType, name)
+      result.key = key
       result.put()
     return result, created
 
@@ -246,15 +246,14 @@ class Program(SearchableModel):
     assert isinstance(year, int) or isinstance(year, long)
     assert status is None or status in Program.STATUSES
     created = False
-    query = Program.query()
-    query = query.filter(Program.program_type == program_type_key)
-    query = query.filter(Program.year == year)
-    result = query.get()
+    program_type_name = program_type_key.string_id()
+    name = "{} {}".format(year, program_type_name)
+    key = ndb.Key(Program, name)
+    result = key.get()
     if result is None:
       created = True
-      program_type_name = program_type_key.get().name
       result = Program(program_type=program_type_key, year=year)
-      result.name = "{} {}".format(year, program_type_name)
+      result.name = name
       result.status = status or Program.ACTIVE_STATUS
       result.put()
     elif status is not None:

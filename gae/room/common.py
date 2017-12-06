@@ -12,7 +12,6 @@ import ndb_models
 # Current value of National Rebuilding Day!
 # Used for various default values, for debris box pickup, eg.
 # TODO: merge into PROGRAMS
-import issue147_program_as_model
 
 NRD = '04/29/2017'
 
@@ -158,7 +157,7 @@ class RoomsUser(object):
     self.staff = ndb_models.Staff.query(
       ndb_models.Staff.email == self.email.lower()).get()
     if self.staff:
-      self.programs = issue147_program_as_model.get_all_programs()
+      self.programs = sorted(ndb_models.Program.query().fetch(), key=lambda p: p.get_sort_key())
       self.program_selected = self.staff.program_selected
 
 
