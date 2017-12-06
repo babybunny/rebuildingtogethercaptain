@@ -17,12 +17,6 @@ from gae.room import general_utils
 from gae.room import ndb_models
 
 
-def ClearSearchIndices():
-  for model in ndb_models.get_all_searchable_models():
-    index = search.Index(model.__name__)
-    general_utils.delete_all_in_index(index)
-
-
 def CreateAll():
   """Creates all the models in this module.
 

@@ -12,20 +12,23 @@ command = ['dev_appserver.py',
            '--admin_port', '8081',
            '--api_port', '8082',
            app_yaml, '&']
-try:
-  return_code = subprocess.call(' '.join(command), shell=True)
-except OSError:
-  raise SystemExit("may not have been able to find dev_appserver.py, make sure your PATH is configured")
 
-time.sleep(6)
 
-dev_utilities.init_stubs_and_models(8080)
+if __name__ == '__main__':
+  try:
+    return_code = subprocess.call(' '.join(command), shell=True)
+  except OSError:
+    raise SystemExit("may not have been able to find dev_appserver.py, make sure your PATH is configured")
 
-print("check out the local server at http://localhost:8080")
+  time.sleep(6)
 
-try:
-  while True:
-    time.sleep(1)
-except KeyboardInterrupt:
-  print("Received KeyboardInterrupt")
-  sys.exit(0)
+  dev_utilities.init_stubs_and_models(8080)
+
+  print("check out the local server at http://localhost:8080")
+
+  try:
+    while True:
+      time.sleep(1)
+  except KeyboardInterrupt:
+    print("Received KeyboardInterrupt")
+    sys.exit(0)
