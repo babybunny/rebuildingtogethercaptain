@@ -79,12 +79,14 @@ class CustomApi(base_api.BaseApi):
   @remote.method(message_types.VoidMessage,
                  message_types.VoidMessage)
   def ehlo(self, request):
+    self._authorize_user()
     logging.info('ehlo')
     return message_types.VoidMessage()
 
   @remote.method(message_types.VoidMessage,
                  OrderFormChoices)
   def order_form_choices(self, request):
+    self._authorize_user()
     res = OrderFormChoices()
     for m in ndb_models.OrderSheet.query(ndb_models.OrderSheet.visibility != 'Inactive'):
       f = OrderFormChoice(
@@ -156,6 +158,7 @@ class CustomApi(base_api.BaseApi):
 
   @remote.method(protorpc_messages.SimpleId, OrderFormDetail)
   def order_form_detail(self, request):
+    self._authorize_user()
     res = OrderFormDetail()
     if not request.id:
       raise remote.ApplicationError('id is required')
@@ -174,7 +177,7 @@ class CustomApi(base_api.BaseApi):
 
   @remote.method(protorpc_messages.SimpleId, OrderFull)
   def order_full_read(self, request):
-    self._authorize_staff()
+    self._authorize_user()
     res = OrderFull()
     order_key = ndb.Key(ndb_models.Order, request.id)
     order_mdl = order_key.get()
@@ -266,7 +269,7 @@ class CustomApi(base_api.BaseApi):
 
   @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_create(self, request):
-    self._authorize_staff()
+    self._authorize_user()
     if request.id:
       raise remote.ApplicationError('must not have id in create')
     self._order_full_put(request)
@@ -274,7 +277,7 @@ class CustomApi(base_api.BaseApi):
 
   @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_update(self, request):
-    self._authorize_staff()
+    self._authorize_user()
     if not request.id:
       raise remote.ApplicationError('id is required')
     mdl = ndb.Key(ndb_models.Order, request.id).get()
@@ -286,6 +289,7 @@ class CustomApi(base_api.BaseApi):
 
   @remote.method(protorpc_messages.SimpleId, SiteCaptains)
   def sitecaptains_for_site(self, request):
+    self._authorize_user()
     res = SiteCaptains()
     sitecaptain_models = list(
       ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))

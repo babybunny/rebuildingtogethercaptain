@@ -37,7 +37,7 @@ class ChoicesApi(base_api.BaseApi):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def supplier_choices_read(self, request):
-    self._authorize_staff()
+    self._authorize_user()
     choices = Choices()
     for mdl in ndb_models.Supplier.query(ndb_models.Supplier.active == 'Active').order(ndb_models.Supplier.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
@@ -46,7 +46,7 @@ class ChoicesApi(base_api.BaseApi):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def staffposition_choices_read(self, request):
-    self._authorize_staff()
+    self._authorize_user()
     choices = Choices()
     for mdl in ndb_models.StaffPosition.query().order(ndb_models.StaffPosition.position_name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.position_name))
@@ -55,7 +55,7 @@ class ChoicesApi(base_api.BaseApi):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def jurisdiction_choices_read(self, request):
-    self._authorize_staff()
+    self._authorize_user()
     choices = Choices()
     for mdl in ndb_models.Jurisdiction.query().order(ndb_models.Jurisdiction.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
@@ -64,7 +64,7 @@ class ChoicesApi(base_api.BaseApi):
   @remote.method(message_types.VoidMessage,
                  Choices)
   def ordersheet_choices_read(self, request):
-    self._authorize_staff()
+    self._authorize_user()
     choices = Choices()
     mdls = ndb_models.OrderSheet.query(ndb_models.OrderSheet.visibility != 'Inactive')
     for mdl in sorted(mdls, key=lambda m: m.name):
