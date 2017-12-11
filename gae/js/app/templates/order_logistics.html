@@ -1,5 +1,62 @@
 <h2>Logistics: <%= order_form.name %> Order for Site #<%= site.get('number') %>
 </h2>
+<p>Existing logistics dates and Captains are listed for your reference.</p>
+<table class="table">
+  <tbody>
+    <tr>
+      <td>
+        <% if (logistics_dates && logistics_dates.length > 0) { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Order</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (logistics_date of logistics_dates.models) { %>
+            <tr>
+              <td><%= logistics_date.get('date')  %></td>
+              <td><%= logistics_date.get('logistics_type') %></td>
+              <td><%= logistics_date.get('ordersheet_name') %> (<%= logistics_date.get('order_id') %>)
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+        <% } else {%>
+        <p>No existing logistics planned for this site.</p>
+        <% } %>
+      </td>
+      <td>
+        <% if (sitecaptains && sitecaptains.length > 0) { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Captain</th>
+              <th>Type</th>
+              <th>Mobile</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (sitecaptain of sitecaptains.models) { %>
+            <tr>
+              <td><%= sitecaptain.get('name') %></td>
+              <td><%= sitecaptain.get('type') %></td>
+              <td><%= sitecaptain.get('phone_mobile') %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+        <% } else {%>
+        <p>No existing logistics planned for this site.</p>
+        <% } %>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<hr/>
 <p>Choose your <%- logistics_words %> options.</p>
 
 <form id="order-logistics-form"></form>

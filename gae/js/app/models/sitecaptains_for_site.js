@@ -1,4 +1,4 @@
-// The items and quantities associated with an order.
+// Details for the captains associated with a site.
 define(
     ['backbone', 'app/models/sitecaptain'],
     function(Backbone, SiteCaptainModel) {

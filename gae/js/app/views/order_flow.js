@@ -4,6 +4,8 @@ define(
         'bootstrap-datepicker',
         'app/views/rooms_form',
 	      'app/views/model_select_control',
+        'app/models/logistics_dates',
+        'app/models/sitecaptains_for_site',
         'app/models/order_existing',
         'app/models/order_form_overview',
         'app/models/order_items',
@@ -18,7 +20,7 @@ define(
     ],
     function(Backbone, Backform, bootstrap,
              bsdp, RoomFormView, ModelSelectControl,
-             OrderExisting,
+             LogisticsDates, SiteCaptains, OrderExisting,
              OrderFormOverview, OrderItems, Order, Site, OrderFormDetail, OrderFull,
              choose_form_template, button_template, select_items_template,
              logistics_template) {
@@ -93,6 +95,12 @@ define(
                 
                 var site = new Site({id: site_id});
                 site.fetch().then(function() {self.site = site; self.render()});
+
+                this.logistics_dates = new LogisticsDates(site_id);
+                this.logistics_dates.fetch();
+                
+                this.sitecaptains = new SiteCaptains(site_id);
+                this.sitecaptains.fetch();
 
                 if (order_id) {  // edit mode
                     var order_full = new OrderFull({id: order_id});
@@ -246,6 +254,8 @@ define(
                 var t = this.logistics_template({
                     order: this.order,
                     site: this.site,
+                    sitecaptains: this.sitecaptains,
+                    logistics_dates: this.logistics_dates,
                     logistics_words: logistics_words,
                     order_form: this.order_form_detail.get('order_sheet'),
                 });
