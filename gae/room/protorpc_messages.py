@@ -705,6 +705,10 @@ def OrderModelToMessage(mdl):
     s.invoice_date = mdl.invoice_date.isoformat()
   else:
     s.invoice_date = ''
+  if mdl.modified:
+    s.modified = mdl.modified.isoformat()
+  else:
+    s.modified = ''
 
   return s
 
@@ -751,7 +755,9 @@ class Order(messages.Message):
   vendor = messages.IntegerField(11)
   actual_total = messages.FloatField(12)
 
+  modified = messages.StringField(13)
 
+  
 #############
 # OrderItem #
 #############

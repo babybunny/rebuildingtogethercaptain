@@ -41,6 +41,15 @@ class OrderFull(messages.Message):
   id = messages.IntegerField(6)
 
 
+class OrderCheckExisting(messages.Message):
+  ordersheet_id = messages.IntegerField(1)
+  site_id = messages.IntegerField(2)
+
+  
+class OrderExisting(messages.Message):
+  order = messages.MessageField(protorpc_messages.Order, 1, repeated=True)
+
+  
 class SiteCaptainDetail(messages.Message):
   sitecaptain = messages.MessageField(protorpc_messages.SiteCaptain, 1)
   name = messages.StringField(2)
@@ -71,6 +80,21 @@ class CustomApi(base_api.BaseApi):
         id=m.key.integer_id(), name=m.name,
         code=m.code, visibility=m.visibility)
       res.order_form.append(f)
+    return res
+
+  @remote.method(OrderCheckExisting,
+                 OrderExisting)
+  def order_existing(self, request):
+    res = OrderExisting()
+    site_key = ndb.Key(ndb_models.NewSite, request.site_id)
+    ordersheet_key = ndb.Key(ndb_models.OrderSheet, request.ordersheet_id)
+
+    orders = sorted(ndb_models.Order.query(
+        ndb_models.Order.state!='Deleted', 
+        ndb_models.Order.order_sheet==ordersheet_key,
+        ndb_models.Order.site==site_key), key=lambda o: o.modified, reverse=True)
+    for m in orders:
+      res.order.append(protorpc_messages.OrderModelToMessage(m))
     return res
 
   @remote.method(protorpc_messages.SimpleId, OrderFormDetail)

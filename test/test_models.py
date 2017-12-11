@@ -425,6 +425,14 @@ def CreateAll():
     state='Being Filled',
   ).put()
 
+  KEYS['ORDER4'] = ndb_models.Order(
+    site=KEYS['SITE'],
+    order_sheet=KEYS['ORDERSHEET'],
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
+    notes='''A deleted order.''',
+    state='Deleted',
+  ).put()
+
   KEYS['DELIVERY'] = ndb_models.Delivery(
     site=KEYS['SITE'],
     delivery_date='Apr 12',

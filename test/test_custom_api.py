@@ -73,3 +73,16 @@ class CustomApiTest(unittest.TestCase):
     self.assertEquals(u'Joe Retrieval', response.json['retrieval']['contact'])
     self.assertIn(u'pickup', response.json)
     self.assertEquals(u'Joe Pickup', response.json['pickup']['contact'])
+
+  def testOrderExisting(self):
+    post_json_body = {
+      "ordersheet_id": self.keys['ORDERSHEET'].integer_id(),
+      "site_id": self.keys['SITE'].integer_id()};
+    response = app.post_json('/custom_api.order_existing',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'order', response.json)
+    self.assertEquals(2, len(response.json['order']))
+    self.assertEquals(self.keys['ORDER'].integer_id(), response.json['order'][1]['id'])
