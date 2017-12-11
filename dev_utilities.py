@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 import path_utils
 
@@ -24,7 +25,7 @@ def parse_port_from_command_line_args(default_port=8082):
 def init_stubs_and_models(port=None):
   port = port or parse_port_from_command_line_args()
   servername = 'localhost:{}'.format(port)
-  print servername
+  remote_api_stub.RemoteStub._SetRequestId("otherwise it spams error messages")
   remote_api_stub.ConfigureRemoteApi(
     app_id=None,  # don't contact prod server!
     servername=servername,
@@ -32,14 +33,10 @@ def init_stubs_and_models(port=None):
     auth_func=lambda: ('', ''),
     secure=False)
 
-  # List the first 10 keys in the datastore.
-  keys = ndb.Query().fetch(10, keys_only=True)
-
-  for key in keys:
-    print(key)
-
-  test_models.CreateAll()
-
+  logging.info("creating test models in the datastore ... this may take a few seconds")
+  keys = test_models.CreateAll()
+  logging.info("created %d test models", len(keys))
 
 if __name__ == '__main__':
+  logging.basicConfig(level=logging.INFO, format='%(levelname)-8s %(asctime)s %(filename)s] %(message)s')
   init_stubs_and_models()

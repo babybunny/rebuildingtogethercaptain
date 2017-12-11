@@ -591,7 +591,6 @@ class NewSite(SearchableModel):
         prefixes.add(self.number[2:2 + i])
         prefixes.add(self.number[5:5 + i])
     self.search_prefixes = [p.lower() for p in prefixes]
-    logging.info('prefixes for %s: %s', self.number, self.search_prefixes)
     k = super(NewSite, self).put(*a, **k)
     return k
 
