@@ -50,6 +50,17 @@ class OrderExisting(messages.Message):
   order = messages.MessageField(protorpc_messages.Order, 1, repeated=True)
 
   
+class LogisticsDate(messages.Message):
+  date = messages.StringField(1)
+  order_id = messages.IntegerField(2)
+  logistics_type = messages.StringField(3)
+  ordersheet_name = messages.StringField(4)
+
+  
+class LogisticsDates(messages.Message):
+  logistics_date = messages.MessageField(LogisticsDate, 1, repeated=True)
+
+  
 class SiteCaptainDetail(messages.Message):
   sitecaptain = messages.MessageField(protorpc_messages.SiteCaptain, 1)
   name = messages.StringField(2)
@@ -97,6 +108,50 @@ class CustomApi(base_api.BaseApi):
     for mdl in orders:
       msg = protorpc_messages.OrderModelToMessage(mdl)
       res.order.append(msg)
+    return res
+
+  @remote.method(protorpc_messages.SimpleId,
+                 LogisticsDates)
+  def logistics_dates(self, request):
+    self._authorize_user()
+    res = LogisticsDates()
+    site_key = ndb.Key(ndb_models.NewSite, request.id)
+    orders = ndb_models.Order.query(ndb_models.Order.state!='Deleted', 
+                                    ndb_models.Order.site==site_key)
+    existing_dates = []
+    for order in orders:
+      os = order.order_sheet.get()
+
+      for od in ndb_models.OrderDelivery.query(ndb_models.OrderDelivery.order==order.key):
+        d = od.delivery.get()
+        if d.delivery_date:
+          existing_dates.append(
+            LogisticsDate(date=d.delivery_date, logistics_type='Delivery',
+                          ordersheet_name=os.name, order_id=order.key.integer_id()))
+
+      for op in ndb_models.OrderPickup.query(ndb_models.OrderPickup.order==order.key):
+        p = op.pickup.get()
+        if p.pickup_date:
+          existing_dates.append(
+            LogisticsDate(date=p.pickup_date, logistics_type='Pick-up',
+                          ordersheet_name=os.name, order_id=order.key.integer_id()))
+        if p.return_date:
+          existing_dates.append(
+            LogisticsDate(date=p.return_date, logistics_type='Return',
+                          ordersheet_name=os.name, order_id=order.key.integer_id()))
+
+      for orl in ndb_models.OrderRetrieval.query(ndb_models.OrderRetrieval.order==order.key):
+        r = orl.retrieval.get()
+        if r.dropoff_date:
+          existing_dates.append(
+            LogisticsDate(date=r.dropoff_date, logistics_type='Drop-off',
+                          ordersheet_name=os.name, order_id=order.key.integer_id()))
+        if r.retrieval_date:
+          existing_dates.append(
+            LogisticsDate(date=r.retrieval_date, logistics_type='Retrieval',
+                          ordersheet_name=os.name, order_id=order.key.integer_id()))
+
+    res.logistics_date = sorted(existing_dates, key=lambda e: e.date)
     return res
 
   @remote.method(protorpc_messages.SimpleId, OrderFormDetail)

@@ -96,3 +96,16 @@ class CustomApiTest(unittest.TestCase):
     self.assertIn(u'order', response.json)
     self.assertEquals(2, len(response.json['order']))
     self.assertEquals(self.keys['ORDER'].integer_id(), response.json['order'][1]['id'])
+
+  def testLogisticsDates(self):
+    post_json_body = {"id": self.keys['SITE'].integer_id()};
+    response = app.post_json('/custom_api.logistics_dates',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'logistics_date', response.json)
+    self.assertEquals(5, len(response.json['logistics_date']))
+    self.assertEquals(self.keys['ORDER'].integer_id(), response.json['logistics_date'][0]['order_id'])
+    self.assertEquals('Apr 12', response.json['logistics_date'][0]['date'])
+    self.assertEquals('Delivery', response.json['logistics_date'][0]['logistics_type'])
