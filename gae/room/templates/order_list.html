@@ -19,11 +19,11 @@ $(function() {
  | List all Orders
 {% endblock %}
 {%block about_this_page %}
-<h2>All Orders
 {% if order_sheet %}
-({{ order_sheet.name}})
+  <h2>Orders for {{ order_sheet.name }} ({{order_sheet.code}})</h2>
+{% else %}
+  <h2>All Orders</h2>
 {% endif %}
-</h2>
 <p>To make an order, go to the site 
  (from <a href="{{ webapp2.uri_for('StaffHome') }}">Staff Home</a>)
 and use the normal Place Order links.  

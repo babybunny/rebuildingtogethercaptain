@@ -704,12 +704,12 @@ class _OrderChangeConfirm(StaffHandler):
       if k.kind() == 'NewSite':
         return self.redirect_to('OrderBySite', site_id=k.id())
       elif k.kind() == 'OrderSheet':
-        return self.redirect_to('OrderByProgram', order_sheet_id=k.id())
+        return self.redirect_to('OrderBySheet', order_sheet_id=k.id())
       else:
         logging.warn('no plan for continuing to list of orders for kind: {}'.format(k.kind()))
 
     # fallback
-    return webapp2.redirect_to('OrderByProgram')  # TODO: should go somewhere better.
+    return self.redirect_to('OrderBySheet')  # TODO: should go somewhere better.
 
 
 class OrderDeleteConfirm(_OrderChangeConfirm):
