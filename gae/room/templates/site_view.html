@@ -79,7 +79,7 @@
 	        <strong>{{ captain.name }}</strong>
 	        {% if user.staff %}
 	        (
-	        <a href="{{ webapp2.uri_for('CaptainEdit', args=[sitecaptain.captain.integer_id()]) }}">
+	        <a href="{{ webapp2.uri_for('Captain', id=sitecaptain.captain.integer_id()) }}">
 	          edit
 	        </a>
 	        )

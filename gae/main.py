@@ -279,12 +279,6 @@ login_required = routes.PathPrefixRoute('/room', [
                 name='OrderExport'),  # TODO
   webapp2.Route(r'/help',
                 Placeholder,
-                name='CaptainNew'),  # TODO
-  webapp2.Route(r'/help',
-                Placeholder,
-                name='CaptainEdit'),  # TODO
-  webapp2.Route(r'/help',
-                Placeholder,
                 name='StaffNew'),  # TODO
   webapp2.Route(r'/search',
                 staff.Search,
