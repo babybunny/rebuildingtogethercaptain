@@ -99,7 +99,6 @@ class AutocompleteHandler(StaffHandler):
 
   def get(self):
     prefix = str(self.request.get('term').lower())
-    logging.info(prefix)
     items = self.model_class.query(self.model_class.search_prefixes == prefix)
     if self.program_filter:
       user = common.RoomsUser.from_request(self.request)
