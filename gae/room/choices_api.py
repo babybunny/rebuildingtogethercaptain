@@ -66,7 +66,8 @@ class ChoicesApi(base_api.BaseApi):
   def ordersheet_choices_read(self, request):
     self._authorize_staff()
     choices = Choices()
-    for mdl in ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name):
+    mdls = ndb_models.OrderSheet.query(ndb_models.OrderSheet.visibility != 'Inactive')
+    for mdl in sorted(mdls, key=lambda m: m.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 

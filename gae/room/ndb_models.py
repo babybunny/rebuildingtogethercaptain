@@ -350,7 +350,7 @@ class OrderSheet(SearchableModel):
   Corresponds to one of the old paper forms, like the Cleaning Supplies form.
   """
   name = ndb.StringProperty()
-  visibility = ndb.StringProperty(choices=('Everyone', 'Staff Only'),
+  visibility = ndb.StringProperty(choices=('Everyone', 'Staff Only', 'Inactive'),
                                   default='Everyone')
   supports_extra_name_on_order = ndb.BooleanProperty(default=False)
   supports_internal_invoice = ndb.BooleanProperty(default=False)

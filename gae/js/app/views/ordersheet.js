@@ -26,6 +26,7 @@ define(
                 options: [
                     {label: "Everyone", value: "Everyone"},
                     {label: "Staff Only", value: "Staff Only"},
+                    {label: "Inactive", value: "Inactive"},
                 ]
             },
             {

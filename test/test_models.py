@@ -295,6 +295,17 @@ def CreateAll():
     visibility='Everyone',
     supports_internal_invoice=True
   ).put()
+  KEYS['ORDERSHEET6'] = ndb_models.OrderSheet(
+    # no default_supplier
+    name='Ancient Historical Artifacts',
+    code='AHA',
+    instructions='This order sheet is inactive and no longer in use.',
+    delivery_options='No',
+    retrieval_options='No',
+    pickup_options='Yes',
+    visibility='Inactive',
+    supports_internal_invoice=True
+  ).put()
 
   KEYS['ITEM'] = ndb_models.Item(
     bar_code_number=1234,

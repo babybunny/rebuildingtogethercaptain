@@ -19,6 +19,16 @@ class CustomApiTest(unittest.TestCase):
   def tearDown(self):
     test_models.DeleteAll(self.keys)
 
+  def testOrderFormChoices(self):
+    post_json_body = {}
+    response = app.post_json('/custom_api.order_form_choices',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'order_form', response.json)
+    self.assertEquals(5, len(response.json['order_form']))
+
   def testOrderSheetDetails(self):
     post_json_body = {
       "id": self.keys['ORDERSHEET'].integer_id(),

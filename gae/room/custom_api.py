@@ -75,7 +75,7 @@ class CustomApi(base_api.BaseApi):
                  OrderFormChoices)
   def order_form_choices(self, request):
     res = OrderFormChoices()
-    for m in ndb_models.OrderSheet.query():
+    for m in ndb_models.OrderSheet.query(ndb_models.OrderSheet.visibility != 'Inactive'):
       f = OrderFormChoice(
         id=m.key.integer_id(), name=m.name,
         code=m.code, visibility=m.visibility)
