@@ -358,7 +358,7 @@ define(
                     var id = parseInt(this.id);  // ordersheet ID
                     self.order.set('order_sheet', id);
                     self.order_existing = new OrderExisting(self.site.id, id);
-                    self.listenTo(self.order_existing, 'change', this.renderStep2);
+                    self.listenTo(self.order_existing, 'update', self.renderStep2);
                     self.order_existing.fetch();
                     var ofd = new OrderFormDetail({id: id});
                     ofd.fetch().then(function() {

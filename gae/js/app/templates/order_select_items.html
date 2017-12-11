@@ -1,7 +1,14 @@
-<% if (order_existing) { %>
-<h3><%= order_existing.length %> existing orders</h3>
+<% if (order_existing && order_existing.length > 0) { %>
+<h3><%= order_existing.length %> existing orders for <%= order_form.name %> Order Form</h3>
+  You may change an order in the "Received" state rather than creating a new order.
   <% for (oe of order_existing.models) { %>
-  <p><a href="<%= oe.edit_url %>">edit</a> | last modified: <%= oe.get('modified_ago') %> | <%= oe.get('notes') %></p>
+  <p>
+    <% if (oe.id) { %>
+    <a href="<%= oe.id %>" alt="order modified <%= oe.get('modified_ago') %> ago">change</a>
+    <% } else { %>
+    Locked
+    <% } %>
+    | <%= oe.get('state') %> | <%= oe.get('notes') %></p>
   <% } %>
 <% } %>
 <table>
@@ -37,7 +44,7 @@
                   <%= order.get('id') %>
                 </span>
                 <span class="attr">
-                  Status: <%= order.get('status') %>
+                  State: <%= order.get('state') %>
                 </span>
                 <br>
                 <% } else { %>

@@ -83,8 +83,9 @@ class CustomApi(base_api.BaseApi):
     return res
 
   @remote.method(OrderCheckExisting,
-                 OrdersExisting)
+                 OrderExisting)
   def order_existing(self, request):
+    self._authorize_user()
     res = OrderExisting()
     site_key = ndb.Key(ndb_models.NewSite, request.site_id)
     ordersheet_key = ndb.Key(ndb_models.OrderSheet, request.ordersheet_id)
@@ -93,8 +94,9 @@ class CustomApi(base_api.BaseApi):
         ndb_models.Order.state!='Deleted', 
         ndb_models.Order.order_sheet==ordersheet_key,
         ndb_models.Order.site==site_key), key=lambda o: o.modified, reverse=True)
-    for m in orders:
-      res.order.append(protorpc_messages.OrderModelToMessage(m))
+    for mdl in orders:
+      msg = protorpc_messages.OrderModelToMessage(mdl)
+      res.order.append(msg)
     return res
 
   @remote.method(protorpc_messages.SimpleId, OrderFormDetail)

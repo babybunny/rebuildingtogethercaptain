@@ -158,13 +158,13 @@ indexes:
 - kind: Order
   properties:
   - name: order_sheet
-  - name: site
+  - name: program
   - name: state
 
 - kind: Order
   properties:
   - name: order_sheet
-  - name: program
+  - name: site
   - name: state
 
 - kind: Order
