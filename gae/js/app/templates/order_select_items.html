@@ -1,9 +1,9 @@
-<p>
-  Select Items
-</p>
-
-<h3>Existing order?.</h3>
-
+<% if (order_existing) { %>
+<h3><%= order_existing.length %> existing orders</h3>
+  <% for (oe of order_existing.models) { %>
+  <p><a href="<%= oe.edit_url %>">edit</a> | last modified: <%= oe.get('modified_ago') %> | <%= oe.get('notes') %></p>
+  <% } %>
+<% } %>
 <table>
   <tbody><tr>
       <td class="layout">

@@ -83,7 +83,7 @@ class CustomApi(base_api.BaseApi):
     return res
 
   @remote.method(OrderCheckExisting,
-                 OrderExisting)
+                 OrdersExisting)
   def order_existing(self, request):
     res = OrderExisting()
     site_key = ndb.Key(ndb_models.NewSite, request.site_id)

@@ -4,6 +4,7 @@ define(
         'bootstrap-datepicker',
         'app/views/rooms_form',
 	      'app/views/model_select_control',
+        'app/models/order_existing',
         'app/models/order_form_overview',
         'app/models/order_items',
         'app/models/order',  // TODO: remove?
@@ -17,6 +18,7 @@ define(
     ],
     function(Backbone, Backform, bootstrap,
              bsdp, RoomFormView, ModelSelectControl,
+             OrderExisting,
              OrderFormOverview, OrderItems, Order, Site, OrderFormDetail, OrderFull,
              choose_form_template, button_template, select_items_template,
              logistics_template) {
@@ -279,6 +281,7 @@ define(
                 var t = this.select_items_template({
                     order: this.order,
                     site: this.site,
+                    order_existing: this.order_existing,
                     order_form: this.order_form_detail.get('order_sheet'),
                     items: this.order_form_detail.get('sorted_items'),  // TODO
                     order_items: this.order_items,
@@ -354,6 +357,9 @@ define(
                 $(".order-form-buttons button").click(function() {
                     var id = parseInt(this.id);  // ordersheet ID
                     self.order.set('order_sheet', id);
+                    self.order_existing = new OrderExisting(self.site.id, id);
+                    self.listenTo(self.order_existing, 'change', this.renderStep2);
+                    self.order_existing.fetch();
                     var ofd = new OrderFormDetail({id: id});
                     ofd.fetch().then(function() {
                         self.order_form_detail = ofd;
