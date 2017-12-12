@@ -70,6 +70,7 @@ define(
                 label: '(Optional) Return date for durable equipment',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
+                required: true
             },
         ].concat(basic_logistics_fields);
 
@@ -79,12 +80,14 @@ define(
                 label: 'Delivery date (Mon-Fri only)',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
+                required: true
             },
             {
                 name: 'retrieval_date',
                 label: 'Retrieval Date (Mon-Fri only)',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
+                required: true
             },
         ].concat(basic_logistics_fields);
 
