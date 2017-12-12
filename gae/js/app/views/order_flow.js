@@ -79,14 +79,14 @@ define(
                 name: 'dropoff_date',
                 label: 'Delivery date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
+                options: {format: "yyyy-mm-dd", startDate: "0d"},
                 required: true
             },
             {
                 name: 'retrieval_date',
                 label: 'Retrieval Date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
+                options: {format: "yyyy-mm-dd", startDate: "0d"},
                 required: true
             },
         ].concat(basic_logistics_fields);
