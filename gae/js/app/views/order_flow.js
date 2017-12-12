@@ -52,7 +52,7 @@ define(
                 name: 'delivery_date',
                 label: 'Delivery date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd", startDate: "0d"},
+                options: {format: "yyyy-mm-dd", startDate: "0d", daysOfWeekDisabled: "06"},
                 required: true
             },
         ].concat(basic_logistics_fields);
@@ -62,7 +62,7 @@ define(
                 name: 'pickup_date',
                 label: 'Pickup date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd", startDate: "+2d"},
+                options: {format: "yyyy-mm-dd", startDate: "+2d",  daysOfWeekDisabled: "06"},
                 required: true
             },
             {
@@ -79,14 +79,14 @@ define(
                 name: 'dropoff_date',
                 label: 'Delivery date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd", startDate: "0d"},
+                options: {format: "yyyy-mm-dd", startDate: "0d",  daysOfWeekDisabled: "06"},
                 required: true
             },
             {
                 name: 'retrieval_date',
                 label: 'Retrieval Date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd", startDate: "0d"},
+                options: {format: "yyyy-mm-dd", startDate: "0d",  daysOfWeekDisabled: "06"},
                 required: true
             },
         ].concat(basic_logistics_fields);
