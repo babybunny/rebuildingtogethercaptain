@@ -62,14 +62,14 @@ define(
                 name: 'pickup_date',
                 label: 'Pickup date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
+                options: {format: "yyyy-mm-dd", startDate: "+2d"},
                 required: true
             },
             {
                 name: 'return_date',
                 label: '(Optional) Return date for durable equipment',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
+                options: {format: "yyyy-mm-dd", startDate: "+2d"},
                 required: true
             },
         ].concat(basic_logistics_fields);
