@@ -92,13 +92,13 @@ define(
             initialize: function(site_id, order_id) {
                 var self = this;
                 this.order_id = order_id;
-                
+
                 var site = new Site({id: site_id});
                 site.fetch().then(function() {self.site = site; self.render()});
 
                 this.logistics_dates = new LogisticsDates(site_id);
                 this.logistics_dates.fetch();
-                
+
                 this.sitecaptains = new SiteCaptains(site_id);
                 this.sitecaptains.fetch();
 
@@ -110,7 +110,7 @@ define(
                         self.order_items = new OrderItems(order_full.get('order_items'));
                         self.listenTo(self.order_items, 'change add', self.renderStep2);
                         self.listenTo(self.order, 'change', self.renderStep2);
-                        
+
                         if (order_full.has('delivery')) {
                             self.delivery = new Backbone.Model(order_full.get('delivery'));
                         }
@@ -125,7 +125,7 @@ define(
                         ofd.fetch().then(function() {
                             self.order_form_detail = ofd;
                             self.renderStep2();
-                        });                    
+                        });
                     });
                 } else {
                     this.order_full = new OrderFull();
@@ -153,7 +153,7 @@ define(
                 'click #order-proceed-no-logistics': 'save',
             },
             savenotes: function(e) {
-                this.order.set('notes', e.target.value);                
+                this.order.set('notes', e.target.value);
             },
             changeQuantity: function(e) {
                 var oi = this.order_items.get(parseInt(e.target.name));
@@ -263,6 +263,7 @@ define(
                 this.logistics_form = new Backform.Form({
                     model: model,
                     fields: fields,
+                    showRequiredAsAsterisk: true,
                     events: {
                         'submit': function(e) {
                             e.preventDefault();
@@ -272,7 +273,7 @@ define(
                 });
                 this.listenTo(this.logistics_form, 'submit', this.save);
                 this.logistics_form.setElement(this.$el.find('#order-logistics-form'));
-                this.logistics_form.render();
+                this.logistics_form.render().$el.find('label.control-label:contains("*")').addClass('required');
                 return this;
             },
             render: function() {
@@ -281,7 +282,7 @@ define(
             },
             renderStep2: function() {
                 console.log('step 2');
-                var self = this;                
+                var self = this;
                 if (!this.site) {
                     return this;  // loading
                 }
@@ -320,12 +321,12 @@ define(
                 });
                 this.$el.html(t);
                 return this;
-            },           
+            },
             renderStep1: function() {  // step 1, render the choose order form screen.
                 var self = this;
-                if (!this.site) {  
+                if (!this.site) {
                     console.log('waiting for site');
-                    return this;  // loading 
+                    return this;  // loading
                 }
                 if (!this.order_full) {
                     console.log('waiting for order_full');
@@ -335,7 +336,7 @@ define(
                     console.log('waiting for order_forms');
                     return this;  // loading
                 }
-                
+
                 var t = this.choose_form_template({
                     s: this.order.attributes,
                     site: this.site,
