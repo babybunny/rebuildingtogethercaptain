@@ -52,7 +52,7 @@ define(
                 name: 'delivery_date',
                 label: 'Delivery date (Mon-Fri only)',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
+                options: {format: "yyyy-mm-dd", startDate: "0d"},
                 required: true
             },
         ].concat(basic_logistics_fields);
