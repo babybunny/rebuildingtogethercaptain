@@ -266,6 +266,7 @@ define(
                 this.logistics_form = new Backform.Form({
                     model: model,
                     fields: fields,
+                    showRequiredAsAsterisk: true,
                     events: {
                         'submit': function(e) {
                             e.preventDefault();
@@ -275,7 +276,7 @@ define(
                 });
                 this.listenTo(this.logistics_form, 'submit', this.save);
                 this.logistics_form.setElement(this.$el.find('#order-logistics-form'));
-                this.logistics_form.render();
+                this.logistics_form.render().$el.find('label.control-label:contains("*")').addClass('required');
                 return this;
             },
             render: function() {
