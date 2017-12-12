@@ -263,17 +263,22 @@ class CustomApi(base_api.BaseApi):
         ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
       
     for oimsg in request.order_items:
-      oimsg.order = order.key.integer_id()
+      if oimsg.id:
+        oimdl = ndb.Key(ndb_models.OrderItem, oimsg.id).get()
+      else:
+        oimdl = ndb_models.OrderItem(order=order.key)
       protorpc_messages.OrderItemMessageToModel(
-        oimsg, ndb_models.OrderItem()).put()  # TODO: put_multi
+        oimsg, oimdl).put()  # TODO: put_multi
 
-  @remote.method(OrderFull, message_types.VoidMessage)
+    return order.key.integer_id()
+        
+  @remote.method(OrderFull, protorpc_messages.SimpleId)
   def order_full_create(self, request):
     self._authorize_user()
     if request.id:
       raise remote.ApplicationError('must not have id in create')
-    self._order_full_put(request)
-    return message_types.VoidMessage()
+    order_id = self._order_full_put(request)
+    return protorpc_messages.SimpleId(id=order_id)
 
   @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_update(self, request):

@@ -781,8 +781,10 @@ def OrderItemModelToMessage(mdl):
 def OrderItemMessageToModel(msg, mdl):
   mdl.name = msg.name
   mdl.quantity_float = msg.quantity
-  mdl.item = ndb.Key(ndb_models.Item, msg.item)
-  mdl.order = ndb.Key(ndb_models.Order, msg.order)
+  if msg.item:
+    mdl.item = ndb.Key(ndb_models.Item, msg.item)
+  if msg.order:
+    mdl.order = ndb.Key(ndb_models.Order, msg.order)
   # can't set automatic fields:
   if msg.supplier:
     mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)

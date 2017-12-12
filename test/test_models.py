@@ -505,6 +505,13 @@ def CreateAll():
     quantity_float=1.0,
   ).put()
 
+  KEYS['ORDERITEM21'] = ndb_models.OrderItem(
+    order=KEYS['ORDER2'],
+    item=KEYS['ITEM'],
+    supplier=KEYS['SUPPLIER'],
+    quantity_float=2.0,
+  ).put()
+
   """template
   KEYS['ORDER'] = ndb_models.Order(
 
