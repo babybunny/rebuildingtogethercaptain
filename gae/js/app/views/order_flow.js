@@ -70,7 +70,7 @@ define(
                 name: 'return_date',
                 label: '(Optional) Return date for durable equipment',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd"},
+                options: {format: "yyyy-mm-dd", endDate: "2018-05-01", startDate: "0d"},
                 required: true
             },
         ].concat(basic_logistics_fields);
