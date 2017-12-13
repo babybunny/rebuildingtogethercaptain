@@ -292,6 +292,16 @@ class CustomApi(base_api.BaseApi):
     self._order_full_put(request, mdl)
     return message_types.VoidMessage()
 
+  @remote.method(protorpc_messages.SimpleId, message_types.VoidMessage)
+  def order_fulfill(self, request):
+    self._authorize_staff()
+    if not request.id:
+      raise remote.ApplicationError('id is required')
+    order = ndb.Key(ndb_models.Order, request.id).get()
+    order.state = 'Being Filled'
+    order.put()
+    return message_types.VoidMessage()
+
   @remote.method(protorpc_messages.SimpleId, SiteCaptains)
   def sitecaptains_for_site(self, request):
     self._authorize_user()
