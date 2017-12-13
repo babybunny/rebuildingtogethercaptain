@@ -160,6 +160,7 @@ define(
             },
             {
                 id: "submit",
+                extraClasses: ['btn-primary'],
                 control: "button",
                 label: "Save changes"
             }
