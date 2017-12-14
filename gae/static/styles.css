@@ -119,6 +119,7 @@ div.right {
 div.body {
     padding-bottom: 20px;
     min-height: 400px;
+    margin-left: 1em;
 }
 div.footer {
   font-size: smaller;
