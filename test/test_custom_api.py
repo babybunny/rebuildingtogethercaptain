@@ -100,6 +100,7 @@ class CustomApiTest(unittest.TestCase):
     self.assertIn(u'id', response.json)
     self.assertEquals(self.keys['ORDER'].integer_id(), response.json['id'])
     self.assertIn(u'order', response.json)
+    self.assertEquals(9.99, response.json['order']['sub_total'])
     self.assertIn(u'order_sheet', response.json['order'])
     self.assertIn(u'order_items', response.json)
     self.assertEquals(3, len(response.json['order_items']))

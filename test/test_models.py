@@ -416,7 +416,7 @@ def CreateAll():
     site=KEYS['SITE'],
     order_sheet=KEYS['ORDERSHEET'],
     program=KEYS['PROGRAM_2011_TEST'].get().name,
-    sub_total=8.00,  # a BS number
+    sub_total=19.98,
     notes='''These are very very nice order2 notes.''',
     state='Being Filled',
     actual_total=9.10,

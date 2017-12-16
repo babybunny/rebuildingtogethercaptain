@@ -299,6 +299,7 @@ class CustomApi(base_api.BaseApi):
       raise remote.ApplicationError('id is required')
     order = ndb.Key(ndb_models.Order, request.id).get()
     order.state = 'Being Filled'
+    order.UpdateSubTotal()
     order.put()
     return message_types.VoidMessage()
 

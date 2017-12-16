@@ -10,9 +10,11 @@ from webtest import TestApp
 
 import app_engine_test_utils
 from gae.room import custom_api
+from gae.room import cru_api
 from test import test_models
 
 app = TestApp(custom_api.application)
+cru_app = TestApp(cru_api.application)
 
 class ApiScenarioTest(unittest.TestCase):
   def setUp(self):
@@ -114,3 +116,59 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertNotIn(u'retrieval', response.json)
     self.assertNotIn(u'pickup', response.json)
 
+  def testOrderFulfillThenChangeItemPrice(self):
+    """Repro for issue #296
+
+    Read an order and see what happens when it's fulfilled and then an item price changes.
+    """
+    order_id = self.keys['ORDER2'].integer_id()
+    post_json_body = {"id": order_id}
+    response = app.post_json('/custom_api.order_full_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'id', response.json)
+    self.assertEquals(order_id, response.json['id'])
+    self.assertEquals(19.98, response.json['order']['sub_total'])
+    original_sub_total = response.json['order']['sub_total']
+    
+    post_json_body = {
+      "id": self.keys['ITEM'].integer_id(),
+      "bar_code_number": 1234,
+      "name": 'My First Item',
+      "appears_on_order_form": self.keys['ORDERSHEET'].integer_id(),
+      "order_form_section": 'The First Section',
+      "description": """A Very nice item, very nice.""",
+      "measure": 'Each',
+      "unit_cost": 10.00,
+      "supplier": self.keys['SUPPLIER'].integer_id(),
+      "supplier_part_number": 'part1234',
+      "url": 'http://example.com/item',
+      "supports_extra_name_on_order": False,
+    }
+    response = cru_app.post_json('/cru_api.item_update',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    
+    post_json_body = {"id": order_id}
+    response = app.post_json('/custom_api.order_fulfill',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+
+    post_json_body = {"id": order_id};
+    response = app.post_json('/custom_api.order_full_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'id', response.json)
+    self.assertEquals(order_id, response.json['id'])
+    self.assertIn(u'order', response.json)
+    self.assertEquals(20.0, response.json['order']['sub_total'])
+    
+    

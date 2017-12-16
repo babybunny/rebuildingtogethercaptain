@@ -697,6 +697,7 @@ def OrderModelToMessage(mdl):
     state=mdl.state,
     notes=mdl.notes,
     actual_total=mdl.actual_total,
+    sub_total=mdl.sub_total,
   )
   # any special handling, like for user objects or datetimes
   if mdl.vendor:
@@ -722,7 +723,8 @@ def OrderMessageToModel(msg, mdl):
   mdl.logistics_instructions = msg.logistics_instructions
   mdl.logistics_start = msg.logistics_start
   mdl.actual_total = msg.actual_total
-
+  # Don't set sub_total, it's computed automatically.
+  
   if msg.state:
     mdl.state = msg.state
 
@@ -754,10 +756,11 @@ class Order(messages.Message):
   state = messages.StringField(10)
   vendor = messages.IntegerField(11)
   actual_total = messages.FloatField(12)
+  sub_total = messages.FloatField(15)
 
   modified_ago = messages.StringField(13)
   editable = messages.BooleanField(14)
-
+  # Next ID to use: 16
   
 #############
 # OrderItem #
