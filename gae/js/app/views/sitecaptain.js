@@ -38,6 +38,7 @@ define(
             {
                 id: "submit",
                 control: "button",
+                extraClasses: ['btn-primary', 'btn-sm'],
                 name: "addCaptain",
                 label: "Add Captain"
             }

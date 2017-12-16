@@ -54,6 +54,7 @@ define(
             {
                 id: "submit",
                 control: "button",
+                extraClasses: ['btn-primary'],
                 label: "Save changes"
             }
         ];
