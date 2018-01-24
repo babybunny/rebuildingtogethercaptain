@@ -279,8 +279,13 @@ class CustomApiTest(unittest.TestCase):
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
-    self.assertEquals('', response.json)
-
+    self.assertIn('sitecaptain_detail', response.json)
+    self.assertDictContainsSubset(
+      {u'captain': self.keys['CAPTAIN'].integer_id(),
+       u'type': u'Construction',
+       u'site': self.keys['SITE'].integer_id()},
+      response.json['sitecaptain_detail'][0]['sitecaptain'])
+    self.assertDictContainsSubset({'name': u'Miss Captain'}, response.json['sitecaptain_detail'][0])
     
 if __name__ == '__main__':
   unittest.main()
