@@ -57,7 +57,7 @@ class CustomApiTest(unittest.TestCase):
                              status=400,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('400 Bad Request', response.status)
-    self.assertEquals('{"state": "APPLICATION_ERROR", "error_message": "No OrderSheet found with key 999"}', response.json)
+    self.assertEquals({"state": "APPLICATION_ERROR", "error_message": "No OrderSheet found with key 999"}, response.json)
     
   def testOrderFullCreate(self):
     post_json_body = {
