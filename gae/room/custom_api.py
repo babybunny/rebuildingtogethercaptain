@@ -160,8 +160,6 @@ class CustomApi(base_api.BaseApi):
   def order_form_detail(self, request):
     self._authorize_user()
     res = OrderFormDetail()
-    if not request.id:
-      raise remote.ApplicationError('id is required')
     key = ndb.Key(ndb_models.OrderSheet, request.id)
     mdl = key.get()
     if not mdl:
@@ -304,9 +302,9 @@ class CustomApi(base_api.BaseApi):
   @remote.method(protorpc_messages.SimpleId, message_types.VoidMessage)
   def order_fulfill(self, request):
     self._authorize_staff()
-    if not request.id:
-      raise remote.ApplicationError('id is required')
     order = ndb.Key(ndb_models.Order, request.id).get()
+    if not order:
+      raise remote.ApplicationError('Order not found: %s' % request.id)
     order.state = 'Being Filled'
     order.UpdateSubTotal()
     order.put()

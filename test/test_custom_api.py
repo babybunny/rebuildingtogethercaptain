@@ -18,6 +18,15 @@ class CustomApiTest(unittest.TestCase):
   def tearDown(self):
     test_models.DeleteAll(self.keys)
 
+  def testEhlo(self):
+    post_json_body = {}
+    response = app.post_json('/custom_api.ehlo',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertEquals({}, response.json)
+
   def testOrderFormChoices(self):
     post_json_body = {}
     response = app.post_json('/custom_api.order_form_choices',
@@ -41,6 +50,15 @@ class CustomApiTest(unittest.TestCase):
     self.assertIn(u'sorted_items', response.json)
     # TODO: more checks
 
+  def testOrderSheetDetailsBadId(self):
+    post_json_body = {"id": 999}
+    response = app.post_json('/custom_api.order_form_detail',
+                             post_json_body,
+                             status=400,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('400 Bad Request', response.status)
+    self.assertEquals('{"state": "APPLICATION_ERROR", "error_message": "No OrderSheet found with key 999"}', response.json)
+    
   def testOrderFullCreate(self):
     post_json_body = {
       "order": {
@@ -48,7 +66,8 @@ class CustomApiTest(unittest.TestCase):
         "order_sheet": self.keys['ORDERSHEET'].integer_id()
       },
       "order_items": [
-        {"item": self.keys['ITEM'].integer_id(), "quantity": "2"}
+        {"item": self.keys['ITEM'].integer_id(), "quantity": "2"},
+        {"item": self.keys['ITEM2'].integer_id(), "quantity": "0"}
       ],
       "delivery": {
         "notes": "Please go around back.",
@@ -64,6 +83,29 @@ class CustomApiTest(unittest.TestCase):
     self.assertEquals('200 OK', response.status)
     self.assertIn(u'id', response.json)
 
+  def testOrderFullCreateWithId(self):
+    post_json_body = {
+      "id": 999,
+      "order": {
+        "site": str(self.keys['SITE'].integer_id()),
+        "order_sheet": self.keys['ORDERSHEET'].integer_id()
+      },
+      "order_items": [
+        {"item": self.keys['ITEM'].integer_id(), "quantity": "2"},
+        {"item": self.keys['ITEM2'].integer_id(), "quantity": "0"}
+      ],
+      "delivery": {
+        "notes": "Please go around back.",
+        "contact_phone": "650 555 1212",
+        "contact": "Person Man",
+        "delivery_date": "2017-09-27"
+      }
+    }
+    response = app.post_json('/custom_api.order_full_create',
+                             post_json_body,
+                             status=400,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    
   def testOrderFullUpdate(self):
     post_json_body = {
       "id": self.keys['ORDER'].integer_id(),
@@ -74,7 +116,15 @@ class CustomApiTest(unittest.TestCase):
       "order_items": [
         {"item": self.keys['ITEM'].integer_id(),
          "order": self.keys['ORDER'].integer_id(),
-         "quantity": "2"}
+         "quantity": "2"},
+        {"id": self.keys['ORDERITEM2'].integer_id(),
+         "item": self.keys['ITEM2'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "3"},
+        {"id": self.keys['ORDERITEM4'].integer_id(),
+         "item": self.keys['ITEM4'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "0"},
       ],
       "delivery": {
         "notes": "Please go around back.",
@@ -88,6 +138,77 @@ class CustomApiTest(unittest.TestCase):
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
+
+  def testOrderFullUpdateMissingId(self):
+    post_json_body = {
+      "order": {
+        "site": str(self.keys['SITE'].integer_id()),
+        "order_sheet": self.keys['ORDERSHEET'].integer_id()
+      },
+      "order_items": [
+        {"item": self.keys['ITEM'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "2"},
+        {"id": self.keys['ORDERITEM2'].integer_id(),
+         "item": self.keys['ITEM2'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "3"},
+        {"id": self.keys['ORDERITEM4'].integer_id(),
+         "item": self.keys['ITEM4'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "0"},
+      ],
+      "delivery": {
+        "notes": "Please go around back.",
+        "contact_phone": "650 555 1212",
+        "contact": "Person Man",
+        "delivery_date": "2017-09-27"
+      }
+    }
+    response = app.post_json('/custom_api.order_full_update',
+                             post_json_body,
+                             status=400,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+
+  def testOrderFullUpdateBadId(self):
+    post_json_body = {
+      "id": 999,
+      "order": {
+        "site": str(self.keys['SITE'].integer_id()),
+        "order_sheet": self.keys['ORDERSHEET'].integer_id()
+      },
+      "order_items": [
+        {"item": self.keys['ITEM'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "2"},
+        {"id": self.keys['ORDERITEM2'].integer_id(),
+         "item": self.keys['ITEM2'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "3"},
+        {"id": self.keys['ORDERITEM4'].integer_id(),
+         "item": self.keys['ITEM4'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "0"},
+      ],
+      "delivery": {
+        "notes": "Please go around back.",
+        "contact_phone": "650 555 1212",
+        "contact": "Person Man",
+        "delivery_date": "2017-09-27"
+      }
+    }
+    response = app.post_json('/custom_api.order_full_update',
+                             post_json_body,
+                             status=400,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+
+  def testOrderFullReadBadId(self):
+    post_json_body = {"id": 999};
+    response = app.post_json('/custom_api.order_full_read',
+                             post_json_body,
+                             status=400,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals({u'state': u'APPLICATION_ERROR', u'error_message': u'No Order found with key 999'}, response.json)
 
   def testOrderFullRead(self):
     post_json_body = {"id": self.keys['ORDER'].integer_id()};
@@ -144,6 +265,22 @@ class CustomApiTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
     
+  def testOrderFulfillBadId(self):
+    post_json_body = {"id": 999};
+    response = app.post_json('/custom_api.order_fulfill',
+                             post_json_body,
+                             status=400,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
 
+  def testSiteCaptainsForSite(self):
+    post_json_body = {"id": self.keys['SITE'].integer_id()};
+    response = app.post_json('/custom_api.sitecaptains_for_site',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertEquals('', response.json)
+
+    
 if __name__ == '__main__':
   unittest.main()
