@@ -33,7 +33,8 @@ class ApiScenarioTest(unittest.TestCase):
         "order_sheet": self.keys['ORDERSHEET'].integer_id()
       },
       "order_items": [
-        {"item": self.keys['ITEM'].integer_id(), "quantity": "2"}
+        {"item": self.keys['ITEM'].integer_id(), "quantity": "2"},
+        {"item": self.keys['ITEM2'].integer_id(), "quantity": "0"},
       ],
       "delivery": {
         "notes": "Please go around back.",
@@ -62,6 +63,7 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertIn(u'order_sheet', response.json['order'])
     self.assertIn(u'order_items', response.json)
     self.assertEquals(1, len(response.json['order_items']))
+    self.assertEquals([{u'id': 54, u'item': 30, u'order': 51, u'quantity': 2.0}], response.json['order_items'])
     self.assertIn(u'delivery', response.json)
     self.assertEquals(u'Person Man', response.json['delivery']['contact'])
     self.assertNotIn(u'retrieval', response.json)

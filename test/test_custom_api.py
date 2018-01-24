@@ -13,7 +13,6 @@ app = TestApp(custom_api.application)
 class CustomApiTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-
     self.keys = test_models.CreateAll()
 
   def tearDown(self):
@@ -145,3 +144,6 @@ class CustomApiTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
     
+
+if __name__ == '__main__':
+  unittest.main()

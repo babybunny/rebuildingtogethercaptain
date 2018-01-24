@@ -816,9 +816,8 @@ class Order(SearchableModel):
       return 0.
     return self.sub_total * SALES_TAX_RATE
 
-  # TODO: seems incorrect to update fulfilled orders.
   def UpdateSubTotal(self):
-    """Recomputes sub_total by summing the cost of items and adding tax."""
+    """Recomputes sub_total by summing the cost of items."""
     sub_total = 0.
     order_items = OrderItem.query(OrderItem.order == self.key)
     for oi in order_items:

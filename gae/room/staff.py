@@ -585,7 +585,6 @@ class OrderView(StaffHandler):
   searchable_model_class = ndb_models.Order
   def get(self, id):
     order = ndb.Key(ndb_models.Order, int(id)).get()
-    order.UpdateSubTotal()
     q = ndb_models.OrderItem.query(ndb_models.OrderItem.order == order.key)
     order_items = [oi for oi in q if oi.FloatQuantity()]
     _SortOrderItemsWithSections(order_items)

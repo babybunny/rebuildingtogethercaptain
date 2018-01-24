@@ -263,13 +263,22 @@ class CustomApi(base_api.BaseApi):
         ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
       
     for oimsg in request.order_items:
+      # Existing order item, changed to 0 quantity.
+      if oimsg.id and not oimsg.quantity:
+        ndb.Key(ndb_models.OrderItem, oimsg.id).delete()
+        continue
+
+      # 0 quantity, we can skip.
+      if not oimsg.quantity:
+        continue
+      
       if oimsg.id:
-        oimdl = ndb.Key(ndb_models.OrderItem, oimsg.id).get()
+        oimdl = ndb.Key(ndb_models.OrderItem, oimsg.id).get()          
       else:
         oimdl = ndb_models.OrderItem(order=order.key)
       protorpc_messages.OrderItemMessageToModel(
         oimsg, oimdl).put()  # TODO: put_multi
-
+        
     return order.key.integer_id()
         
   @remote.method(OrderFull, protorpc_messages.SimpleId)
