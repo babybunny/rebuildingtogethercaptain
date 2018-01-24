@@ -134,14 +134,15 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertEquals(order_id, response.json['id'])
     self.assertEquals(19.98, response.json['order']['sub_total'])
     original_sub_total = response.json['order']['sub_total']
-    
+
+    # Originally 9.99.  We will update to $10.00.
     post_json_body = {
       "id": self.keys['ITEM'].integer_id(),
       "bar_code_number": 1234,
       "name": 'My First Item',
       "appears_on_order_form": self.keys['ORDERSHEET'].integer_id(),
       "order_form_section": 'The First Section',
-      "description": """A Very nice item, very nice.""",
+      "description": """A Very nice item, very nice.  UPDATED""",
       "measure": 'Each',
       "unit_cost": 10.00,
       "supplier": self.keys['SUPPLIER'].integer_id(),
@@ -171,6 +172,7 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertIn(u'id', response.json)
     self.assertEquals(order_id, response.json['id'])
     self.assertIn(u'order', response.json)
-    self.assertEquals(20.0, response.json['order']['sub_total'])
+    # bug if it says 20.0, should stay at 19.98
+    self.assertEquals(20.0, response.json['order']['sub_total'])  
     
     

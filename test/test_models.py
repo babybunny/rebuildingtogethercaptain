@@ -314,7 +314,7 @@ def CreateAll():
     order_form_section='The First Section',
     description="""A Very nice item, very nice.""",
     measure='Each',
-    unit_cost=9.99,
+    unit_cost=9.99,  # This is important.  Please don't change.
     supplier=KEYS['SUPPLIER'],
     supplier_part_number='part1234',
     url='http://example.com/item',
@@ -419,7 +419,7 @@ def CreateAll():
     sub_total=19.98,
     notes='''These are very very nice order2 notes.''',
     state='Being Filled',
-    actual_total=9.10,
+    actual_total=21.10,  # a fake number
     reconciliation_notes='''These are the reconciliation notes from the very nice staff on order2''',
     # invoice_date=datetime.datetime(2011, 4, 5, 1, 2, 6),
     # vendor=KEYS['SUPPLIER'],
