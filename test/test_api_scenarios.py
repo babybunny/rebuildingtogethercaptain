@@ -63,7 +63,8 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertIn(u'order_sheet', response.json['order'])
     self.assertIn(u'order_items', response.json)
     self.assertEquals(1, len(response.json['order_items']))
-    self.assertEquals([{u'id': 54, u'item': 30, u'order': 51, u'quantity': 2.0}], response.json['order_items'])
+    self.assertDictContainsSubset({u'item': 30, u'order': 51, u'quantity': 2.0, u'unit_cost': 9.99},
+                                  response.json['order_items'][0])
     self.assertIn(u'delivery', response.json)
     self.assertEquals(u'Person Man', response.json['delivery']['contact'])
     self.assertNotIn(u'retrieval', response.json)
@@ -111,7 +112,9 @@ class ApiScenarioTest(unittest.TestCase):
         {u"item": self.keys['ITEM'].integer_id(),
          u"order": self.keys['ORDER2'].integer_id(),
          u"id": self.keys['ORDERITEM21'].integer_id(),
-         u"quantity": 4.0}, response.json['order_items'][0])
+         u"supplier": self.keys['SUPPLIER'].integer_id(),
+         u"quantity": 4.0,
+         u"unit_cost": 9.99}, response.json['order_items'][0])
     self.assertEquals(1, len(response.json['order_items']))
     self.assertIn(u'delivery', response.json)
     self.assertEquals(u'Person Man', response.json['delivery']['contact'])
