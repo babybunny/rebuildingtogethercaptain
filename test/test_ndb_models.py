@@ -30,7 +30,7 @@ class ModelsTest(unittest.TestCase):
 
   def testOrder2Unicode(self):
     o = self.keys['ORDER2'].get()
-    self.assertEquals(u'110TEST Fixme Center Some Supplies 1 items $9.10', unicode(o))
+    self.assertEquals(u'110TEST Fixme Center Some Supplies 1 items $21.10', unicode(o))
 
   def testSiteBudget(self):
     mdl = self.keys['SITE'].get()
