@@ -816,20 +816,6 @@ class Order(SearchableModel):
       return 0.
     return self.sub_total * SALES_TAX_RATE
 
-  def UpdateSubTotal(self):
-    """Recomputes sub_total by summing the cost of items."""
-    sub_total = 0.
-    order_items = OrderItem.query(OrderItem.order == self.key)
-    for oi in order_items:
-      quantity = oi.FloatQuantity()
-      if oi.item.get().unit_cost is not None and quantity:
-        sub_total += quantity * oi.item.get().unit_cost
-    if self.sub_total != sub_total:
-      self.sub_total = sub_total
-      self.put()
-      logging.info('Updated subtotal for order %d to %0.2f',
-                   self.key.integer_id(), sub_total)
-
   def LogisticsStart(self):
     for od in self.orderdelivery_set:
       return "%s (Delivery)" % od.delivery.get().delivery_date
@@ -885,7 +871,9 @@ class OrderItem(SearchableModel):
   quantity = ndb.IntegerProperty(default=0)
   quantity_float = ndb.FloatProperty(default=0.0)
   name = ndb.StringProperty(default="")
-
+  # no default because it's not present for all objects, yet.
+  unit_cost = ndb.FloatProperty()
+  
   def FloatQuantity(self):
     """Returns quantity as a float."""
     if self.quantity:

@@ -776,7 +776,9 @@ def OrderItemModelToMessage(mdl):
   )
   # any special handling, like for user objects or datetimes
   if mdl.supplier:
-    supplier = mdl.supplier.integer_id(),
+    s.supplier = mdl.supplier.integer_id()
+  if mdl.unit_cost:
+    s.unit_cost = mdl.unit_cost
 
   return s
 
@@ -788,9 +790,10 @@ def OrderItemMessageToModel(msg, mdl):
     mdl.item = ndb.Key(ndb_models.Item, msg.item)
   if msg.order:
     mdl.order = ndb.Key(ndb_models.Order, msg.order)
-  # can't set automatic fields:
   if msg.supplier:
-    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
+    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)    
+
+  # can't set automatic fields: unit_cost
   return mdl
 
 
@@ -801,7 +804,7 @@ class OrderItem(messages.Message):
   supplier = messages.IntegerField(4)
   quantity = messages.FloatField(5)
   name = messages.StringField(6)
-
+  unit_cost = messages.FloatField(7)
 
 ############
 # Delivery #

@@ -208,16 +208,52 @@ class CustomApi(base_api.BaseApi):
       order = ndb_models.Order()
     order = protorpc_messages.OrderMessageToModel(request.order, order)
     sub_total = 0.
-    for oimsg in request.order_items:
-      if oimsg.quantity:
-        item = ndb.Key(ndb_models.Item, oimsg.item).get()  # TODO: get_multi
-        if item.unit_cost:
-          sub_total += oimsg.quantity * item.unit_cost
-    order.sub_total = sub_total
+    oimdl_has_order_key = []
+    oimdl_needs_order_key = []
+    
     if not order.state:
       order.state = 'Received'
+
+    for oimsg in request.order_items:
+      # Existing order item, changed to 0 quantity, so delete it.
+      if oimsg.id and not oimsg.quantity:
+        ndb.Key(ndb_models.OrderItem, oimsg.id).delete()
+        continue
+
+      # 0 quantity, we don't need to add it.
+      if not oimsg.quantity:
+        continue
+      
+      # Add/Update the OrderItem.
+      if oimsg.id:
+        oimdl = ndb.Key(ndb_models.OrderItem, oimsg.id).get()          
+        oimdl_has_order_key.append(oimdl)
+      else:
+        if order.key:
+          oimdl = ndb_models.OrderItem(order=order.key)
+          oimdl_has_order_key.append(oimdl)
+        else:
+          oimdl = ndb_models.OrderItem(order=ndb.Key(ndb_models.Order, 'placeholder'))
+          oimdl_needs_order_key.append(oimdl)
+
+      oimdl = protorpc_messages.OrderItemMessageToModel(
+        oimsg, oimdl)
+
+      if order.state == 'Received' or oimdl.unit_cost is None:
+        oimdl.unit_cost = oimdl.item.get().unit_cost
+
+      if oimdl.quantity_float and oimdl.unit_cost:
+        sub_total += oimdl.quantity_float * oimdl.unit_cost
+
+    order.sub_total = sub_total
     order.put()
 
+    for oimdl in oimdl_needs_order_key:
+      oimdl.order = order.key
+      oimdl_has_order_key.append(oimdl)
+
+    ndb.put_multi(oimdl_has_order_key)
+    
     if request.delivery:
       if request.delivery.id:
         delivery = ndb.Key(ndb_models.Delivery, request.delivery.id).get()
@@ -260,23 +296,6 @@ class CustomApi(base_api.BaseApi):
       if not request.retrieval.id:
         ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
       
-    for oimsg in request.order_items:
-      # Existing order item, changed to 0 quantity.
-      if oimsg.id and not oimsg.quantity:
-        ndb.Key(ndb_models.OrderItem, oimsg.id).delete()
-        continue
-
-      # 0 quantity, we can skip.
-      if not oimsg.quantity:
-        continue
-      
-      if oimsg.id:
-        oimdl = ndb.Key(ndb_models.OrderItem, oimsg.id).get()          
-      else:
-        oimdl = ndb_models.OrderItem(order=order.key)
-      protorpc_messages.OrderItemMessageToModel(
-        oimsg, oimdl).put()  # TODO: put_multi
-        
     return order.key.integer_id()
         
   @remote.method(OrderFull, protorpc_messages.SimpleId)
@@ -306,8 +325,6 @@ class CustomApi(base_api.BaseApi):
     if not order:
       raise remote.ApplicationError('Order not found: %s' % request.id)
     order.state = 'Being Filled'
-    order.UpdateSubTotal()
-    order.put()
     return message_types.VoidMessage()
 
   @remote.method(protorpc_messages.SimpleId, SiteCaptains)

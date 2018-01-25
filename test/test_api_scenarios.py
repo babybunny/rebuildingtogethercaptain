@@ -121,22 +121,12 @@ class ApiScenarioTest(unittest.TestCase):
   def testOrderFulfillThenChangeItemPrice(self):
     """Repro for issue #296
 
-    Read an order and see what happens when it's fulfilled and then an item price changes.
+    Play with an order and see what happens to its sub_total when
+    1) price changes before fulfillment
+    2) price changes after fulfillment
     """
     order_id = self.keys['ORDER2'].integer_id()
-    post_json_body = {"id": order_id}
-    response = app.post_json('/custom_api.order_full_read',
-                             post_json_body,
-                             status=200,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-    self.assertEquals('200 OK', response.status)
-    self.assertIn(u'id', response.json)
-    self.assertEquals(order_id, response.json['id'])
-    self.assertEquals(19.98, response.json['order']['sub_total'])
-    original_sub_total = response.json['order']['sub_total']
-
-    # Originally 9.99.  We will update to $10.00.
-    post_json_body = {
+    item_body = {
       "id": self.keys['ITEM'].integer_id(),
       "bar_code_number": 1234,
       "name": 'My First Item',
@@ -144,18 +134,69 @@ class ApiScenarioTest(unittest.TestCase):
       "order_form_section": 'The First Section',
       "description": """A Very nice item, very nice.  UPDATED""",
       "measure": 'Each',
-      "unit_cost": 10.00,
+      "unit_cost": 9.98,
       "supplier": self.keys['SUPPLIER'].integer_id(),
       "supplier_part_number": 'part1234',
       "url": 'http://example.com/item',
       "supports_extra_name_on_order": False,
     }
+    
+    # Just read the original value.  Should correspond to the sub_total in test_models.py.
+    post_json_body = {"id": order_id}
+    response = app.post_json('/custom_api.order_full_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals(19.98, response.json['order']['sub_total'])
+
+    # Item is originally 9.99.  We will update to $10.00 each.
+    post_json_body = dict(item_body)
+    post_json_body['unit_cost'] = 10.00
     response = cru_app.post_json('/cru_api.item_update',
                              post_json_body,
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
-    
+
+    # Now the order should still be $19.98 because the order has not been saved since the item
+    # price was changed.
+    post_json_body = {"id": order_id};
+    response = app.post_json('/custom_api.order_full_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals(19.98, response.json['order']['sub_total'])  
+
+    # Change the order and we should get the new price.
+    post_json_body = {
+      "id": order_id,
+      "order": {
+        "site": str(self.keys['SITE'].integer_id()),
+        "order_sheet": self.keys['ORDERSHEET'].integer_id()
+      },
+      "order_items": [
+        {"item": self.keys['ITEM'].integer_id(),
+         "order": self.keys['ORDER2'].integer_id(),
+         "id": self.keys['ORDERITEM21'].integer_id(),
+         "quantity": "4"}
+      ],
+    }
+    response = app.post_json('/custom_api.order_full_update',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+
+    # Now the order should still be $19.98 because the order has not been saved since the item
+    # price was changed.
+    post_json_body = {"id": order_id};
+    response = app.post_json('/custom_api.order_full_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals(40.0, response.json['order']['sub_total'])
+
+    # Fulfill should freeze the price.
     post_json_body = {"id": order_id}
     response = app.post_json('/custom_api.order_fulfill',
                              post_json_body,
@@ -163,6 +204,16 @@ class ApiScenarioTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
 
+    # Update to $11.  This should not change the order.
+    post_json_body = dict(item_body)
+    post_json_body['unit_cost'] = 11.00
+    response = cru_app.post_json('/cru_api.item_update',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    
+    # Still $40 sub_total.
     post_json_body = {"id": order_id};
     response = app.post_json('/custom_api.order_full_read',
                              post_json_body,
@@ -172,7 +223,6 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertIn(u'id', response.json)
     self.assertEquals(order_id, response.json['id'])
     self.assertIn(u'order', response.json)
-    # bug if it says 20.0, should stay at 19.98
-    self.assertEquals(20.0, response.json['order']['sub_total'])  
+    self.assertEquals(40.0, response.json['order']['sub_total'])
     
     
