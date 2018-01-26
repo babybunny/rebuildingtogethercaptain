@@ -5,10 +5,6 @@ indexes:
   - name: __key__
     direction: desc
 
-- kind: Captain
-  properties:
-  - name: search_prefixes
-
 - kind: NewSite
   properties:
   - name: program

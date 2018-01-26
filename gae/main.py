@@ -288,10 +288,19 @@ login_required = routes.PathPrefixRoute('/room', [
                 name='LoadModel')
 ])
 
-post_routes = routes.PathPrefixRoute('/room', [
+standard_post_routes = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/room/site_budget_export',
                 staff.SiteBudgetExport,
                 name='SiteBudgetExport')
+])
+
+non_standard_routes = routes.PathPrefixRoute('/room', [
+  webapp2.Route(r'/upload_statement_of_work_attachment',
+                staff.UploadStatementOfWorkAttachment,
+                name='UploadStatementOfWorkAttachment'),
+  webapp2.Route(r'/get_document',
+                staff.GetDocument,
+                name='GetDocument')
 ])
 
 app = webapp2.WSGIApplication(
@@ -303,7 +312,8 @@ app = webapp2.WSGIApplication(
                   Placeholder,
                   name='Help'),  # TODO
     login_required,
-    post_routes,
+    standard_post_routes,
+    non_standard_routes,
     webapp2.Route(r'/order_delete_confirm',
                   staff.OrderDeleteConfirm,
                   name='OrderDeleteConfirm'),

@@ -110,7 +110,7 @@ class StatefulTestStaffWithProgramAuto(StatefulTestStaffWithProgram):
       testFunc.__name__ = 'test{}'.format(r['name'])
       setattr(StatefulTestStaffWithProgramAuto, testFunc.__name__, testFunc)
 
-    for r in route_lister.get_route_list(main.post_routes):
+    for r in route_lister.get_route_list(main.standard_post_routes):
       if '<' in r['template']:
         continue  # TODO: figure out how to test paths with id segments.
       testFunc = StatefulTestStaffWithProgramAuto.get_test_function(r['template'], 'POST')

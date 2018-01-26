@@ -7,8 +7,14 @@ import logging
 import collections
 import traceback
 import webapp2
+import urllib
+
 from google.appengine.ext import ndb
 from google.appengine.api import search
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
+
+
 import common
 import ndb_models
 import general_utils
@@ -138,8 +144,22 @@ class SiteView(StaffHandler):
     d['site_list_detail'] = True
     d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
     d['entries'] = [site]
+
+    # to list order sheets
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     d['order_sheets'] = order_sheets
+
+    # for document uploads
+    upload_url = blobstore.create_upload_url('/room/upload_statement_of_work_attachment?site_id={}'.format(id))
+    d['upload_url'] = str(upload_url)
+
+    # document data for documents that are already attached
+    attachment = None
+    if site.statement_of_work_attachment:
+      attachment = site.statement_of_work_attachment.get()
+      attachment.formatted_time = attachment.time.strftime("%b %d %Y %H:%M UTC")
+      attachment.uri = webapp2.uri_for('GetDocument', blob_key=attachment.blob_key)
+    d['attachment'] = attachment
     return common.Respond(self.request, 'site_list_one', d)
 
 
@@ -962,3 +982,43 @@ class LoadModel(StaffHandler):
       self.response.write("model {} does not have a default handler defined in {}".format(model_type, __file__))
       return
     return self.redirect_to(handler.__name__, id=model_id)
+
+
+############################################################################################
+# Following is based on https://cloud.google.com/appengine/docs/standard/python/blobstore/ #
+############################################################################################
+
+class UploadStatementOfWorkAttachment(blobstore_handlers.BlobstoreUploadHandler):
+    def post(self):
+      site_id = self.request.get('site_id')
+      if site_id is None:
+        logging.error("{} did not receive a site_id, nothing to link to".format(self.__class__.__name__))
+        return self.redirect('/room/staff')
+
+      redirect_uri = webapp2.uri_for(SiteView.__name__, id=site_id)
+      upload_files = self.get_uploads('file')
+      if not upload_files:
+        logging.error("No files to upload")
+        return self.redirect(redirect_uri)
+
+      upload = upload_files[0]
+      document = ndb_models.UploadedDocument(blob_key=upload.key(), filename=upload.filename)
+      document.put()
+      site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
+      site.statement_of_work_attachment = document.key
+      site.put()
+      return self.redirect(redirect_uri)
+
+
+class GetDocument(blobstore_handlers.BlobstoreDownloadHandler):
+    def get(self):
+        blob_key = str(urllib.unquote(self.request.get('blob_key')))
+        if not blobstore.get(blob_key):
+            self.error(404)
+        else:
+            self.send_blob(blobstore.BlobInfo.get(blob_key), save_as=True)
+
+############################################################################################
+# The above is based on https://cloud.google.com/appengine/docs/standard/python/blobstore/ #
+############################################################################################
+
