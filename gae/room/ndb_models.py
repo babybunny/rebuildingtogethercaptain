@@ -473,7 +473,12 @@ class SiteAttachments(ndb.Model):
 
   @staticmethod
   def names():
-    return SiteAttachments.name_to_attr_map().keys()
+    return [
+      'Recommended Scope of Work',
+      'Signed Scope of Work',
+      'Submitted Scope of Work',
+      'Fully Executed Scope of Work'
+    ]
 
   def get_by_name(self, name):
     return getattr(self, SiteAttachments.name_to_attr_map()[name])
@@ -481,9 +486,6 @@ class SiteAttachments(ndb.Model):
   def set_by_name(self, name, value):
     setattr(self, SiteAttachments.name_to_attr_map()[name], value)
     self.put()
-
-  def as_dict(self):
-    return {n}
 
 class NewSite(SearchableModel):
   """

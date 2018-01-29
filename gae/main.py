@@ -298,12 +298,15 @@ standard_post_routes = routes.PathPrefixRoute('/room', [
 ])
 
 non_standard_routes = routes.PathPrefixRoute('/room', [
-  webapp2.Route(r'/site/upload',
+  webapp2.Route(r'/site/attachments/upload',
                 staff.UploadSiteAttachment,
                 name=staff.UploadSiteAttachment.__name__),
-  webapp2.Route(r'/site/download',
+  webapp2.Route(r'/site/attachments/download',
                 staff.DownloadSiteAttachment,
-                name=staff.DownloadSiteAttachment.__name__)
+                name=staff.DownloadSiteAttachment.__name__),
+  webapp2.Route(r'/site/attachments/remove',
+                staff.RemoveSiteAttachment,
+                name=staff.RemoveSiteAttachment.__name__)
 ])
 
 app = webapp2.WSGIApplication(

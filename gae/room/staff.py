@@ -144,10 +144,21 @@ class SiteAttachments(StaffHandler):
       file = attachments.get_by_name(name)
       if file:
         file = file.get()
+
+      # build upload uri
       query = {'site_id': id, 'attachment_type': name}
       encoded_query = urllib.urlencode(query)
-      upload_uri = blobstore.create_upload_url('/room/site/upload?{}'.format(encoded_query))
-      attachment_data[name] = [file, upload_uri]
+      upload_uri = blobstore.create_upload_url('/room/site/attachments/upload?{}'.format(encoded_query))
+
+      # build remove uri
+      remove_uri = webapp2.uri_for(
+        'RemoveSiteAttachment',
+        site_id=id,
+        attachments_id=attachments.key.integer_id(),
+        name=name
+      )
+
+      attachment_data[name] = [file, upload_uri, remove_uri]
     d = {
       'entries': [site],
       'attachments': attachment_data
@@ -1014,12 +1025,12 @@ class UploadSiteAttachment(blobstore_handlers.BlobstoreUploadHandler):
       site_id = self.request.get('site_id')
       if site_id is None:
         logging.error("{} did not receive a site_id, nothing to link to".format(self.__class__.__name__))
-        return self.redirect('/room/staff')
+        self.error(404)
 
       attachment_type = self.request.get('attachment_type')
       if attachment_type is None:
         logging.error("{} did not receive an attachment type".format(self.__class__.__name__))
-        return self.redirect('/room/staff')
+        self.error(404)
 
       redirect_uri = webapp2.uri_for(SiteAttachments.__name__, id=site_id)
       upload_files = self.get_uploads('file')
@@ -1040,6 +1051,31 @@ class DownloadSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
             self.error(404)
         else:
             self.send_blob(blobstore.BlobInfo.get(blob_key), save_as=True)
+
+class RemoveSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
+  def get(self):
+    site_id = self.request.get('site_id')
+    attachments_id = self.request.get('attachments_id')
+    name = self.request.get('name')
+
+    if site_id is None:
+      logging.error("{} did not receive a site_id".format(self.__class__.__name__))
+      self.error(404)
+      return
+
+    if attachments_id is None:
+      logging.error("{} did not receive a attachments_id".format(self.__class__.__name__))
+      self.error(404)
+      return
+
+    if name is None:
+      logging.error("{} did not receive an attachment type".format(self.__class__.__name__))
+      self.error(404)
+      return
+
+    attachments = ndb.Key(ndb_models.SiteAttachments, int(attachments_id)).get()  # type: ndb_models.SiteAttachments
+    attachments.set_by_name(name, None)
+    self.redirect(webapp2.uri_for(SiteAttachments.__name__, id=site_id))
 
 ############################################################################################
 # The above is based on https://cloud.google.com/appengine/docs/standard/python/blobstore/ #
