@@ -9,7 +9,8 @@ import collections
 import logging
 import math
 
-from google.appengine.ext import ndb
+import webapp2
+from google.appengine.ext import ndb, blobstore
 from google.appengine.api import search
 
 import general_utils
@@ -446,6 +447,43 @@ class UploadedDocument(ndb.Model):
   time = ndb.DateTimeProperty(auto_now=True)
   blob_key = ndb.BlobKeyProperty()
 
+  @property
+  def formatted_time(self):
+    return self.time.strftime("%b %d %Y %H:%M UTC")
+
+  @property
+  def uri(self):
+    return webapp2.uri_for('DownloadSiteAttachment', blob_key=self.blob_key)
+
+
+class SiteAttachments(ndb.Model):
+  recommended_scope_of_work = ndb.KeyProperty(kind=UploadedDocument)
+  signed_scope_of_work = ndb.KeyProperty(kind=UploadedDocument)
+  submitted_scope_of_work = ndb.KeyProperty(kind=UploadedDocument)
+  fully_executed_scope_of_work = ndb.KeyProperty(kind=UploadedDocument, name="asdf")
+
+  @staticmethod
+  def name_to_attr_map():
+    return {
+      'Recommended Scope of Work': 'recommended_scope_of_work',
+      'Signed Scope of Work': 'signed_scope_of_work',
+      'Submitted Scope of Work': 'submitted_scope_of_work',
+      'Fully Executed Scope of Work': 'fully_executed_scope_of_work'
+    }
+
+  @staticmethod
+  def names():
+    return SiteAttachments.name_to_attr_map().keys()
+
+  def get_by_name(self, name):
+    return getattr(self, SiteAttachments.name_to_attr_map()[name])
+
+  def set_by_name(self, name, value):
+    setattr(self, SiteAttachments.name_to_attr_map()[name], value)
+    self.put()
+
+  def as_dict(self):
+    return {n}
 
 class NewSite(SearchableModel):
   """
@@ -480,7 +518,7 @@ class NewSite(SearchableModel):
   street_number.verbose_name = "Street Address"
   city_state_zip = ndb.StringProperty()
   budget = ndb.IntegerProperty(default=0)
-  statement_of_work_attachment = ndb.KeyProperty(kind=UploadedDocument)
+  attachments = ndb.KeyProperty(kind=SiteAttachments)
   announcement_subject = ndb.StringProperty(default='Nothing Needs Attention')
   announcement_body = ndb.TextProperty(
     default="Pat yourself on the back - no items need attention.\n"
@@ -499,6 +537,16 @@ class NewSite(SearchableModel):
 
   def get_search_result_detail_lines(self):
     return [self.street_number or "N/A", self.city_state_zip]
+
+  def add_attachment(self, attachment_name, uploaded_file):
+    document = UploadedDocument(blob_key=uploaded_file.key(), filename=uploaded_file.filename)
+    document.put()
+    if not self.attachments:
+      attachments = SiteAttachments()
+      attachments.put()
+      self.attachments = attachments.key
+    self.attachments.get().set_by_name(attachment_name, document.key)
+    self.put()
 
   @property
   def IsCDBG(self):

@@ -201,6 +201,9 @@ login_required = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/site/view/<id:\d+>/',
                 staff.SiteView,
                 name='SiteView'),
+  webapp2.Route(r'/site/attachments/<id:\d+>',
+                staff.SiteAttachments,
+                name=staff.SiteAttachments.__name__),
   webapp2.Route(r'/site/lookup/<site_number:\w+>',
                 staff.SiteLookup,
                 name='SiteLookup'),
@@ -295,12 +298,12 @@ standard_post_routes = routes.PathPrefixRoute('/room', [
 ])
 
 non_standard_routes = routes.PathPrefixRoute('/room', [
-  webapp2.Route(r'/upload_statement_of_work_attachment',
-                staff.UploadStatementOfWorkAttachment,
-                name='UploadStatementOfWorkAttachment'),
-  webapp2.Route(r'/get_document',
-                staff.GetDocument,
-                name='GetDocument')
+  webapp2.Route(r'/site/upload',
+                staff.UploadSiteAttachment,
+                name=staff.UploadSiteAttachment.__name__),
+  webapp2.Route(r'/site/download',
+                staff.DownloadSiteAttachment,
+                name=staff.DownloadSiteAttachment.__name__)
 ])
 
 app = webapp2.WSGIApplication(

@@ -127,18 +127,6 @@
 	             name="{{ site.key.integer_id() }}">{{ site.announcement_body }}
             </div>
         </div>
-        <h3>Attachment</h3>
-        <div class="panel">
-            {% if attachment %}
-              file: <a href="{{ attachment.uri }}"> {{ attachment.filename }} </a><br>
-              user: {{ attachment.user }}<br>
-              time: {{ attachment.formatted_time}}<br><br>
-            {% endif %}
-            <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
-                <input type="file" name="file"><br>
-                <input type="submit" name="submit" value="Submit">
-            </form>
-        </div>
         {% if site_list_detail %}
         <p>{{ site.StreetAddress() }}
           <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress() }}&ie=UTF8&z=14" target="_blank">

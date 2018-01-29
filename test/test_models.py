@@ -10,10 +10,7 @@ import datetime
 import logging
 import unittest
 
-from google.appengine.api import search
-
 import app_engine_test_utils
-from gae.room import general_utils
 from gae.room import ndb_models
 
 
@@ -522,6 +519,7 @@ def DeleteAll(KEYS):
 
 
 class ModelsTest(unittest.TestCase):
+
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
@@ -531,3 +529,11 @@ class ModelsTest(unittest.TestCase):
     self.assertIn('ORDERITEM', KEYS)
     DeleteAll(KEYS)
     self.assertFalse(KEYS)
+
+  def testUploadedDocumentTypes(self):
+    KEYS = CreateAll()
+    site = KEYS['SITE'].get()
+    attachments = site.attachments
+    self.assertIsNone(attachments)
+    attachments = ndb_models.SiteAttachments()
+

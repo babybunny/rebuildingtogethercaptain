@@ -1,0 +1,21 @@
+<table class="site">
+  <tbody>
+    {% for name, current_and_uri in attachments.items() %}
+      <h5> {{ name }} </h5>
+      <div class="panel">
+
+        {% if current_and_uri[0] %}
+          file: <a href="{{ current_and_uri[0].uri }}"> {{ current_and_uri[0].filename }} </a><br>
+          user: {{ current_and_uri[0].user }}<br>
+          time: {{ current_and_uri[0].formatted_time}}<br>
+        {% endif %}
+
+        <form action="{{ current_and_uri[1] }}" method="POST" enctype="multipart/form-data">
+          <input type="file" name="file"><br>
+          <input type="submit" name="submit" value="Submit">
+        </form>
+
+      </div>
+    {% endfor %}
+  </tbody>
+</table>

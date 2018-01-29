@@ -130,6 +130,31 @@ class CaptainAutocomplete(AutocompleteHandler):
   program_filter = False
 
 
+class SiteAttachments(StaffHandler):
+
+  def get(self, id):
+    site = ndb.Key(ndb_models.NewSite, int(id)).get()
+    if not site:
+      webapp2.abort(404)
+    attachments = site.attachments and site.attachments.get()  # type: ndb_models.SiteAttachments
+    if not attachments:
+      attachments = ndb_models.SiteAttachments()
+    attachment_data = {}
+    for name in attachments.names():
+      file = attachments.get_by_name(name)
+      if file:
+        file = file.get()
+      query = {'site_id': id, 'attachment_type': name}
+      encoded_query = urllib.urlencode(query)
+      upload_uri = blobstore.create_upload_url('/room/site/upload?{}'.format(encoded_query))
+      attachment_data[name] = [file, upload_uri]
+    d = {
+      'entries': [site],
+      'attachments': attachment_data
+    }
+    return common.Respond(self.request, 'site_list_attachments', d)
+
+
 class SiteView(StaffHandler):
 
   searchable_model_class = ndb_models.NewSite
@@ -155,10 +180,6 @@ class SiteView(StaffHandler):
 
     # document data for documents that are already attached
     attachment = None
-    if site.statement_of_work_attachment:
-      attachment = site.statement_of_work_attachment.get()
-      attachment.formatted_time = attachment.time.strftime("%b %d %Y %H:%M UTC")
-      attachment.uri = webapp2.uri_for('GetDocument', blob_key=attachment.blob_key)
     d['attachment'] = attachment
     return common.Respond(self.request, 'site_list_one', d)
 
@@ -988,29 +1009,31 @@ class LoadModel(StaffHandler):
 # Following is based on https://cloud.google.com/appengine/docs/standard/python/blobstore/ #
 ############################################################################################
 
-class UploadStatementOfWorkAttachment(blobstore_handlers.BlobstoreUploadHandler):
+class UploadSiteAttachment(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
       site_id = self.request.get('site_id')
       if site_id is None:
         logging.error("{} did not receive a site_id, nothing to link to".format(self.__class__.__name__))
         return self.redirect('/room/staff')
 
-      redirect_uri = webapp2.uri_for(SiteView.__name__, id=site_id)
+      attachment_type = self.request.get('attachment_type')
+      if attachment_type is None:
+        logging.error("{} did not receive an attachment type".format(self.__class__.__name__))
+        return self.redirect('/room/staff')
+
+      redirect_uri = webapp2.uri_for(SiteAttachments.__name__, id=site_id)
       upload_files = self.get_uploads('file')
       if not upload_files:
         logging.error("No files to upload")
         return self.redirect(redirect_uri)
 
       upload = upload_files[0]
-      document = ndb_models.UploadedDocument(blob_key=upload.key(), filename=upload.filename)
-      document.put()
-      site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
-      site.statement_of_work_attachment = document.key
-      site.put()
+      site = ndb.Key(ndb_models.NewSite, int(site_id)).get()  # type: ndb_models.NewSite
+      site.add_attachment(attachment_type, upload)
       return self.redirect(redirect_uri)
 
 
-class GetDocument(blobstore_handlers.BlobstoreDownloadHandler):
+class DownloadSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
     def get(self):
         blob_key = str(urllib.unquote(self.request.get('blob_key')))
         if not blobstore.get(blob_key):
