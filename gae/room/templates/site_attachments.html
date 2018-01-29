@@ -1,9 +1,8 @@
 <table class="site">
   <tbody>
     {% for name, current_and_uri in attachments.items() %}
-      <h5> {{ name }} </h5>
+      <h3> {{ name }} </h3>
       <div class="panel">
-
         {% if current_and_uri[0] %}
           file: <a href="{{ current_and_uri[0].uri }}"> {{ current_and_uri[0].filename }} </a><br>
           user: {{ current_and_uri[0].user }}<br>
