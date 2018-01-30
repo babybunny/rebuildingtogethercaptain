@@ -537,3 +537,16 @@ class ModelsTest(unittest.TestCase):
     self.assertIsNone(attachments)
     attachments = ndb_models.SiteAttachments()
 
+    expected = [
+      ndb_models.SiteAttachments.one,
+      ndb_models.SiteAttachments.two,
+      ndb_models.SiteAttachments.three,
+      ndb_models.SiteAttachments.four
+    ]
+    actual = attachments.get_ordered_properties()
+    self.assertEqual(actual, expected)
+
+    expected = [None, None, None, None]
+    actual = attachments.get_ordered_file_keys()
+    self.assertEqual(actual, expected)
+

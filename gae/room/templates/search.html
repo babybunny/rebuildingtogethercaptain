@@ -1,7 +1,9 @@
 {% extends "base.html" %}
-{% block body%}
- <h2>Search</h2>
-    {% if user.staff %}
+{% block breadcrumb %}
+{% endblock %}
+{%block about_this_page %}
+<h2>Search</h2>
+{% if user.staff %}
         <form
 	         method="GET"
 	         action="{{ webapp2.uri_for('Search') }}">
@@ -17,6 +19,7 @@
       <br>
     {% endif%}
     {% if results %}
+      <br>
       {% for result in results %}
         <h4><a href="{{result.uri}}">{{result.headline}}</a></h4>
         {% for detail in result.details %}
@@ -30,4 +33,6 @@
         <h5 style="color:red;">Please try again</h5>
       {% endif %}
     {% endif %}
+{% endblock %}
+{% block body %}
 {% endblock %}

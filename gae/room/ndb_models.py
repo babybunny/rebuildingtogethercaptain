@@ -456,19 +456,79 @@ class UploadedDocument(ndb.Model):
     return webapp2.uri_for('DownloadSiteAttachment', blob_key=self.blob_key)
 
 
+class SiteAttachmentsMetadata(ndb.Model):
+
+  # names
+  one_name = ndb.StringProperty()
+  two_name = ndb.StringProperty()
+  three_name = ndb.StringProperty()
+  four_name = ndb.StringProperty()
+
+  # descriptions
+  one_description = ndb.StringProperty()
+  two_description = ndb.StringProperty()
+  three_description = ndb.StringProperty()
+  four_description = ndb.StringProperty()
+
+
 class SiteAttachments(ndb.Model):
-  recommended_scope_of_work = ndb.KeyProperty(kind=UploadedDocument)
-  signed_scope_of_work = ndb.KeyProperty(kind=UploadedDocument)
-  submitted_scope_of_work = ndb.KeyProperty(kind=UploadedDocument)
-  fully_executed_scope_of_work = ndb.KeyProperty(kind=UploadedDocument, name="asdf")
+  one = ndb.KeyProperty(kind=UploadedDocument,
+                        name='Recommended Scope of Work',
+                        verbose_name="RTP's rough scope of work recommendation for the Construction Captain. "
+                                     "To be reviewed by the Captain prior to first site visit. Captain is to take "
+                                     "this scope and adjust it according to what they can realistically commit to."
+                                     "\n\n\nThis doument will be on ROOMs prior to Captain Kick off.")
+  two = ndb.KeyProperty(kind=UploadedDocument,
+                        name='Signed Scope of Work',
+                        verbose_name="It's crucial that Captains have their site owners sign-off on the scope of work "
+                                     "prior to any work starting. Captains, after you have walked the property "
+                                     "and assessed priorities, please write or type out the scope, review it with "
+                                     "site owner, and have them sign up top on the scope of work form to show "
+                                     "approval. Please leave them a copy and upload a scanned version here. This is "
+                                     "RTP's way of confirming everyone is in agreement.\n\n\nUpload your scanned "
+                                     "signed Scope of work here.\n\n\nDue March 26th.")
+  three = ndb.KeyProperty(kind=UploadedDocument,
+                          name='Submitted Scope of Work',
+                          verbose_name="Since signed scopes are usually in a PDF format, we also need a typed out "
+                                       "version uploaded. This is important for RTP's reporting purposes. Captains "
+                                       "please do your best to also upload a submitted typed scope of work (doc). If "
+                                       "only a PDF signed scoped is uploaded, RTP staff will type this info infot "
+                                       "a submitted scope of work for the Site.\n\n\n\nAlso Due March 26th.")
+  four = ndb.KeyProperty(kind=UploadedDocument,
+                         name='Fully Executed Signed Scope of Work',
+                         verbose_name="On National Rebuilding Day (or within a few weeks after), please omplete all "
+                                      "\"primary tasks\" on the scope of work, review the completion with the site "
+                                      "owner, and have them sign at the bottom of the scope of work form (feel free "
+                                      "to use the exact same document that was signed before work started). Please "
+                                      "upload \"Fully Executed Signed Scope of Work\" here. This is RTP's way of "
+                                      "recognizing that the Scope of work is complete and the site owner is in "
+                                      "agreement. This is the final document needed.\n\n\nDue May 23rd.")
+
+  def get_ordered_file_keys(self):
+    return [getattr(self, p._code_name) for p in self.get_ordered_properties()]
+
+  def get_ordered_properties(self):
+    return [SiteAttachments.one, SiteAttachments.two, SiteAttachments.three, SiteAttachments.four]
+
+  def buildSiteAttachmentsHandlerData(self, site_id):
+    data = []
+    for file_key, property in zip(self.get_ordered_file_keys(), self.get_ordered_properties()):
+      name, verbose_name = property._name, property._verbose_name
+
+      # expires in 10 minutes apparently (TODO)
+      logging.warning("Creating an upload url which will expire in 10 minutes")
+      upload_uri = blobstore.create_upload_url(webapp2.uri_for('UploadSiteAttachment',
+                                                               site_id=site_id,
+                                                               attachment_type=name))
+
 
   @staticmethod
   def name_to_attr_map():
     return {
-      'Recommended Scope of Work': 'recommended_scope_of_work',
-      'Signed Scope of Work': 'signed_scope_of_work',
-      'Submitted Scope of Work': 'submitted_scope_of_work',
-      'Fully Executed Scope of Work': 'fully_executed_scope_of_work'
+      'Recommended Scope of Work': 'Recommended Scope of Work',
+      'Signed Scope of Work': 'two',
+      'Submitted Scope of Work': 'three',
+      'Fully Executed Scope of Work': 'four'
     }
 
   @staticmethod
@@ -486,6 +546,7 @@ class SiteAttachments(ndb.Model):
   def set_by_name(self, name, value):
     setattr(self, SiteAttachments.name_to_attr_map()[name], value)
     self.put()
+
 
 class NewSite(SearchableModel):
   """
