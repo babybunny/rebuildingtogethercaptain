@@ -448,6 +448,7 @@ class SiteExpenseList(StaffHandler):
       site_key = ndb.Key(ndb_models.NewSite, int(site_id))
       site = site_key.get()
       query = query.filter(mdl_cls.site == site_key)
+      params['site'] = site
       params['which_site'] = 'Site ' + site.number
       params['next_key'] = site_key.urlsafe()
     else:
@@ -580,7 +581,28 @@ class OrderList(SiteExpenseList):
   expense_type = 'Order'
   table_template = 'order_table.html'
 
+  
+class OrderListDetail(StaffHandler):
+  def get(self, site_id):
+    query = ndb_models.Order.query()
+    query = query.filter(ndb_models.Order.state != 'Deleted')
+    query = query.filter(ndb_models.Order.state != 'new')
+    
+    site_key = ndb.Key(ndb_models.NewSite, int(site_id))
+    site = site_key.get()
+    query = query.filter(ndb_models.Order.site == site_key)
+    q = ndb_models.OrderItem.query(ndb_models.OrderItem.order == order.key)
+    order_items = [oi for oi in q if oi.FloatQuantity()]
+    _SortOrderItemsWithSections(order_items)
+    params = {}
+    params['site'] = site
+    params['order_items'] = order_items
+    params['which_site'] = 'Site ' + site.number
+    params['next_key'] = site_key.urlsafe()
+    return _EntryList(self.request, ndb_models.Order, 'order_list_detail',
+                      params=params, query=query)
 
+  
 class OrderView(StaffHandler):
   searchable_model_class = ndb_models.Order
   def get(self, id):
