@@ -60,13 +60,13 @@ define(
                 name: "labor_amount",
                 label: "Labor Value ($)",
                 control: "input",
-                default: 0.0,
+                value: 0.0,
             },
             {
                 name: "materials_amount",
                 label: "Materials Value ($)",
                 control: "input",
-                default: 0.0
+                value: 0.0
             },
             {
                 name: "description",
@@ -81,7 +81,7 @@ define(
                     {label: "Normal", value: "Normal"},
                     {label: "Roofing", value: "Roofing"}
                 ],
-		default: "Normal"
+		value: "Normal"
             },
             {
                 name: "state",
@@ -94,7 +94,7 @@ define(
                     {label: "fulfilled", value: "fulfilled"},
                     {label: "deleted", value: "deleted"}
                 ],
-                default: "new"
+                value: "new"
             },
             {
                 id: "submit",

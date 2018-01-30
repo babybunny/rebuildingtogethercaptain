@@ -1159,6 +1159,10 @@ class InKindDonation(SearchableModel):
     return me
 
   def Total(self):
+    if self.labor_amount is None:
+      self.labor_amount = 0.
+    if self.materials_amount is None:
+      self.materials_amount = 0.
     return self.labor_amount + self.materials_amount
 
 
