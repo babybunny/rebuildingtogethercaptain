@@ -140,6 +140,9 @@ class SiteAttachments(StaffHandler):
     attachment_model = site.attachments and site.attachments.get()  # type: ndb_models.SiteAttachments
     if not attachment_model:
       attachment_model = ndb_models.SiteAttachments()
+      attachment_model.put()
+      site.attachments = attachment_model.key
+      site.put()
 
     d = {
       'site': site,
