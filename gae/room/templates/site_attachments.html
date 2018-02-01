@@ -2,22 +2,16 @@
   <tbody>
     {% for a in attachments %}
       <h3> {{ a.name }} </h3>
-      <p> {{ a.verbose_name }} </p>
       <div class="panel">
+        <p class="small"> {{ a.verbose_name }} </p>
         {% if a.attached_file %}
-          <b><a href="{{ a.attached_file.uri }}"> {{ a.attached_file.filename }} </a></b>
-          &nbsp;&nbsp;<a href="{{ a.remove_uri }}"> remove </a>
-          <br>&nbsp;&nbsp;Uploaded by {{ a.attached_file.user }} at {{ file_and_uris[0].formatted_time}}<br>
-
-          <form action="{{ a.upload_uri }}" method="POST" enctype="multipart/form-data"
-                  onsubmit="return confirm('This will replace the existing attachment. Continue?');">
-            <input type="file" name="file">
-            <input type="submit" name="submit" value="Submit">
-          </form>
+            <a href="{{ a.attached_file.uri }}" class="move-right-1 small"> {{ a.attached_file.filename }} </a>
+          &nbsp;&nbsp;<a href="{{ a.remove_uri }}" class="move-right-1 small"> remove </a>
+          <br><p class="move-right-1 small">Uploaded by {{ a.attached_file.user }} on {{ a.attached_file.formatted_time}}</p>
         {% else %}
-          <form action="{{ a.upload_uri }}" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file">
-            <input type="submit" name="submit" value="Submit">
+          <form action="{{ a.upload_uri }}" method="POST" enctype="multipart/form-data" class="small">
+            <input type="file" name="file" class="small">
+            <input type="submit" name="submit" value="Submit" class="small">
           </form>
         {% endif %}
       </div>

@@ -1056,7 +1056,7 @@ class RemoveSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
       return
 
     attachments = ndb.Key(ndb_models.SiteAttachments, int(attachments_id)).get()  # type: ndb_models.SiteAttachments
-    attachments.set_by_name(name, None)
+    attachments.set_attachment_by_property_name(name, None)
     self.redirect(webapp2.uri_for(SiteAttachments.__name__, id=site_id))
 
 ############################################################################################

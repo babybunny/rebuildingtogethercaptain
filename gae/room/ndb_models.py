@@ -457,11 +457,11 @@ class UploadedDocument(ndb.Model):
 
 class SiteAttachments(ndb.Model):
   one = ndb.KeyProperty(kind=UploadedDocument,
-                        name='Recommended Scope of Work',
-                        verbose_name="RTP's rough scope of work recommendation for the Construction Captain. "
-                                     "To be reviewed by the Captain prior to first site visit. Captain is to take "
-                                     "this scope and adjust it according to what they can realistically commit to."
-                                     "\n\n\nThis doument will be on ROOMs prior to Captain Kick off.")
+                        name='Planned Scope of Work',
+                        verbose_name="This is RTP's rough scope of work recommendation for the Construction Captain. "
+                                     "This should be reviewed by the Captain prior to first site visit. Captain is to "
+                                     "take this scope and adjust it according to what they can realistically commit to."
+                                     "<br><br>This document will be on ROOMs prior to Captain Kick off.")
   two = ndb.KeyProperty(kind=UploadedDocument,
                         name='Signed Scope of Work',
                         verbose_name="It's crucial that Captains have their site owners sign-off on the scope of work "
@@ -469,15 +469,16 @@ class SiteAttachments(ndb.Model):
                                      "and assessed priorities, please write or type out the scope, review it with "
                                      "site owner, and have them sign up top on the scope of work form to show "
                                      "approval. Please leave them a copy and upload a scanned version here. This is "
-                                     "RTP's way of confirming everyone is in agreement.\n\n\nUpload your scanned "
-                                     "signed Scope of work here.\n\n\nDue March 26th.")
+                                     "RTP's way of confirming everyone is in agreement. Upload your scanned signed "
+                                     "scope of work here.<br><br>Due March 26th for 2018 National Rebuilding Day")
   three = ndb.KeyProperty(kind=UploadedDocument,
                           name='Submitted Scope of Work',
                           verbose_name="Since signed scopes are usually in a PDF format, we also need a typed out "
                                        "version uploaded. This is important for RTP's reporting purposes. Captains "
                                        "please do your best to also upload a submitted typed scope of work (doc). If "
-                                       "only a PDF signed scoped is uploaded, RTP staff will type this info infot "
-                                       "a submitted scope of work for the Site.\n\n\n\nAlso Due March 26th.")
+                                       "only a PDF signed scoped is uploaded, RTP staff will type this info into a "
+                                       "submitted scope of work for the Site.<br><br>Also Due March 26th for 2018 "
+                                       "National Rebuilding Day.")
   four = ndb.KeyProperty(kind=UploadedDocument,
                          name='Fully Executed Signed Scope of Work',
                          verbose_name="On National Rebuilding Day (or within a few weeks after), please omplete all "
@@ -486,7 +487,16 @@ class SiteAttachments(ndb.Model):
                                       "to use the exact same document that was signed before work started). Please "
                                       "upload \"Fully Executed Signed Scope of Work\" here. This is RTP's way of "
                                       "recognizing that the Scope of work is complete and the site owner is in "
-                                      "agreement. This is the final document needed.\n\n\nDue May 23rd.")
+                                      "agreement. This is the final document needed.<br><br>Due May 23rd for 2018 "
+                                      "National Rebuilding Today.")
+
+  def set_attachment_by_property_name(self, property_name, document_key):
+    for prop in self.get_ordered_properties():
+      if prop._name == property_name:
+        setattr(self, prop._code_name, document_key)
+        self.put()
+        return
+    raise Exception("No property named {} could be found on {}".format(property_name, self.__class__.__name__))
 
   def get_ordered_file_keys(self):
     return [getattr(self, p._code_name) for p in self.get_ordered_properties()]
@@ -506,6 +516,7 @@ class SiteAttachments(ndb.Model):
         name=property._name,
         verbose_name=property._verbose_name
       ))
+    return attachments
 
 class SiteAttachmentHandlerData(object):
 
@@ -532,7 +543,6 @@ class SiteAttachmentHandlerData(object):
           site_id=self.site_id,
           attachments_id=self.attachments_id,
           name=self.name)
-
 
 
 class NewSite(SearchableModel):
@@ -595,7 +605,8 @@ class NewSite(SearchableModel):
       attachments = SiteAttachments()
       attachments.put()
       self.attachments = attachments.key
-    self.attachments.get().set_by_name(attachment_name, document.key)
+    attachments_model = self.attachments.get()  # type: SiteAttachments
+    attachments_model.set_attachment_by_property_name(attachment_name, document.key)
     self.put()
 
   @property
