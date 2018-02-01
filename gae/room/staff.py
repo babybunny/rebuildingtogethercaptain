@@ -136,34 +136,14 @@ class SiteAttachments(StaffHandler):
     site = ndb.Key(ndb_models.NewSite, int(id)).get()
     if not site:
       webapp2.abort(404)
+
     attachment_model = site.attachments and site.attachments.get()  # type: ndb_models.SiteAttachments
     if not attachment_model:
       attachment_model = ndb_models.SiteAttachments()
-    file_keys = attachment_model.get_ordered_file_keys()
-    properties = attachment_model.get_ordered_properties()
 
-    attachment_data = []
-    for property_key, file_key in zip(properties, file_keys):
-      nt =
-      name = file
-
-      # build upload uri
-      upload_uri = blobstore.create_upload_url(webapp2.uri_for('UploadSiteAttachment',
-                                               site_id=id,
-                                               attachment_type=name))
-
-      # build remove uri
-      remove_uri = webapp2.uri_for(
-        'RemoveSiteAttachment',
-        site_id=id,
-        attachments_id=attachment_model.key.integer_id(),
-        name=name
-      )
-
-      attachment_data[name] = [file, upload_uri, remove_uri]
     d = {
-      'entries': [site],
-      'attachments': attachment_data
+      'site': site,
+      'attachments': attachment_model.get_attachments(id)
     }
     return common.Respond(self.request, 'site_list_attachments', d)
 

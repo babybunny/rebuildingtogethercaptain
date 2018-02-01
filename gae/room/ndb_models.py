@@ -4,17 +4,16 @@ Many of these are similar to models in models.py, which are Django models.  We
 need these ndb versions for use with runtime: python27, which is required by
 endpoints.
 """
-import os
 import collections
 import logging
 import math
+import os
 
 import webapp2
-from google.appengine.ext import ndb, blobstore
 from google.appengine.api import search
+from google.appengine.ext import ndb, blobstore
 
 import general_utils
-
 
 # TODO: move to global config
 SALES_TAX_RATE = float(os.environ.get('SALES_TAX_RATE', 0.0925))
@@ -456,21 +455,6 @@ class UploadedDocument(ndb.Model):
     return webapp2.uri_for('DownloadSiteAttachment', blob_key=self.blob_key)
 
 
-class SiteAttachmentsMetadata(ndb.Model):
-
-  # names
-  one_name = ndb.StringProperty()
-  two_name = ndb.StringProperty()
-  three_name = ndb.StringProperty()
-  four_name = ndb.StringProperty()
-
-  # descriptions
-  one_description = ndb.StringProperty()
-  two_description = ndb.StringProperty()
-  three_description = ndb.StringProperty()
-  four_description = ndb.StringProperty()
-
-
 class SiteAttachments(ndb.Model):
   one = ndb.KeyProperty(kind=UploadedDocument,
                         name='Recommended Scope of Work',
@@ -510,42 +494,45 @@ class SiteAttachments(ndb.Model):
   def get_ordered_properties(self):
     return [SiteAttachments.one, SiteAttachments.two, SiteAttachments.three, SiteAttachments.four]
 
-  def buildSiteAttachmentsHandlerData(self, site_id):
-    data = []
-    for file_key, property in zip(self.get_ordered_file_keys(), self.get_ordered_properties()):
-      name, verbose_name = property._name, property._verbose_name
+  def get_attachments(self, site_id):
+    attachments = []
+    files_and_properties = zip(self.get_ordered_file_keys(), self.get_ordered_properties())
+    for file_key, property in files_and_properties:
+      attached_file = file_key.get() if file_key else None
+      attachments.append(SiteAttachmentHandlerData(
+        site_id=site_id,
+        attachments_id=self.key.integer_id(),
+        attached_file=attached_file,
+        name=property._name,
+        verbose_name=property._verbose_name
+      ))
 
-      # expires in 10 minutes apparently (TODO)
-      logging.warning("Creating an upload url which will expire in 10 minutes")
-      upload_uri = blobstore.create_upload_url(webapp2.uri_for('UploadSiteAttachment',
-                                                               site_id=site_id,
-                                                               attachment_type=name))
+class SiteAttachmentHandlerData(object):
 
+  def __init__(self, site_id, attachments_id, attached_file, name, verbose_name):
+    self.site_id = site_id
+    self.attachments_id = attachments_id
+    self.attached_file = attached_file
+    self.name = name
+    self.verbose_name = verbose_name
+    self.upload_uri = None
+    self.remove_uri = None
+    self.filename = attached_file.filename if attached_file else None
+    self._build_uris()
 
-  @staticmethod
-  def name_to_attr_map():
-    return {
-      'Recommended Scope of Work': 'Recommended Scope of Work',
-      'Signed Scope of Work': 'two',
-      'Submitted Scope of Work': 'three',
-      'Fully Executed Scope of Work': 'four'
-    }
+  def _build_uris(self):
+    self.upload_uri = blobstore.create_upload_url(webapp2.uri_for(
+          'UploadSiteAttachment',
+          site_id=self.site_id,
+          attachment_type=self.name))
+    if self.attached_file is not None:
+      self.download_uri = webapp2.uri_for('DownloadSiteAttachment', blob_key=self.attached_file.blob_key)
+    self.remove_uri = webapp2.uri_for(
+          'RemoveSiteAttachment',
+          site_id=self.site_id,
+          attachments_id=self.attachments_id,
+          name=self.name)
 
-  @staticmethod
-  def names():
-    return [
-      'Recommended Scope of Work',
-      'Signed Scope of Work',
-      'Submitted Scope of Work',
-      'Fully Executed Scope of Work'
-    ]
-
-  def get_by_name(self, name):
-    return getattr(self, SiteAttachments.name_to_attr_map()[name])
-
-  def set_by_name(self, name, value):
-    setattr(self, SiteAttachments.name_to_attr_map()[name], value)
-    self.put()
 
 
 class NewSite(SearchableModel):

@@ -1,25 +1,25 @@
 <table class="site">
   <tbody>
-    {% for name, file_and_uris in attachments.items() %}
-      <h3> {{ name }} </h3>
+    {% for a in attachments %}
+      <h3> {{ a.name }} </h3>
+      <p> {{ a.verbose_name }} </p>
       <div class="panel">
-        {% if file_and_uris[0] %}
-          <b><a href="{{ file_and_uris[0].uri }}"> {{ file_and_uris[0].filename }} </a></b>
-          &nbsp;&nbsp;<a href="{{ file_and_uris[2] }}"> remove </a>
-          <br>&nbsp;&nbsp;Uploaded by {{ file_and_uris[0].user }} at {{ file_and_uris[0].formatted_time}}<br>
+        {% if a.attached_file %}
+          <b><a href="{{ a.attached_file.uri }}"> {{ a.attached_file.filename }} </a></b>
+          &nbsp;&nbsp;<a href="{{ a.remove_uri }}"> remove </a>
+          <br>&nbsp;&nbsp;Uploaded by {{ a.attached_file.user }} at {{ file_and_uris[0].formatted_time}}<br>
 
-          <form action="{{ file_and_uris[1] }}" method="POST" enctype="multipart/form-data"
+          <form action="{{ a.upload_uri }}" method="POST" enctype="multipart/form-data"
                   onsubmit="return confirm('This will replace the existing attachment. Continue?');">
             <input type="file" name="file">
             <input type="submit" name="submit" value="Submit">
           </form>
         {% else %}
-          <form action="{{ file_and_uris[1] }}" method="POST" enctype="multipart/form-data">
+          <form action="{{ a.upload_uri }}" method="POST" enctype="multipart/form-data">
             <input type="file" name="file">
             <input type="submit" name="submit" value="Submit">
           </form>
         {% endif %}
-
       </div>
     {% endfor %}
   </tbody>
