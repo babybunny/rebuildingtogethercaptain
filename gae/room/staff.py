@@ -24,6 +24,14 @@ EXPORT_CSV = 'Export CSV'
 POSTED_ID_PREFIX = 'export_'
 
 
+def send_message_with_status(response, message, status=500):
+  if status > 399:
+    logging.error(message)
+  response.set_status(404)
+  response.write(message)
+
+
+
 class SelectProgram(webapp2.RequestHandler):
   """Handler for Staff to select a program.
 
@@ -1009,18 +1017,20 @@ class UploadSiteAttachment(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
       site_id = self.request.get('site_id')
       if site_id is None:
-        logging.error("{} did not receive a site_id, nothing to link to".format(self.__class__.__name__))
-        self.error(404)
+        msg = "{} did not receive a site_id, nothing to link to".format(self.__class__.__name__)
+        send_message_with_status(self.response, msg)
+        return
 
       attachment_type = self.request.get('attachment_type')
       if attachment_type is None:
-        logging.error("{} did not receive an attachment type".format(self.__class__.__name__))
-        self.error(404)
+        msg = "{} did not receive an attachment type".format(self.__class__.__name__)
+        send_message_with_status(self.response, msg)
+        return
 
       redirect_uri = webapp2.uri_for(SiteAttachments.__name__, id=site_id)
       upload_files = self.get_uploads('file')
       if not upload_files:
-        logging.error("No files to upload")
+        logging.warning("No files to upload")
         return self.redirect(redirect_uri)
 
       upload = upload_files[0]
@@ -1044,18 +1054,15 @@ class RemoveSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
     name = self.request.get('name')
 
     if site_id is None:
-      logging.error("{} did not receive a site_id".format(self.__class__.__name__))
-      self.error(404)
+      send_message_with_status(self.response, "{} did not receive a site_id".format(self.__class__.__name__))
       return
 
     if attachments_id is None:
-      logging.error("{} did not receive a attachments_id".format(self.__class__.__name__))
-      self.error(404)
+      send_message_with_status(self.response, "{} did not receive a attachments_id".format(self.__class__.__name__))
       return
 
     if name is None:
-      logging.error("{} did not receive an attachment type".format(self.__class__.__name__))
-      self.error(404)
+      send_message_with_status(self.response, "{} did not receive an attachment type".format(self.__class__.__name__))
       return
 
     attachments = ndb.Key(ndb_models.SiteAttachments, int(attachments_id)).get()  # type: ndb_models.SiteAttachments
