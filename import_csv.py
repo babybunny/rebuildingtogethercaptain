@@ -67,13 +67,15 @@ def import_sites(input_csv):
   sanity_check_headers(expected_headers, actual_headers, input_csv)
   for s in reader:
     number = s["Site ID"]
-    site = ndb_models.NewSite.query().filter(ndb_models.NewSite.number == number).get()
+    site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
     if site:
       logging.info('site %s exists, skipping', number)
       continue
     else:
       site = ndb_models.NewSite(number=number)
-    site.program = get_program(s['Program Year']).name
+    program = get_program(s['Program Year'])
+    site.program = program.name
+    site.program_key = program.key
     budget = s.get("Budgeted Cost in Campaign", "$0").strip("$").replace(",", "") or '0'
     site.budget = int(budget)
     site.name = clean_get(s, "Repair Application: Applicant's Name")
@@ -122,7 +124,7 @@ def import_captains(input_csv):
       if captain:
         logging.info('got captain from rooms_id %s', rooms_id)
     if not captain:
-      captain = ndb_models.Captain.query().filter(ndb_models.Captain.email == email).get()
+      captain = ndb_models.Captain.query(ndb_models.Captain.email == email).get()
       if captain:
         logging.info('got captain from email %s', email)
     if not captain:
@@ -139,7 +141,7 @@ def import_captains(input_csv):
 
     numbers = [n.strip() for n in s["Site ID"].split(',')]
     for number in numbers:
-      site = ndb_models.NewSite.query().filter(ndb_models.NewSite.number == number).get()
+      site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
       if not site:
         logging.error('site %s does not exist, skipping', number)
         continue
@@ -151,7 +153,7 @@ def import_captains(input_csv):
         if t in input_type:
           break
 
-      query = ndb_models.SiteCaptain.query().filter(ndb_models.SiteCaptain.site == site.key).filter(ndb_models.SiteCaptain.captain == captain.key)
+      query = ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == site.key).filter(ndb_models.SiteCaptain.captain == captain.key)
       sitecaptain = query.get()
       if sitecaptain is None:
         logging.info('Creating new SiteCaptain mapping %s to %s',
