@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+import textwrap
 import app_engine_test_utils
 import import_csv
 from gae.room import ndb_models
@@ -23,10 +24,10 @@ class TestImportCsv(unittest.TestCase):
     with open(path_to_captains_data, 'wb') as io:
       io.write(TestImportCsv.CAPTAINS_DATA)
 
-    import_csv.import_sites(path_to_sites_data, 2442)
+    import_csv.import_sites(path_to_sites_data)
     import_csv.import_captains(path_to_captains_data)
 
-    site = ndb_models.NewSite.query().filter(ndb_models.NewSite.number == "18010SAM").get()  # type: ndb_models.NewSite
+    site = ndb_models.NewSite.query().filter(ndb_models.NewSite.number == "50010SAM").get()  # type: ndb_models.NewSite
     self.assertTrue(site)
     site_captains = list(site.sitecaptain_set)
     self.assertEqual(len(site_captains), 2)
@@ -35,116 +36,117 @@ class TestImportCsv(unittest.TestCase):
       captain = site_captain.captain.get()
       self.assertIn(ctype, ("Construction", "Volunteer"))
       if ctype == "Construction":
-        self.assertEqual(captain.email, 'mike@nibbi.com')
+        self.assertEqual(captain.email, 'metropolitan@boulevard.com')
       else:
-        self.assertEqual(captain.email, 'bobn@nibbi.com')
+        self.assertEqual(captain.email, 'aristocratic@theorist.com')
 
 
-  SITES_DATA = """\
-Announcement Subject,Announcement Body,Site ID,Budgeted Cost in Campaign,Repair Application: Applicant's Name,Applicant Home Phone,Applicant Mobile Phone,Applicant Work Phone,Recipient's Street Address,Recipient's City,Recipient's Zip Code,Jurisdiction,Sponsor,Repair Application: RRP Test Results,Photos Link
-subject of announcement,"announcement body, has some commas",18001DAL,"$10,000",Man Shu Lau,,(415) 350-7499,,221 South Hill Court,Daly City,94014,Daly City,Woodlawn Foundation & St. Andrews Church (volunteers),"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsksxU9or
-subject of announcement,"announcement body, has some commas",18002SSF,"$5,250",Til Won,(650) 737-0378,,,102 Manzanita Ave,South San Francisco,94080,South San Francisco,First National Bank - CDBG South SF ,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmakxWNw
-subject of announcement,"announcement body, has some commas",18003SSF,"$5,250",Kavita Sharma,(415) 774-6026,(415) 774-6025,,135 Arden Ave,South San Francisco,94080,South San Francisco,CDBG South SF - LDS Stanford (volunteers),Tested - Negative,https://flic.kr/s/aHsmdASNF9
-subject of announcement,"announcement body, has some commas",18004SSF,"$3,250",Sunder Sujan,(650) 746-6302,(650) 580-9069,,229 Bonita Ave,South San Francisco,94080,South San Francisco,Nishkian Menninger - CDBG South SF ,Tested - Negative,https://flic.kr/s/aHsmcc2RiK
-subject of announcement,"announcement body, has some commas",18005RWC,"$4,000",Mary Gail Lynch,(650) 366-8281,,,215 Oakdale St.,Redwood City,94062,Redwood City,Oracle - CDBG Redwood City ,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHskvEkfxS
-subject of announcement,"announcement body, has some commas",18006RWC,"$4,000",Kimi Rosas,,(650) 833-9111,,639 Flynn Ave,Redwood City,94063,Redwood City,Whiting-Turner - CDBG Redwood City,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmeLPcqP
-subject of announcement,"announcement body, has some commas",18007RWC,"$4,000",Nancy Moore,(650) 369-6706,,,473 Ruby St.,Redwood City,94062,Redwood City,CDBG Redwood City,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmcc4Hdn
-subject of announcement,"announcement body, has some commas",18008RWC,"$4,000",Hubert Bourland,(650) 365-7726,,,559 Oak Ridge Drive,Redwood City,94062,Redwood City,CDBG Redwood City,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHskvEmPBW
-subject of announcement,"announcement body, has some commas",18009RWC,"$4,000",Maria Castillo,(650) 921-3831,(650) 771-1031,,3241 Hoover St,Redwood City,94063,Redwood City,CDBG Redwood City - Ebcon (volunteers),"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmdAW5B1
-subject of announcement,"announcement body, has some commas",18010SAM,,Katalina Ahoia,(650) 401-8147,,(650) 573-2056,624 Oceanview Avenue,San Mateo,94401,City of San Mateo,Nibbi Brothers Construction ,Tested - Negative,https://flic.kr/s/aHsmdAWAHo
-subject of announcement,"announcement body, has some commas",18011SAM,"$3,000",Nadia McGraw,(650) 348-6707,(650) 346-3753,,1309 Huron Ave.,San Mateo,94401,City of San Mateo,CDBG San Mateo - Foster City Lions (volunteers),"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmcc6zbr
-subject of announcement,"announcement body, has some commas",18012SAM,"$3,000",Frank Tu,(650) 345-3461,(650) 307-3121,,2145 Meadow View Place,San Mateo,94401,City of San Mateo,CDBG San Mateo - Crystal Springs Upland School (volunteers),Tested - Negative,https://flic.kr/s/aHsmdAXZFW
-subject of announcement,"announcement body, has some commas",18013SAM,"$5,000",Lori Poultney,(650) 773-3034,(650) 773-3034,,1553 Monte Diablo Ave.,San Mateo,94401,City of San Mateo,BKF Engineers - CDBG  San Mateo,Tested - Positive,https://flic.kr/s/aHsmeLTyoT
-subject of announcement,"announcement body, has some commas",18014SAM,"$15,000",Mary Kinney,(650) 343-1793,(650) 278-7610,(650) 265-5345,326 North Idaho Street,San Mateo,94401,City of San Mateo,Novo Construction & ABD Insurance - CDBG San Mateo,Tested - Negative,https://flic.kr/s/aHskBtPQhD
-subject of announcement,"announcement body, has some commas",18015EPA,"$9,250",Atella Brackman,(650) 326-2160,,,2857 Temple Court,East Palo Alto,94303,San Mateo County,Siemens - CDBG San Mateo County,Tested - Negative,https://flic.kr/s/aHsmdB112w
-subject of announcement,"announcement body, has some commas",18016EPA,"$4,250",Sharron Scoggins,(650) 323-1770,,,1523 Ursula Way,East Palo Alto,94303,San Mateo County,Woodside Priory - CDBG San Mateo County,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmcc9YXt
-subject of announcement,"announcement body, has some commas",18017EPA,"$4,250",Thurman Smith,(650) 324-4341,(650) 888-7840,,256 Azalia Dr,East Palo Alto,94303,San Mateo County,TE Connectivity - CDBG San Mateo County,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmakF9Ss
-subject of announcement,"announcement body, has some commas",18018EPA,"$4,250",Plocerfina Thompson,(650) 631-7671,(650) 631-7671,,107 Daphne Way,East Palo Alto,94303,San Mateo County,Wells Fargo - CDBG San Mateo County,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHskBtQW3e
-subject of announcement,"announcement body, has some commas",18019EPA,"$4,250",Selbia Smith,(650) 322-7341,(650) 776-5922,,108 Verbena Dr.,East Palo Alto,94303,San Mateo County,Kiwanis Club of Menlo Park - CDBG San Mateo County,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmeLVJKF
-subject of announcement,"announcement body, has some commas",18020EPA,"$4,250",Leo Woodard,,(650) 518-0929 ,(650) 817-9070 ext 149,2250 Menalto Ave.,East Palo Alto,94303,San Mateo County,CDBG San Mateo County - Serra Fathers' Club (volunteers),"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmeLWAR2
-subject of announcement,"announcement body, has some commas",18021EPA,,Haitelenisia Mahe,(650) 600-2123,(650) 518-1374,,2260 Brentwood Ct,East Palo Alto,94303,San Mateo County,Nibbi Brothers Construction,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmdB4ybW
-subject of announcement,"announcement body, has some commas",18022MEN,"$4,250",Patricia Jacowsky,(650) 325-4752,(650) 291-9829,,832 15th Ave.,Menlo Park,94025,San Mateo County,Stanford Health Care - CDBG  San Mateo County,Tested - Positive,https://flic.kr/s/aHsmcceCVV
-subject of announcement,"announcement body, has some commas",18023RWU,"$9,250",Roy Obana,(650) 257-7026,,,820 6th Avenue,Redwood City,94063,San Mateo County,"Trinity Episcopal, Christ Episcopal, First Presbyterian - CDBG SMC",Tested - Positive,
-subject of announcement,"announcement body, has some commas",18024SUN,"$3,000",Lorraine Wolfington,(408) 735-8742,,,1070 Polk Ave,Sunnyvale,94086,Sunnyvale,Rambus,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHskvEuNby
-subject of announcement,"announcement body, has some commas",18025SSF,"$7,000",South San Francisco Head Start Program (Site Contact: Yesenia Guzman),,,(650) 438-9036,825 Southwood Drive,South San Francisco,94080,South San Francisco,Genentech - CDBG SMC - SMC Dept of Education,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmdB6M5Y
-subject of announcement,"announcement body, has some commas",18026RWC,"$5,000",St. Francis Center (Site Contact: Dulce Pasillas),,,(650) 365-7829,780 Bradford Avenue,Redwood City,94086,Redwood City,W.L. Butler Construction - CDBG San Mateo County,Tested - Negative,https://flic.kr/s/aHskvEx36y
-subject of announcement,"announcement body, has some commas",18027RWC,"$6,000",Redwood Church Preschool (Site Contact: Jennifer Corrales),,,(650) 562-7611,901 Madison Avenue,Redwood City,94061,Redwood City,Commercial Casework & Heritage Bank of Commerce - SMC Dept of Education,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmeM2jVV
-subject of announcement,"announcement body, has some commas",18028RWC,"$5,000",Samaritan House Free Clinic of RWC (Site Contact: Laura Bent),,,(650) 341-4081 ext 2020,114 5th Avenue,Redwood City,94063,Redwood City,Rotary Clubs Woodside/Portola Valley & Peninsula Sunrise - CDBG SMC,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHskBtWFbt
-subject of announcement,"announcement body, has some commas",18029RWC,"$6,000",Garcia's Daycare (Site Contact: Maria Garcia),,,(650) 921-7673,278 Madrone Street,Redwood City,94061,Redwood City,Pentair - SMC Dept of Education,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmeM4dMP
-subject of announcement,"announcement body, has some commas",18030MEN,"$5,000",Haven Family House - Lifemoves (Site Contact: Jacob Stone),,,(650) 685-5880,260 Van Buren Rd.,Menlo Park,94025,San Mateo County,Cooley LLP - CDBG San Mateo County,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmakP61y
-subject of announcement,"announcement body, has some commas",18031EPA,"$3,000",East Palo Alto Charter School (Site Contact: Eron Truran),,,(650) 614-9100,1286 Runnymede St.,East Palo Alto,94303,San Mateo County,WSGR Foundation - CDBG SMC,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmdBchS3
-subject of announcement,"announcement body, has some commas",18032EPA,"$5,000",Free at Last - (Site Contact: Sue Cortopassi),,,(650) 462-6992,1796 Bay Road,East Palo Alto,94303,San Mateo County,Trubeck Construction,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmcckd5F
-subject of announcement,"announcement body, has some commas",18033SAM,"$5,000",Lisa's House - CORA's Emergency Shelter (Site Contact: Cheyrle Matteo),,,(650) 652-0800,,San Mateo,94403,City of San Mateo,Roche,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmeM7Xvi
-subject of announcement,"announcement body, has some commas",18034SAM,"$5,000",Medina Family Daycare (Site Contact: Marcela Medina),,,(650) 445-5512,849 Patricia Ave.,San Mateo,94401,City of San Mateo,SMC Dept of Education - Notre Dame Fathers' Club (volunteers),"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsksyeCSn
-subject of announcement,"announcement body, has some commas",18035MER,,Boys & Girls Club of Merced (Site Contact: Michael Pierick),,,(209) 722- 9922,615 W. 15th Street,Merced,95340,,Webcor Builders,n/a,https://flic.kr/s/aHskvECqf3
-subject of announcement,"announcement body, has some commas",18036SAM,"$5,000",Rosemarie Aguiniga,,(650) 393-3147,,1029 East 5th Ave,San Mateo,94402,City of San Mateo,DES - CDBG San Mateo,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmckKt5z
-subject of announcement,"announcement body, has some commas",18037EPA,"$3,000",East Palo Alto Charter School (Site Contact: Eron Truran),,,(650) 614-9100,1286 Runnymede St.,East Palo Alto,94303,San Mateo County,Kiwanis Club of Palo Alto & NCL Orchard Valley,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmdBchS3
-subject of announcement,"announcement body, has some commas",18038EPA,"$5,000",East Palo Alto Charter School (Site Contact: Eron Truran),,,(650) 614-9100,1286 Runnymede St.,East Palo Alto,94303,San Mateo County,Webcor Builders,"Not tested - Not required to test, assume no lead",https://flic.kr/s/aHsmdBchS3"""
+  SITES_DATA = textwrap.dedent("""\
+    Announcement Subject,Announcement Body,Site ID,Budgeted Cost in Campaign,Repair Application: Applicant's Name,Applicant Home Phone,Applicant Mobile Phone,Applicant Work Phone,Recipient's Street Address,Recipient's City,Recipient's Zip Code,Jurisdiction,Sponsor,Repair Application: RRP Test Results,Photos Link,Program Year
+    subject,"announcement body, which has some commas",50001DAL,$1007,Malay Nothing,9999999999,(608) 123-4567,7777777777,123 Champaign St,"Row, Rectilinear",00000,Argue Wendy,Pompon,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50002SSF,$1007,Efficacious Gizzard,9999999999,(608) 123-4567,7777777777,123 Radii St,"Bronchi, Epsom",00000,Curie Thousand,Sibling,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50003SSF,$1007,Enthusiast Baffin,9999999999,(608) 123-4567,7777777777,123 Expositor St,"Placeable, Knives",00000,Egret Fume,Indirect,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50004SSF,$1007,Nordstrom Brindisi,9999999999,(608) 123-4567,7777777777,123 Dennis St,"Wavy, Lookout",00000,Airy Rib,Magnetic,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50005RWC,$1007,Incorrigible Isochronal,9999999999,(608) 123-4567,7777777777,123 Gerbil St,"Systemwide, Ergative",00000,Soundproof Orthodontic,Leguminous,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50006RWC,$1007,Paraxial Blackbody,9999999999,(608) 123-4567,7777777777,123 Glory St,"Worrisome, Valeur",00000,Slapdash Shipbuild,Heidegger,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50007RWC,$1007,Dialectic Alger,9999999999,(608) 123-4567,7777777777,123 Derivate St,"Utter, Fusion",00000,Politico Shore,Missionary,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50008RWC,$1007,Premonition Gasp,9999999999,(608) 123-4567,7777777777,123 Wove St,"Culvert, Holman",00000,Algiers Trifluoride,Midsection,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50009RWC,$1007,Embryology Dill,9999999999,(608) 123-4567,7777777777,123 Quartz St,"Oklahoma, Tyrannicide",00000,Dew Chateau,Alkali,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50010SAM,$1007,Phobic Calibrate,9999999999,(608) 123-4567,7777777777,123 Moorish St,"Hagiography, Saud",00000,Empathic Lehigh,Fishy,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50011SAM,$1007,Calculate Disastrous,9999999999,(608) 123-4567,7777777777,123 Shod St,"Commissariat, Equinoctial",00000,Tananarive Nomadic,Trigram,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50012SAM,$1007,Me Spoke,9999999999,(608) 123-4567,7777777777,123 Cern St,"Adrift, Tasteful",00000,Bitterroot Nashua,Premiere,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50013SAM,$1007,Byzantine Officio,9999999999,(608) 123-4567,7777777777,123 Scatterbrain St,"Organ, Regulatory",00000,Levulose Diffusive,Denudation,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50014SAM,$1007,Philip Committable,9999999999,(608) 123-4567,7777777777,123 Interpolatory St,"Cornflower, Sockeye",00000,Blockage Waste,Nought,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50015EPA,$1007,Devolve Hillmen,9999999999,(608) 123-4567,7777777777,123 Pelican St,"Slovenia, Patriarch",00000,Moderate Caroline,Gnomonic,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50016EPA,$1007,Sightsee Anomie,9999999999,(608) 123-4567,7777777777,123 Dross St,"Crept, Pap",00000,Hid Armstrong,Matrilineal,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50017EPA,$1007,Import Counterproductive,9999999999,(608) 123-4567,7777777777,123 Sagittarius St,"Kruger, Mackerel",00000,Otherwise Alvin,Suez,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50018EPA,$1007,Serology Harmonious,9999999999,(608) 123-4567,7777777777,123 Noodle St,"Camellia, Galloway",00000,Transferring Amphibole,Nevertheless,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50019EPA,$1007,Whitish Callus,9999999999,(608) 123-4567,7777777777,123 Damocles St,"Immediate, Trencherman",00000,Luminosity Tactic,Briton,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50020EPA,$1007,Alice Vendor,9999999999,(608) 123-4567,7777777777,123 Inconvenient St,"Hard, Anorthic",00000,Bimetallism Ames,Fairy,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50021EPA,$1007,Stony Monolith,9999999999,(608) 123-4567,7777777777,123 Matins St,"Spec, Exegesis",00000,Picnicking Equanimity,Millenarian,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50022MEN,$1007,Haney Buccaneer,9999999999,(608) 123-4567,7777777777,123 Antenna St,"Aborning, Batavia",00000,Heterogeneity Damascus,Auto,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50023RWU,$1007,Jam Ojibwa,9999999999,(608) 123-4567,7777777777,123 Jacobite St,"Comprehensive, Dud",00000,Gift Doe,Sorghum,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50024SUN,$1007,Eden Liable,9999999999,(608) 123-4567,7777777777,123 Quitter St,"Matriarchy, Accumulate",00000,Forfeiture Millionth,Reilly,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50025SSF,$1007,Woodcock Inactivate,9999999999,(608) 123-4567,7777777777,123 Genera St,"Mesozoic, Concatenate",00000,Funeral Immaterial,Treasonous,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50026RWC,$1007,Finger Awesome,9999999999,(608) 123-4567,7777777777,123 Canine St,"Honoraria, Whee",00000,Prussic Vortices,Genesco,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50027RWC,$1007,Segundo Need,9999999999,(608) 123-4567,7777777777,123 Reprise St,"Droplet, Conjuncture",00000,Witchcraft Gar,Abramson,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50028RWC,$1007,Rotate Exorcism,9999999999,(608) 123-4567,7777777777,123 Kowalski St,"Depression, Dahomey",00000,Banquet Dailey,Chit,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50029RWC,$1007,Chimney Shrapnel,9999999999,(608) 123-4567,7777777777,123 Recalcitrant St,"Citizen, Adulate",00000,Cardinal Inability,Ironwood,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50030MEN,$1007,Giraffe Beluga,9999999999,(608) 123-4567,7777777777,123 Sproul St,"Vodka, Hog",00000,Tantalum Grow,Salvage,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50031EPA,$1007,Accident Melamine,9999999999,(608) 123-4567,7777777777,123 Ellipsometer St,"Impractical, Quadrangular",00000,Semiramis Convivial,Daedalus,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50032EPA,$1007,Crunchy Crandall,9999999999,(608) 123-4567,7777777777,123 Mushroom St,"Blitz, Daddy",00000,Chinamen Alder,Beckon,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50033SAM,$1007,Aboard Lucy,9999999999,(608) 123-4567,7777777777,123 Prestidigitate St,"Jehovah, Grub",00000,Doctrine Albrecht,Delilah,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50034SAM,$1007,Past Ian,9999999999,(608) 123-4567,7777777777,123 Flea St,"Parentheses, Future",00000,Arclength Crete,Camelot,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50035MER,$1007,Catalpa Matrimony,9999999999,(608) 123-4567,7777777777,123 Conferring St,"Operable, Coprocessor",00000,Attention Yates,Yosemite,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50036SAM,$1007,Mcmullen Invitation,9999999999,(608) 123-4567,7777777777,123 Stonehenge St,"Kikuyu, Sum",00000,Nuance Onlooking,Thrash,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50037EPA,$1007,Automorphism Lisbon,9999999999,(608) 123-4567,7777777777,123 Onrushing St,"Otiose, Soggy",00000,Portraiture Siltstone,Godwin,some test results,https://www.google.com,2050
+    subject,"announcement body, which has some commas",50038EPA,$1007,Pbs Pecuniary,9999999999,(608) 123-4567,7777777777,123 Teleology St,"Lear, Latinate",00000,Glide Pilewort,Burial,some test results,https://www.google.com,2050\
+    """)
 
-  CAPTAINS_DATA = """\
-Site ID,Name,ROOMS Captain ID,Phone,Email,Project Role
-18001DAL,John Solano,R00438,(650) 678-6109,john@johnsolanoconstruction.com,Construction Captain
-18001DAL,Lisa Angelot,R00238,(650) 455-3555,lange16093@aol.com,Volunteer Captain
-18002SSF,Bill Provence,R00029,(650) 355-1729,billprovence@yahoo.com,Construction Captain
-18002SSF,Bill Tecson,R00031,(650) 875-4860,btecson@familybank.com,Volunteer Captain
-18003SSF,Jim Benson,R00169,(650) 544-4653,jb11hmb@gmail.com,Construction Captain
-18003SSF,Laura Pearson,R00448,,laurapear@gmail.com,Volunteer Captain
-18004SSF,Dan Goodman,R00079,(650) 714-6312,danmgoodman@gmail.com,Construction Captain
-18004SSF,Julie Hagelshaw,R00422,(415) 541-9477,jhagelshaw@nishkian.com,Volunteer Captain
-18005RWC,Kim Nguyen,R00432,(650) 204-0986,kimn_1@yahoo.com,Volunteer Captain
-18005RWC,Matt Sorgenfrei,R00257,(650) 704-6806,sorgenfrei.matt@gmail.com,Construction Captain
-18006RWC,Jacob LaMontagne,R00444,(240) 372-2908,jacob.lamontagne@whiting-turner.com,Volunteer Captain
-18006RWC,Tom Wooden,R00384,(925) 580-5207,thomas.wooden@whiting-turner.com,Construction Captain
-18007RWC,Don Kirk,R00400,(650) 924-5279,don@donkirk.com,Construction Captain
-18009RWC,Erik Bergstrom,R00435,(650) 773-1272,ebcon.corp@gmail.com,Construction Captain
-"18010SAM, 18021EPA",Michael Nibbi,R00269,(415) 412-7168,mike@nibbi.com,Construction Captain
-"18010SAM, 18021EPA",Robert Nibbi,R00331,(415) 863-1820,bobn@nibbi.com,Volunteer Captain
-18011SAM,Ray Rosenthal,R00308,(650) 465-7158,rosieinc45@gmail.com,Construction Captain
-18012SAM,Bill Kwong,R00026,(650) 342-4175,bkwong@crystal.csus.org,Volunteer Captain
-18012SAM,Chi-hwa Shao,R00057,(650) 222-5467,shaochihwa@gmail.com,Construction Captain
-18012SAM,Vivian Shao,R00443,(650) 347-8848,vshao@csus.org,Volunteer Captain
-18013SAM,Alex Cabezon,R00003,(650) 482-6350,acabezon@bkf.com,Volunteer Captain
-18013SAM,Craig Wallace,R00070,(650) 533-8850,craig.wallace@yahoo.com,Construction Captain
-18014SAM,Andrew Duvall,R00442,(415) 542-6320,aduvall@novoconstruction.com,Construction Captain
-18015EPA,Don Van Creveld,R00102,(925) 330-6194,misterrefurb@gmail.com,Construction Captain
-18015EPA,Josh Martin,R00193,(650) 933-8176,josh.martin@siemens.com,Volunteer Captain
-18016EPA,Lawrence Hu,R00230,(650) 450-0959,lhu_ccas@yahoo.com,Construction Captain
-18016EPA,Tim Molak,R00378,(650) 851-6117,tmolak@prioryca.org,Volunteer Captain
-18017EPA,John Sheckleton,R00445,,jsheckleton@te.com,Volunteer Captain
-18017EPA,Robert Pereira,R00333,(408) 813-0684,rjpereira2001@gmail.com,Construction Captain
-18018EPA,Bob Rosenberg,R00035,(650) 465-0344,bob@gr8work.com,Construction Captain
-18018EPA,Linda Guzman,R00446,(650) 400-5659,linda.m.guzman@wellsfargo.com,Volunteer Captain
-18019EPA,Thompson Sako,R00376,(415) 990-3903,tsako@pacbell.net,Construction Captain
-18019EPA,Tom Boeddiker,R00381,(650) 614-3500,tboeddiker@gmail.com,Volunteer Captain
-18020EPA,Jeff Jerome,R00403,(650) 596-6160,jeffriejerome@yahoo.com,Construction Captain
-18022MEN,Brooks Posegate,R00045,(650) 367-5977,brooks.posegate@hotmail.com,Construction Captain
-18022MEN,Tessa Wei,R00440,(415) 254-9250,twei@stanfordhealthcare.org,Volunteer Captain
-18023RWU,Andy Ritger,R00009,(408) 667-6038,andy.ritger@gmail.com,Construction Captain
-18023RWU,John Crevelt,R00177,(650) 743-0611,krefeldsawards@gmail.com,Construction Captain
-18023RWU,John Tastor,R00439,(415) 298-4611,johntastor85@gmail.com,Volunteer Captain
-18025SSF,Edna Stoehr,R00109,(650) 477-8563,edna@gene.com,Volunteer Captain
-18025SSF,Gitte Jensen,R00137,(650) 438-2340,jensen.gitte@gene.com,Volunteer Captain
-18025SSF,Peter Yribar,R00300,(650) 255-4085,yribar.peter@gene.com,Construction Captain
-18026RWC,Joel Butler,R00175,(650) 743-8018,joel.butler@wlbutler.com,Construction Captain
-18027RWC,Edward Greilich,R00110,(510) 813-4400,eg@commercialcasework.com,Construction Captain
-18027RWC,Toby Cordone,R00379,(408) 494-4528,toby.cordone@herbank.com,Volunteer Captain
-18028RWC,David Kirk,R00442,(650) 384-5758,dgkirk@gmail.com,Construction Captain
-18028RWC,Ken Hayes,R00213,(650) 365-0600 x15,khayes@thehayesgroup.com,Volunteer Captain
-18028RWC,Russ Castle,R00441,(650) 722-3974,russ@insurancebycastle.com,Volunteer Captain
-18029RWC,Frances Larios,R00434,,frances.larios@pentair.com,Volunteer Captain
-18029RWC,Spence Leslie,R00357,(650) 474-7414,spencerkleslie@gmail.com,Construction Captain
-18030MEN,Michael Tenta,R00270,(650) 843-5636,mtenta@cooley.com,Volunteer Captain
-18030MEN,Pete Hooper,R00299,(650) 303-2156,hooperpete@gmail.com,Construction Captain
-18038EPA,Brian Dahlquist,R00040,(650) 787-4885,brian.dahlquist@efi.com,Construction Captain
-18038EPA,Candace Demele,R00447,(650) 793-5699,cdemele@rocketmail.com,Volunteer Captain
-18031EPA,Gail McFall,R00129,(650) 461-6626,gail.mcfall@gmail.com,Volunteer Captain
-18031EPA,Jim McFall,R00172,(650) 380-8544,wjmcfall@gmail.com,Construction Captain
-18038EPA,Marty Deggeller,R00254,(650) 321-1029,martydeg@pacbell.net,Volunteer Captain
-18032EPA,Amanda Carson,R00402,(650) 636-6727,amanda.carson@gmail.com,Volunteer Captain
-18032EPA,Carlos Delgadillo,R00418,,carlos.delgadillo@truebeck.com,Construction Captain
-18033SAM,Kevin Marks,R00221,(650) 283-9151,kevamarks@gmail.com,Construction Captain
-18034SAM,Kenneth Hines,R00215,(650) 823-8355,ken.r.hines@gmail.com,Construction Captain
-18034SAM,Ron Strong,R00449,,strongra@gmail.com,Volunteer Captain
-18036SAM,Kevin Norman,R00406,(650) 364-6453 x 253,knorman@des-ae.com,Construction Captain
-18036SAM,Mohammed Sedqi,R00122,(650) 364-6453 ,msedqi@des-ae.com,Volunteer Captain\
-"""
+  CAPTAINS_DATA = textwrap.dedent("""\
+    Site ID,Name,ROOMS Captain ID,Phone,Email,Project Role
+    50001DAL,Assimilate Pacemake,R00438,608) 123-4567,flutter@telescope.com,Construction Captain
+    50001DAL,Solidarity Countdown,R00238,608) 123-4567,neptune@flan.com,Volunteer Captain
+    50002SSF,Paul Peppergrass,R00029,608) 123-4567,told@quadrivium.com,Construction Captain
+    50002SSF,Liberate Ocarina,R00031,608) 123-4567,timetable@sultan.com,Volunteer Captain
+    50003SSF,Angle Bartender,R00169,608) 123-4567,barberry@printout.com,Construction Captain
+    50003SSF,General Arden,R00448,608) 123-4567,metalwork@plod.com,Volunteer Captain
+    50004SSF,Companionway Encryption,R00079,608) 123-4567,sepoy@three.com,Construction Captain
+    50004SSF,Berry Perjury,R00422,608) 123-4567,broody@dendritic.com,Volunteer Captain
+    50005RWC,Magnificent Novak,R00432,608) 123-4567,lutetium@luggage.com,Volunteer Captain
+    50005RWC,Chromosphere Tuberous,R00257,608) 123-4567,bleach@nocturne.com,Construction Captain
+    50006RWC,Sang Taffy,R00444,608) 123-4567,violate@coeducation.com,Volunteer Captain
+    50006RWC,Licensable Artifact,R00384,608) 123-4567,rehearsal@karate.com,Construction Captain
+    50007RWC,Coffey Friar,R00400,608) 123-4567,permeate@incite.com,Construction Captain
+    50009RWC,Sardine Nit,R00435,608) 123-4567,skiff@aircraft.com,Construction Captain
+    "50010SAM, 50021EPA",Anthony Pinkie,R00269,608) 123-4567,metropolitan@boulevard.com,Construction Captain
+    "50010SAM, 50021EPA",Chat Dull,R00331,608) 123-4567,aristocratic@theorist.com,Volunteer Captain
+    50011SAM,Archae Falsify,R00308,608) 123-4567,mandatory@myriad.com,Construction Captain
+    50012SAM,Ontogeny Shine,R00026,608) 123-4567,deputation@stratagem.com,Volunteer Captain
+    50012SAM,Avow Manhattan,R00057,608) 123-4567,public@clubroom.com,Construction Captain
+    50012SAM,Adequacy Software,R00443,608) 123-4567,permitted@blanch.com,Volunteer Captain
+    50013SAM,Salient Deadhead,R00003,608) 123-4567,scandium@washbasin.com,Volunteer Captain
+    50013SAM,Georgia Sleight,R00070,608) 123-4567,birdseed@nature.com,Construction Captain
+    50014SAM,Promulgate Christiana,R00442,608) 123-4567,oocyte@obstruct.com,Construction Captain
+    50015EPA,Danube Smash,R00102,608) 123-4567,tugboat@resplendent.com,Construction Captain
+    50015EPA,Main Sudden,R00193,608) 123-4567,vintner@sommelier.com,Volunteer Captain
+    50016EPA,Lacrosse Format,R00230,608) 123-4567,potatoes@aluminate.com,Construction Captain
+    50016EPA,Halide Loy,R00378,608) 123-4567,lavender@chandler.com,Volunteer Captain
+    50017EPA,Rumford Antithetic,R00445,608) 123-4567,agnew@together.com,Volunteer Captain
+    50017EPA,Wander Glitch,R00333,608) 123-4567,bronx@bolo.com,Construction Captain
+    50018EPA,Brandon Truly,R00035,608) 123-4567,bali@pidgin.com,Construction Captain
+    50018EPA,Winthrop Cable,R00446,608) 123-4567,navajo@neurosis.com,Volunteer Captain
+    50019EPA,Impressive I'll,R00376,608) 123-4567,freshwater@ripoff.com,Construction Captain
+    50019EPA,Sanhedrin Mythology,R00381,608) 123-4567,mutual@slipshod.com,Volunteer Captain
+    50020EPA,Gait Diabetic,R00403,608) 123-4567,flop@infatuate.com,Construction Captain
+    50022MEN,Thyme Terrific,R00045,608) 123-4567,dextrous@carnal.com,Construction Captain
+    50022MEN,Newcastle Dialysis,R00440,608) 123-4567,boston@platinum.com,Volunteer Captain
+    50023RWU,Communicable Coachmen,R00009,608) 123-4567,tsar@virgin.com,Construction Captain
+    50023RWU,Savonarola Inexorable,R00177,608) 123-4567,rancorous@plenty.com,Construction Captain
+    50023RWU,Minstrelsy Allocate,R00439,608) 123-4567,inviolate@farkas.com,Volunteer Captain
+    50025SSF,Clint Malnourished,R00109,608) 123-4567,inert@breeze.com,Volunteer Captain
+    50025SSF,Aphelion Hurdle,R00137,608) 123-4567,kola@polymeric.com,Volunteer Captain
+    50025SSF,Internal Julio,R00300,608) 123-4567,calculable@abet.com,Construction Captain
+    50026RWC,Premonition Millionfold,R00175,608) 123-4567,vase@pushpin.com,Construction Captain
+    50027RWC,First Upsurge,R00110,608) 123-4567,skyward@refractory.com,Construction Captain
+    50027RWC,Illumine Ernest,R00379,608) 123-4567,assist@canterbury.com,Volunteer Captain
+    50028RWC,Cosy Ursula,R00442,608) 123-4567,siren@rubble.com,Construction Captain
+    50028RWC,Complex Hearken,R00213,608) 123-4567,eastward@decertify.com,Volunteer Captain
+    50028RWC,Lucifer Pest,R00441,608) 123-4567,ironic@cranny.com,Volunteer Captain
+    50029RWC,Judo Homogeneity,R00434,608) 123-4567,let@oviduct.com,Volunteer Captain
+    50029RWC,Extension Sworn,R00357,608) 123-4567,swelter@woodwind.com,Construction Captain
+    50030MEN,Digress Seasonal,R00270,608) 123-4567,silty@transmittal.com,Volunteer Captain
+    50030MEN,Angela Godhead,R00299,608) 123-4567,chorale@entropy.com,Construction Captain
+    50038EPA,Westfield Boson,R00040,608) 123-4567,litany@onondaga.com,Construction Captain
+    50038EPA,Coffee Seductive,R00447,608) 123-4567,pious@stacy.com,Volunteer Captain
+    50031EPA,Ode Baudelaire,R00129,608) 123-4567,concern@alasdair.com,Volunteer Captain
+    50031EPA,Sabra Mutandis,R00172,608) 123-4567,patois@madcap.com,Construction Captain
+    50038EPA,Slake Herkimer,R00254,608) 123-4567,wack@wrapup.com,Volunteer Captain
+    50032EPA,Prexy Complicity,R00402,608) 123-4567,waterhouse@typhon.com,Volunteer Captain
+    50032EPA,Grata Berate,R00418,608) 123-4567,tent@strike.com,Construction Captain
+    50033SAM,Fibrin Polopony,R00221,608) 123-4567,hartford@douce.com,Construction Captain
+    50034SAM,Theoretician Votive,R00215,608) 123-4567,georgetown@schoolhouse.com,Construction Captain
+    50034SAM,Gentle Davis,R00449,608) 123-4567,penguin@shish.com,Volunteer Captain
+    50036SAM,Silicate Lanky,R00406,608) 123-4567,sacrilege@hijack.com,Construction Captain
+    50036SAM,Muzo Videotape,R00122,608) 123-4567,gait@giles.com,Volunteer Captain
+    """)

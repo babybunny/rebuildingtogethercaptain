@@ -13,6 +13,7 @@ dev~rebuildingtogethercaptain> import_csv.import_captains(input_csv="../2012_ROO
 """
 
 import csv
+import sys
 import logging
 
 from gae.room import ndb_models
@@ -36,20 +37,34 @@ def clean_get(d, k):
 
 
 def get_program(year):
-  assert isinstance(year, int)
   nrd_type, created = ndb_models.ProgramType.get_or_create("NRD")
   assert not created
   program, created = ndb_models.Program.get_or_create(nrd_type.key, int(year))
   return program
 
 
-def import_sites(input_csv, nrd_program_year):
+def sanity_check_headers(e, a, path):
+  if e != a:
+    for h in e - a:
+      print >> sys.stderr, "Expected header \"{}\" was not found in {}".format(h, path)
+    for h in a - e:
+      print >> sys.stderr, "Found header \"{}\" in {} which was not expected".format(h, path)
+    sys.stderr.flush()
+    raise SystemExit(1)
+
+
+def import_sites(input_csv):
   """
   input_csv is a path like "../2012_ROOMS_site_info_sample.csv"
-
-  Change input_csv to actual input file - the default is test data.
   """
+  expected_headers = {"Program Year", "Announcement Subject", "Announcement Body", "Site ID",
+                      "Budgeted Cost in Campaign", "Repair Application: Applicant's Name", "Applicant Home Phone",
+                      "Applicant Mobile Phone", "Applicant Work Phone", "Recipient's Street Address",
+                      "Recipient's City", "Recipient's Zip Code", "Jurisdiction", "Sponsor",
+                      "Repair Application: RRP Test Results", "Photos Link"}
   reader = csv.DictReader(open(input_csv))
+  actual_headers = set(reader.fieldnames)
+  sanity_check_headers(expected_headers, actual_headers, input_csv)
   for s in reader:
     number = s["Site ID"]
     site = ndb_models.NewSite.query().filter(ndb_models.NewSite.number == number).get()
@@ -58,7 +73,7 @@ def import_sites(input_csv, nrd_program_year):
       continue
     else:
       site = ndb_models.NewSite(number=number)
-    site.program = get_program(nrd_program_year).name
+    site.program = get_program(s['Program Year']).name
     budget = s.get("Budgeted Cost in Campaign", "$0").strip("$").replace(",", "") or '0'
     site.budget = int(budget)
     site.name = clean_get(s, "Repair Application: Applicant's Name")
@@ -87,13 +102,12 @@ def import_sites(input_csv, nrd_program_year):
 def import_captains(input_csv):
   """
   input_csv is a path like "../2012_ROOMS_site_info_sample.csv"
-
-  Change input_csv to actual input file - the default is test data.
   """
+  expected_headers = {"Site ID", "Name", "ROOMS Captain ID", "Phone", "Email", "Project Role"}
   reader = csv.DictReader(open(input_csv))
+  actual_headers = set(reader.fieldnames)
+  sanity_check_headers(expected_headers, actual_headers, input_csv)
   for s in reader:
-    
-
     key = s.get('key')
     email = clean_get(s, "Email")
     rooms_id = clean_get(s, "ROOMS Captain ID")
