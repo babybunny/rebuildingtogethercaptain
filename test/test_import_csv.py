@@ -1,9 +1,10 @@
 import tempfile
-import unittest
 import textwrap
+import unittest
+
 import app_engine_test_utils
-import import_csv
 from gae.room import ndb_models
+from scripts import import_csv
 from test import test_models
 
 
