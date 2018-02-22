@@ -993,13 +993,13 @@ class UploadStatementOfWorkAttachment(blobstore_handlers.BlobstoreUploadHandler)
       site_id = self.request.get('site_id')
       if site_id is None:
         logging.error("{} did not receive a site_id, nothing to link to".format(self.__class__.__name__))
-        return self.redirect('/room/staff')
+        self.error(404)
 
       redirect_uri = webapp2.uri_for(SiteView.__name__, id=site_id)
       upload_files = self.get_uploads('file')
       if not upload_files:
         logging.error("No files to upload")
-        return self.redirect(redirect_uri)
+        self.error(404)
 
       upload = upload_files[0]
       document = ndb_models.UploadedDocument(blob_key=upload.key(), filename=upload.filename)
