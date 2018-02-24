@@ -15,6 +15,7 @@ def activate_app_engine_testbed_and_clear_cache():
   tb.init_search_stub()
   tb.init_user_stub()
   tb.init_memcache_stub()
+  tb.init_blobstore_stub()
   tb.init_images_stub(enable=False)
   ndb.get_context().clear_cache()
   return tb

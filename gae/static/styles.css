@@ -32,6 +32,12 @@ body {
 .listpic {
   text-align: right;
 }
+.move-right-1 {
+  margin-left: 20px;
+}
+.move-right-2 {
+  margin-left: 40px;
+}
 .big {
   font-size: 30px;
 }

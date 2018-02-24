@@ -6,9 +6,14 @@ import json
 import logging
 import collections
 import traceback
+import urllib
+
 import webapp2
 from google.appengine.ext import ndb
 from google.appengine.api import search
+from google.appengine.ext.blobstore import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
+
 import common
 import ndb_models
 import general_utils
@@ -16,6 +21,14 @@ import general_utils
 TEST_SITE_NUMBER = '11999ZZZ'
 EXPORT_CSV = 'Export CSV'
 POSTED_ID_PREFIX = 'export_'
+
+
+def send_message_with_status(response, message, status=500):
+  if status > 399:
+    logging.error(message)
+  response.set_status(404)
+  response.write(message)
+
 
 
 class SelectProgram(webapp2.RequestHandler):
@@ -124,6 +137,27 @@ class CaptainAutocomplete(AutocompleteHandler):
   program_filter = False
 
 
+class SiteAttachments(StaffHandler):
+
+  def get(self, id):
+    site = ndb.Key(ndb_models.NewSite, int(id)).get()
+    if not site:
+      webapp2.abort(404)
+
+    attachment_model = site.attachments and site.attachments.get()  # type: ndb_models.SiteAttachments
+    if not attachment_model:
+      attachment_model = ndb_models.SiteAttachments()
+      attachment_model.put()
+      site.attachments = attachment_model.key
+      site.put()
+
+    d = {
+      'site': site,
+      'attachments': attachment_model.get_attachments(id)
+    }
+    return common.Respond(self.request, 'site_list_attachments', d)
+
+
 class SiteView(StaffHandler):
 
   searchable_model_class = ndb_models.NewSite
@@ -140,6 +174,14 @@ class SiteView(StaffHandler):
     d['entries'] = [site]
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     d['order_sheets'] = order_sheets
+
+    # for document uploads
+    upload_url = blobstore.create_upload_url('/room/upload_statement_of_work_attachment?site_id={}'.format(id))
+    d['upload_url'] = str(upload_url)
+
+    # document data for documents that are already attached
+    attachment = None
+    d['attachment'] = attachment
     return common.Respond(self.request, 'site_list_one', d)
 
 
@@ -962,3 +1004,68 @@ class LoadModel(StaffHandler):
       self.response.write("model {} does not have a default handler defined in {}".format(model_type, __file__))
       return
     return self.redirect_to(handler.__name__, id=model_id)
+
+
+############################################################################################
+# Following is based on https://cloud.google.com/appengine/docs/standard/python/blobstore/ #
+############################################################################################
+
+class UploadSiteAttachment(blobstore_handlers.BlobstoreUploadHandler):
+    def post(self):
+      site_id = self.request.get('site_id')
+      if site_id is None:
+        msg = "{} did not receive a site_id, nothing to link to".format(self.__class__.__name__)
+        send_message_with_status(self.response, msg)
+        return
+
+      attachment_type = self.request.get('attachment_type')
+      if attachment_type is None:
+        msg = "{} did not receive an attachment type".format(self.__class__.__name__)
+        send_message_with_status(self.response, msg)
+        return
+
+      redirect_uri = webapp2.uri_for(SiteAttachments.__name__, id=site_id)
+      upload_files = self.get_uploads('file')
+      if not upload_files:
+        logging.warning("No files to upload")
+        return self.redirect(redirect_uri)
+
+      upload = upload_files[0]
+      site = ndb.Key(ndb_models.NewSite, int(site_id)).get()  # type: ndb_models.NewSite
+      site.add_attachment(attachment_type, upload)
+      return self.redirect(redirect_uri)
+
+
+class DownloadSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
+    def get(self):
+        blob_key = str(urllib.unquote(self.request.get('blob_key')))
+        if not blobstore.get(blob_key):
+            self.error(404)
+        else:
+            self.send_blob(blobstore.BlobInfo.get(blob_key), save_as=True)
+
+class RemoveSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
+  def get(self):
+    site_id = self.request.get('site_id')
+    attachments_id = self.request.get('attachments_id')
+    name = self.request.get('name')
+
+    if site_id is None:
+      send_message_with_status(self.response, "{} did not receive a site_id".format(self.__class__.__name__))
+      return
+
+    if attachments_id is None:
+      send_message_with_status(self.response, "{} did not receive a attachments_id".format(self.__class__.__name__))
+      return
+
+    if name is None:
+      send_message_with_status(self.response, "{} did not receive an attachment type".format(self.__class__.__name__))
+      return
+
+    attachments = ndb.Key(ndb_models.SiteAttachments, int(attachments_id)).get()  # type: ndb_models.SiteAttachments
+    attachments.set_attachment_by_property_name(name, None)
+    self.redirect(webapp2.uri_for(SiteAttachments.__name__, id=site_id))
+
+############################################################################################
+# The above is based on https://cloud.google.com/appengine/docs/standard/python/blobstore/ #
+############################################################################################
