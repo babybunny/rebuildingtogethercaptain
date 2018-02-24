@@ -6,14 +6,13 @@ import json
 import logging
 import collections
 import traceback
-import webapp2
 import urllib
 
+import webapp2
 from google.appengine.ext import ndb
 from google.appengine.api import search
-from google.appengine.ext import blobstore
+from google.appengine.ext.blobstore import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
-
 
 import common
 import ndb_models
@@ -173,8 +172,6 @@ class SiteView(StaffHandler):
     d['site_list_detail'] = True
     d['start_new_order_submit'] = common.START_NEW_ORDER_SUBMIT
     d['entries'] = [site]
-
-    # to list order sheets
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     d['order_sheets'] = order_sheets
 
@@ -1072,4 +1069,3 @@ class RemoveSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
 ############################################################################################
 # The above is based on https://cloud.google.com/appengine/docs/standard/python/blobstore/ #
 ############################################################################################
-

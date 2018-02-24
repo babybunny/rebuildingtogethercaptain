@@ -3,7 +3,6 @@
 https://stackoverflow.com/questions/13078892/in-webapp2-how-can-i-get-a-list-of-all-route-uris
 """
 
-
 def get_route_list(router):
   """
   Get a nested list of all the routes in the app's router

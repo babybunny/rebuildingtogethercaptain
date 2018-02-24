@@ -291,7 +291,7 @@ login_required = routes.PathPrefixRoute('/room', [
                 name='LoadModel')
 ])
 
-standard_post_routes = routes.PathPrefixRoute('/room', [
+post_routes = routes.PathPrefixRoute('/room', [
   webapp2.Route(r'/room/site_budget_export',
                 staff.SiteBudgetExport,
                 name='SiteBudgetExport')
@@ -318,7 +318,7 @@ app = webapp2.WSGIApplication(
                   Placeholder,
                   name='Help'),  # TODO
     login_required,
-    standard_post_routes,
+    post_routes,
     non_standard_routes,
     webapp2.Route(r'/order_delete_confirm',
                   staff.OrderDeleteConfirm,

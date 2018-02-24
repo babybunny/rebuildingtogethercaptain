@@ -1,8 +1,8 @@
 define(
     [
-	      'bootstrap-datepicker',
+	'bootstrap-datepicker',
         'app/views/rooms_form',
-	      'app/views/model_select_control',
+	'app/views/model_select_control',
         'app/models/captain_choices',
         'text!app/templates/simple_form.html'
     ],
@@ -18,7 +18,7 @@ define(
                 name: "site",
                 label: "Site",
                 control: "input",
-		            disabled: true
+		disabled: true
             },
             {
                 name: "program",
@@ -60,13 +60,13 @@ define(
                 name: "labor_amount",
                 label: "Labor Value ($)",
                 control: "input",
-                default: 0.0,
+                value: 0.0,
             },
             {
                 name: "materials_amount",
                 label: "Materials Value ($)",
                 control: "input",
-                default: 0.0
+                value: 0.0
             },
             {
                 name: "description",
@@ -81,7 +81,7 @@ define(
                     {label: "Normal", value: "Normal"},
                     {label: "Roofing", value: "Roofing"}
                 ],
-		            default: "Normal"
+		value: "Normal"
             },
             {
                 name: "state",
@@ -94,7 +94,7 @@ define(
                     {label: "fulfilled", value: "fulfilled"},
                     {label: "deleted", value: "deleted"}
                 ],
-                    default: "new"
+                value: "new"
             },
             {
                 id: "submit",
@@ -106,12 +106,12 @@ define(
 
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		            name: 'inkinddonation',
-		            template: template,
-		            model: app.models.inkinddonation,
-		            loading: loading,
-		            fields: fields,
-	          });
+		name: 'inkinddonation',
+		template: template,
+		model: app.models.inkinddonation,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }
