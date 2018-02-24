@@ -440,13 +440,6 @@ class Item(SearchableModel):
     return self.VisibleSortableLabel(self.order_form_section)
 
 
-class UploadedDocument(ndb.Model):
-  filename = ndb.StringProperty()
-  user = ndb.UserProperty(auto_current_user=True)
-  time = ndb.DateTimeProperty(auto_now=True)
-  blob_key = ndb.BlobKeyProperty()
-
-
 class NewSite(SearchableModel):
   """
   A work site.
@@ -480,7 +473,6 @@ class NewSite(SearchableModel):
   street_number.verbose_name = "Street Address"
   city_state_zip = ndb.StringProperty()
   budget = ndb.IntegerProperty(default=0)
-  statement_of_work_attachment = ndb.KeyProperty(kind=UploadedDocument)
   announcement_subject = ndb.StringProperty(default='Nothing Needs Attention')
   announcement_body = ndb.TextProperty(
     default="Pat yourself on the back - no items need attention.\n"
