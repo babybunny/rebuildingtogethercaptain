@@ -1,5 +1,5 @@
 """
-Imports site and captain data into ROOM.
+Imports site and captain data into ROOMS for a NRD batch data upload. "NRD" is hard-coded.
 
 Intended to be run with the remote_api. Great instructions at
 https://github.com/babybunny/rebuildingtogethercaptain/wiki/Import-Site-and-Captain-Data
@@ -38,7 +38,6 @@ def clean_get(d, k):
 
 def get_program(year):
   nrd_type, created = ndb_models.ProgramType.get_or_create("NRD")
-  assert not created
   program, created = ndb_models.Program.get_or_create(nrd_type.key, int(year))
   return program
 
