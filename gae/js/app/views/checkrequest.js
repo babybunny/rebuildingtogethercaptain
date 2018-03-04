@@ -2,11 +2,17 @@ define(
     [
         'bootstrap-datepicker',
         'app/views/rooms_form',
-	      'app/views/model_select_control',
+	'app/views/model_select_control',
         'app/models/captain_choices',
+        'app/models/captain_for_site_choices',
         'text!app/templates/simple_form.html'
     ],
-    function(bsdp, RoomFormView, ModelSelectControl, CaptainChoices, template) {
+    function(bsdp,
+	     RoomFormView,
+	     ModelSelectControl,
+	     CaptainChoices,
+	     CaptainForSiteChoice,
+	     template) {
         var fields = [
             {
                 name: "id",
@@ -30,7 +36,7 @@ define(
                 name: "captain",
                 label: "Captain",
                 control: ModelSelectControl,
-                room_model_module: CaptainChoices
+		room_model_module: CaptainForSiteChoice
             },
             {
                 name: "name",
@@ -43,7 +49,7 @@ define(
                 label: "Payment date",
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd"},
-		            required: true
+		required: true
             },
             {
                 name: "labor_amount",
@@ -112,12 +118,12 @@ define(
 
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		            name: 'checkrequest',
-		            template: template,
-		            model: app.models.checkrequest,
-		            loading: loading,
-		            fields: fields,
-	          });
+		name: 'checkrequest',
+		template: template,
+		model: app.models.checkrequest,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }

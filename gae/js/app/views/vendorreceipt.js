@@ -79,12 +79,12 @@ define(
 
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		            name: 'vendorreceipt',
-		            template: template,
-		            model: app.models.vendorreceipt,
-		            loading: loading,
-		            fields: fields,
-	          });
+		name: 'vendorreceipt',
+		template: template,
+		model: app.models.vendorreceipt,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }

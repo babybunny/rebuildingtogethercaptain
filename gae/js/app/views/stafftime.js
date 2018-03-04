@@ -2,8 +2,9 @@ define(
     [
         'bootstrap-datepicker',
         'app/views/rooms_form',
-	      'app/views/model_select_control',
+	'app/views/model_select_control',
         'app/models/captain_choices',
+        'app/models/captain_for_site_choices',
         'app/models/staffposition_choice',
         'text!app/templates/simple_form.html'
     ],
@@ -12,6 +13,7 @@ define(
         RoomFormView,
         ModelSelectControl,
         CaptainChoice,
+	CaptainForSiteChoice,
         StaffPositionChoice,
         template) {
         var fields = [
@@ -37,13 +39,13 @@ define(
                 name: "captain",
                 label: "Captain",
                 control: ModelSelectControl,
-                room_model_module: CaptainChoice
+		room_model_module: CaptainForSiteChoice
             },
             {
                 name: "position",
                 label: "Position",
-		            control: ModelSelectControl,
-		            room_model_module: StaffPositionChoice
+		control: ModelSelectControl,
+		room_model_module: StaffPositionChoice
             },
             {
                 name: "state",
@@ -88,12 +90,12 @@ define(
 
         var ViewFactory = function(app, loading) {
             return new RoomFormView({
-		            name: 'stafftime',
-		            template: template,
-		            model: app.models.stafftime,
-		            loading: loading,
-		            fields: fields,
-	          });
+		name: 'stafftime',
+		template: template,
+		model: app.models.stafftime,
+		loading: loading,
+		fields: fields,
+	    });
         }
         return ViewFactory;
     }
