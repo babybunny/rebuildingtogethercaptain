@@ -21,6 +21,18 @@ define(
                 disabled: true
             },
             {
+                name: "state",
+                label: "State",
+                control: "select",
+                options: [
+                    {label: "new", value: "new"},
+                    {label: "submitted", value: "submitted"},
+                    {label: "payable", value: "payable"},
+                    {label: "fulfilled", value: "fulfilled"},
+                    {label: "deleted", value: "deleted"}
+                ]
+            },
+            {
                 name: "site",
                 label: "Site",
                 control: "input",
@@ -93,18 +105,6 @@ define(
                     {label: "Sole Proprietor", value: "Sole Proprietor"},
                     {label: "Partnership", value: "Partnership"},
                     {label: "Don't Know", value: "Don't Know"},
-                ]
-            },
-            {
-                name: "state",
-                label: "State",
-                control: "select",
-                options: [
-                    {label: "new", value: "new"},
-                    {label: "submitted", value: "submitted"},
-                    {label: "payable", value: "payable"},
-                    {label: "fulfilled", value: "fulfilled"},
-                    {label: "deleted", value: "deleted"}
                 ]
             },
             {
