@@ -175,6 +175,11 @@ def CreateAll():
     captain=KEYS['CAPTAIN'],
     type='Construction'
   ).put()
+  KEYS['SITECAPTAIN2'] = ndb_models.SiteCaptain(
+    site=KEYS['SITE'],
+    captain=KEYS['CAPTAIN'],
+    type='Volunteer'
+  ).put()
 
   KEYS['STAFFTIME'] = ndb_models.StaffTime(
     site=KEYS['SITE'],
