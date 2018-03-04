@@ -77,6 +77,31 @@ class StaffHandler(webapp2.RequestHandler):
       return webapp2.redirect_to('Start')
 
 
+class StaffOrCaptainHandler(webapp2.RequestHandler):
+  """Handler base class that ensures the user meets Staff or Captain view prerequisites:
+  - user is logged in
+  - user matches an existing Staff record OR user matches an existing Captian record
+  - if Staff, record has a selected Program
+  """
+
+  model_class = None
+  searchable_model_class = None
+
+  def dispatch(self, *a, **k):
+    user = common.RoomsUser.from_request(self.request)
+    if not user:
+      return webapp2.redirect_to('Start')
+    if user.staff:
+      if not user.staff.program_selected:
+        logging.info(self.request)
+        return webapp2.redirect_to('SelectProgram')
+      super(StaffOrCaptainHandler, self).dispatch(*a, **k)
+    elif user.captain:
+      super(StaffOrCaptainHandler, self).dispatch(*a, **k)
+    else:
+      return webapp2.redirect_to('Start')
+
+
 class StaffHome(StaffHandler):
   def get(self):
     order_sheets = list(ndb_models.OrderSheet.query())
@@ -470,7 +495,7 @@ class OrderSheetItemList(StaffHandler):
                       query=sheet.item_set, params={'order_sheet': sheet})
 
 
-class SiteExpenseList(StaffHandler):
+class SiteExpenseList(StaffOrCaptainHandler):
   model_class = None  # 'StaffTime'
   expense_type = None  # 'Staff Time'
   table_template = None  # 'stafftime_table.html'
@@ -500,7 +525,7 @@ class SiteExpenseList(StaffHandler):
                       params=params, query=query)
 
 
-class SiteExpenseEditor(StaffHandler):
+class SiteExpenseEditor(StaffOrCaptainHandler):
   model_class = None
   template_value = None
   template_file = None
@@ -643,7 +668,7 @@ class OrderView(StaffHandler):
     return common.Respond(self.request, 'order_view', d)
 
 
-class OrderFlow(StaffHandler):
+class OrderFlow(StaffOrCaptainHandler):
   def get(self, site_id, id=None):
     site = ndb.Key(ndb_models.NewSite, int(site_id)).get()
     if not site:

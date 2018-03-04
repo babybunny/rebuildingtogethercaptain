@@ -108,7 +108,7 @@ class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metacl
       """
 
       def mdl_read(self, request):
-        self._authorize_staff()
+        self._authorize_user()
         if not request.id:
           raise remote.ApplicationError('id is required')
         mdl = ndb.Key(mdl_cls, request.id).get()
@@ -118,7 +118,7 @@ class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metacl
         return d2g(mdl)
 
       def mdl_create(self, request):
-        self._authorize_staff()
+        self._authorize_user()
         if request.id:
           raise remote.ApplicationError(
             'Must not include id with create requests')
@@ -128,7 +128,7 @@ class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metacl
         return d2g(mdl)
 
       def mdl_update(self, request):
-        self._authorize_staff()
+        self._authorize_user()
         if not request.id:
           raise remote.ApplicationError('id is required')
         mdl = ndb.Key(mdl_cls, request.id).get()

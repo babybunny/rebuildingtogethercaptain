@@ -23,6 +23,7 @@ class BaseApi(remote.Service):
     """
     user = common.RoomsUser.from_request(self.rs)
     if user and user.staff:
+      self._user = user
       return
     raise remote.ApplicationError('Must be staff to use this API.')
 
@@ -34,5 +35,6 @@ class BaseApi(remote.Service):
     """
     user = common.RoomsUser.from_request(self.rs)
     if user and (user.staff or user.captain):
+      self._user = user
       return
     raise remote.ApplicationError('Must be a ROOMS user to use this API.')
