@@ -9,29 +9,31 @@
 {% endblock %}
 {%block about_this_page %}
 <h1>Ahoy Captain!</h1>
-<p>This is your personalized Captain's Page.  Here you can make orders for your site(s) and <a href="#personal_info">update personal info</a> including preferred phone numbers and T-shirt size.
+<p class="captain_home_top">This is your personalized Captain's Page.  Here you can review or make orders for your site(s) and <a href="#personal_info">update personal info</a> including preferred phone numbers and T-shirt size.
 {% endblock %}
 {%block body%}
-<h2>Sites</h2>
+<div class="captain_home_header">
+    <h2 class="captain_home_sides">Sites</h2>
 {% if entries %}
-<p>You're a Captain for the following site(s):
+<p class="captain_home_bottom"><b>You're a Captain for the following site(s):</b><br />
 {% for site in entries %}
   <a href="#site_{{ site.number }}">
     {{ site.name }} (#{{ site.number }})
   </a>
 {% if not loop.last %}
-,
+<br>
 {% endif %}
 {% endfor %}
 
-<br>Contact 
-<a href="mailto:{{ help_contact }}">{{ help_contact }}</a> 
+<br>Contact
+<a href="mailto:{{ help_contact }}">{{ help_contact }}</a>
 if this is incorrect.
-</p>
+</p></div>
 {% include "site_view.html" %}
 {% else %}
-There are no sites assigned to you.  Contact 
-<a href="mailto:{{ help_contact }}">{{ help_contact }}</a> 
+<p class="captain_home_bottom">
+There are no sites assigned to you.<br>  Contact
+<a href="mailto:{{ help_contact }}">{{ help_contact }}</a>
 to have your Sites set up, by
 sending the Site number (if available), site name, and your role
 (Construction, Team, or Volunteer captain).
@@ -40,7 +42,7 @@ sending the Site number (if available), site name, and your role
 <a name="personal_info"></a>
 <br/>
 <h2>Personal Info</h2>
-<p>Only RTP staff can change Name and Email because they must match up with the 
+<p>Only RTP staff can change Name and Email because they must match up with the
 volunteer database and login account.  Contact {{ help_contact }} for assistance.   You can change your phone numbers and add special instructions below, remember to click <strong>"{{ captain_contact_submit }}"</strong> to save them.
   <form action="{{ webapp2.uri_for('Captain', id=captain.key.integer_id()) }}" method="post">
   <table>
@@ -54,7 +56,7 @@ volunteer database and login account.  Contact {{ help_contact }} for assistance
     {% endif %}
     <tr>
       <th>
-	Name: 
+	Name:
       </th>
       <td>
 	{{ captain.name }}
@@ -62,7 +64,7 @@ volunteer database and login account.  Contact {{ help_contact }} for assistance
     </tr>
     <tr>
       <th>
-	Email: 
+	Email:
       </th>
       <td>
 	{{ captain.email }}
