@@ -160,14 +160,18 @@ define(
                 this.order.set('notes', e.target.value);
             },
             changeQuantity: function(e) {
+                var new_quantity_float = 0;
+                if (e.target.value != "") {
+                    new_quantity_float = parseInt(e.target.value);
+                }
                 var oi = this.order_items.get(parseInt(e.target.name));
                 if (!oi) {
                     this.order_items.add({
                         item: parseInt(e.target.name),
-                        quantity: e.target.value
+                        quantity: new_quantity_float
                     });
                 } else {
-                    oi.set('quantity', e.target.value);
+                    oi.set('quantity', new_quantity_float);
                 }
                 return false;
             },
