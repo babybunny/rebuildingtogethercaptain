@@ -234,3 +234,4 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertEquals(1, q.count())
     oi = q.get()
     self.assertEquals(self.keys['ORDER2'], oi.order)
+    self.assertEquals(self.keys['ITEM'], oi.item)
