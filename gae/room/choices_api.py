@@ -1,3 +1,6 @@
+"""API for choices that appear as parts of forms, in drop-dpwn menus."""
+
+from google.appengine.ext import ndb
 
 from protorpc import message_types
 from protorpc import messages
@@ -10,6 +13,10 @@ import ndb_models
 package = 'rooms'
 
 
+class Site(messages.Message):
+  id = messages.IntegerField(1, required=True)
+
+  
 class Choice(messages.Message):
   id = messages.IntegerField(1, required=True)
   label = messages.StringField(2)
@@ -31,6 +38,18 @@ class ChoicesApi(base_api.BaseApi):
     self._authorize_staff()
     choices = Choices()
     for mdl in ndb_models.Captain.query().order(ndb_models.Captain.name):
+      choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
+    return choices
+
+  @remote.method(Site, Choices)
+  def captain_for_site_choices_read(self, request):
+    self._authorize_user()
+    choices = Choices()
+    sitecaptain_models = list(
+      ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))
+    captains = ndb.get_multi(set(m.captain for m in sitecaptain_models))
+    captains.sort(key=lambda c: c.name)
+    for mdl in captains:
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
     return choices
 

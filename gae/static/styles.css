@@ -32,6 +32,12 @@ body {
 .listpic {
   text-align: right;
 }
+.move-right-1 {
+  margin-left: 20px;
+}
+.move-right-2 {
+  margin-left: 40px;
+}
 .big {
   font-size: 30px;
 }
@@ -119,6 +125,7 @@ div.right {
 div.body {
     padding-bottom: 20px;
     min-height: 400px;
+    margin-left: 1em;
 }
 div.footer {
   font-size: smaller;
@@ -372,3 +379,29 @@ button.btn.white{
 
 div.form-group.thumbnail{border:none}
 .required{color: #a94442;}
+.captain_home_header{
+    width: 742px;
+    margin-left: 208px;
+    margin-top: -5px;
+    text-align: center;
+    padding: 0 20px;
+}
+.captain_home_top, .captain_home_sides, .captain_home_bottom{
+    border: 3px solid green;
+    padding: 5px;
+}
+.captain_home_top{
+    border-bottom: none;
+    margin-bottom: -5px;
+    margin-left: 16px;
+    margin-right: -16px;
+}
+.captain_home_sides{
+    border-top: none;
+    border-bottom: none;
+    padding-bottom: 0px;
+}
+.captain_home_bottom{
+    border-top: none;
+    margin-top: -5px;
+}
