@@ -63,7 +63,8 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertIn(u'order_sheet', response.json['order'])
     self.assertIn(u'order_items', response.json)
     self.assertEquals(1, len(response.json['order_items']))
-    self.assertDictContainsSubset({u'item': 30, u'order': 51, u'quantity': 2.0, u'unit_cost': 9.99},
+    self.assertDictContainsSubset({u'item': self.keys['ITEM'].integer_id(),
+                                   u'quantity': 2.0, u'unit_cost': 9.99},
                                   response.json['order_items'][0])
     self.assertIn(u'delivery', response.json)
     self.assertEquals(u'Person Man', response.json['delivery']['contact'])
@@ -190,8 +191,7 @@ class ApiScenarioTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
 
-    # Now the order should still be $19.98 because the order has not been saved since the item
-    # price was changed.
+    # Now we see the new price reflected, and the new quantity 10.00 * 4 = 40..
     post_json_body = {"id": order_id};
     response = app.post_json('/custom_api.order_full_read',
                              post_json_body,
@@ -227,5 +227,10 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertEquals(order_id, response.json['id'])
     self.assertIn(u'order', response.json)
     self.assertEquals(40.0, response.json['order']['sub_total'])
-    
-    
+
+    # Make sure we are still dealing with the same OrderItem objects.
+    oicls = test_models.ndb_models.OrderItem
+    q = oicls.query(oicls.order == self.keys['ORDER2'])
+    self.assertEquals(1, q.count())
+    oi = q.get()
+    self.assertEquals(self.keys['ORDER2'], oi.order)
