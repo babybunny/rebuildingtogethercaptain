@@ -1,5 +1,5 @@
 """
-Imports site and captain data into ROOM.
+Imports site and captain data into ROOMS for a NRD batch data upload. "NRD" is hard-coded.
 
 Intended to be run with the remote_api. Great instructions at
 https://github.com/babybunny/rebuildingtogethercaptain/wiki/Import-Site-and-Captain-Data
@@ -13,181 +13,152 @@ dev~rebuildingtogethercaptain> import_csv.import_captains(input_csv="../2012_ROO
 """
 
 import csv
+import sys
 import logging
 
-from room import models
-
-##############
-# update me! #
-##############
-PROGRAM = '2017 NRD'
+from gae.room import ndb_models
 
 
-def import_photos(input_csv="../2012_ROOMS_phote.csv"):
-  """Change input_csv to actual input file - the default is test data."""
+def clean_get(d, k):
+
+  ### bit of dirty data coverage ###
+  ok = k
+  if k not in d:
+    k = k.replace("Repair Application: ", "")
+    if k not in d:
+      k = "Repair Application: " + k
+      if k not in d:
+        raise KeyError("No column named \"{}\"".format(ok))
+  ### bit of dirty data coverage ###
+
+  return d[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
+                                                                                                       '').replace(
+    '\x95', '').encode('ascii', 'replace')
+
+
+def get_program(year):
+  nrd_type, created = ndb_models.ProgramType.get_or_create("NRD")
+  program, created = ndb_models.Program.get_or_create(nrd_type.key, int(year))
+  return program
+
+
+def sanity_check_headers(e, a, path):
+  if e != a:
+    for h in e - a:
+      print >> sys.stderr, "Expected header \"{}\" was not found in {}".format(h, path)
+    for h in a - e:
+      print >> sys.stderr, "Found header \"{}\" in {} which was not expected".format(h, path)
+    sys.stderr.flush()
+    raise SystemExit(1)
+
+
+def import_sites(input_csv):
+  """
+  input_csv is a path like "../2012_ROOMS_site_info_sample.csv"
+  """
+  expected_headers = {"Program Year", "Announcement Subject", "Announcement Body", "Site ID",
+                      "Budgeted Cost in Campaign", "Repair Application: Applicant's Name", "Applicant Home Phone",
+                      "Applicant Mobile Phone", "Applicant Work Phone", "Recipient's Street Address",
+                      "Recipient's City", "Recipient's Zip Code", "Jurisdiction", "Sponsor",
+                      "Repair Application: RRP Test Results", "Photos Link"}
   reader = csv.DictReader(open(input_csv))
+  actual_headers = set(reader.fieldnames)
+  sanity_check_headers(expected_headers, actual_headers, input_csv)
   for s in reader:
     number = s["Site ID"]
-    site = models.NewSite.all().filter('number =', number).get()
-    if not site:
-      continue
-    if s['Flickr Pages']:
-      site.photo_link = s['Flickr Pages']
-      site.put()
-
-
-def import_sites(input_csv="../2012_ROOMS_site_info_sample.csv"):
-  """Change input_csv to actual input file - the default is test data."""
-  reader = csv.DictReader(open(input_csv))
-  for s in reader:
-    number = s["Site ID"]
-    site = models.NewSite.all().filter('number =', number).get()
+    site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
     if site:
       logging.info('site %s exists, skipping', number)
       continue
     else:
-      site = models.NewSite(number=number)
-    site.program = PROGRAM
-    site.budget = int(s["Budgeted Cost in Campaign"]
-                      ) if s["Budgeted Cost in Campaign"] else 0
-
-    # Because Python 2.x csv module only reads ascii.
-    def clean_s(k):
-      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
-                                                                                                           '').replace(
-        '\x95', '').replace('\xb1', '').encode('ascii', 'replace')
-
-    site.name = clean_s("Repair Application: Applicant's Name")
-    site.street_number = clean_s("Street Address")
+      site = ndb_models.NewSite(number=number)
+    program = get_program(s['Program Year'])
+    site.program = program.name
+    site.program_key = program.key
+    budget = s.get("Budgeted Cost in Campaign", "$0").strip("$").replace(",", "") or '0'
+    site.budget = int(budget)
+    site.name = clean_get(s, "Repair Application: Applicant's Name")
+    site.street_number = clean_get(s, "Recipient's Street Address")
     site.city_state_zip = "%s CA, %s" % (
-      clean_s("Repair Application: Recipient's City"),
-      clean_s("Repair Application: Recipient's Zip Code"))
-    site.applicant = clean_s("Repair Application: Applicant's Name")
-    site.applicant_home_phone = clean_s(
+      clean_get(s, "Recipient's City"),
+      clean_get(s, "Recipient's Zip Code"))
+    site.applicant = clean_get(s, "Repair Application: Applicant's Name")
+    site.applicant_home_phone = clean_get(s, 
       "Repair Application: Applicant Home Phone")
-    site.applicant_work_phone = clean_s(
+    site.applicant_work_phone = clean_get(s, 
       "Repair Application: Applicant Work Phone")
-    site.applicant_mobile_phone = clean_s(
+    site.applicant_mobile_phone = clean_get(s, 
       "Repair Application: Applicant Mobile Phone")
-    site.sponsor = clean_s("(Sponsor) Campaign Description")
-    site.rrp_test = clean_s("Repair Application: RRP Test Results")
-    site.rrp_level = clean_s("Repair Application: RRP Result Notes")
-    # site.roof = clean_s("Roof?")
-    site.jurisdiction = clean_s("Jurisdiction")
-    site.announcement_subject = clean_s("Announcement Subject")
-    site.announcement_body = clean_s("Announcement Body")
+    site.sponsor = clean_get(s, "Sponsor")
+    site.rrp_test = clean_get(s, "Repair Application: RRP Test Results")
+    site.rrp_level = clean_get(s, "Repair Application: RRP Test Results")
+    # site.roof = clean_get(s, "Roof?")
+    site.jurisdiction = clean_get(s, "Jurisdiction")
+    site.announcement_subject = clean_get(s, "Announcement Subject")
+    site.announcement_body = clean_get(s, "Announcement Body")
     site.put()
     logging.info('put site %s', number)
 
 
-def import_captains(input_csv="../2012_ROOMS_Captain_email_sample.csv"):
-  """Change input_csv to actual input file - the default is test data."""
+def import_captains(input_csv):
+  """
+  input_csv is a path like "../2012_ROOMS_site_info_sample.csv"
+  """
+  expected_headers = {"Site ID", "Name", "ROOMS Captain ID", "Phone", "Email", "Project Role"}
   reader = csv.DictReader(open(input_csv))
+  actual_headers = set(reader.fieldnames)
+  sanity_check_headers(expected_headers, actual_headers, input_csv)
   for s in reader:
-    def clean_s(k):
-      return s[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
-                                                                                                           '').replace(
-        '\x95', '').encode('ascii', 'replace')
-
     key = s.get('key')
-    email = clean_s("Email")
-    rooms_id = clean_s("ROOMS Captain ID")
-    # name = "%s %s" % (clean_s("First Name"),
-    #                   clean_s("Last Name"))
-    name = clean_s("Name")
+    email = clean_get(s, "Email")
+    rooms_id = clean_get(s, "ROOMS Captain ID")
+    name = clean_get(s, "Name")
     captain = None
     if key:
-      captain = models.Captain.get_by_id(int(key))
+      captain = ndb_models.Captain.get_by_id(int(key))
       if captain:
         logging.info('got captain from key %s', key)
     if not captain:
-      captain = models.Captain.all().filter('rooms_id =', rooms_id).get()
+      captain = ndb_models.Captain.query(ndb_models.Captain.rooms_id == rooms_id).get()
       if captain:
         logging.info('got captain from rooms_id %s', rooms_id)
     if not captain:
-      captain = models.Captain.all().filter('email =', email).get()
+      captain = ndb_models.Captain.query(ndb_models.Captain.email == email).get()
       if captain:
         logging.info('got captain from email %s', email)
     if not captain:
       logging.info('creating captain key %s name %s email %s rooms_id %s',
                    key, name, email, rooms_id)
-      captain = models.Captain(name=name, email=email, rooms_id=rooms_id)
+      captain = ndb_models.Captain(name=name, email=email, rooms_id=rooms_id)
 
     # Over-write these values, assume volunteer database is more up to
     # date.
     captain.name = name
     captain.email = email
     captain.rooms_id = rooms_id
-    # captain.phone1 = clean_s("Preferred Phone") or None
-    # captain.phone_mobile = clean_s("Phone mobile")
-    # captain.phone_work = clean_s("Phone work")
-    # captain.phone_home = clean_s("Phone home")
-    # captain.phone_fax = clean_s("Phones Fax::number")
-    # captain.phone_other = clean_s("Phones Other::number")
     captain.put()
 
-    number = s["Site ID"]
-    site = models.NewSite.all().filter('number =', number).get()
-    if not site:
-      logging.error('site %s does not exist, skipping', number)
-      continue
+    numbers = [n.strip() for n in s["Site ID"].split(',')]
+    for number in numbers:
+      site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
+      if not site:
+        logging.error('site %s does not exist, skipping', number)
+        continue
 
-    # In input type is like "Volunteer Captain" but in model it's
-    # "Volunteer"
-    input_type = s["Captain Type"]
-    for t in models.SiteCaptain.type.choices:
-      if t in input_type:
-        break
+      # In input type is like "Volunteer Captain" but in model it's
+      # "Volunteer"
+      input_type = s.get("Captain Type", s.get("Project Role"))
+      for t in ndb_models.SiteCaptain.type._choices:
+        if t in input_type:
+          break
 
-    query = models.SiteCaptain.all()
-    query.filter('site =', site).filter('captain =', captain)
-    sitecaptain = query.get()
-    if sitecaptain is None:
-      logging.info('Creating new SiteCaptain mapping %s to %s',
-                   site.number, captain.name)
-      sitecaptain = models.SiteCaptain(site=site, captain=captain, type=t)
-    else:
-      logging.info('Found existing SiteCaptain')
-      sitecaptain.type = t
-    sitecaptain.put()
-
-
-ANNOUNCEMENT_BODY = """Please remember that your Home Depot card will be held until we receive your scope of work form.
-Thank you for serving as a captain this year!  Please use this space to include notes/correspondence with staff.
-Contact RTP staff for assistance:
-Cari, 650-366-6597 x224, cari@rebuildingtogetherpeninsula.org
-Adam, 650-366-6597 x223, adam@rebuildingtogetherpeninsula.org
-"""
-ANNOUNCEMENT_SUBJECT = """Scope of work is due March 2 for CDBG sites; all forms due March 30."""
-
-# SAH
-ANNOUNCEMENT_SUBJECT = """Thank you for your help with SAH!"""
-ANNOUNCEMENT_BODY = ''
-
-# NRD 2014
-ANNOUNCEMENT_BODY = """
-Thank you for serving as a captain this year!  Please use this space to include
-notes/correspondence with staff.
-Contact RTP staff for assistance:
-Roger, 650-366-6597 x227, roger@rebuildingtogetherpeninsula.org
-Adam, 650-366-6597 x223, adam@rebuildingtogetherpeninsula.org
-"""
-ANNOUNCEMENT_SUBJECT = """Scope of work is due March 5; all forms due March 28."""
-
-# NRD 2015
-ANNOUNCEMENT_BODY = """
-Thank you for serving as a captain this year!  REMINDER: Captain's BBQ @RTP
-11AM-4PM on Saturday, March 21.
-(Deadline to Identify a Runner).  Please use this space to include notes or correspondence with staff.
-Contact RTP staff for assistance:
-Lindsay, 650-366-6597 x226, lindsay@rebuildingtogetherpeninsula.org
-Adam, 650-366-6597 x223, adam@rebuildingtogetherpeninsula.org
-"""
-ANNOUNCEMENT_SUBJECT = """Scope of work is due March 13; all forms due March 28."""
-
-
-def set_announcement():
-  for s in models.NewSite.all().filter('program =', PROGRAM):
-    s.announcement_subject = ANNOUNCEMENT_SUBJECT
-    s.announcement_body = ANNOUNCEMENT_BODY
-    s.put()
+      query = ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == site.key).filter(ndb_models.SiteCaptain.captain == captain.key)
+      sitecaptain = query.get()
+      if sitecaptain is None:
+        logging.info('Creating new SiteCaptain mapping %s to %s',
+                     site.number, captain.name)
+        sitecaptain = ndb_models.SiteCaptain(site=site.key, captain=captain.key, type=t)
+      else:
+        logging.info('Found existing SiteCaptain')
+        sitecaptain.type = t
+      sitecaptain.put()

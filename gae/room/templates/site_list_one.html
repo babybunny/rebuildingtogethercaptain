@@ -10,15 +10,19 @@
   <i>{{ entries[0].program }}</i>
 </p>
 <a href="{{ webapp2.uri_for('Site', id=entries[0].key.integer_id()) }}">
-  Edit Site Info
+  Edit Site
 </a>
-|
+&nbsp;|&nbsp;
+<a href="{{ webapp2.uri_for('SiteAttachments', id=entries[0].key.integer_id()) }}">
+  Attachments
+</a>
+&nbsp;|&nbsp;
 <a href="{{ webapp2.uri_for('SiteExpenses', id=entries[0].key.integer_id()) }}">
-  View all Site Expenses
+  Expenses
 </a>
-|
+&nbsp;|&nbsp;
 <a href="{{ webapp2.uri_for('SiteSummary', id=entries[0].key.integer_id()) }}">
-  Reporting Summary
+  Reporting
 </a>
 {% if user.captain %}
 <p>

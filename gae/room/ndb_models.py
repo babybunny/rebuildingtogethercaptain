@@ -4,16 +4,16 @@ Many of these are similar to models in models.py, which are Django models.  We
 need these ndb versions for use with runtime: python27, which is required by
 endpoints.
 """
-import os
 import collections
 import logging
 import math
+import os
 
-from google.appengine.ext import ndb
+import webapp2
 from google.appengine.api import search
+from google.appengine.ext import ndb, blobstore
 
 import general_utils
-
 
 # TODO: move to global config
 SALES_TAX_RATE = float(os.environ.get('SALES_TAX_RATE', 0.0925))
@@ -440,6 +440,111 @@ class Item(SearchableModel):
     return self.VisibleSortableLabel(self.order_form_section)
 
 
+class UploadedDocument(ndb.Model):
+  filename = ndb.StringProperty()
+  user = ndb.UserProperty(auto_current_user=True)
+  time = ndb.DateTimeProperty(auto_now=True)
+  blob_key = ndb.BlobKeyProperty()
+
+  @property
+  def formatted_time(self):
+    return self.time.strftime("%b %d %Y %H:%M UTC")
+
+  @property
+  def uri(self):
+    return webapp2.uri_for('DownloadSiteAttachment', blob_key=self.blob_key)
+
+
+class SiteAttachments(ndb.Model):
+  one = ndb.KeyProperty(kind=UploadedDocument,
+                        name='Planned Scope of Work',
+                        verbose_name="This is RTP's rough scope of work recommendation for the Construction Captain. "
+                                     "This should be reviewed by the Captain prior to first site visit. Captain is to "
+                                     "take this scope and adjust it according to what they can realistically commit to."
+                                     "<br><br>This document will be on ROOMs prior to Captain Kick off.")
+  two = ndb.KeyProperty(kind=UploadedDocument,
+                        name='Signed Scope of Work',
+                        verbose_name="It's crucial that Captains have their site owners sign-off on the scope of work "
+                                     "prior to any work starting. Captains, after you have walked the property "
+                                     "and assessed priorities, please write or type out the scope, review it with "
+                                     "site owner, and have them sign up top on the scope of work form to show "
+                                     "approval. Please leave them a copy and upload a scanned version here. This is "
+                                     "RTP's way of confirming everyone is in agreement. Upload your scanned signed "
+                                     "scope of work here.<br><br>Due March 26th for 2018 National Rebuilding Day")
+  three = ndb.KeyProperty(kind=UploadedDocument,
+                          name='Submitted Scope of Work',
+                          verbose_name="Since signed scopes are usually in a PDF format, we also need a typed out "
+                                       "version uploaded. This is important for RTP's reporting purposes. Captains "
+                                       "please do your best to also upload a submitted typed scope of work (doc). If "
+                                       "only a PDF signed scoped is uploaded, RTP staff will type this info into a "
+                                       "submitted scope of work for the Site.<br><br>Also Due March 26th for 2018 "
+                                       "National Rebuilding Day.")
+  four = ndb.KeyProperty(kind=UploadedDocument,
+                         name='Fully Executed Signed Scope of Work',
+                         verbose_name="On National Rebuilding Day (or within a few weeks after), please omplete all "
+                                      "\"primary tasks\" on the scope of work, review the completion with the site "
+                                      "owner, and have them sign at the bottom of the scope of work form (feel free "
+                                      "to use the exact same document that was signed before work started). Please "
+                                      "upload \"Fully Executed Signed Scope of Work\" here. This is RTP's way of "
+                                      "recognizing that the Scope of work is complete and the site owner is in "
+                                      "agreement. This is the final document needed.<br><br>Due May 23rd for 2018 "
+                                      "National Rebuilding Today.")
+
+  def set_attachment_by_property_name(self, property_name, document_key):
+    for prop in self.get_ordered_properties():
+      if prop._name == property_name:
+        setattr(self, prop._code_name, document_key)
+        self.put()
+        return
+    raise Exception("No property named {} could be found on {}".format(property_name, self.__class__.__name__))
+
+  def get_ordered_file_keys(self):
+    return [getattr(self, p._code_name) for p in self.get_ordered_properties()]
+
+  def get_ordered_properties(self):
+    return [SiteAttachments.one, SiteAttachments.two, SiteAttachments.three, SiteAttachments.four]
+
+  def get_attachments(self, site_id):
+    attachments = []
+    files_and_properties = zip(self.get_ordered_file_keys(), self.get_ordered_properties())
+    for file_key, property in files_and_properties:
+      attached_file = file_key.get() if file_key else None
+      attachments.append(SiteAttachmentHandlerData(
+        site_id=site_id,
+        attachments_id=self.key.integer_id(),
+        attached_file=attached_file,
+        name=property._name,
+        verbose_name=property._verbose_name
+      ))
+    return attachments
+
+class SiteAttachmentHandlerData(object):
+
+  def __init__(self, site_id, attachments_id, attached_file, name, verbose_name):
+    self.site_id = site_id
+    self.attachments_id = attachments_id
+    self.attached_file = attached_file
+    self.name = name
+    self.verbose_name = verbose_name
+    self.upload_uri = None
+    self.remove_uri = None
+    self.filename = attached_file.filename if attached_file else None
+    self._build_uris()
+
+  def _build_uris(self):
+    self.upload_uri = blobstore.create_upload_url(webapp2.uri_for(
+          'UploadSiteAttachment',
+          site_id=self.site_id,
+          attachment_type=self.name))
+    if self.attached_file is not None:
+      self.download_uri = webapp2.uri_for('DownloadSiteAttachment', blob_key=self.attached_file.blob_key)
+    self.remove_uri = webapp2.uri_for(
+          'RemoveSiteAttachment',
+          site_id=self.site_id,
+          attachments_id=self.attachments_id,
+          name=self.name)
+
+
 class NewSite(SearchableModel):
   """
   A work site.
@@ -473,6 +578,7 @@ class NewSite(SearchableModel):
   street_number.verbose_name = "Street Address"
   city_state_zip = ndb.StringProperty()
   budget = ndb.IntegerProperty(default=0)
+  attachments = ndb.KeyProperty(kind=SiteAttachments)
   announcement_subject = ndb.StringProperty(default='Nothing Needs Attention')
   announcement_body = ndb.TextProperty(
     default="Pat yourself on the back - no items need attention.\n"
@@ -491,6 +597,17 @@ class NewSite(SearchableModel):
 
   def get_search_result_detail_lines(self):
     return [self.street_number or "N/A", self.city_state_zip]
+
+  def add_attachment(self, attachment_name, uploaded_file):
+    document = UploadedDocument(blob_key=uploaded_file.key(), filename=uploaded_file.filename)
+    document.put()
+    if not self.attachments:
+      attachments = SiteAttachments()
+      attachments.put()
+      self.attachments = attachments.key
+    attachments_model = self.attachments.get()  # type: SiteAttachments
+    attachments_model.set_attachment_by_property_name(attachment_name, document.key)
+    self.put()
 
   @property
   def IsCDBG(self):
@@ -1159,6 +1276,10 @@ class InKindDonation(SearchableModel):
     return me
 
   def Total(self):
+    if self.labor_amount is None:
+      self.labor_amount = 0.
+    if self.materials_amount is None:
+      self.materials_amount = 0.
     return self.labor_amount + self.materials_amount
 
 

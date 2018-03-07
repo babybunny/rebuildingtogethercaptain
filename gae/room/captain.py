@@ -38,11 +38,20 @@ class CaptainHome(CaptainHandler):
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     sites = []
     for sitecaptain in ndb_models.SiteCaptain.query(
-            ndb_models.SiteCaptain.captain == captain.key):
+        ndb_models.SiteCaptain.captain == captain.key):
       site = sitecaptain.site.get()
-      # if site.program != common.DEFAULT_CAPTAIN_PROGRAM:
-      #   continue
+      
+      if site.program_key:
+        if site.program_key.get().status != ndb_models.Program.ACTIVE_STATUS:
+          continue
+
+      # TODO: remove after issue147 is complete.
+      elif site.program and site.program != "2018 NRD":
+        continue
+      
+      # TODO:what's this? maybe clean it up.
       site.new_order_form = "site.new_order_form placeholder"
+
       sites.append(site)
 
     captain_form = 'captain_form placeholder'

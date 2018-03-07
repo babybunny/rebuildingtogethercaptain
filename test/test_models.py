@@ -10,10 +10,7 @@ import datetime
 import logging
 import unittest
 
-from google.appengine.api import search
-
 import app_engine_test_utils
-from gae.room import general_utils
 from gae.room import ndb_models
 
 
@@ -177,6 +174,11 @@ def CreateAll():
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],
     type='Construction'
+  ).put()
+  KEYS['SITECAPTAIN2'] = ndb_models.SiteCaptain(
+    site=KEYS['SITE'],
+    captain=KEYS['CAPTAIN'],
+    type='Volunteer'
   ).put()
 
   KEYS['STAFFTIME'] = ndb_models.StaffTime(
@@ -529,6 +531,7 @@ def DeleteAll(KEYS):
 
 
 class ModelsTest(unittest.TestCase):
+
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
@@ -538,3 +541,24 @@ class ModelsTest(unittest.TestCase):
     self.assertIn('ORDERITEM', KEYS)
     DeleteAll(KEYS)
     self.assertFalse(KEYS)
+
+  def testUploadedDocumentTypes(self):
+    KEYS = CreateAll()
+    site = KEYS['SITE'].get()
+    attachments = site.attachments
+    self.assertIsNone(attachments)
+    attachments = ndb_models.SiteAttachments()
+
+    expected = [
+      ndb_models.SiteAttachments.one,
+      ndb_models.SiteAttachments.two,
+      ndb_models.SiteAttachments.three,
+      ndb_models.SiteAttachments.four
+    ]
+    actual = attachments.get_ordered_properties()
+    self.assertEqual(actual, expected)
+
+    expected = [None, None, None, None]
+    actual = attachments.get_ordered_file_keys()
+    self.assertEqual(actual, expected)
+
