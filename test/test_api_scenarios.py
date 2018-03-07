@@ -82,7 +82,10 @@ class ApiScenarioTest(unittest.TestCase):
         {"item": self.keys['ITEM'].integer_id(),
          "order": self.keys['ORDER2'].integer_id(),
          "id": self.keys['ORDERITEM21'].integer_id(),
-         "quantity": "4"}
+         "quantity": "0"},
+        {"item": self.keys['ITEM2'].integer_id(),
+         "order": self.keys['ORDER2'].integer_id(),
+         "quantity": "1"}
       ],
       "delivery": {
         "notes": "Please go around back.",
@@ -107,15 +110,15 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertIn(u'id', response.json)
     self.assertEquals(order_id, response.json['id'])
     self.assertIn(u'order', response.json)
+    self.assertEquals(4.99, response.json['order']['sub_total'])
     self.assertIn(u'order_sheet', response.json['order'])
     self.assertIn(u'order_items', response.json)
-    self.assertDictEqual(
-        {u"item": self.keys['ITEM'].integer_id(),
+    self.assertEquals(1, len(response.json['order_items']))
+    self.assertDictContainsSubset(
+        {u"item": self.keys['ITEM2'].integer_id(),
          u"order": self.keys['ORDER2'].integer_id(),
-         u"id": self.keys['ORDERITEM21'].integer_id(),
-         u"supplier": self.keys['SUPPLIER'].integer_id(),
-         u"quantity": 4.0,
-         u"unit_cost": 9.99}, response.json['order_items'][0])
+         u"quantity": 1.0,
+         u"unit_cost": 4.99}, response.json['order_items'][0])
     self.assertEquals(1, len(response.json['order_items']))
     self.assertIn(u'delivery', response.json)
     self.assertEquals(u'Person Man', response.json['delivery']['contact'])
