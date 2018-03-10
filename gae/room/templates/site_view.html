@@ -125,6 +125,11 @@
 	             id="announcement_body"
 	             name="{{ site.key.integer_id() }}">{{ site.announcement_body }}</div>
         </div>
+        <p>
+          <a href="{{ webapp2.uri_for('SiteAttachments', id=site.key.integer_id()) }}">
+            Scope of Work Attachments
+          </a>
+        </p>
         {% if site_list_detail %}
         <p>{{ site.StreetAddress() }}
           <a href="http://maps.google.com/maps?f=q&q={{ site.StreetAddress() }}&ie=UTF8&z=14" target="_blank">
