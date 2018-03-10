@@ -3,6 +3,20 @@
 {% endblock %}
 {%block about_this_page %}
 <h2>Attachments for Site {{site.number}}</h2>
+{% if user.staff %}
+<p>
+  <a href="{{ webapp2.uri_for('SiteView', id=site.key.integer_id()) }}">
+    Go back to Site #{{ site.number }}.
+  </a>
+</p>
+{% endif %}
+{% if user.captain %}
+<p>
+  <a href="{{ webapp2.uri_for('CaptainHome') }}">
+    Go back to your Captain home page.
+  </a>
+</p>
+{% endif %}
 {% endblock %}
 {% block body %}
 {% include "site_attachments.html" %}
