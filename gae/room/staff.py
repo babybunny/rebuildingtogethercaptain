@@ -162,7 +162,7 @@ class CaptainAutocomplete(AutocompleteHandler):
   program_filter = False
 
 
-class SiteAttachments(StaffHandler):
+class SiteAttachments(StaffOrCaptainHandler):
 
   def get(self, id):
     site = ndb.Key(ndb_models.NewSite, int(id)).get()
