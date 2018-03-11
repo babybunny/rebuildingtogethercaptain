@@ -66,15 +66,25 @@ define(
                 options: {format: "yyyy-mm-dd", startDate: "+2d",  daysOfWeekDisabled: "06"},
                 required: true
             },
+        ].concat(basic_logistics_fields);
+
+        var borrow_fields = [
+            {
+                name: 'borrow_date',
+                label: 'Borrow date (Mon-Fri only)',
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd", startDate: "+2d",  daysOfWeekDisabled: "06"},
+                required: true
+            },
             {
                 name: 'return_date',
-                label: '(Optional) Return date for durable equipment',
+                label: 'Return date for durable equipment',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd", startDate: "+2d"},
                 required: true
             },
         ].concat(basic_logistics_fields);
-
+        
         var retrieval_fields = [
             {
                 name: 'dropoff_date',
@@ -121,6 +131,9 @@ define(
                         if (order_full.has('pickup')) {
                             self.pickup = new Backbone.Model(order_full.get('pickup'));
                         }
+                        if (order_full.has('borrow')) {
+                            self.borrow = new Backbone.Model(order_full.get('borrow'));
+                        }
                         if (order_full.has('retrieval')) {
                             self.retrieval = new Backbone.Model(order_full.get('retrieval'));
                         }
@@ -152,6 +165,7 @@ define(
                 'change .item-quantity': 'changeQuantity',
                 'click #order-proceed-delivery': 'renderDelivery',
                 'click #order-proceed-pickup': 'renderPickup',
+                'click #order-proceed-borrow': 'renderBorrow',
                 'click #order-proceed-retrieval': 'renderRetrieval',
                 'click #order-submit': 'save',
                 'click #order-proceed-no-logistics': 'save',
@@ -248,7 +262,14 @@ define(
                     this.pickup = new Backbone.Model();
                 }
                 this.order_full.set('pickup', this.pickup.attributes);
-                this.renderLogistics(pickup_fields, "Pickup and Return", this.pickup);
+                this.renderLogistics(pickup_fields, "Pickup", this.pickup);
+            },
+            renderBorrow: function() {
+                if (!this.borrow) {
+                    this.borrow = new Backbone.Model();
+                }
+                this.order_full.set('borrow', this.borrow.attributes);
+                this.renderLogistics(borrow_fields, "Borrow and Return", this.borrow);
             },
             renderRetrieval: function() {
                 if (!this.retrieval) {

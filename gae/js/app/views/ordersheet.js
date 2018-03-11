@@ -86,7 +86,18 @@ define(
                     {label: "No", value: "No"},
                     {label: "Yes", value: "Yes"},
                 ],
-                helpMessage: "Allow Captain to select Pick-up from RTP warehouse"
+                helpMessage: "Allow Captain to select Pick-up from RTP warehouse (no returns)"
+            },
+            {
+                name: "borrow_options",
+                label: "Borrow options",
+                control: "select",
+                default: "No",
+                options: [
+                    {label: "No", value: "No"},
+                    {label: "Yes", value: "Yes"},
+                ],
+                helpMessage: "Allow Captain to Borrow from RTP warehouse and Return"
             },
             {
                 name: "retrieval_options",

@@ -56,6 +56,11 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: OrderBorrow
+  properties:
+  - name: __key__
+    direction: desc
+
 - kind: OrderRetrieval
   properties:
   - name: __key__
@@ -72,6 +77,11 @@ indexes:
     direction: desc
 
 - kind: Pickup
+  properties:
+  - name: __key__
+    direction: desc
+
+- kind: Borrow
   properties:
   - name: __key__
     direction: desc
