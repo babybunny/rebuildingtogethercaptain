@@ -284,6 +284,7 @@ def CreateAll():
     delivery_options='No',
     retrieval_options='No',
     pickup_options='No',
+    borrow_options='Yes',
     visibility='Staff Only'
   ).put()
   KEYS['ORDERSHEET5'] = ndb_models.OrderSheet(
@@ -305,6 +306,7 @@ def CreateAll():
     delivery_options='No',
     retrieval_options='No',
     pickup_options='Yes',
+    borrow_options='No',
     visibility='Inactive',
     supports_internal_invoice=True
   ).put()
@@ -469,6 +471,19 @@ def CreateAll():
   KEYS['ORDERPICKUP'] = ndb_models.OrderPickup(
     order=KEYS['ORDER'],
     pickup=KEYS['PICKUP'],
+  ).put()
+
+  KEYS['BORROW'] = ndb_models.Borrow(
+    site=KEYS['SITE'],
+    borrow_date='Apr 13',
+    return_date='Apr 19',
+    contact='Joe Borrow',
+    notes='''meet me at the side door for borrow''',
+  ).put()
+
+  KEYS['ORDERBORROW'] = ndb_models.OrderBorrow(
+    order=KEYS['ORDER'],
+    borrow=KEYS['BORROW'],
   ).put()
 
   KEYS['RETRIEVAL'] = ndb_models.Retrieval(

@@ -224,6 +224,8 @@ class CustomApiTest(unittest.TestCase):
     self.assertIn(u'order_sheet', response.json['order'])
     self.assertIn(u'order_items', response.json)
     self.assertEquals(3, len(response.json['order_items']))
+    # It isn't very realisitic to have delivery, retrieval, and pickup options on the same order, but the
+    # data model supports it.
     self.assertIn(u'delivery', response.json)
     self.assertEquals(u'Joe Delivery', response.json['delivery']['contact'])
     self.assertIn(u'retrieval', response.json)

@@ -371,6 +371,7 @@ class OrderSheet(SearchableModel):
   pickup_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
   pickup_options.verbose_name = (
     'Allow Captain to select Pick-up from RTP warehouse')
+  borrow_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
   retrieval_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
   retrieval_options.verbose_name = ('Drop-off and retrieval (like debris box)'
                                     '  Note: do not set this with either'
@@ -382,6 +383,7 @@ class OrderSheet(SearchableModel):
   def HasLogistics(self):
     return (self.delivery_options == 'Yes' or
             self.pickup_options == 'Yes' or
+            self.borrow_options == 'Yes' or
             self.retrieval_options == 'Yes')
 
   @property
@@ -867,6 +869,10 @@ class Order(SearchableModel):
     return OrderPickup.query(OrderPickup.order == self.key)
 
   @property
+  def orderborrow_set(self):
+    return OrderBorrow.query(OrderBorrow.order == self.key)
+
+  @property
   def orderretrieval_set(self):
     return OrderRetrieval.query(OrderRetrieval.order == self.key)
 
@@ -938,6 +944,8 @@ class Order(SearchableModel):
       return "%s (Delivery)" % od.delivery.get().delivery_date
     for od in self.orderpickup_set:
       return "%s (Pickup)" % od.pickup.get().pickup_date
+    for od in self.orderborrow_set:
+      return "%s (Borrow)" % od.borrow.get().borrow_date
     for od in self.orderretrieval_set:
       return "%s (Drop-off)" % od.retrieval.get().dropoff_date
     return None
@@ -963,6 +971,14 @@ class Order(SearchableModel):
         od.pickup.get().contact_phone and 'at ' or '',
         od.pickup.get().contact_phone or '',
         od.pickup.get().notes or '')
+
+    for od in self.orderborrow_set:
+      return "%s%s %s%s %s" % (
+        od.borrow.get().contact and 'Contact ' or '',
+        od.borrow.get().contact or '',
+        od.borrow.get().contact_phone and 'at ' or '',
+        od.borrow.get().contact_phone or '',
+        od.borrow.get().notes or '')
 
     for od in self.orderretrieval_set:
       return "%s%s %s%s %s" % (
@@ -1067,6 +1083,27 @@ class OrderPickup(SearchableModel):
   """Maps Order to Pickup."""
   order = ndb.KeyProperty(kind=Order, required=True)
   pickup = ndb.KeyProperty(kind=Pickup, required=True)
+
+
+class Borrow(SearchableModel):
+  """Pick up from RTP warehouse."""
+  site = ndb.KeyProperty(kind=NewSite, required=True)
+  borrow_date = ndb.StringProperty()
+  borrow_date.verbose_name = 'Borrow Date (Mon-Fri only)'
+  return_date = ndb.StringProperty()
+  return_date.verbose_name = '(Optional) Return date for durable equipment'
+  contact = ndb.StringProperty()
+  contact.verbose_name = "Contact person (who will pick up)"
+  contact_phone = ndb.StringProperty()
+  notes = ndb.TextProperty()
+  notes.verbose_name = (
+    'Instructions for warehouse staff')
+
+
+class OrderBorrow(SearchableModel):
+  """Maps Order to Borrow."""
+  order = ndb.KeyProperty(kind=Order, required=True)
+  borrow = ndb.KeyProperty(kind=Borrow, required=True)
 
 
 class Retrieval(SearchableModel):

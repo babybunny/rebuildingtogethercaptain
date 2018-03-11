@@ -70,6 +70,7 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertEquals(u'Person Man', response.json['delivery']['contact'])
     self.assertNotIn(u'retrieval', response.json)
     self.assertNotIn(u'pickup', response.json)
+    self.assertNotIn(u'borrow', response.json)
 
   def testOrderFullUpdateAndReadBack(self):
     post_json_body = {
@@ -124,6 +125,7 @@ class ApiScenarioTest(unittest.TestCase):
     self.assertEquals(u'Person Man', response.json['delivery']['contact'])
     self.assertNotIn(u'retrieval', response.json)
     self.assertNotIn(u'pickup', response.json)
+    self.assertNotIn(u'borrow', response.json)
 
   def testOrderFulfillThenChangeItemPrice(self):
     """Repro for issue #296
