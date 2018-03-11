@@ -108,6 +108,12 @@ div#cdbg-breakdown {
   width: 200px;
   position: absolute;
 }
+div.helpful {
+    vertical-align: top;
+    display: inline-block;
+    border: 1px solid #999;
+    margin: 5px;
+}
 table.tablesorter th.header {
   padding-right: 20px;  /* leaves room for tablesorter arrows */
 }

@@ -326,6 +326,7 @@ class CustomApi(base_api.BaseApi):
       if not request.retrieval.id:
         ndb_models.OrderRetrieval(order=order.key, retrieval=retrieval.key).put()
       
+    order.UpdateLogistics()
     return order.key.integer_id()
         
   @remote.method(OrderFull, protorpc_messages.SimpleId)
