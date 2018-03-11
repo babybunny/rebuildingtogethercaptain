@@ -254,7 +254,7 @@ class CustomApiTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
     self.assertIn(u'logistics_date', response.json)
-    self.assertEquals(5, len(response.json['logistics_date']))
+    self.assertEquals(7, len(response.json['logistics_date']))
     self.assertEquals(self.keys['ORDER'].integer_id(), response.json['logistics_date'][0]['order_id'])
     self.assertEquals('Apr 12', response.json['logistics_date'][0]['date'])
     self.assertEquals('Delivery', response.json['logistics_date'][0]['logistics_type'])

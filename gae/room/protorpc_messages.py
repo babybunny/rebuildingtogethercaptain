@@ -329,6 +329,7 @@ def OrderSheetModelToMessage(mdl):
     delivery_options=mdl.delivery_options,
     retrieval_options=mdl.retrieval_options,
     pickup_options=mdl.pickup_options,
+    borrow_options=mdl.borrow_options,
   )
   # any special handling, like for user objects or datetimes
   if mdl.default_supplier:
@@ -346,6 +347,7 @@ def OrderSheetMessageToModel(msg, mdl):
   mdl.delivery_options = msg.delivery_options
   mdl.retrieval_options = msg.retrieval_options
   mdl.pickup_options = msg.pickup_options
+  mdl.borrow_options = msg.borrow_options
   # can't set automatic fields:
   # TODO
   if msg.default_supplier:
@@ -365,6 +367,7 @@ class OrderSheet(messages.Message):
   delivery_options = messages.StringField(8)
   retrieval_options = messages.StringField(9)
   pickup_options = messages.StringField(10)
+  borrow_options = messages.StringField(12)
 
 
 ############
@@ -871,6 +874,43 @@ class Pickup(messages.Message):
   id = messages.IntegerField(1)
   # Omit the 'site' field, it's not part of the API.
   pickup_date = messages.StringField(2)
+  return_date = messages.StringField(3)
+  contact = messages.StringField(4)
+  contact_phone = messages.StringField(5)
+  notes = messages.StringField(6)
+
+
+############
+# Borrow #
+############
+
+def BorrowModelToMessage(mdl):
+  s = Borrow(
+    id=mdl.key.integer_id(),
+    borrow_date=mdl.borrow_date,
+    return_date=mdl.return_date,
+    notes=mdl.notes,
+    contact=mdl.contact,
+    contact_phone=mdl.contact_phone,
+  )
+  return s
+
+
+def BorrowMessageToModel(msg, mdl):
+  if msg.id:
+    mdl.id = msg.id
+  mdl.borrow_date = msg.borrow_date  # is a string in the datastore!
+  mdl.return_date = msg.return_date  # is a string in the datastore!
+  mdl.notes = msg.notes
+  mdl.contact = msg.contact
+  mdl.contact_phone = msg.contact_phone
+  return mdl
+
+
+class Borrow(messages.Message):
+  id = messages.IntegerField(1)
+  # Omit the 'site' field, it's not part of the API.
+  borrow_date = messages.StringField(2)
   return_date = messages.StringField(3)
   contact = messages.StringField(4)
   contact_phone = messages.StringField(5)

@@ -37,6 +37,7 @@ class OrderFull(messages.Message):
   order_items = messages.MessageField(protorpc_messages.OrderItem, 2, repeated=True)
   delivery = messages.MessageField(protorpc_messages.Delivery, 3)
   pickup = messages.MessageField(protorpc_messages.Pickup, 4)
+  borrow = messages.MessageField(protorpc_messages.Borrow, 7)
   retrieval = messages.MessageField(protorpc_messages.Retrieval, 5)
   id = messages.IntegerField(6)
 
@@ -142,6 +143,17 @@ class CustomApi(base_api.BaseApi):
             LogisticsDate(date=p.return_date, logistics_type='Return',
                           ordersheet_name=os.name, order_id=order.key.integer_id()))
 
+      for ob in ndb_models.OrderBorrow.query(ndb_models.OrderBorrow.order==order.key):
+        p = ob.borrow.get()
+        if p.borrow_date:
+          existing_dates.append(
+            LogisticsDate(date=p.borrow_date, logistics_type='Borrow',
+                          ordersheet_name=os.name, order_id=order.key.integer_id()))
+        if p.return_date:
+          existing_dates.append(
+            LogisticsDate(date=p.return_date, logistics_type='Return',
+                          ordersheet_name=os.name, order_id=order.key.integer_id()))
+
       for orl in ndb_models.OrderRetrieval.query(ndb_models.OrderRetrieval.order==order.key):
         r = orl.retrieval.get()
         if r.dropoff_date:
@@ -195,6 +207,10 @@ class CustomApi(base_api.BaseApi):
     join_mdl = ndb_models.OrderPickup.query(ndb_models.OrderPickup.order == order_key).get()
     if join_mdl is not None:
       res.pickup = protorpc_messages.PickupModelToMessage(join_mdl.pickup.get())
+
+    join_mdl = ndb_models.OrderBorrow.query(ndb_models.OrderBorrow.order == order_key).get()
+    if join_mdl is not None:
+      res.borrow = protorpc_messages.BorrowModelToMessage(join_mdl.borrow.get())
 
     join_mdl = ndb_models.OrderRetrieval.query(ndb_models.OrderRetrieval.order == order_key).get()
     if join_mdl is not None:
@@ -281,6 +297,20 @@ class CustomApi(base_api.BaseApi):
       pickup.put()
       if not request.pickup.id:
         ndb_models.OrderPickup(order=order.key, pickup=pickup.key).put()
+      
+    if request.borrow:
+      if request.borrow.id:
+        borrow = ndb.Key(ndb_models.Borrow, request.borrow.id).get()
+        if not borrow:
+          logging.error('no Borrow found with id {}'.format(request.borrow.id))
+          webapp2.abort(404)
+      else:
+        borrow = ndb_models.Borrow(site=order.site)
+        
+      protorpc_messages.BorrowMessageToModel(request.borrow, borrow)
+      borrow.put()
+      if not request.borrow.id:
+        ndb_models.OrderBorrow(order=order.key, borrow=borrow.key).put()
       
     if request.retrieval:
       if request.retrieval.id:
