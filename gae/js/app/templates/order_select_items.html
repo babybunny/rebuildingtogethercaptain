@@ -167,6 +167,7 @@
       <td>
         <% if (order_form.delivery_options != 'Yes' &&
                order_form.pickup_options != 'Yes' &&
+               order_form.borrow_options != 'Yes' &&
                order_form.retrieval_options != 'Yes') { %>
         No logistics for this type of order. 
         <button id="order-proceed-no-logistics">Save</button>
@@ -178,6 +179,9 @@
         <% } %>
         <% if (order_form.pickup_options == 'Yes') { %>
         <button id="order-proceed-pickup">Proceed to Pickup Options</button>
+        <% } %>
+        <% if (order_form.borrow_options == 'Yes') { %>
+        <button id="order-proceed-borrow">Proceed to Borrow and Return Options</button>
         <% } %>
         <% if (order_form.retrieval_options == 'Yes') { %>
         <button id="order-proceed-retrieval">Proceed to Retrieval Options</button>
