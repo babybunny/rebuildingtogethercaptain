@@ -133,6 +133,24 @@
 	          {% endif %}
 	        </td>
 	        {% endfor %}
+	        {% for d in order.orderborrow_set %}
+	        <td>
+	          <strong>Borrow and Return</strong>
+	          <br>Borrow on {{ d.borrow.get().borrow_date }} 
+	          {% if d.borrow.get().return_date %} 
+	          <br>Return durable items on {{ d.borrow.get().return_date }} 
+	          {% endif %}
+	          {% if d.borrow.get().contact %}
+	          <br>Contact: {{ d.borrow.get().contact }}
+	          {% endif %}
+	          {% if d.borrow.get().contact_phone %}
+	          ({{ d.borrow.get().contact_phone }})
+	          {% endif %}
+	          {% if d.borrow.get().notes %}
+	          <br>{{ d.borrow.get().notes|replace('\n', '<br>\n') }}
+	          {% endif %}
+	        </td>
+	        {% endfor %}
 	        {% for d in order.orderretrieval_set %}
 	        <td>
 	          <strong>Retrieval</strong>

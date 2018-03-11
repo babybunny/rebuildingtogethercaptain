@@ -363,6 +363,9 @@
 	                {% for od in order.orderpickup_set %}
 	                {{ od.pickup.get().pickup_date }} (Pickup)
 	                {% endfor %}
+	                {% for od in order.orderborrow_set %}
+	                {{ od.borrow.get().borrow_date }} (Borrow)
+	                {% endfor %}
 	                {% for od in order.orderretrieval_set %}
 	                {{ od.retrieval.get().dropoff_date }} (Drop-off)
 	                <br/>

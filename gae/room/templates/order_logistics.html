@@ -5,6 +5,7 @@
 $(function() {
   $("#id_delivery_date").datepicker();
   $("#id_pickup_date").datepicker();
+  $("#id_borrow_date").datepicker();
   $("#id_return_date").datepicker();
   $("#id_dropoff_date").datepicker();
   $("#id_retrieval_date").datepicker();
@@ -26,7 +27,7 @@ $( "#tabs" ).tabs();
 {%block about_this_page %}
 <h2>Logistics: {{ order.order_sheet.name }} Order for Site {{ order.site.number }}
 </h2>
-<p>Please set up the logistics for your order here.  Includes delivery, pickup, or rental options as appropriate.
+<p>Please set up the logistics for your order here.  Includes delivery, pickup, borrow and return, or rental options as appropriate.
 </p>
 
 <p>Existing logistics dates and Captains for Site #{{ order.site.number }}
@@ -99,6 +100,9 @@ are listed for your reference.
     {% ifequal order.order_sheet.pickup_options "Yes" %}
     <li><a href="#tabs-2">Pick-up at RTP</a></li>
     {% endifequal %}
+    {% ifequal order.order_sheet.borrow_options "Yes" %}
+    <li><a href="#tabs-2">Borrow from RTP and Return</a></li>
+    {% endifequal %}
     {% ifequal order.order_sheet.retrieval_options "Yes" %}
     <li><a href="#tabs-3">Drop-off / Retrieval</a></li>
     {% endifequal %}
@@ -151,6 +155,34 @@ are listed for your reference.
 	  <br>
 	  <input name="submit" type="submit" 
 		 value="{{ complete.pickup }} and proceed directly to fulfill (STAFF ONLY)">
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+  {% endifequal %}
+  {% ifequal order.order_sheet.borrow_options "Yes" %}
+  <div id="tabs-2">
+    Items will be borrowed from RTP warehouse by someone on your team.
+    <form action="{% url room.order.OrderLogistics order.key.integer_id() %}" 
+	  method="post">
+    <table>
+      {{ forms.borrow }}
+      <tr>
+	<td>
+	  {% if current.delivery %}
+	  Submitting these borrow options will override your previous 
+	  logistics choice.
+	  {% endif %}
+	</td>
+	<td>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.borrow }} and complete order">
+	  {% if user.staff %}
+	  <br>
+	  <input name="submit" type="submit" 
+		 value="{{ complete.borrow }} and proceed directly to fulfill (STAFF ONLY)">
 	  {% endif %}
 	</td>
       </tr>
