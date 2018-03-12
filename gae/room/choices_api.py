@@ -45,6 +45,11 @@ class ChoicesApi(base_api.BaseApi):
   def captain_for_site_choices_read(self, request):
     self._authorize_user()
     choices = Choices()
+    if self._user.staff:
+      for mdl in ndb_models.Captain.query().order(ndb_models.Captain.name):
+        choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
+      return choices
+      
     sitecaptain_models = list(
       ndb_models.SiteCaptain.query(ndb_models.SiteCaptain.site == ndb.Key(ndb_models.NewSite, request.id)))
     captains = ndb.get_multi(set(m.captain for m in sitecaptain_models))
