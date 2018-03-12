@@ -74,6 +74,15 @@ def CreateAll():
     notes="You may say I'm a dreamer",
     last_welcome=datetime.datetime(2017, 1, 30, 1, 2, 3)
   ).put()
+  KEYS['CAPTAIN2'] = ndb_models.Captain(
+    name="Mister Captain",
+    email="rebuildingtogether.capn+mister@gmail.com",
+    rooms_id="R00002",
+    phone_mobile="222-333-4445",
+    tshirt_size="Large",
+    notes="You may say I'm a dreamer, I'm not the only one",
+    last_welcome=datetime.datetime(2017, 3, 30, 1, 2, 3)
+  ).put()
   KEYS['JURISDICTION'] = ndb_models.Jurisdiction(
     name="FunkyTown"
   ).put()

@@ -35,7 +35,7 @@ class ChoicesTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
     self.assertIn(u'choice', response.json)
-    self.assertEquals(1, len(response.json['choice']))
+    self.assertEquals(2, len(response.json['choice']))
     self.assertDictContainsSubset({u'label': u'Miss Captain'},
                                   response.json['choice'][0])
 
