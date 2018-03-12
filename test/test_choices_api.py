@@ -53,6 +53,20 @@ class ChoicesTest(unittest.TestCase):
     self.assertDictContainsSubset({u'label': u'Miss Captain'},
                                   response.json['choice'][0])
 
+  def testCaptainForSiteStaff(self):
+    post_json_body = {
+          "id": self.keys['SITE'].integer_id(),
+    }
+    response = app.post_json('/choices_api.captain_for_site_choices_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'choice', response.json)
+    self.assertEquals(2, len(response.json['choice']))
+    self.assertDictContainsSubset({u'label': u'Miss Captain'},
+                                  response.json['choice'][0])
+
   def testStaffposition(self):
     post_json_body = {}
     response = app.post_json('/choices_api.staffposition_choices_read',
