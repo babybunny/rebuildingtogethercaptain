@@ -548,9 +548,7 @@ class NewSite(SearchableModel):
   program = ndb.StringProperty()  # reference
   program_key = ndb.KeyProperty(kind=Program)  # TODO: Set to required after migration
   name = ndb.StringProperty()  # "Belle Haven"
-  name.verbose_name = 'Recipient Name'
   applicant = ndb.StringProperty()
-  applicant.verbose_name = 'Applicant Contact'
   applicant_home_phone = ndb.StringProperty()
   applicant_work_phone = ndb.StringProperty()
   applicant_mobile_phone = ndb.StringProperty()
@@ -564,7 +562,6 @@ class NewSite(SearchableModel):
   scope_of_work = ndb.TextProperty()
   sponsor = ndb.StringProperty()
   street_number = ndb.StringProperty()
-  street_number.verbose_name = "Street Address"
   city_state_zip = ndb.StringProperty()
   budget = ndb.IntegerProperty(default=0)
   attachments = ndb.KeyProperty(kind=SiteAttachments)

@@ -30,13 +30,15 @@ define(
                 name: "name",
                 label: "Recipient Name",
                 control: "input",
-                type: "text"
+                type: "text",
+                helpMessage: "Recipient Name"
             },
             {
                 name: "applicant",
                 label: "Applicant Contact",
                 control: "input",
-                type: "text"
+                type: "text",
+                helpMessage: "Applicant Contact"
             },
             {
                 name: "applicant_home_phone",
