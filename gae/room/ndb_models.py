@@ -355,27 +355,14 @@ class OrderSheet(SearchableModel):
   supports_extra_name_on_order = ndb.BooleanProperty(default=False)
   supports_internal_invoice = ndb.BooleanProperty(default=False)
   code = ndb.StringProperty()
-  code.verbose_name = 'Three-letter code like LUM for Lumber'
   instructions = ndb.TextProperty(default='')
-  instructions.verbose_name = (
-    'Instructions to Captain, appears on order form')
   logistics_instructions = ndb.TextProperty(default='')
-  logistics_instructions.verbose_name = (
-    'Instructions to Captain, appears on logistics form')
   default_supplier = ndb.KeyProperty(kind=Supplier)
-  default_supplier.verbose_name = (
-    'Default Supplier, used if Item\'s supplier is not set.')
-  # Choose one of the next three.
+  # Choose one of the next four.
   delivery_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
-  delivery_options.verbose_name = ('Allow Captain to select Delivery to site')
   pickup_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
-  pickup_options.verbose_name = (
-    'Allow Captain to select Pick-up from RTP warehouse')
   borrow_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
   retrieval_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
-  retrieval_options.verbose_name = ('Drop-off and retrieval (like debris box)'
-                                    '  Note: do not set this with either'
-                                    ' delivery or pick-up')
 
   def __unicode__(self):
     return '%s' % (self.name)
@@ -1006,7 +993,7 @@ class OrderItem(SearchableModel):
   name = ndb.StringProperty(default="")
   # no default because it's not present for all objects, yet.
   unit_cost = ndb.FloatProperty()
-  
+
   def FloatQuantity(self):
     """Returns quantity as a float."""
     if self.quantity:

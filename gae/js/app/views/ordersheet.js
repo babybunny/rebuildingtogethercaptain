@@ -64,7 +64,12 @@ define(
                 label: "Default supplier",
                 control: ModelSelectControl,
 		            room_model_module: SupplierChoices,
-                helpMessage: "Default Supplier, used if Item's supplier is not set."
+                helpMessage: "Default Supplier, used if Item\'s supplier is not set."
+            },
+            {
+                name: "order_form_helper",
+                control: "help",
+                label: "Choose one of the next four."
             },
             {
                 name: "delivery_options",

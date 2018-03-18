@@ -411,3 +411,10 @@ div.form-group.thumbnail{border:none}
     border-top: none;
     margin-top: -5px;
 }
+
+#simple-form-backform > div.form-group.order_form_helper  .help-block{
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  margin-top: 25px;
+}
