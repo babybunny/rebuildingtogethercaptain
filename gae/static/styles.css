@@ -418,3 +418,8 @@ div.form-group.thumbnail{border:none}
   color: #333;
   margin-top: 25px;
 }
+
+/* Displays help-text immediately under textarea */
+#order-logistics-form > div.form-group.notes {
+  white-space: normal;
+}

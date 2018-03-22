@@ -1033,13 +1033,9 @@ class Delivery(SearchableModel):
   """Delivery to a site (no retrieval)."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   delivery_date = ndb.StringProperty()
-  delivery_date.verbose_name = 'Delivery Date (Mon-Fri only)'
   contact = ndb.StringProperty()
-  contact.verbose_name = "Contact person (who will accept delivery)"
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
-  notes.verbose_name = (
-    'Instructions for delivery person')
 
 
 class OrderDelivery(SearchableModel):

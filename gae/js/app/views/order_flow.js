@@ -47,16 +47,55 @@ define(
                 label: "Choose these options and complete order"
             },
         ];
+        function Fields (additional_fields){
+            return {
+                logistics_fields: [
+                    {
+                        name: "contact",
+                        label: "Contact",
+                        control: "input"
+                    },
+                    {
+                        name: "contact_phone",
+                        label: "Contact Phone",
+                        control: "input",
+                    },
+                    ].concat(additional_fields).concat([
+                    {
+                        name: "notes",
+                        label: "Notes",
+                        control: "textarea"
+                    },
+                    {
+                        name: "submit",
+                        control: "button",
+                        extraClasses: ['btn-primary'],
+                        label: "Choose these options and complete order"
+                    },
+                ]),
+                get_fields: function(){
+                    return this.logistics_fields;
+                },
+                assign_help: function(target_name, helpMessage){
+                    var field =  _.where(this.logistics_fields, {name: target_name})[0];
+                    field.helpMessage = helpMessage;
+                }
+            };
+        }
 
-        var delivery_fields = [
+        var delivery_flow = Fields([
             {
                 name: 'delivery_date',
-                label: 'Delivery date (Mon-Fri only)',
+                label: 'Delivery Date',
+                helpMessage: 'Delivery Date (Mon-Fri only)',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd", startDate: "0d", daysOfWeekDisabled: "06"},
                 required: true
             },
-        ].concat(basic_logistics_fields);
+        ]);
+        delivery_flow.assign_help('contact', "Contact person (who will accept delivery)");
+        delivery_flow.assign_help('notes', "Instructions for the delivery person.");
+        delivery_flow.fields = delivery_flow.get_fields();
 
         var pickup_fields = [
             {
@@ -84,7 +123,7 @@ define(
                 required: true
             },
         ].concat(basic_logistics_fields);
-        
+
         var retrieval_fields = [
             {
                 name: 'dropoff_date',
@@ -255,7 +294,7 @@ define(
                     this.delivery = new Backbone.Model();
                 }
                 this.order_full.set('delivery', this.delivery.attributes);
-                this.renderLogistics(delivery_fields, "Delivery", this.delivery);
+                this.renderLogistics(delivery_flow.fields, "Delivery", this.delivery);
             },
             renderPickup: function() {
                 if (!this.pickup) {
