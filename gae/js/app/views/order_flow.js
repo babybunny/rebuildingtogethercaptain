@@ -97,15 +97,27 @@ define(
         delivery_flow.assign_help('notes', "Instructions for the delivery person.");
         delivery_flow.fields = delivery_flow.get_fields();
 
-        var pickup_fields = [
+        var pickup_flow = Fields([
             {
                 name: 'pickup_date',
-                label: 'Pickup date (Mon-Fri only)',
+                label: 'Pickup Date',
+                helpMessage: 'Pickup date (Mon-Fri only)',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd", startDate: "+2d",  daysOfWeekDisabled: "06"},
                 required: true
             },
-        ].concat(basic_logistics_fields);
+            {
+                name: 'return_date',
+                label: 'Return Date',
+                helpMessage: '(Optional) Return date for durable equipment',
+                control: "datepicker",
+                options: {format: "yyyy-mm-dd", startDate: "+2d",  daysOfWeekDisabled: "06"},
+            },
+        ]);
+        pickup_flow.assign_help('contact', "Contact person (who will pick up)");
+        pickup_flow.assign_help('notes', "Instructions for warehouse staff");
+        pickup_flow.fields = pickup_flow.get_fields();
+
 
         var borrow_fields = [
             {
@@ -301,7 +313,7 @@ define(
                     this.pickup = new Backbone.Model();
                 }
                 this.order_full.set('pickup', this.pickup.attributes);
-                this.renderLogistics(pickup_fields, "Pickup", this.pickup);
+                this.renderLogistics(pickup_flow.fields, "Pickup", this.pickup);
             },
             renderBorrow: function() {
                 if (!this.borrow) {
