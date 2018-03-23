@@ -1233,13 +1233,8 @@ class InKindDonation(SearchableModel):
   donor = ndb.StringProperty()
   donor_phone = ndb.StringProperty()
   donor_info = ndb.TextProperty()
-  donor_info.verbose_name = (
-    'Include as much of the following donor information as possible:'
-    ' donor name, company, address, phone, email.')
   labor_amount = ndb.FloatProperty(default=0.0)
-  labor_amount.verbose_name = 'Labor Value ($)'
   materials_amount = ndb.FloatProperty(default=0.0)
-  materials_amount.verbose_name = 'Materials Value ($)'
   description = ndb.TextProperty()
   budget = ndb.StringProperty(choices=('Normal', 'Roofing'), default='Normal')
   state = ndb.StringProperty()

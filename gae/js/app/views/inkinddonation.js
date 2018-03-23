@@ -64,13 +64,15 @@ define(
             },
             {
                 name: "labor_amount",
-                label: "Labor Value ($)",
+                label: "Labor Amount",
+                helpMessage: "Labor Value ($)",
                 control: "input",
                 value: 0.0,
             },
             {
                 name: "materials_amount",
-                label: "Materials Value ($)",
+                label: "Materials Amount",
+                helpMessage: "Materials Value ($)",
                 control: "input",
                 value: 0.0
             },
