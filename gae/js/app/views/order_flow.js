@@ -24,29 +24,7 @@ define(
              OrderFormOverview, OrderItems, Order, Site, OrderFormDetail, OrderFull,
              choose_form_template, button_template, select_items_template,
              logistics_template) {
-        var basic_logistics_fields = [
-            {
-                name: "contact",
-                label: "Contact person (who will be present)",
-                control: "input",
-            },
-            {
-                name: "contact_phone",
-                label: "Contact phone",
-                control: "input",
-            },
-            {
-                name: "notes",
-                label: "Instructions for delivery person",
-                control: "textarea"
-            },
-            {
-                name: "submit",
-                control: "button",
-                extraClasses: ['btn-primary'],
-                label: "Choose these options and complete order"
-            },
-        ];
+
         function Fields (additional_fields){
             return {
                 logistics_fields: [
