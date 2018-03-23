@@ -1268,9 +1268,7 @@ class StaffTime(SearchableModel):
   program_key = ndb.KeyProperty(kind=Program)
   state = ndb.StringProperty()
   hours = ndb.FloatProperty(default=0.0)
-  hours.verbose_name = 'Hours'
   miles = ndb.FloatProperty(default=0.0)
-  miles.verbose_name = 'Miles'
   activity_date = ndb.DateProperty()
   description = ndb.TextProperty()
   last_editor = ndb.UserProperty(auto_current_user=True)
