@@ -42,7 +42,8 @@ define(
             },
             {
                 name: "amount",
-                label: "Purchase Amount ($)",
+                label: "Amount",
+                helpText: "Purchase Amount ($)",
                 control: "input"
             },
             {

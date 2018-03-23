@@ -1202,7 +1202,6 @@ class VendorReceipt(SearchableModel):
   vendor = ndb.StringProperty()
   supplier = ndb.KeyProperty(kind=Supplier)
   amount = ndb.FloatProperty()
-  amount.verbose_name = 'Purchase Amount ($)'
   description = ndb.TextProperty()
   state = ndb.StringProperty()
   last_editor = ndb.UserProperty()
