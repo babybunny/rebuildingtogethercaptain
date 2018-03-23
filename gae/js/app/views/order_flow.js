@@ -140,22 +140,27 @@ define(
         borrow_flow.assign_help('notes', "Instructions for warehouse staff");
         borrow_flow.fields = borrow_flow.get_fields();
 
-        var retrieval_fields = [
+        var retrieval_flow = Fields([
             {
                 name: 'dropoff_date',
-                label: 'Delivery date (Mon-Fri only)',
+                label: 'Dropoff Date',
+                helpMessage: 'Delivery date (Mon-Fri only)',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd", startDate: "0d",  daysOfWeekDisabled: "06"},
                 required: true
             },
             {
                 name: 'retrieval_date',
-                label: 'Retrieval Date (Mon-Fri only)',
+                label: 'Retrieval Date',
+                helpMessage: 'Retrieval Date (Mon-Fri only)',
                 control: "datepicker",
                 options: {format: "yyyy-mm-dd", startDate: "0d",  daysOfWeekDisabled: "06"},
                 required: true
             },
-        ].concat(basic_logistics_fields);
+        ]);
+        retrieval_flow.assign_help('contact', "Contact person (who will accept delivery)");
+        retrieval_flow.assign_help('notes', "Instructions for delivery person");
+        retrieval_flow.fields = retrieval_flow.get_fields();
 
         var OrderFlowView = Backbone.View.extend({
             initialize: function(site_id, order_id) {
@@ -331,7 +336,7 @@ define(
                     this.retrieval = new Backbone.Model();
                 }
                 this.order_full.set('retrieval', this.retrieval.attributes);
-                this.renderLogistics(retrieval_fields, "Drop-off and Retrieval", this.retrieval);
+                this.renderLogistics(retrieval_flow.fields, "Drop-off and Retrieval", this.retrieval);
             },
             renderLogistics: function(fields, logistics_words, model) {
                 console.log('step 3');

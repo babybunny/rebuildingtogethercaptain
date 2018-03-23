@@ -1080,15 +1080,10 @@ class Retrieval(SearchableModel):
   """Delivery and retrieval to and from a site."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   dropoff_date = ndb.StringProperty()
-  dropoff_date.verbose_name = 'Delivery Date (Mon-Fri only)'
   retrieval_date = ndb.StringProperty()
-  retrieval_date.verbose_name = 'Retrieval Date (Mon-Fri only)'
   contact = ndb.StringProperty()
-  contact.verbose_name = "Contact person (who will accept delivery)"
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
-  notes.verbose_name = (
-    'Instructions for delivery person')
 
 
 class OrderRetrieval(SearchableModel):
