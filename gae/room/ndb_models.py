@@ -1064,15 +1064,10 @@ class Borrow(SearchableModel):
   """Pick up from RTP warehouse."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   borrow_date = ndb.StringProperty()
-  borrow_date.verbose_name = 'Borrow Date (Mon-Fri only)'
   return_date = ndb.StringProperty()
-  return_date.verbose_name = '(Optional) Return date for durable equipment'
   contact = ndb.StringProperty()
-  contact.verbose_name = "Contact person (who will pick up)"
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
-  notes.verbose_name = (
-    'Instructions for warehouse staff')
 
 
 class OrderBorrow(SearchableModel):
