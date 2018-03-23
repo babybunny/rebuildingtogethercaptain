@@ -34,9 +34,9 @@ def send_message_with_status(response, message, status=500):
 class SelectProgram(webapp2.RequestHandler):
   """Handler for Staff to select a program.
 
-  This is different from other Staff handlers because it is 
-  the only prerequisite to loading the StaffHome page.  So 
-  it requires that the user is staff but does not require that 
+  This is different from other Staff handlers because it is
+  the only prerequisite to loading the StaffHome page.  So
+  it requires that the user is staff but does not require that
   program is already selected. Bootstrapping.
   """
 
@@ -68,8 +68,8 @@ class StaffHandler(webapp2.RequestHandler):
 
   def dispatch(self, *a, **k):
     user = common.RoomsUser.from_request(self.request)
-    if user and user.staff:
-      if not user.staff.program_selected:
+    if user and (user.staff or user.captain):
+      if user.staff and not user.staff.program_selected:
         logging.info(self.request)
         return webapp2.redirect_to('SelectProgram')
       super(StaffHandler, self).dispatch(*a, **k)
@@ -380,7 +380,7 @@ def _SiteBudgetExportInternal(writable, post_vars):
 def _EntryList(request, model_cls, template, params=None, query=None):
   """Generic helper method to perform a list view.
 
-  This method does not enforce any authorization. It should be called after 
+  This method does not enforce any authorization. It should be called after
   authorization is successful..
 
   Template should iterate over a list called 'entries'.
@@ -877,7 +877,7 @@ class OrderInvoice(StaffHandler):
          'site': order.site.get(),
          }
     return common.Respond(self.request, 'order_invoice', d)
-    
+
 
 def _ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
   """Changes an order field based on POST data from jeditable."""
