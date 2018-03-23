@@ -1320,7 +1320,6 @@ class Expense(SearchableModel):
   program_key = ndb.KeyProperty(kind=Program)
   date = ndb.DateProperty()
   amount = ndb.FloatProperty()
-  amount.verbose_name = 'Purchase Amount ($)'
   description = ndb.TextProperty()
   state = ndb.StringProperty()
   last_editor = ndb.UserProperty()
