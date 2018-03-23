@@ -52,7 +52,8 @@ define(
             },
             {
                 name: "name",
-                label: "Payable To",
+                label: "Name",
+                helpMessage: "Payable To",
                 control: "input",
                 required: true
             },
@@ -87,18 +88,20 @@ define(
 
             {
                 name: "address",
-                label: "Payee Address",
+                label: "Address",
+                helpMessage: "Payee Address",
                 control: "textarea"
             },
             {
                 name: "tax_id",
-                label: "Payee Tax ID",
+                label: "Tax ID",
                 control: "input",
-                helpMessage: "We'll notify you if we still need this information to process the check"
+                helpMessage: "Payee Tax ID  (We'll notify you if we still need this information to process the check)"
             },
             {
                 name: "form_of_business",
-                label: "Payee Business Type",
+                label: "Form of Business",
+                helpMessage: "Payee Business Type",
                 control: "select",
                 options: [
                     {label: "Corporation", value: "Corporation"},

@@ -1169,22 +1169,15 @@ class CheckRequest(SearchableModel):
   program_key = ndb.KeyProperty(kind=Program)
   payment_date = ndb.DateProperty()
   labor_amount = ndb.FloatProperty(default=0.0)
-  labor_amount.verbose_name = 'Labor Amount ($)'
   materials_amount = ndb.FloatProperty(default=0.0)
-  materials_amount.verbose_name = 'Materials Amount ($)'
   food_amount = ndb.FloatProperty(default=0.0)
-  food_amount.verbose_name = 'Food Amount ($)'
   description = ndb.TextProperty()
   name = ndb.StringProperty()
-  name.verbose_name = 'Payable To'
   address = ndb.TextProperty()
-  address.verbose_name = "Payee Address"
   tax_id = ndb.StringProperty()
-  tax_id.verbose_name = "Payee Tax ID"
   form_of_business = ndb.StringProperty(
     choices=('Corporation', 'Partnership', 'Sole Proprietor',
              'Don\'t Know'))
-  form_of_business.verbose_name = "Payee Business Type"
   state = ndb.StringProperty()
   last_editor = ndb.UserProperty(auto_current_user=True)
   modified = ndb.DateTimeProperty(auto_now=True)
