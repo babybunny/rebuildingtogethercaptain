@@ -84,13 +84,6 @@ define(
                 options: {format: "yyyy-mm-dd", startDate: "+2d",  daysOfWeekDisabled: "06"},
                 required: true
             },
-            {
-                name: 'return_date',
-                label: 'Return Date',
-                helpMessage: '(Optional) Return date for durable equipment',
-                control: "datepicker",
-                options: {format: "yyyy-mm-dd", startDate: "+2d",  daysOfWeekDisabled: "06"},
-            },
         ]);
         pickup_flow.assign_help('contact', "Contact person (who will pick up)");
         pickup_flow.assign_help('notes', "Instructions for warehouse staff");
