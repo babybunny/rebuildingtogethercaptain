@@ -66,6 +66,8 @@ define(
 		            room_model_module: SupplierChoices,
                 helpMessage: "Default Supplier, used if Item\'s supplier is not set."
             },
+            {   control: "spacer"
+            },
             {
                 name: "order_form_helper",
                 control: "help",
