@@ -101,9 +101,10 @@ define(
             {
                 name: 'return_date',
                 label: 'Return Date',
-                helpMessage: '(Optional) Return date for durable equipment',
+                helpMessage: 'Return date for durable equipment',
                 control: "datepicker",
-                options: {format: "yyyy-mm-dd", startDate: "+2d"}
+                options: {format: "yyyy-mm-dd", startDate: "+2d"},
+                required: true
             },
         ]);
         borrow_flow.assign_help('contact', "Contact person (who will pick up)");
