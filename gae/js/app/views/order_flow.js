@@ -27,7 +27,7 @@ define(
 
         function Fields (additional_fields){
             return {
-                logistics_fields: [
+                logistics_fields: additional_fields.concat([
                     {
                         name: "contact",
                         label: "Contact",
@@ -38,7 +38,6 @@ define(
                         label: "Contact Phone",
                         control: "input",
                     },
-                    ].concat(additional_fields).concat([
                     {
                         name: "notes",
                         label: "Notes",
