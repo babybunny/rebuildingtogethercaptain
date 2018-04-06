@@ -55,7 +55,11 @@ class SelectProgram(webapp2.RequestHandler):
     user.staff.put()
     return webapp2.redirect_to('StaffHome')
 
+"""StaffHandler and StaffCaptainHandler access control classes.
 
+These two classes are to be used as base classes for other handlers in this file. 
+They are not useful as handlers by themselves.
+"""
 class StaffHandler(webapp2.RequestHandler):
   """Handler base class that ensures the user meets Staff view prerequisites:
   - user is logged in
