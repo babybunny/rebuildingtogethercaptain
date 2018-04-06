@@ -241,6 +241,13 @@ login_required = routes.PathPrefixRoute('/room', [
                 staff.SiteBudget,
                 name='SiteBudget'),
 
+    webapp2.Route(r'/staffposition',
+                staff.StaffPositionList,
+                name='StaffPositionList'),
+  webapp2.Route(r'/staffposition/<id:\d*>',
+                staff.StaffPosition,
+                name='StaffPosition'),
+
   webapp2.Route(r'/scoreboard',
                 Placeholder,
                 name='Scoreboard'),  # TODO
