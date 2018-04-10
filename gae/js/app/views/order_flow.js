@@ -311,15 +311,12 @@ define(
             },
             renderStep2: function() {
                 console.log('step 2');
+		            trackJs.track('order_flow step2 on ' + this.site.get('number'));
                 var self = this;
                 if (!this.site) {
                     return this;  // loading
                 }
-		trackJs.track('order_flow step2 on ' + this.site.get('number'));
                 if (!this.order_form_detail) {
-                    return this;  // loading
-                }
-                if (!this.order_existing) {
                     return this;  // loading
                 }
                 var t = this.select_items_template({
