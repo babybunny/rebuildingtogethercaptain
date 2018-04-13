@@ -1,6 +1,6 @@
 <% if (sitecaptains.length) { %>
 <h3>Active Captains for this site</h3>
-<% for (sc of sitecaptains) { %>
+<% _.each(sitecaptains, function (sc) { %>
      <div class="sitecaptain">
        <button class="remove-sitecaptain" name="<%= sc.get('id') %>">
          Remove
@@ -8,7 +8,7 @@
        <%= sc.get('type') %> Captain:
        <%= sc.get('name') %>
      </div>
-  <% } %>
+  <% }); %>
 <% } else { %>
   <h3>No Captains active for this site</h3>
 <% } %>

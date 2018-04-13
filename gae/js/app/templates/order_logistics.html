@@ -13,14 +13,14 @@
             </tr>
           </thead>
           <tbody>
-            <% for (logistics_date of logistics_dates.models) { %>
+            <% _.each(logistics_dates.models, function(logistics_date) { %>
             <tr>
               <td><%= logistics_date.get('date')  %></td>
               <td><%= logistics_date.get('logistics_type') %></td>
               <td><%= logistics_date.get('ordersheet_name') %> (<%= logistics_date.get('order_id') %>)
               </td>
             </tr>
-            <% } %>
+            <% }); %>
           </tbody>
         </table>
         <% } else { %>
@@ -38,13 +38,13 @@
             </tr>
           </thead>
           <tbody>
-            <% for (sitecaptain of sitecaptains.models) { %>
+            <% _.each(sitecaptains.models, function(sitecaptain) { %>
             <tr>
               <td><%= sitecaptain.get('name') %></td>
               <td><%= sitecaptain.get('type') %></td>
               <td><%= sitecaptain.get('phone_mobile') %></td>
             </tr>
-            <% } %>
+            <% }); %>
           </tbody>
         </table>
         <% } else {%>
