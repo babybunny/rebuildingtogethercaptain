@@ -571,7 +571,7 @@ class CheckRequestList(SiteExpenseList):
   table_template = 'checkrequest_table.html'
 
 
-class CheckRequestView(StaffHandler):
+class CheckRequestView(StaffOrCaptainHandler):
   searchable_model_class = ndb_models.CheckRequest
   def get(self, id):
     entity = ndb.Key(ndb_models.CheckRequest, int(id)).get()
@@ -592,7 +592,7 @@ class VendorReceiptList(SiteExpenseList):
   table_template = 'vendorreceipt_table.html'
 
 
-class VendorReceiptView(StaffHandler):
+class VendorReceiptView(StaffOrCaptainHandler):
   searchable_model_class = ndb_models.VendorReceipt
   def get(self, id):
     entity = ndb.Key(ndb_models.VendorReceipt, int(id)).get()
@@ -614,7 +614,7 @@ class InKindDonationList(SiteExpenseList):
   table_template = 'inkinddonation_table.html'
 
 
-class InKindDonationView(StaffHandler):
+class InKindDonationView(StaffOrCaptainHandler):
   searchable_model_class = ndb_models.InKindDonation
   def get(self, id):
     entity = ndb.Key(ndb_models.InKindDonation, int(id)).get()
@@ -648,7 +648,7 @@ class OrderList(SiteExpenseList):
   table_template = 'order_table.html'
 
 
-class OrderView(StaffHandler):
+class OrderView(StaffOrCaptainHandler):
   searchable_model_class = ndb_models.Order
   def get(self, id):
     order = ndb.Key(ndb_models.Order, int(id)).get()
