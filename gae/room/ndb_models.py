@@ -1021,7 +1021,7 @@ class OrderItem(SearchableModel):
   name = ndb.StringProperty(default="")
   # no default because it's not present for all objects, yet.
   unit_cost = ndb.FloatProperty()
-  
+
   def FloatQuantity(self):
     """Returns quantity as a float."""
     if self.quantity:
@@ -1167,6 +1167,7 @@ def _GetRateFromArray(default, array, activity_date):
 
 class StaffPosition(SearchableModel):
   """Staff positions that have hourly billing."""
+  name = ndb.StringProperty()
   position_name = ndb.StringProperty()
 
   # Defaults possibly superceded by the date-based lists below, and destined to be deprecated once
@@ -1195,7 +1196,7 @@ class StaffPosition(SearchableModel):
   hourly_rate_after_date = ndb.StringProperty(repeated=True)
   mileage_rate_after_date = ndb.StringProperty(repeated=True)
 
-  last_editor = ndb.UserProperty()
+  last_editor = ndb.UserProperty(auto_current_user=True)
   modified = ndb.DateTimeProperty(auto_now=True)
 
   def GetHourlyRate(self, activity_date):
