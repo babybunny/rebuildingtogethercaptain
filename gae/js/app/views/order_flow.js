@@ -311,6 +311,7 @@ define(
             },
             renderStep2: function() {
                 console.log('step 2');
+		            trackJs.track('order_flow step2 on ' + this.site.get('number'));
                 var self = this;
                 if (!this.site) {
                     return this;  // loading

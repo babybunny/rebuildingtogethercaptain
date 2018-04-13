@@ -491,6 +491,15 @@ class SiteAttachments(ndb.Model):
                                       "recognizing that the Scope of work is complete and the site owner is in "
                                       "agreement. This is the final document needed.<br><br>Due May 23rd for 2018 "
                                       "National Rebuilding Today.")
+  five = ndb.KeyProperty(kind=UploadedDocument,
+                         name='Signed Runner Waiver Form',
+                         verbose_name='')
+  six = ndb.KeyProperty(kind=UploadedDocument,
+                         name='Scanned Driver\'s Licence',
+                         verbose_name='')
+  seven = ndb.KeyProperty(kind=UploadedDocument,
+                         name='Car Insurance Form',
+                         verbose_name='')
 
   def set_attachment_by_property_name(self, property_name, document_key):
     for prop in self.get_ordered_properties():
@@ -504,7 +513,13 @@ class SiteAttachments(ndb.Model):
     return [getattr(self, p._code_name) for p in self.get_ordered_properties()]
 
   def get_ordered_properties(self):
-    return [SiteAttachments.one, SiteAttachments.two, SiteAttachments.three, SiteAttachments.four]
+    return [SiteAttachments.one,
+            SiteAttachments.two,
+            SiteAttachments.three,
+            SiteAttachments.four,
+            SiteAttachments.five,
+            SiteAttachments.six,
+            SiteAttachments.seven]
 
   def get_attachments(self, site_id):
     attachments = []

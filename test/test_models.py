@@ -577,12 +577,15 @@ class ModelsTest(unittest.TestCase):
       ndb_models.SiteAttachments.one,
       ndb_models.SiteAttachments.two,
       ndb_models.SiteAttachments.three,
-      ndb_models.SiteAttachments.four
+      ndb_models.SiteAttachments.four,
+      ndb_models.SiteAttachments.five,
+      ndb_models.SiteAttachments.six,
+      ndb_models.SiteAttachments.seven
     ]
     actual = attachments.get_ordered_properties()
     self.assertEqual(actual, expected)
 
-    expected = [None, None, None, None]
+    expected = [None, None, None, None, None, None, None]
     actual = attachments.get_ordered_file_keys()
     self.assertEqual(actual, expected)
 
