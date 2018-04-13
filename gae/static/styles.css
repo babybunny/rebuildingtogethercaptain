@@ -411,3 +411,6 @@ div.form-group.thumbnail{border:none}
     border-top: none;
     margin-top: -5px;
 }
+
+th.today, th.datepicker-switch{text-align:center;}
+td.today.day{background-color: yellow;}
