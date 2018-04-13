@@ -64,7 +64,7 @@ basic_crud_config = (
    ndb_models.Order,
    protorpc_messages.OrderMessageToModel,
    protorpc_messages.OrderModelToMessage),
-  (protorpc_messages.SiteCaptain,
+   (protorpc_messages.SiteCaptain,
    ndb_models.SiteCaptain,
    protorpc_messages.SiteCaptainMessageToModel,
    protorpc_messages.SiteCaptainModelToMessage),
@@ -73,6 +73,10 @@ basic_crud_config = (
   #  ndb_models.Example,
   #  protorpc_messages.ExampleMessageToModel,
   #  protorpc_messages.ExampleModelToMessage),
+  (protorpc_messages.StaffPosition,
+   ndb_models.StaffPosition,
+   protorpc_messages.StaffPositionMessageToModel,
+   protorpc_messages.StaffPositionModelToMessage),
 )
 
 
@@ -89,7 +93,7 @@ class _GeneratedCruApi(remote._ServiceClass):  # sorry. but 'remote' used metacl
     def makeBasicCrud(msg_name, msg_cls, mdl_cls, g2d, d2g):
       """Create functions for three basic CRU operations on a model.
 
-      CRU == Create, Read, Update.  
+      CRU == Create, Read, Update.
 
       We don't have generic Delete methods for all models because many
       have references or back-references. These need special handling
