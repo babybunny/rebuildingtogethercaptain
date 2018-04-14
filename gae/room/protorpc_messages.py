@@ -1,6 +1,6 @@
 """Protorpc messages and conversion functions that can be used in multiple APIs..
 
-This is the place to put messages that are one-to-one with datastore Kinds 
+This is the place to put messages that are one-to-one with datastore Kinds
 (classes in ndb_models.py) and conversion functions. By convention, the conversions are
   message_instance = KindModelToMessage(model_instance)
   KindMessageToModel(message_instance, model_instance)
@@ -713,7 +713,7 @@ def OrderModelToMessage(mdl):
     s.modified_ago = str(datetime.datetime.now() - mdl.modified)
   else:
     s.modified_ago = ''
-    
+
   return s
 
 
@@ -727,7 +727,7 @@ def OrderMessageToModel(msg, mdl):
   mdl.logistics_start = msg.logistics_start
   mdl.actual_total = msg.actual_total
   # Don't set sub_total, it's computed automatically.
-  
+
   if msg.state:
     mdl.state = msg.state
 
@@ -764,7 +764,7 @@ class Order(messages.Message):
   modified_ago = messages.StringField(13)
   editable = messages.BooleanField(14)
   # Next ID to use: 16
-  
+
 #############
 # OrderItem #
 #############
@@ -794,7 +794,7 @@ def OrderItemMessageToModel(msg, mdl):
   if msg.order:
     mdl.order = ndb.Key(ndb_models.Order, msg.order)
   if msg.supplier:
-    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)    
+    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
 
   # can't set automatic fields: unit_cost
   return mdl
@@ -989,6 +989,78 @@ class SiteCaptain(messages.Message):
   site = messages.IntegerField(2)
   captain = messages.IntegerField(3)
   type = messages.StringField(4)
+
+
+
+############
+# StaffPosition #
+############
+
+
+def get_date_with_rate(arr, current_rate):
+  print current_rate
+  for dr in (string.split() for string in arr):
+    print dr
+    if "{:.2f}".format(float(dr[1])) == "{:.2f}".format(float(current_rate)):
+      return dr[0]
+  return ""
+
+def StaffPositionModelToMessage(mdl):
+  s = StaffPosition(
+    id=mdl.key.integer_id(),
+    position_name = mdl.position_name,
+    hourly_rate = mdl.GetHourlyRate(datetime.datetime.now()),
+    mileage_rate = mdl.GetMileageRate(datetime.datetime.now())
+  )
+
+  if mdl.hourly_rate_after_date:
+    s.hourly_form_date = get_date_with_rate(mdl.hourly_rate_after_date, s.hourly_rate)
+
+  if mdl.mileage_rate_after_date:
+    s.mileage_form_date =  get_date_with_rate(mdl.mileage_rate_after_date, s.mileage_rate)
+  return s
+
+
+def StaffPositionMessageToModel(msg, mdl):
+
+  mdl.position_name = msg.position_name
+  mdl.hourly_rate = mdl.GetHourlyRate(datetime.datetime.now())
+  mdl.mileage_rate = mdl.GetMileageRate(datetime.datetime.now())
+
+  if not msg.position_name:
+    raise remote.ApplicationError('position name is required')
+
+  if not msg.hourly_form_date:
+    raise remote.ApplicationError('hourly rate after date, (hourly date) is required')
+
+  if not msg.mileage_form_date:
+    raise remote.ApplicationError('mileage rate after date, (mileage date) is required')
+
+
+  msg.hourly_rate_after_date  = msg.hourly_form_date  + " " +  "{:.2f}".format(msg.hourly_rate)
+  msg.mileage_rate_after_date = msg.mileage_form_date + " " + "{:.2f}".format(msg.mileage_rate)
+
+
+  if not (msg.hourly_rate_after_date in mdl.hourly_rate_after_date):
+    mdl.hourly_rate_after_date.insert(0, msg.hourly_rate_after_date)
+
+  if not (msg.mileage_rate_after_date in mdl.mileage_rate_after_date):
+    mdl.mileage_rate_after_date.insert(0, msg.mileage_rate_after_date)
+
+  return mdl
+
+
+class StaffPosition(messages.Message):
+  id = messages.IntegerField(1)
+  position_name = messages.StringField(2)
+
+  hourly_rate_after_date = messages.StringField(3)
+  hourly_rate = messages.FloatField(4)
+  hourly_form_date = messages.StringField(5)
+
+  mileage_rate_after_date = messages.StringField(6)
+  mileage_rate = messages.FloatField(7)
+  mileage_form_date = messages.StringField(8)
 
 
 # Use the multi-line string below as a template for adding models.

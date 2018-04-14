@@ -32,7 +32,7 @@ define([
                 control: "input",
             },
             {
-                name: "hourly_date",
+                name: "hourly_form_date",
                 label: "Hourly rate after date",
                 control: "datepicker",
                 placeholder: "yyyy-mm-dd",
@@ -46,7 +46,7 @@ define([
                 control: "input"
             },
             {
-                name: "mileage_date",
+                name: "mileage_form_date",
                 label: "Mileage rate after date",
                 control: "datepicker",
                 placeholder: "yyyy-mm-dd",
