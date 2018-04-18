@@ -416,7 +416,7 @@
 	          <thead>
 	            <tr>
 	              <th>Captain</th>
-	              <th>Payable To</th>
+	              <th class="main_column">Payable To</th>
 	              <th>Amount</th>
 	              <th>Status</th>
 	            </tr>
@@ -438,6 +438,11 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('CheckRequestView', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
+		                view
+		              </a>
+                  |
 		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('CheckRequest', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
 		                make changes
@@ -465,7 +470,7 @@
 	          <thead>
 	            <tr>
 	              <th>Captain</th>
-	              <th>Vendor</th>
+	              <th class="main_column">Vendor</th>
 	              <th>Amount</th>
 	              <th>Status</th>
 	            </tr>
@@ -488,9 +493,15 @@
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('VendorReceiptView', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
+		                view
+		              </a>
+                  |
+                  <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('VendorReceipt', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
 		                make changes
 		              </a>
+
 	              </td>
 	            </tr>
 	            {% endfor %}
@@ -519,7 +530,7 @@
 	              <th>Miles</th>
 	              <th>Total</th>
 	              <th>Activity Date</th>
-	              <th>Description</th>
+	              <th class="main_column">Description</th>
 	            </tr>
 	          </thead>
 	          <tbody>
@@ -577,7 +588,7 @@
 	          <thead>
 	            <tr>
 	              <th>Captain</th>
-	              <th>Donor</th>
+	              <th class="main_column">Donor</th>
 	              <th>Amount</th>
 	              <th>Status</th>
 	            </tr>
@@ -599,6 +610,11 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
+		              <a name="{{ entity.key.integer_id() }}"
+		                 href="{{ webapp2.uri_for('InKindDonationView', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
+		                view
+		              </a>
+                  |
 		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('InKindDonation', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
 		                make changes
