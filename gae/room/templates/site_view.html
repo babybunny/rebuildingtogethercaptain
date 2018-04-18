@@ -439,15 +439,9 @@
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('CheckRequestView', id=entity.key.integer_id()) }}">
-		                view</a>
-		              {% if user.staff %}
-		              <span> or </span>
-		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('CheckRequest', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
-		                edit
+		                make changes
 		              </a>
-		              {% endif %}
 	              </td>
 	            </tr>
 	            {% endfor %}
@@ -494,15 +488,9 @@
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('VendorReceiptView', id=entity.key.integer_id()) }}">
-		                view</a>
-		              {% if user.staff %}
-		              <span> or </span>
-		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('VendorReceipt', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
-		                edit
+		                make changes
 		              </a>
-		              {% endif %}
 	              </td>
 	            </tr>
 	            {% endfor %}
@@ -612,16 +600,9 @@
 	                {{ entity.state }}
                   <br/>
 		              <a name="{{ entity.key.integer_id() }}"
-		                 href="{{ webapp2.uri_for('InKindDonationView', id=entity.key.integer_id()) }}">
-		                view
-		              </a>
-		              {% if user.staff %}
-		              <span> or </span>
-		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('InKindDonation', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
-		                edit
+		                make changes
 		              </a>
-		              {% endif %}
 	              </td>
 	            </tr>
 	            {% endfor %}
