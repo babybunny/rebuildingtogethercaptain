@@ -104,6 +104,9 @@ div.panel table.tablesorter {
   margin-right: 0;
   margin-bottom: 5px;
 }
+div.panel table.tablesorter th.main_column {
+    min-width: 180px;
+}
 div#cdbg-breakdown {
   width: 200px;
   position: absolute;
