@@ -36,8 +36,8 @@ define(
 			                         self.set(f, 0);
 			                     }
                              else {
-                                 this.f = parseFloat(String(self.get(f)).replace(/,/g, ''));
-                                 self.set(f, this.f);
+                                 var temp = parseFloat(String(self.get(f)).replace(/,/g, ''));
+                                 self.set(f, temp);
                                  }
 		                   });
 	          }
