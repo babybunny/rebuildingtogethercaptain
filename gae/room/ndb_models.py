@@ -1167,7 +1167,6 @@ def _GetRateFromArray(default, array, activity_date):
 
 class StaffPosition(SearchableModel):
   """Staff positions that have hourly billing."""
-  name = ndb.StringProperty()
   position_name = ndb.StringProperty()
 
   # Defaults possibly superceded by the date-based lists below, and destined to be deprecated once
@@ -1198,6 +1197,10 @@ class StaffPosition(SearchableModel):
 
   last_editor = ndb.UserProperty(auto_current_user=True)
   modified = ndb.DateTimeProperty(auto_now=True)
+
+  @property
+  def name(self):
+    return self.position_name
 
   def GetHourlyRate(self, activity_date):
     return _GetRateFromArray(self.hourly_rate, self.hourly_rate_after_date, activity_date)
