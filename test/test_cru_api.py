@@ -14,10 +14,11 @@ app = TestApp(cru_api.application)
 # List of pairs: (model name, fields dict)
 # Include required messages in fields.
 models_and_data = (
-  ('Jurisdiction', {'name': 'Smallville'}),
-  ('Staff', {'name': 'Stef Staff', 'email': 'steff@example.com'}),
-  ('Captain', {'name': 'Cary Captain', 'email': 'cary@example.com'}),
-  ('Supplier', {'name': 'House'}),
+  # ('Jurisdiction', {'name': 'Smallville'}),
+  # ('Staff', {'name': 'Stef Staff', 'email': 'steff@example.com'}),
+  # ('Captain', {'name': 'Cary Captain', 'email': 'cary@example.com'}),
+  # ('Supplier', {'name': 'House'}),
+  ('StaffPosition', {'name': 'Test Position'}),
 )
 
 
@@ -147,82 +148,116 @@ class BugsTest(unittest.TestCase):
   def tearDown(self):
     test_models.DeleteAll(self.keys)
 
-  def testCheckRequest(self):
-    post_json_body = {
-      "site": self.keys['SITE'].integer_id(),
-      "labor_amount": 45.67,
-      "form_of_business": "Corporation",
-      "description": "For Services Rendered",
-      "address": "123 checkrequest street",
-      "materials_amount": 23.45,
-      "captain": self.keys['CAPTAIN'].integer_id(),
-      "state": "submitted",
-      "payment_date": "2011-02-03",
-      "name": "Mister Payable",
-      "tax_id": "123-456-8790",
-      "food_amount": 12.34}
-    response = app.post_json('/cru_api.checkrequest_create',
+  # def testCheckRequest(self):
+  #   post_json_body = {
+  #     "site": self.keys['SITE'].integer_id(),
+  #     "labor_amount": 45.67,
+  #     "form_of_business": "Corporation",
+  #     "description": "For Services Rendered",
+  #     "address": "123 checkrequest street",
+  #     "materials_amount": 23.45,
+  #     "captain": self.keys['CAPTAIN'].integer_id(),
+  #     "state": "submitted",
+  #     "payment_date": "2011-02-03",
+  #     "name": "Mister Payable",
+  #     "tax_id": "123-456-8790",
+  #     "food_amount": 12.34}
+  #   response = app.post_json('/cru_api.checkrequest_create',
 
+  #                            post_json_body,
+  #                            status=200,
+  #                            headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+  #   self.assertEquals('200 OK', response.status)
+  #   self.assertIn(u'payment_date', response.json)
+  #   self.assertEquals('2011-02-03', response.json['payment_date'])
+
+  # def testCaptainNoEmail(self):
+  #   post_json_body = {
+  #     "name": "Mister Captain",
+  #   }
+  #   response = app.post_json('/cru_api.captain_create',
+  #                            post_json_body,
+  #                            status=200,
+  #                            headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+  #   self.assertEquals('200 OK', response.status)
+  #   self.assertIn(u'name', response.json)
+  #   self.assertEquals('Mister Captain', response.json['name'])
+
+  # def testCaptainEmptyEmail(self):
+  #   post_json_body = {
+  #     "name": "Mister Captain",
+  #     "email": ""}
+  #   response = app.post_json('/cru_api.captain_create',
+  #                            post_json_body,
+  #                            status=200,
+  #                            headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+  #   self.assertEquals('200 OK', response.status)
+  #   self.assertIn(u'name', response.json)
+  #   self.assertEquals('Mister Captain', response.json['name'])
+
+  # def testCaptainLowerEmail(self):
+  #   post_json_body = {
+  #     "name": "Mister Captain",
+  #     "email": "Mister@Captain.com"}
+  #   response = app.post_json('/cru_api.captain_create',
+  #                            post_json_body,
+  #                            status=200,
+  #                            headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+  #   self.assertEquals('200 OK', response.status)
+  #   self.assertIn(u'email', response.json)
+  #   self.assertEquals('mister@captain.com', response.json['email'])
+
+  # def testSiteCaptainMissingType(self):
+  #   post_json_body = {
+  #     "site": self.keys['SITE'].integer_id(),
+  #     "captain": self.keys['CAPTAIN'].integer_id(),
+  #     }
+  #   response = app.post_json('/cru_api.sitecaptain_create',
+  #                            post_json_body,
+  #                            status=400,
+  #                            headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+  #   self.assertIn('type is required', response.body)
+
+  # def testSiteCaptainDelete(self):
+  #   post_json_body = {"id": self.keys['SITECAPTAIN'].integer_id()}
+  #   response = app.post_json('/cru_api.sitecaptain_delete',
+  #                            post_json_body,
+  #                            status=200,
+  #                            headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+  #   self.assertEquals('200 OK', response.status)
+  #   self.assertIsNone(self.keys['SITECAPTAIN'].get())
+
+  def testStaffPosition_MissingHourlyRateAfterDate(self):
+    post_json_body = {"id": self.keys['STAFFPOSITION'].integer_id()}
+    response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
-    self.assertIn(u'payment_date', response.json)
-    self.assertEquals('2011-02-03', response.json['payment_date'])
+    self.assertEquals(0.0, response.json['hourly_rate'])
+    self.assertEquals(0.54, response.json['mileage_rate'])
 
-  def testCaptainNoEmail(self):
-    post_json_body = {
-      "name": "Mister Captain",
-    }
-    response = app.post_json('/cru_api.captain_create',
+
+  def testStaffPosition_Name(self):
+    post_json_body = {"id": self.keys['STAFFPOSITION2'].integer_id()}
+    response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
-    self.assertIn(u'name', response.json)
-    self.assertEquals('Mister Captain', response.json['name'])
+    self.assertNotIn(u'position_name', response.json)
+    self.assertEquals("position two", response.json['name'])
 
-  def testCaptainEmptyEmail(self):
-    post_json_body = {
-      "name": "Mister Captain",
-      "email": ""}
-    response = app.post_json('/cru_api.captain_create',
+
+  def testStaffPosition_IncludingHourlyAndMileageRateAfterDate(self):
+    post_json_body = {"id": self.keys['STAFFPOSITION3'].integer_id()}
+    response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
-    self.assertIn(u'name', response.json)
-    self.assertEquals('Mister Captain', response.json['name'])
-
-  def testCaptainLowerEmail(self):
-    post_json_body = {
-      "name": "Mister Captain",
-      "email": "Mister@Captain.com"}
-    response = app.post_json('/cru_api.captain_create',
-                             post_json_body,
-                             status=200,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-    self.assertEquals('200 OK', response.status)
-    self.assertIn(u'email', response.json)
-    self.assertEquals('mister@captain.com', response.json['email'])
-
-  def testSiteCaptainMissingType(self):
-    post_json_body = {
-      "site": self.keys['SITE'].integer_id(),
-      "captain": self.keys['CAPTAIN'].integer_id(),
-      }
-    response = app.post_json('/cru_api.sitecaptain_create',
-                             post_json_body,
-                             status=400,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-    self.assertIn('type is required', response.body)
-
-  def testSiteCaptainDelete(self):
-    post_json_body = {"id": self.keys['SITECAPTAIN'].integer_id()}
-    response = app.post_json('/cru_api.sitecaptain_delete',
-                             post_json_body,
-                             status=200,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
-    self.assertEquals('200 OK', response.status)
-    self.assertIsNone(self.keys['SITECAPTAIN'].get())
+    self.assertNotIn(u'hourly_rate_after_date', response.json)
+    self.assertNotIn(u'mileage_rate_after_date', response.json)
+    self.assertEquals(20.00, response.json['hourly_rate'])
+    self.assertEquals(0.58, response.json['mileage_rate'])
 

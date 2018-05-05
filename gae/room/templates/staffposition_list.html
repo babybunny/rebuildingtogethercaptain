@@ -40,10 +40,10 @@ $(function(){
           </a>
       </td>
       <td>
-          {{ entry.hourly_rate|escape }}
+          {{entry.hourly_rate|escape}}
       </td>
       <td>
-          {{ entry.mileage_rate|escape }}
+          {{entry.mileage_rate|escape}}
       </td>
       <td>
           {{ entry.hourly_rate_after_date|escape }}
@@ -55,7 +55,7 @@ $(function(){
           {{ entry.last_editor|escape }}
       </td>
       <td>
-          {{ entry.modified|escape }}
+          {{ entry.modified.strftime("%Y/%m/%d")|escape }}
       </td>
     </tr>
     {% endfor %}

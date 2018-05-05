@@ -18,40 +18,37 @@ define([
                 control: "input",
                 disabled: true
             },
-            {control: "spacer", disabled: true},
             {
-                name: "position_name",
+                name: "name",
                 label: "Position name",
                 control: "input",
                 required: true
             },
+            {   control: "spacer"   },
             {
                 name: "hourly_rate",
-                label: "Hourly rate $",
-                placeholder: "0.0",
-                control: "input",
-            },
-            {
-                name: "hourly_form_date",
-                label: "Hourly rate after date",
-                control: "datepicker",
-                placeholder: "yyyy-mm-dd",
-                helpMessage: "Hourly rate (effective after this date)",
-                required: true
-            },
-            {
-                name: "mileage_rate",
-                label: "Mileage rate $",
-                placeholder: "0.0",
+                label: "Hourly rate",
                 control: "input"
             },
             {
-                name: "mileage_form_date",
-                label: "Mileage rate after date",
+                name: "hourly_start_date",
+                label: "Hourly start date",
                 control: "datepicker",
                 placeholder: "yyyy-mm-dd",
-                helpMessage: "Mileage rate (effective after this date)",
-                required: true
+                helpMessage: "Modified hourly rate will be adjusted on this date."
+            },
+            {   control: "spacer"   },
+            {
+                name: "mileage_rate",
+                label: "Mileage rate",
+                control: "input"
+            },
+            {
+                name: "mileage_start_date",
+                label: "Mileage start date",
+                control: "datepicker",
+                placeholder: "yyyy-mm-dd",
+                helpMessage: "Modified mileage rate will be adjusted on this date"
             },
             {
                 id: "submit",
