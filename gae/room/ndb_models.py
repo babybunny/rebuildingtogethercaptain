@@ -1203,10 +1203,14 @@ class StaffPosition(SearchableModel):
     return self.position_name
 
   def GetHourlyRate(self, activity_date):
-    return _GetRateFromArray(self.hourly_rate, self.hourly_rate_after_date, activity_date)
+    if self.hourly_rate_after_date:
+      return _GetRateFromArray(self.hourly_rate, self.hourly_rate_after_date, activity_date)
+    return 0.0
 
   def GetMileageRate(self, activity_date):
-    return _GetRateFromArray(self.mileage_rate, self.mileage_rate_after_date, activity_date)
+    if self.mileage_rate_after_date:
+      return _GetRateFromArray(self.mileage_rate, self.mileage_rate_after_date, activity_date)
+    return 0.0
 
   def __unicode__(self):
     return '%s' % self.position_name

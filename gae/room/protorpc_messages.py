@@ -998,17 +998,10 @@ class SiteCaptain(messages.Message):
 def StaffPositionModelToMessage(mdl):
   s = StaffPosition(
     id=mdl.key.integer_id(),
-    name=mdl.position_name
+    name=mdl.position_name,
+    hourly_rate=mdl.GetHourlyRate(datetime.datetime.today()),
+    mileage_rate=mdl.GetMileageRate(datetime.datetime.today())
   )
-  if mdl.hourly_rate_after_date:
-    s.hourly_rate = mdl.GetHourlyRate(datetime.datetime.today())
-  else:
-    s.hourly_rate = 0.0
-  if mdl.mileage_rate_after_date:
-    s.mileage_rate = mdl.GetMileageRate(datetime.datetime.today())
-  else:
-    s.mileage_rate = 0.0
-
   return s
 
 
@@ -1017,17 +1010,22 @@ def StaffPositionMessageToModel(msg, mdl):
     raise remote.ApplicationError('position name is required')
   mdl.position_name = msg.name
 
-  if msg.hourly_rate != mdl.hourly_rate and msg.hourly_rate is not None:
+  mdl.hourly_rate = mdl.GetHourlyRate(datetime.datetime.today())
+  mdl.mileage_rate = mdl.GetMileageRate(datetime.datetime.today())
+
+  if msg.hourly_rate and msg.hourly_rate != mdl.hourly_rate:
     if not msg.hourly_start_date:
       raise remote.ApplicationError('Hourly start date is required.')
-    hourly_str = msg.hourly_start_date + " " + str(msg.hourly_rate)
-    mdl.hourly_rate_after_date.insert(0, hourly_str)
+    h_str = msg.hourly_start_date + " " + str(msg.hourly_rate)
+    mdl.hourly_rate_after_date.insert(0, h_str)
+    mdl.hourly_rate = mdl.GetHourlyRate(datetime.datetime.today())
 
-  if msg.mileage_rate != mdl.mileage_rate and msg.mileage_rate is not None:
+  if msg.mileage_rate and msg.mileage_rate != mdl.mileage_rate:
     if not msg.mileage_start_date:
       raise remote.ApplicationError('Mileage start date is required.')
-    mileage_str = msg.mileage_start_date + " " + str(msg.mileage_rate)
-    mdl.mileage_rate_after_date.insert(0, mileage_str)
+    m_str = msg.mileage_start_date + " " + str(msg.mileage_rate)
+    mdl.mileage_rate_after_date.insert(0, m_str)
+    mdl.mileage_rate = mdl.GetMileageRate(datetime.datetime.today())
 
   return mdl
 

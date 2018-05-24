@@ -1098,10 +1098,10 @@ class StaffPositionList(StaffHandler):
   def get(self):
     query = ndb_models.StaffPosition.query()
     query.get()
+
     for staffposition in query:
-      staffposition.mileage_rate = staffposition.GetMileageRate(datetime.datetime.now())
       staffposition.hourly_rate = staffposition.GetHourlyRate(datetime.datetime.now())
-      staffposition.put()
+      staffposition.mileage_rate = staffposition.GetMileageRate(datetime.datetime.now())
 
     return _EntryList(self.request, ndb_models.StaffPosition, 'staffposition_list', params=None, query=query)
 
