@@ -1096,14 +1096,13 @@ class RemoveSiteAttachment(blobstore_handlers.BlobstoreDownloadHandler):
 
 class StaffPositionList(StaffHandler):
   def get(self):
-    query = ndb_models.StaffPosition.query()
-    query.get()
 
-    for staffposition in query:
-      staffposition.hourly_rate = staffposition.GetHourlyRate(datetime.datetime.now())
-      staffposition.mileage_rate = staffposition.GetMileageRate(datetime.datetime.now())
+    for s in self.request.GET:
+      s.hourly_rate = s.GetHourlyRate(datetime.datetime.now())
+      s.mileage_rate = s.GetMileageRate(datetime.datetime.now())
 
-    return _EntryList(self.request, ndb_models.StaffPosition, 'staffposition_list', params=None, query=query)
+    return _EntryList(
+        self.request, ndb_models.StaffPosition, 'staffposition_list')
 
 
 class StaffPosition(EditView):
