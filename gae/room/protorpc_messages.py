@@ -991,7 +991,6 @@ class SiteCaptain(messages.Message):
   type = messages.StringField(4)
 
 
-
 ############
 # StaffPosition #
 ############
@@ -999,8 +998,8 @@ def StaffPositionModelToMessage(mdl):
   s = StaffPosition(
     id=mdl.key.integer_id(),
     name=mdl.position_name,
-    hourly_rate=mdl.GetHourlyRate(datetime.datetime.today()),
-    mileage_rate=mdl.GetMileageRate(datetime.datetime.today())
+    hourly_rate=mdl.GetHourlyRate(datetime.date.today()),
+    mileage_rate=mdl.GetMileageRate(datetime.date.today())
   )
   return s
 
@@ -1010,22 +1009,21 @@ def StaffPositionMessageToModel(msg, mdl):
     raise remote.ApplicationError('position name is required')
   mdl.position_name = msg.name
 
-  mdl.hourly_rate = mdl.GetHourlyRate(datetime.datetime.today())
-  mdl.mileage_rate = mdl.GetMileageRate(datetime.datetime.today())
+  today = datetime.date.today()
+  mdl.hourly_rate = mdl.GetHourlyRate(today)
+  mdl.mileage_rate = mdl.GetMileageRate(today)
 
   if msg.hourly_rate and msg.hourly_rate != mdl.hourly_rate:
     if not msg.hourly_start_date:
       raise remote.ApplicationError('Hourly start date is required.')
-    h_str = msg.hourly_start_date + " " + str(msg.hourly_rate)
-    mdl.hourly_rate_after_date.insert(0, h_str)
-    mdl.hourly_rate = mdl.GetHourlyRate(datetime.datetime.today())
+    mdl.hourly_rate_after_date += [msg.hourly_start_date + " " + str(msg.hourly_rate)]
+    mdl.hourly_rate = mdl.GetHourlyRate(today)
 
   if msg.mileage_rate and msg.mileage_rate != mdl.mileage_rate:
     if not msg.mileage_start_date:
       raise remote.ApplicationError('Mileage start date is required.')
-    m_str = msg.mileage_start_date + " " + str(msg.mileage_rate)
-    mdl.mileage_rate_after_date.insert(0, m_str)
-    mdl.mileage_rate = mdl.GetMileageRate(datetime.datetime.today())
+    mdl.mileage_rate_after_date += [msg.mileage_start_date + " " + str(msg.mileage_rate)]
+    mdl.mileage_rate = mdl.GetMileageRate(today)
 
   return mdl
 
