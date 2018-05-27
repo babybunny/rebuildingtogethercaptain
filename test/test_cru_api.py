@@ -232,9 +232,10 @@ class BugsTest(unittest.TestCase):
     response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
                              status=200,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+                             headers={'x-rooms-dev-signin-email':
+                                      'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
-    self.assertEquals(0.0, response.json['hourly_rate'])
+    self.assertEquals(19.19, response.json['hourly_rate'])
     self.assertEquals(0.54, response.json['mileage_rate'])
 
 
@@ -243,7 +244,8 @@ class BugsTest(unittest.TestCase):
     response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
                              status=200,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+                             headers={'x-rooms-dev-signin-email':
+                                      'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
     self.assertNotIn(u'position_name', response.json)
     self.assertEquals("position two", response.json['name'])
@@ -254,7 +256,8 @@ class BugsTest(unittest.TestCase):
     response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
                              status=200,
-                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+                             headers={'x-rooms-dev-signin-email':
+                                      'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
     self.assertNotIn(u'hourly_rate_after_date', response.json)
     self.assertNotIn(u'mileage_rate_after_date', response.json)
