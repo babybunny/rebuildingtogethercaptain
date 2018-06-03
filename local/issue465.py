@@ -1,6 +1,14 @@
 """Scratch code for dealing with duplicate order items.
 
 See https://github.com/babybunny/rebuildingtogethercaptain/issues/465
+
+$ python /Users/babybunny/google-cloud-sdk/platform/google_appengine/remote_api_shell.py -s rebuildingtogethercaptain.appspot.com
+App Engine remote_api shell
+Python 2.7.9 (v2.7.9:648dcafa7e5f, Dec 10 2014, 10:10:46)
+[GCC 4.2.1 (Apple Inc. build 5666) (dot 3)]
+The db, ndb, users, urlfetch, and memcache modules are imported.
+s~rebuildingtogethercaptain-hrd> from local import issue465
+s~rebuildingtogethercaptain-hrd> issue465.find_dupes(2018, 1, 1)
 """
 
 from collections import defaultdict
