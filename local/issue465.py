@@ -13,25 +13,36 @@ s~rebuildingtogethercaptain-hrd> issue465.find_dupes(2018, 1, 1)
 
 from collections import defaultdict
 import datetime
+import csv
 
 from gae.room import ndb_models
 
+oi_by_i = defaultdict(list)
+
 def find_dupes(y, m, d):
     oq = ndb_models.Order.query(ndb_models.Order.created > datetime.datetime(y, m, d, 0, 0, 0))
-    oqf = oq.fetch(5)
+    oqf = oq.fetch()
     # print oqf
-    oi_by_i = defaultdict(list)
     for o in oqf:
-        # print o
+        print "processing {0!s}".format(o.key)
         oiq = ndb_models.OrderItem.query(ndb_models.OrderItem.order == o.key)
         for oi in oiq:
             k = (oi.order, oi.item)
             oi_by_i[k].append(oi.key)
 
-    for ok_ik, oikl in oi_by_i.iteritems(): 
+    for ok_ik, oikl in sorted(oi_by_i.items()):
         if len(oikl) > 1:
             print "DUPLICATE!!"
             print ok_ik
             print oikl
         else:
             print "no duplicates for {0!s}".format(ok_ik)
+
+    with open('issue465.csv', 'wb') as outfile: 
+        outcsv = csv.writer(outfile)
+        for ok_ik, oikl in sorted(oi_by_i.items()):
+            if len(oikl) > 1:
+                for oik in sorted(oikl[:-1]):
+                    outcsv.writerow([ok_ik[0].integer_id(), ok_ik[1].integer_id(), oik.integer_id()])
+
+                
