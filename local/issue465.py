@@ -17,6 +17,8 @@ import csv
 
 from gae.room import ndb_models
 
+CSV_FILENAME = 'issue465.csv'
+
 oi_by_i = defaultdict(list)
 
 def find_dupes(y, m, d):
@@ -38,7 +40,7 @@ def find_dupes(y, m, d):
         else:
             print "no duplicates for {0!s}".format(ok_ik)
 
-    with open('issue465.csv', 'wb') as outfile: 
+    with open(CSV_FILENAME, 'wb') as outfile: 
         outcsv = csv.writer(outfile)
         for ok_ik, oikl in sorted(oi_by_i.items()):
             if len(oikl) > 1:
@@ -46,3 +48,12 @@ def find_dupes(y, m, d):
                     outcsv.writerow([ok_ik[0].integer_id(), ok_ik[1].integer_id(), oik.integer_id()])
 
                 
+def del_dupes_from_csv():
+    with open(CSV_FILENAME, 'r') as infile:
+        csvreader = csv.reader(infile)
+        for ok, ik, oik in csvreader:
+            print ok, ik, oik
+            k = ndb_models.ndb.Key(ndb_models.OrderItem, int(oik))
+            print k
+            k.delete()
+            
