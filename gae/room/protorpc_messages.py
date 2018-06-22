@@ -996,11 +996,21 @@ class SiteCaptain(messages.Message):
 ############
 def StaffPositionModelToMessage(mdl):
   s = StaffPosition(
-    id=mdl.key.integer_id(),
-    name=mdl.position_name,
-    hourly_rate=mdl.GetHourlyRate(datetime.date.today()),
-    mileage_rate=mdl.GetMileageRate(datetime.date.today())
-  )
+      id=mdl.key.integer_id(),
+      name=mdl.position_name,
+      hourly_rate=mdl.GetHourlyRate(datetime.date.today()),
+      mileage_rate=mdl.GetMileageRate(datetime.date.today())
+    )
+  if mdl.hourly_rate_after_date:
+    s.hourly_rates = [{'date': str(dr[0]), 'rate': float(dr[1])} for dr in (
+          dr.split() for dr in mdl.hourly_rate_after_date if dr)]
+  else:
+    s.hourly_rates = [{'date': unicode(datetime.date.today()), 'rate': mdl.hourly_rate}]
+  if mdl.mileage_rate_after_date:
+    s.mileage_rates = [{'date': str(dr[0]), 'rate': float(dr[1])} for dr in (
+                dr.split() for dr in mdl.mileage_rate_after_date if dr)]
+  else:
+    s.mileage_rates = [{'date': unicode(datetime.date.today()), 'rate': mdl.mileage_rate}]
   return s
 
 
@@ -1028,6 +1038,10 @@ def StaffPositionMessageToModel(msg, mdl):
   return mdl
 
 
+class RateAfterDate(messages.Message):
+  date = messages.StringField(1)
+  rate = messages.FloatField(2)
+
 class StaffPosition(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
@@ -1035,6 +1049,8 @@ class StaffPosition(messages.Message):
   hourly_start_date = messages.StringField(4)
   mileage_rate = messages.FloatField(5)
   mileage_start_date = messages.StringField(6)
+  hourly_rates = messages.MessageField(RateAfterDate, 7, repeated=True)
+  mileage_rates = messages.MessageField(RateAfterDate, 8, repeated=True)
 
 
 # Use the multi-line string below as a template for adding models.
