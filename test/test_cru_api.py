@@ -237,7 +237,8 @@ class BugsTest(unittest.TestCase):
     self.assertEquals('200 OK', response.status)
     self.assertEquals(19.19, response.json['hourly_rate'])
     self.assertEquals(0.54, response.json['mileage_rate'])
-
+    self.assertEquals(response.json['hourly_rates'], [{u'date': u'', u'rate': 19.19}])
+    self.assertEquals(response.json['mileage_rates'], [{u'date': u'2016-01-01', u'rate': 0.54}])
 
   def testStaffPositionName(self):
     post_json_body = {"id": self.keys['STAFFPOSITION2'].integer_id()}
@@ -249,7 +250,6 @@ class BugsTest(unittest.TestCase):
     self.assertEquals('200 OK', response.status)
     self.assertNotIn(u'position_name', response.json)
     self.assertEquals("position two", response.json['name'])
-
 
   def testStaffPositionIncludingHourlyAndMileageRateAfterDate(self):
     post_json_body = {"id": self.keys['STAFFPOSITION3'].integer_id()}
@@ -263,4 +263,17 @@ class BugsTest(unittest.TestCase):
     self.assertNotIn(u'mileage_rate_after_date', response.json)
     self.assertEquals(20.00, response.json['hourly_rate'])
     self.assertEquals(0.58, response.json['mileage_rate'])
+
+  def testStaffPositionHourlyAndMileageRates(self):
+    post_json_body = {"id": self.keys['STAFFPOSITION3'].integer_id()}
+    response = app.post_json('/cru_api.staffposition_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email':
+                                      'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'hourly_rates', response.json)
+    self.assertIn(u'mileage_rates', response.json)
+    self.assertEquals(response.json['hourly_rates'], [{u'date': u'2016-01-01', u'rate': 10.0}, {u'date': u'2017-01-10', u'rate': 20.0}])
+    self.assertEquals(response.json['mileage_rates'], [{u'date': u'2016-01-01', u'rate': 0.54}, {u'date': u'2017-01-10', u'rate': 0.58}])
 
