@@ -227,7 +227,7 @@ class BugsTest(unittest.TestCase):
     self.assertEquals('200 OK', response.status)
     self.assertIsNone(self.keys['SITECAPTAIN'].get())
 
-  def testStaffPosition_MissingHourlyRateAfterDate(self):
+  def testStaffPositionMissingHourlyRateAfterDate(self):
     post_json_body = {"id": self.keys['STAFFPOSITION'].integer_id()}
     response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
@@ -239,7 +239,7 @@ class BugsTest(unittest.TestCase):
     self.assertEquals(0.54, response.json['mileage_rate'])
 
 
-  def testStaffPosition_Name(self):
+  def testStaffPositionName(self):
     post_json_body = {"id": self.keys['STAFFPOSITION2'].integer_id()}
     response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
@@ -251,7 +251,7 @@ class BugsTest(unittest.TestCase):
     self.assertEquals("position two", response.json['name'])
 
 
-  def testStaffPosition_IncludingHourlyAndMileageRateAfterDate(self):
+  def testStaffPositionIncludingHourlyAndMileageRateAfterDate(self):
     post_json_body = {"id": self.keys['STAFFPOSITION3'].integer_id()}
     response = app.post_json('/cru_api.staffposition_read',
                              post_json_body,
