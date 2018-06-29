@@ -998,15 +998,12 @@ def StaffPositionModelToMessage(mdl):
   s = StaffPosition(
       id=mdl.key.integer_id(),
       name=mdl.position_name,
-      hourly_rate=mdl.GetHourlyRate(datetime.date.today()),
-      mileage_rate=mdl.GetMileageRate(datetime.date.today())
     )
   if mdl.hourly_rate_after_date:
     s.hourly_rates = [{'date': str(dr[0]), 'rate': float(dr[1])} for dr in (
           dr.split() for dr in mdl.hourly_rate_after_date if dr)]
   else:
     s.hourly_rates = [{'date': "", 'rate': mdl.hourly_rate}]
-    # s.hourly_rates = [{'date': unicode(datetime.date.today()), 'rate': mdl.hourly_rate}]
   if mdl.mileage_rate_after_date:
     s.mileage_rates = [{'date': str(dr[0]), 'rate': float(dr[1])} for dr in (
                 dr.split() for dr in mdl.mileage_rate_after_date if dr)]
