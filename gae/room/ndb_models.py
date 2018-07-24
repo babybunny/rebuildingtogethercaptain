@@ -111,10 +111,6 @@ class SearchableModel(ndb.Model):
         search_type = search.AtomField
         value_processor = lambda v: unicode(v)
 
-      elif prop_type == ndb.StructuredProperty:
-        search_type = search.TextField
-        value_processor = lambda v: unicode(str(v))
-
       else:
         logging.warning("type {} not supported {}".format(prop_type, SearchableModel.__name__))
         continue
@@ -1171,14 +1167,6 @@ def _GetRateFromArray(default, array, activity_date):
     rate = float(dr[1])
   return rate
 
-class RateAfterDate(ndb.Model):
-  type = ndb.StringProperty() # E.g., hourly, mileage
-  date = ndb.StringProperty()
-  rate = ndb.FloatProperty(default=0.0)
-
-  def __str__(self):
-    return '%s %s' % (self.date, str(self.rate))
-
 
 class StaffPosition(SearchableModel):
   """Staff positions that have hourly billing."""
@@ -1209,8 +1197,6 @@ class StaffPosition(SearchableModel):
   # [u'2016-01-01 10.0', u'2017-01-01 20.0']
   hourly_rate_after_date = ndb.StringProperty(repeated=True)
   mileage_rate_after_date = ndb.StringProperty(repeated=True)
-
-  rates = ndb.StructuredProperty(RateAfterDate, repeated=True)
 
   last_editor = ndb.UserProperty(auto_current_user=True)
   modified = ndb.DateTimeProperty(auto_now=True)
