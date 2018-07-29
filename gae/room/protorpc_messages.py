@@ -1017,21 +1017,11 @@ def StaffPositionMessageToModel(msg, mdl):
     raise remote.ApplicationError('position name is required')
   mdl.position_name = msg.name
 
-  today = datetime.date.today()
-  mdl.hourly_rate = mdl.GetHourlyRate(today)
-  mdl.mileage_rate = mdl.GetMileageRate(today)
+  mdl.hourly_rate_after_date = [h.date + " " + str(h.rate) for h in msg.hourly_rates if h.rate and h.date]
+  mdl.hourly_rate = mdl.GetHourlyRate(datetime.datetime.today())
 
-  if msg.hourly_rate and msg.hourly_rate != mdl.hourly_rate:
-    if not msg.hourly_start_date:
-      raise remote.ApplicationError('Hourly start date is required.')
-    mdl.hourly_rate_after_date += [msg.hourly_start_date + " " + str(msg.hourly_rate)]
-    mdl.hourly_rate = mdl.GetHourlyRate(today)
-
-  if msg.mileage_rate and msg.mileage_rate != mdl.mileage_rate:
-    if not msg.mileage_start_date:
-      raise remote.ApplicationError('Mileage start date is required.')
-    mdl.mileage_rate_after_date += [msg.mileage_start_date + " " + str(msg.mileage_rate)]
-    mdl.mileage_rate = mdl.GetMileageRate(today)
+  mdl.mileage_rate_after_date = [m.date + " " + str(m.rate) for m in msg.mileage_rates if m.rate and m.date]
+  mdl.mileage_rate = mdl.GetMileageRate(datetime.datetime.today())
 
   return mdl
 
@@ -1044,9 +1034,9 @@ class StaffPosition(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
   hourly_rate = messages.FloatField(3)
-  hourly_start_date = messages.StringField(4)
+  hourly_date = messages.StringField(4)
   mileage_rate = messages.FloatField(5)
-  mileage_start_date = messages.StringField(6)
+  mileage_date = messages.StringField(6)
   hourly_rates = messages.MessageField(RateAfterDate, 7, repeated=True)
   mileage_rates = messages.MessageField(RateAfterDate, 8, repeated=True)
 

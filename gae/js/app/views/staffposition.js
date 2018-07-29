@@ -24,31 +24,29 @@ define([
                 control: "input",
                 required: true
             },
-            {   control: "spacer"   },
             {
                 name: "hourly_rate",
                 label: "Hourly rate",
                 control: "input"
             },
             {
-                name: "hourly_start_date",
-                label: "Hourly start date",
+                name: "hourly_date",
+                label: "Hourly date",
                 control: "datepicker",
                 placeholder: "yyyy-mm-dd",
-                helpMessage: "Modified hourly rate will be adjusted on this date."
+                helpMessage: "Hourly rate start date"
             },
-            {   control: "spacer"   },
             {
                 name: "mileage_rate",
                 label: "Mileage rate",
                 control: "input"
             },
             {
-                name: "mileage_start_date",
-                label: "Mileage start date",
+                name: "mileage_date",
+                label: "Mileage date",
                 control: "datepicker",
                 placeholder: "yyyy-mm-dd",
-                helpMessage: "Modified mileage rate will be adjusted on this date"
+                helpMessage: "Mileage rate start date"
             },
             {
                 id: "submit",
