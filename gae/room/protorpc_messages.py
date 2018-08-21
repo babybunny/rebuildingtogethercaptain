@@ -1033,10 +1033,6 @@ class RateAfterDate(messages.Message):
 class StaffPosition(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
-  hourly_rate = messages.FloatField(3)
-  hourly_date = messages.StringField(4)
-  mileage_rate = messages.FloatField(5)
-  mileage_date = messages.StringField(6)
   hourly_rates = messages.MessageField(RateAfterDate, 7, repeated=True)
   mileage_rates = messages.MessageField(RateAfterDate, 8, repeated=True)
 
