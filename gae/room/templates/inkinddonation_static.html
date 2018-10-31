@@ -1,5 +1,5 @@
 <h2>
-  In-kind Donation # {{ entity.key.integer_id()}} 
+  In-kind Donation # {{ entity.key.integer_id()}}
   for Site {{ entity.site.get().number }}
 </h2>
 <hr>
@@ -75,7 +75,11 @@
     Labor Amount
   </td>
   <td>
-    ${{ "%0.2f" % entity.labor_amount }}
+    {% if entity.labor_amount %}
+      ${{ "%0.2f" % entity.labor_amount }}
+    {% else %}
+      $0.00
+    {% endif %}
   </td>
 </tr>
 <tr>
@@ -83,7 +87,11 @@
     Materials Amount
   </td>
   <td>
-    ${{ "%0.2f" % entity.materials_amount }}
+    {% if entity.materials_amount %}
+      ${{ "%0.2f" % entity.materials_amount }}
+    {% else %}
+      $0.00
+    {% endif %}
   </td>
 </tr>
 <tr>
