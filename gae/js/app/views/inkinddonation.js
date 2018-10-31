@@ -66,13 +66,11 @@ define(
                 name: "labor_amount",
                 label: "Labor Value ($)",
                 control: "input",
-                value: 0.0,
             },
             {
                 name: "materials_amount",
                 label: "Materials Value ($)",
                 control: "input",
-                value: 0.0
             },
             {
                 name: "description",

@@ -5,6 +5,10 @@ define(
             // matches first part of method name in @remote.method
             urlRoot: '/cru_api.inkinddonation_',
 	    must_be_floats: ['labor_amount', 'materials_amount'],
+        defaults: {
+            labor_amount: 0.0,
+            materials_amount: 0.0
+        },
 	    validate: function(attrs, options){
             this.errorModel.clear();
             var msg = "You can not submit an in-kind Donation without a Value. Please add an estimated Value or find out an estimated Value from the source and then submit. Values are very important for our reporting";
