@@ -355,27 +355,14 @@ class OrderSheet(SearchableModel):
   supports_extra_name_on_order = ndb.BooleanProperty(default=False)
   supports_internal_invoice = ndb.BooleanProperty(default=False)
   code = ndb.StringProperty()
-  code.verbose_name = 'Three-letter code like LUM for Lumber'
   instructions = ndb.TextProperty(default='')
-  instructions.verbose_name = (
-    'Instructions to Captain, appears on order form')
   logistics_instructions = ndb.TextProperty(default='')
-  logistics_instructions.verbose_name = (
-    'Instructions to Captain, appears on logistics form')
   default_supplier = ndb.KeyProperty(kind=Supplier)
-  default_supplier.verbose_name = (
-    'Default Supplier, used if Item\'s supplier is not set.')
   # Choose one of the next three.
   delivery_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
-  delivery_options.verbose_name = ('Allow Captain to select Delivery to site')
   pickup_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
-  pickup_options.verbose_name = (
-    'Allow Captain to select Pick-up from RTP warehouse')
   borrow_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
   retrieval_options = ndb.StringProperty(choices=['Yes', 'No'], default='No')
-  retrieval_options.verbose_name = ('Drop-off and retrieval (like debris box)'
-                                    '  Note: do not set this with either'
-                                    ' delivery or pick-up')
 
   def __unicode__(self):
     return '%s' % (self.name)
@@ -576,9 +563,7 @@ class NewSite(SearchableModel):
   program = ndb.StringProperty()  # reference
   program_key = ndb.KeyProperty(kind=Program)  # TODO: Set to required after migration
   name = ndb.StringProperty()  # "Belle Haven"
-  name.verbose_name = 'Recipient Name'
   applicant = ndb.StringProperty()
-  applicant.verbose_name = 'Applicant Contact'
   applicant_home_phone = ndb.StringProperty()
   applicant_work_phone = ndb.StringProperty()
   applicant_mobile_phone = ndb.StringProperty()
@@ -592,7 +577,6 @@ class NewSite(SearchableModel):
   scope_of_work = ndb.TextProperty()
   sponsor = ndb.StringProperty()
   street_number = ndb.StringProperty()
-  street_number.verbose_name = "Street Address"
   city_state_zip = ndb.StringProperty()
   budget = ndb.IntegerProperty(default=0)
   attachments = ndb.KeyProperty(kind=SiteAttachments)
@@ -1021,7 +1005,7 @@ class OrderItem(SearchableModel):
   name = ndb.StringProperty(default="")
   # no default because it's not present for all objects, yet.
   unit_cost = ndb.FloatProperty()
-  
+
   def FloatQuantity(self):
     """Returns quantity as a float."""
     if self.quantity:
@@ -1064,13 +1048,9 @@ class Delivery(SearchableModel):
   """Delivery to a site (no retrieval)."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   delivery_date = ndb.StringProperty()
-  delivery_date.verbose_name = 'Delivery Date (Mon-Fri only)'
   contact = ndb.StringProperty()
-  contact.verbose_name = "Contact person (who will accept delivery)"
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
-  notes.verbose_name = (
-    'Instructions for delivery person')
 
 
 class OrderDelivery(SearchableModel):
@@ -1083,11 +1063,8 @@ class Pickup(SearchableModel):
   """Pick up from RTP warehouse."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   pickup_date = ndb.StringProperty()
-  pickup_date.verbose_name = 'Pickup Date (Mon-Fri only)'
   return_date = ndb.StringProperty()
-  return_date.verbose_name = '(Optional) Return date for durable equipment'
   contact = ndb.StringProperty()
-  contact.verbose_name = "Contact person (who will pick up)"
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
   notes.verbose_name = (
@@ -1104,11 +1081,8 @@ class Borrow(SearchableModel):
   """Pick up from RTP warehouse."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   borrow_date = ndb.StringProperty()
-  borrow_date.verbose_name = 'Borrow Date (Mon-Fri only)'
   return_date = ndb.StringProperty()
-  return_date.verbose_name = '(Optional) Return date for durable equipment'
   contact = ndb.StringProperty()
-  contact.verbose_name = "Contact person (who will pick up)"
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
   notes.verbose_name = (
@@ -1125,15 +1099,10 @@ class Retrieval(SearchableModel):
   """Delivery and retrieval to and from a site."""
   site = ndb.KeyProperty(kind=NewSite, required=True)
   dropoff_date = ndb.StringProperty()
-  dropoff_date.verbose_name = 'Delivery Date (Mon-Fri only)'
   retrieval_date = ndb.StringProperty()
-  retrieval_date.verbose_name = 'Retrieval Date (Mon-Fri only)'
   contact = ndb.StringProperty()
-  contact.verbose_name = "Contact person (who will accept delivery)"
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
-  notes.verbose_name = (
-    'Instructions for delivery person')
 
 
 class OrderRetrieval(SearchableModel):
@@ -1219,22 +1188,15 @@ class CheckRequest(SearchableModel):
   program_key = ndb.KeyProperty(kind=Program)
   payment_date = ndb.DateProperty()
   labor_amount = ndb.FloatProperty(default=0.0)
-  labor_amount.verbose_name = 'Labor Amount ($)'
   materials_amount = ndb.FloatProperty(default=0.0)
-  materials_amount.verbose_name = 'Materials Amount ($)'
   food_amount = ndb.FloatProperty(default=0.0)
-  food_amount.verbose_name = 'Food Amount ($)'
   description = ndb.TextProperty()
   name = ndb.StringProperty()
-  name.verbose_name = 'Payable To'
   address = ndb.TextProperty()
-  address.verbose_name = "Payee Address"
   tax_id = ndb.StringProperty()
-  tax_id.verbose_name = "Payee Tax ID"
   form_of_business = ndb.StringProperty(
     choices=('Corporation', 'Partnership', 'Sole Proprietor',
              'Don\'t Know'))
-  form_of_business.verbose_name = "Payee Business Type"
   state = ndb.StringProperty()
   last_editor = ndb.UserProperty(auto_current_user=True)
   modified = ndb.DateTimeProperty(auto_now=True)
@@ -1259,7 +1221,6 @@ class VendorReceipt(SearchableModel):
   vendor = ndb.StringProperty()
   supplier = ndb.KeyProperty(kind=Supplier)
   amount = ndb.FloatProperty()
-  amount.verbose_name = 'Purchase Amount ($)'
   description = ndb.TextProperty()
   state = ndb.StringProperty()
   last_editor = ndb.UserProperty()
@@ -1291,13 +1252,8 @@ class InKindDonation(SearchableModel):
   donor = ndb.StringProperty()
   donor_phone = ndb.StringProperty()
   donor_info = ndb.TextProperty()
-  donor_info.verbose_name = (
-    'Include as much of the following donor information as possible:'
-    ' donor name, company, address, phone, email.')
   labor_amount = ndb.FloatProperty(default=0.0)
-  labor_amount.verbose_name = 'Labor Value ($)'
   materials_amount = ndb.FloatProperty(default=0.0)
-  materials_amount.verbose_name = 'Materials Value ($)'
   description = ndb.TextProperty()
   budget = ndb.StringProperty(choices=('Normal', 'Roofing'), default='Normal')
   state = ndb.StringProperty()
@@ -1331,9 +1287,7 @@ class StaffTime(SearchableModel):
   program_key = ndb.KeyProperty(kind=Program)
   state = ndb.StringProperty()
   hours = ndb.FloatProperty(default=0.0)
-  hours.verbose_name = 'Hours'
   miles = ndb.FloatProperty(default=0.0)
-  miles.verbose_name = 'Miles'
   activity_date = ndb.DateProperty()
   description = ndb.TextProperty()
   last_editor = ndb.UserProperty(auto_current_user=True)
