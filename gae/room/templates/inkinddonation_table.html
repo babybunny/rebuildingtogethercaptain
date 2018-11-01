@@ -29,7 +29,7 @@
 	{{ entity.site.get().number|escape }}
 	</a>
       </td><td class="editable">	<span class="sortorder">{{ entity.state }}</span>
-	<div class="jeditable-state" 
+	<div class="jeditable-state"
 	     id="state"
 	     name="{{ entity.key.integer_id() }}">{{ entity.state }}</div>
       </td><td>
@@ -43,7 +43,7 @@
       </td><td>
 	{{ entity.donor_phone|escape }}
       </td>
-      <td class="dollar">	
+      <td class="dollar">
 	{% if entity.labor_amount %}
 	${{ "%0.2f" % entity.labor_amount }}
 	{% endif %}
@@ -51,11 +51,6 @@
       <td class="dollar">
 	{% if entity.materials_amount %}
 	${{ "%0.2f" % entity.materials_amount }}
-	{% endif %}
-      </td>
-      <td class="dollar">	
-	{% if entity.food_amount %}
-	${{ "%0.2f" % entity.food_amount }}
 	{% endif %}
       </td><td>
 	{{ entity.donor_info|escape }}
