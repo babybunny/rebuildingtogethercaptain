@@ -84,7 +84,7 @@ define(
                 required: true
             },
         ].concat(basic_logistics_fields);
-        
+
         var retrieval_fields = [
             {
                 name: 'dropoff_date',
@@ -262,6 +262,7 @@ define(
                     this.pickup = new Backbone.Model();
                 }
                 this.order_full.set('pickup', this.pickup.attributes);
+                pickup_fields[3].label = "Instructions for warehouse staff";
                 this.renderLogistics(pickup_fields, "Pickup", this.pickup);
             },
             renderBorrow: function() {
@@ -269,6 +270,7 @@ define(
                     this.borrow = new Backbone.Model();
                 }
                 this.order_full.set('borrow', this.borrow.attributes);
+                borrow_fields[4].label = "Instructions for warehouse staff";
                 this.renderLogistics(borrow_fields, "Borrow and Return", this.borrow);
             },
             renderRetrieval: function() {

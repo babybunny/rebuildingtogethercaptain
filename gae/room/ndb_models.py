@@ -1067,8 +1067,6 @@ class Pickup(SearchableModel):
   contact = ndb.StringProperty()
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
-  notes.verbose_name = (
-    'Instructions for warehouse staff')
 
 
 class OrderPickup(SearchableModel):
@@ -1085,8 +1083,6 @@ class Borrow(SearchableModel):
   contact = ndb.StringProperty()
   contact_phone = ndb.StringProperty()
   notes = ndb.TextProperty()
-  notes.verbose_name = (
-    'Instructions for warehouse staff')
 
 
 class OrderBorrow(SearchableModel):
