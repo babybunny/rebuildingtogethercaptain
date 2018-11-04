@@ -25,24 +25,24 @@ define([
                 required: true
             },
             {
-                name: "hourly_rate",
+                name: "hourly_rates.rate",
                 label: "Hourly rate",
                 control: "input"
             },
             {
-                name: "hourly_date",
+                name: "hourly_rates.date",
                 label: "Hourly date",
                 control: "datepicker",
                 placeholder: "yyyy-mm-dd",
                 helpMessage: "Hourly rate start date"
             },
             {
-                name: "mileage_rate",
+                name: "mileage_rates.rate",
                 label: "Mileage rate",
                 control: "input"
             },
             {
-                name: "mileage_date",
+                name: "mileage_rates.date",
                 label: "Mileage date",
                 control: "datepicker",
                 placeholder: "yyyy-mm-dd",
