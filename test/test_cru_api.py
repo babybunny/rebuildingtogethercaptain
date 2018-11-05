@@ -18,6 +18,7 @@ models_and_data = (
   ('Staff', {'name': 'Stef Staff', 'email': 'steff@example.com'}),
   ('Captain', {'name': 'Cary Captain', 'email': 'cary@example.com'}),
   ('Supplier', {'name': 'House'}),
+  ('StaffPosition', {'name': 'Position 1'})
 )
 
 
