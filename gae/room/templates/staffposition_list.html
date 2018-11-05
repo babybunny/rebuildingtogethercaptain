@@ -1,0 +1,34 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("table.tablesorter").tablesorter({sortList: [[0, 0]]});
+  });
+</script>
+{%endblock%}
+{% block breadcrumb %}
+| List Staff Position
+{% endblock %}
+{%block about_this_page%}
+<h2>List of Staff Positions</h2>
+<p>
+  <a href="{{ webapp2.uri_for('StaffPosition', id='') }}" alt="new Staff-position">Add a new Staff Position</a>
+</p>
+{%endblock%}
+{%block body%}
+<table class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Position Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+      <tr>
+        <td><a href="{{ webapp2.uri_for('StaffPosition', id=entry.key.integer_id()) }}">{{entry.name|escape}}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%endblock%}
