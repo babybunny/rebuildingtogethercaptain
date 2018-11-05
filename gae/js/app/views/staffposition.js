@@ -12,7 +12,7 @@ define(
                 disabled: true
             },
             {
-                name: "position_name",
+                name: "name",
                 label: "Position name",
                 control: "input",
                 type: "text",
