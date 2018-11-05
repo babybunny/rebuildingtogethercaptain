@@ -998,17 +998,17 @@ class SiteCaptain(messages.Message):
 def StaffPositionModelToMessage(mdl):
   s = StaffPosition(
     id=mdl.key.integer_id(),
-    position_name=mdl.position_name
+    name=mdl.name
   )
   return s
 
 def StaffPositionMessageToModel(msg, mdl):
-  mdl.position_name = msg.position_name
+  mdl.position_name = msg.name
   return mdl
 
 class StaffPosition(messages.Message):
   id = messages.IntegerField(1)
-  position_name = messages.StringField(2)
+  name = messages.StringField(2)
 
 
 # Use the multi-line string below as a template for adding models.
