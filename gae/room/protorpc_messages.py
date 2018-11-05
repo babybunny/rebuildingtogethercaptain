@@ -1,6 +1,6 @@
 """Protorpc messages and conversion functions that can be used in multiple APIs..
 
-This is the place to put messages that are one-to-one with datastore Kinds 
+This is the place to put messages that are one-to-one with datastore Kinds
 (classes in ndb_models.py) and conversion functions. By convention, the conversions are
   message_instance = KindModelToMessage(model_instance)
   KindMessageToModel(message_instance, model_instance)
@@ -713,7 +713,7 @@ def OrderModelToMessage(mdl):
     s.modified_ago = str(datetime.datetime.now() - mdl.modified)
   else:
     s.modified_ago = ''
-    
+
   return s
 
 
@@ -727,7 +727,7 @@ def OrderMessageToModel(msg, mdl):
   mdl.logistics_start = msg.logistics_start
   mdl.actual_total = msg.actual_total
   # Don't set sub_total, it's computed automatically.
-  
+
   if msg.state:
     mdl.state = msg.state
 
@@ -764,7 +764,7 @@ class Order(messages.Message):
   modified_ago = messages.StringField(13)
   editable = messages.BooleanField(14)
   # Next ID to use: 16
-  
+
 #############
 # OrderItem #
 #############
@@ -794,7 +794,7 @@ def OrderItemMessageToModel(msg, mdl):
   if msg.order:
     mdl.order = ndb.Key(ndb_models.Order, msg.order)
   if msg.supplier:
-    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)    
+    mdl.supplier = ndb.Key(ndb_models.Supplier, msg.supplier)
 
   # can't set automatic fields: unit_cost
   return mdl
@@ -989,6 +989,26 @@ class SiteCaptain(messages.Message):
   site = messages.IntegerField(2)
   captain = messages.IntegerField(3)
   type = messages.StringField(4)
+
+
+############
+# StaffPosition #
+############
+
+def StaffPositionModelToMessage(mdl):
+  s = StaffPosition(
+    id=mdl.key.integer_id(),
+    position_name=mdl.position_name
+  )
+  return s
+
+def StaffPositionMessageToModel(msg, mdl):
+  mdl.position_name = msg.position_name
+  return mdl
+
+class StaffPosition(messages.Message):
+  id = messages.IntegerField(1)
+  position_name = messages.StringField(2)
 
 
 # Use the multi-line string below as a template for adding models.
