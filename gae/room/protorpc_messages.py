@@ -1003,6 +1003,10 @@ def StaffPositionModelToMessage(mdl):
       mileage_rates=[{'date': dt, 'rate': float(rt)} for dt, rt in (
         m.split() for m in mdl.mileage_rate_after_date if m)]
     )
+  if not s.hourly_rates:
+    s.hourly_rates = [{'date': '', 'rate': mdl.GetHourlyRate(datetime.datetime.today())}]
+  if not s.mileage_rates:
+    s.mileage_rates = [{'date': '', 'rate': mdl.GetMileageRate(datetime.datetime.today())}]
   return s
 
 
@@ -1010,23 +1014,18 @@ def StaffPositionMessageToModel(msg, mdl):
   if not msg.name:
     raise remote.ApplicationError('position name is required')
   mdl.position_name = msg.name
-
-  if msg.hourly_rates and msg.hourly_rates[0].rate and not msg.hourly_rates[0].date:
-    raise remote.ApplicationError('hourly rate & hourly date are required')
-
-  if msg.hourly_rates and msg.hourly_rates[0].rate and msg.hourly_rates[0].date:
-    hrd = " ".join([msg.hourly_rates[0].date, str(msg.hourly_rates[0].rate)])
-    if hrd not in mdl.hourly_rate_after_date:
-      mdl.hourly_rate_after_date += [hrd]
+  if msg.hourly_rates and msg.hourly_rates[0].rate != mdl.GetHourlyRate(datetime.datetime.today()):
+    if not msg.hourly_rates[0].date:
+      raise remote.ApplicationError('hourly rate & hourly date are required')
+    if msg.hourly_rates[0].date + " " + str(msg.hourly_rates[0].rate) not in mdl.hourly_rate_after_date:
+      mdl.hourly_rate_after_date += [msg.hourly_rates[0].date + " " + str(msg.hourly_rates[0].rate)]
       mdl.hourly_rate = mdl.GetHourlyRate(datetime.datetime.today())
 
-  if msg.mileage_rates and msg.mileage_rates[0].rate and not msg.mileage_rates[0].date:
-    raise remote.ApplicationError('mileage rate & mileage date are required')
-
-  if msg.mileage_rates and msg.mileage_rates[0].date and msg.mileage_rates[0].rate:
-    mrd = " ".join([msg.mileage_rates[0].date, str(msg.mileage_rates[0].rate)])
-    if mrd not in mdl.mileage_rate_after_date:
-      mdl.mileage_rate_after_date += [mrd]
+  if msg.mileage_rates and msg.mileage_rates[0].rate != mdl.GetMileageRate(datetime.datetime.today()):
+    if not msg.mileage_rates[0].date:
+      raise remote.ApplicationError('mileage rate & mileage date are required')
+    if msg.mileage_rates[0].date + " " + str(msg.mileage_rates[0].rate) not in mdl.mileage_rate_after_date:
+      mdl.mileage_rate_after_date += [msg.mileage_rates[0].date + " " + str(msg.mileage_rates[0].rate)]
       mdl.mileage_rate = mdl.GetMileageRate(datetime.datetime.today())
 
   return mdl
