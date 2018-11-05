@@ -34,9 +34,9 @@ def send_message_with_status(response, message, status=500):
 class SelectProgram(webapp2.RequestHandler):
   """Handler for Staff to select a program.
 
-  This is different from other Staff handlers because it is 
-  the only prerequisite to loading the StaffHome page.  So 
-  it requires that the user is staff but does not require that 
+  This is different from other Staff handlers because it is
+  the only prerequisite to loading the StaffHome page.  So
+  it requires that the user is staff but does not require that
   program is already selected. Bootstrapping.
   """
 
@@ -380,7 +380,7 @@ def _SiteBudgetExportInternal(writable, post_vars):
 def _EntryList(request, model_cls, template, params=None, query=None):
   """Generic helper method to perform a list view.
 
-  This method does not enforce any authorization. It should be called after 
+  This method does not enforce any authorization. It should be called after
   authorization is successful..
 
   Template should iterate over a list called 'entries'.
@@ -630,6 +630,19 @@ class InKindDonation(SiteExpenseEditor):
   template_file = 'expense_form'
 
 
+class StaffPositionList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.StaffPosition, 'staffposition_list')
+
+
+class StaffPosition(EditView):
+  searchable_model_class = ndb_models.StaffPosition
+  model_class = ndb_models.StaffPosition
+  list_view = 'StaffPositionList'
+  template_value = 'Staff Position'
+  template_file = 'simple_form'
+
+
 def _SortOrderItemsWithSections(order_items):
   order_items.sort(
     key=lambda x: (x.item.get().order_form_section or None, x.item.get().name))
@@ -877,7 +890,7 @@ class OrderInvoice(StaffHandler):
          'site': order.site.get(),
          }
     return common.Respond(self.request, 'order_invoice', d)
-    
+
 
 def _ChangeOrder(request, order_id, input_sanitizer, output_filter=None):
   """Changes an order field based on POST data from jeditable."""
