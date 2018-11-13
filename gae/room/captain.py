@@ -37,23 +37,23 @@ class CaptainHome(CaptainHandler):
       captain = ndb_models.Captain.get_by_id(int(captain_id))
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
     sites = []
-    for sitecaptain in ndb_models.SiteCaptain.query(
-        ndb_models.SiteCaptain.captain == captain.key):
+    scs = list(ndb_models.SiteCaptain.query(
+      ndb_models.SiteCaptain.captain == captain.key))
+    for sitecaptain in scs:
       site = sitecaptain.site.get()
       
       if site.program_key:
         if site.program_key.get().status != ndb_models.Program.ACTIVE_STATUS:
           continue
 
-      # TODO: remove after issue147 is complete.
-      elif site.program and site.program != "2018 NRD":
-        continue
-      
       # TODO:what's this? maybe clean it up.
       site.new_order_form = "site.new_order_form placeholder"
 
       sites.append(site)
 
+    if not sites:
+      logging.warning('no sites in active programs. but found SiteCaptains: %s', scs)
+      
     captain_form = 'captain_form placeholder'
     return common.Respond(self.request, 'captain_home',
                           {'order_sheets': order_sheets,
