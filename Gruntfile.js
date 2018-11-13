@@ -23,7 +23,7 @@ module.exports = function(grunt) {
     grunt.file.copy('node_modules/backform/src/backform.js', 'gae/js/lib/backform.js');
     grunt.file.copy('node_modules/bootstrap/dist/css/bootstrap.css', 'gae/css/lib/bootstrap.css');
     grunt.file.copy('node_modules/bootstrap/dist/css/bootstrap.css.map', 'gae/css/lib/bootstrap.css.map');
-    grunt.file.copy('node_modules/bootstrap/dist/js/bootstrap.min.js', 'gae/js/lib/bootstrap.js');
+    grunt.file.copy('node_modules/bootstrap/dist/js/bootstrap.bundle.min.js', 'gae/js/lib/bootstrap.js');
     grunt.file.copy('node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.css', 'gae/css/lib/bootstrap-datepicker.css');
     grunt.file.copy('node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', 'gae/js/lib/bootstrap-datepicker.js');
   });
