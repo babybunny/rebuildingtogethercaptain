@@ -998,17 +998,32 @@ class SiteCaptain(messages.Message):
 def StaffPositionModelToMessage(mdl):
   s = StaffPosition(
     id=mdl.key.integer_id(),
-    name=mdl.name
+    name=mdl.name,
+    hourly_rates=[RateAfterDate(date=dt, rate=float(rt))
+                  for dt, rt in (dr.split() for dr in
+                  mdl.hourly_rate_after_date)],
+    mileage_rates=[RateAfterDate(date=dt, rate=float(rt))
+                   for dt, rt in (dr.split() for dr in
+                   mdl.mileage_rate_after_date)]
   )
   return s
+
 
 def StaffPositionMessageToModel(msg, mdl):
   mdl.position_name = msg.name
   return mdl
 
+
+class RateAfterDate(messages.Message):
+  date = messages.StringField(1)
+  rate = messages.FloatField(2)
+
+
 class StaffPosition(messages.Message):
   id = messages.IntegerField(1)
   name = messages.StringField(2)
+  hourly_rates = messages.MessageField(RateAfterDate, 3, repeated=True)
+  mileage_rates = messages.MessageField(RateAfterDate, 4, repeated=True)
 
 
 # Use the multi-line string below as a template for adding models.
