@@ -1,9 +1,10 @@
 define(
     [
+        'bootstrap-datepicker',
         'app/views/rooms_form',
         'text!app/templates/simple_form.html'
     ],
-    function(RoomFormView, template) {
+    function(bsdp, RoomFormView, template) {
         var fields = [
             {
                 name: "id",
@@ -17,6 +18,29 @@ define(
                 control: "input",
                 type: "text",
                 required: true
+            },
+            {
+                label: "Hourly (new rate)",
+                name: "hourly_rate",
+                control: "input",
+            },
+            {
+                name: "hourly_date",
+                label: "Hourly (start date)",
+
+                control: "datepicker",
+                options: {autoclose: true, assumeNearbyYear: true, todayHiglight: true, format: "yyyy-mm-dd"},
+            },
+            {
+                name: "mileage_rate",
+                label: "Mileage (new rate)",
+                control: "input"
+            },
+            {
+                name: "mileage_date",
+                label: "Mileage (start date)",
+                control: "datepicker",
+                options: {autoclose: true, assumeNearbyYear: true, todayHiglight: true, format: "yyyy-mm-dd"},
             },
             {
                 id: "submit",
