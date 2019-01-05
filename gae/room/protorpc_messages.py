@@ -1011,6 +1011,8 @@ def StaffPositionModelToMessage(mdl):
 
 def StaffPositionMessageToModel(msg, mdl):
   mdl.position_name = msg.name
+  mdl.hourly_rate_after_date  = [r.date + " " + str(r.rate) for r in msg.hourly_rates]
+  mdl.mileage_rate_after_date = [r.date + " " + str(r.rate) for r in msg.mileage_rates]
   return mdl
 
 
