@@ -33,7 +33,26 @@ define(
                 if (!_.isEmpty(_.compact(this.errorModel.toJSON()))) {
                     return "Validation errors. Please fix.";
                 }
+                else{
+                    this.validModelResponder()
+                }
             },
+            validModelResponder: function(){
+                if (this.has('hourly_update')){
+                    this.addRate(this.get('hourly_update'), 'hourly_rates');
+                }
+                if (this.has('mileage_update')){
+                    this.addRate(this.get('mileage_update'), 'mileage_rates');
+                }
+            },
+            addRate: function(rate_and_date, rate_name){
+                var rates = this.get(rate_name);
+                this.set(rate_name, rates.concat([rate_and_date]));
+            },
+            defaults: {
+                hourly_rates: [],
+                mileage_rates: []
+            }
         });
 
         return Model;
