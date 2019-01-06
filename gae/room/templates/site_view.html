@@ -606,9 +606,11 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
+                    <a href="{{ webapp2.uri_for('InKindDonationView', id=entity.key.integer_id()) }}">view</a>
+                         or
 		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('InKindDonation', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
-		                make changes
+		                edit
 		              </a>
 	              </td>
 	            </tr>
