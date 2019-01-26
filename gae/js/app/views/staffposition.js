@@ -25,9 +25,8 @@ define(
                 control: "input",
             },
             {
-                name: "hourly_date",
+                name: "hourly_rates.date",
                 label: "Hourly (start date)",
-
                 control: "datepicker",
                 options: {autoclose: true, assumeNearbyYear: true, todayHiglight: true, format: "yyyy-mm-dd"},
             },
@@ -37,7 +36,7 @@ define(
                 control: "input"
             },
             {
-                name: "mileage_date",
+                name: "mileage_rates.date",
                 label: "Mileage (start date)",
                 control: "datepicker",
                 options: {autoclose: true, assumeNearbyYear: true, todayHiglight: true, format: "yyyy-mm-dd"},
