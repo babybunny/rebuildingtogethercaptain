@@ -67,7 +67,7 @@
           </strong>
         </p>
         {% endif %}
-            
+
         {% if not site.sitecaptain_set %}
         <p>
 	        No captains assigned yet!
@@ -157,7 +157,7 @@
         {{ site.street }}
         <br>{{ site.city }}
         {% endif %}
-      </td>      
+      </td>
       <td>
         <span class="big">
 	        {{ site.BudgetStatement() }}
@@ -381,8 +381,10 @@
 	                {{ order.state }}
 	                {% if order.CanMakeChanges() %}
 	                <br>
+                    <a href="{{ webapp2.uri_for('OrderView', id=order.key.integer_id()) }}">view</a>
+                    or
 	                <a href="{{ webapp2.uri_for('OrderFlow', site_id=site.key.integer_id(), id=order.key.integer_id()) }}">
-	                  make changes
+	                  edit
 	                </a>
 	                {% else %}
 	                <br>
@@ -395,7 +397,7 @@
 	                ${{ "%0.2f" % order.GrandTotal() }}
 	              </td>
 	            </tr>
-	            {% endfor %}              
+	            {% endfor %}
             </tbody>
           </table>
         </div>
@@ -438,9 +440,14 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
+                  <a
+                         href="{{ webapp2.uri_for('CheckRequestView', id=entity.key.integer_id()) }}">
+                        view
+                      </a>
+                    or
 		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('CheckRequest', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
-		                make changes
+		                edit
 		              </a>
 	              </td>
 	            </tr>
@@ -487,9 +494,11 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
+                    <a href="{{ webapp2.uri_for('VendorReceiptView', id=entity.key.integer_id()) }}">
+                        view </a> or
 		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('VendorReceipt', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
-		                make changes
+		                edit
 		              </a>
 	              </td>
 	            </tr>
@@ -561,7 +570,7 @@
         </div>
 	      {% endif %}
 	      {% endif %}
-        
+
         {% if site.InKindDonations.Count() %}
         <a name="inkinddonations_panel"></a>
         <div class="panel">
@@ -599,9 +608,11 @@
 	              <td>
 	                {{ entity.state }}
                   <br/>
+                    <a href="{{ webapp2.uri_for('InKindDonationView', id=entity.key.integer_id()) }}">view</a>
+                         or
 		              <a name="{{ entity.key.integer_id() }}"
 		                 href="{{ webapp2.uri_for('InKindDonation', site_id=site.key.integer_id(), id=entity.key.integer_id()) }}">
-		                make changes
+		                edit
 		              </a>
 	              </td>
 	            </tr>
@@ -610,7 +621,7 @@
 	        </table>
 	        {% endif %}
         </div>
-        
+
       </td>
     </tr>
     <tr>
