@@ -75,7 +75,7 @@ def import_sites(input_csv):
     program = get_program(s['Program Year'])
     site.program = program.name
     site.program_key = program.key
-    budget = s.get("Budgeted Cost in Campaign", "$0").strip("$").replace(",", "") or '0'
+    budget = s.get("Budgeted Cost in Campaign", "$0").strip("$").replace(",", "").replace(".00", "") or '0'
     site.budget = int(budget)
     site.name = clean_get(s, "Repair Application: Applicant's Name")
     site.street_number = clean_get(s, "Recipient's Street Address")
