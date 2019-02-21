@@ -56,10 +56,11 @@ def import_sites(input_csv):
   """
   input_csv is a path like "../2012_ROOMS_site_info_sample.csv"
   """
-  expected_headers = {"Announcement Subject", "Announcement Body", "Site ID",
-                      "Budgeted Cost in Campaign", "Homeowner/Site Contact Name", "Homeowner Home Phone/Site main Phone",
-                      "Applicant Mobile Phone", "Applicant Email", "Street Address",
-                      " Recipient's City", " Recipient's Zip Code", "Jurisdiction", "Sponsored By"}
+  expected_headers = {"Program Year", "Announcement Subject", "Announcement Body", "Site ID",
+                      "Budgeted Cost in Campaign", "Repair Application: Applicant's Name", "Applicant Home Phone",
+                      "Applicant Mobile Phone", "Applicant Work Phone", "Recipient's Street Address",
+                      "Recipient's City", "Recipient's Zip Code", "Jurisdiction", "Sponsor",
+                      "Repair Application: RRP Test Results", "Photos Link"}
   reader = csv.DictReader(open(input_csv))
   actual_headers = set(reader.fieldnames)
   sanity_check_headers(expected_headers, actual_headers, input_csv)
@@ -71,24 +72,27 @@ def import_sites(input_csv):
       continue
     else:
       site = ndb_models.NewSite(number=number)
-    program = get_program(2019)  # s['Program Year']
+    program = get_program(s['Program Year'])
     site.program = program.name
     site.program_key = program.key
-    budget = s.get("Budgeted Cost in Campaign", "$0").strip("$").replace(",", "").replace(".00", "") or '0'
+    budget = s.get("Budgeted Cost in Campaign", "$0").strip("$").replace(",", "") or '0'
     site.budget = int(budget)
-    site.name = clean_get(s, "Homeowner/Site Contact Name")
-    site.street_number = clean_get(s, "Street Address")
+    site.name = clean_get(s, "Repair Application: Applicant's Name")
+    site.street_number = clean_get(s, "Recipient's Street Address")
     site.city_state_zip = "%s CA, %s" % (
-      clean_get(s, " Recipient's City"),
-      clean_get(s, " Recipient's Zip Code"))
-    site.applicant = clean_get(s, "Homeowner/Site Contact Name")
+      clean_get(s, "Recipient's City"),
+      clean_get(s, "Recipient's Zip Code"))
+    site.applicant = clean_get(s, "Repair Application: Applicant's Name")
     site.applicant_home_phone = clean_get(s, 
-      "Homeowner Home Phone/Site main Phone")
-    site.applicant_email = clean_get(s, 
-      "Applicant Email")
+      "Repair Application: Applicant Home Phone")
+    site.applicant_work_phone = clean_get(s, 
+      "Repair Application: Applicant Work Phone")
     site.applicant_mobile_phone = clean_get(s, 
-      "Applicant Mobile Phone")
-    site.sponsor = clean_get(s, "Sponsored By")
+      "Repair Application: Applicant Mobile Phone")
+    site.sponsor = clean_get(s, "Sponsor")
+    site.rrp_test = clean_get(s, "Repair Application: RRP Test Results")
+    site.rrp_level = clean_get(s, "Repair Application: RRP Test Results")
+    # site.roof = clean_get(s, "Roof?")
     site.jurisdiction = clean_get(s, "Jurisdiction")
     site.announcement_subject = clean_get(s, "Announcement Subject")
     site.announcement_body = clean_get(s, "Announcement Body")
