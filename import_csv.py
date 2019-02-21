@@ -104,7 +104,7 @@ def import_captains(input_csv):
   """
   input_csv is a path like "../2012_ROOMS_site_info_sample.csv"
   """
-  expected_headers = {"Site ID", "Name", "ROOMS Captain ID", "Phone", "Email", "Captain Type"}
+  expected_headers = {"Site ID", "Name", "ROOMS Captain ID", "Phone", "Email", "Project Role"}
   reader = csv.DictReader(open(input_csv))
   actual_headers = set(reader.fieldnames)
   sanity_check_headers(expected_headers, actual_headers, input_csv)
