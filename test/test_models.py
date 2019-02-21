@@ -559,12 +559,6 @@ class ModelsTest(unittest.TestCase):
   def setUp(self):
     app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
-  @unittest.skip("Will enable after migration")
-  def testQuerySitesWithoutProgramKey(self):
-    CreateAll()
-    site_without_program_key = ndb_models.NewSite.query(ndb_models.NewSite.program_key == None)
-    self.assertFalse(site_without_program_key.fetch())
-
   def testCreate(self):
     KEYS = CreateAll()
     self.assertTrue(KEYS)
