@@ -68,11 +68,6 @@ basic_crud_config = (
    ndb_models.SiteCaptain,
    protorpc_messages.SiteCaptainMessageToModel,
    protorpc_messages.SiteCaptainModelToMessage),
-  (protorpc_messages.StaffPosition,
-   ndb_models.StaffPosition,
-   protorpc_messages.StaffPositionMessageToModel,
-   protorpc_messages.StaffPositionModelToMessage),
-
   # (protorpc_messages.Example,
   #  ndb_models.Example,
   #  protorpc_messages.ExampleMessageToModel,

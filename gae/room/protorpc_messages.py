@@ -991,62 +991,6 @@ class SiteCaptain(messages.Message):
   type = messages.StringField(4)
 
 
-############
-# StaffPosition #
-############
-
-def StaffPositionModelToMessage(mdl):
-  s = StaffPosition(
-    id=mdl.key.integer_id(),
-    name=mdl.name,
-  )
-  return s
-
-
-def StaffPositionMessageToModel(msg, mdl):
-  if not(msg.name):
-    raise remote.ApplicationError('position name is required')
-  mdl.position_name = msg.name
-
-  for h in msg.hourly_rates:
-    if (h.date or h.rate):
-      if not h.rate:
-        raise remote.ApplicationError('hourly rate is required')
-      if not h.date:
-        raise remote.ApplicationError('hourly date is required')
-      try:
-        datetime.date(*map(int, h.date.split('-')))
-      except Exception, e:
-        raise remote.ApplicationError('invalid hourly date: {}'.format(e))
-      mdl.hourly_rate_after_date.append(" ".join( (h.date, str(h.rate))))
-
-  for m in msg.mileage_rates:
-    if (m.date or m.rate):
-      if not m.rate:
-        raise remote.ApplicationError('mileage rate is required')
-      if not m.date:
-        raise remote.ApplicationError('mileage date is required')
-      try:
-        datetime.date(*map(int, m.date.split('-')))
-      except Exception, e:
-        raise remote.ApplicationError('invalid mileage date: {}'.format(e))
-      mdl.mileage_rate_after_date.append(" ".join((m.date, str(m.rate))))
-
-  return mdl
-
-
-class RateAfterDate(messages.Message):
-  date = messages.StringField(1)
-  rate = messages.FloatField(2)
-
-
-class StaffPosition(messages.Message):
-  id = messages.IntegerField(1)
-  name = messages.StringField(2)
-  hourly_rates = messages.MessageField(RateAfterDate, 3, repeated=True)
-  mileage_rates = messages.MessageField(RateAfterDate, 4, repeated=True)
-
-
 # Use the multi-line string below as a template for adding models.
 # Or use model_boilerplate.py
 """
