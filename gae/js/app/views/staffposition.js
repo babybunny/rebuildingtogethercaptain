@@ -5,7 +5,7 @@ define(
         'text!app/templates/simple_form.html'
     ],
     function(bsdp, RoomFormView, template) {
-        var fields = [{
+        var new_fields = [{
                 name: "position_name",
                 label: "Position name",
                 control: "input",
@@ -40,6 +40,14 @@ define(
         ];
 
         var ViewFactory = function(app, loading) {
+            if (!app.models['staffposition'].isNew()) {
+                var fields = [new_fields[0]].concat([new_fields[5]]);
+            }
+            else{
+                var fields = new_fields;
+            }
+
+
             return new RoomFormView({
                 name: 'staffposition',
                     template: template,

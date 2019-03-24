@@ -632,15 +632,47 @@ class InKindDonation(SiteExpenseEditor):
 
 class StaffPositionList(StaffHandler):
   def get(self):
-    return _EntryList(self.request, ndb_models.StaffPosition, 'staffposition_list')
+    return _EntryList(self.request,
+                      ndb_models.StaffPosition,
+                      'staffposition_list',
+                      {'today': datetime.date.today()})
 
 
-class StaffPosition(EditView):
+class StaffPosition(StaffHandler):
   searchable_model_class = ndb_models.StaffPosition
   model_class = ndb_models.StaffPosition
   list_view = 'StaffPositionList'
   template_value = 'Staff Position'
-  template_file = 'simple_form'
+  template_file = 'staffposition_edit'
+
+  def get(self, id=None):
+    d = dict(list_uri=webapp2.uri_for(self.list_view),
+             type=self.template_value)
+    if id:
+      staffposition = ndb.Key(ndb_models.StaffPosition, int(id)).get()
+      d['hourly_rate'] = staffposition.GetHourlyRate(datetime.date.today())
+      d['mileage_rate'] = staffposition.GetMileageRate(datetime.date.today())
+      d['rates_uri'] = webapp2.uri_for('StaffPositionRates', id=id)
+      d['position_name'] = staffposition.name
+    return common.Respond(self.request, self.template_file, d)
+
+
+class StaffPositionRates(StaffHandler):
+  searchable_model_class = ndb_models.StaffPosition
+  model_class = ndb_models.StaffPosition
+  list_view = 'StaffPositionList'
+  template_value = 'staffposition'
+  template_file = 'staffposition_rates'
+
+  def get(self, id=None):
+    d = dict(list_uri=webapp2.uri_for(self.list_view),
+             type=self.template_value)
+    if id:
+      staffposition = ndb.Key(ndb_models.StaffPosition, int(id)).get()
+      d['basic_uri'] = webapp2.uri_for('StaffPosition', id=id)
+      d['rates_uri'] = webapp2.uri_for('StaffPositionRates', id=id)
+      d['position_name'] = staffposition.name
+    return common.Respond(self.request, self.template_file, d)
 
 
 def _SortOrderItemsWithSections(order_items):

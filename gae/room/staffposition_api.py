@@ -66,4 +66,24 @@ class StaffpositionApi(base_api.BaseApi):
       res.hourly_rates.append(RateAfterDate(date=d, rate=float(r)))
     return res
 
+  @remote.method(StaffPosition, message_types.VoidMessage)
+  def staffposition_update(self, request):
+    self._authorize_staff()
+    mdl = ndb.Key(ndb_models.StaffPosition, request.id).get()
+    if not request.id:
+      raise remote.ApplicationError('id is required for update')
+    if not request.position_name:
+      raise remote.ApplicationError('position name is required')
+    mdl.position_name = request.position_name
+    if len(request.hourly_rates) < 0:
+      raise remote.ApplicationError('hourly_rates are required for update')
+    mdl.hourly_rate_after_date = [self.create_rate_after_date_string(
+                                  h.date, h.rate) for h in request.hourly_rates if h]
+    if len(request.mileage_rates) < 0:
+      raise remote.ApplicationError('mileage rates are required for update')
+    mdl.mileage_rate_after_date = [self.create_rate_after_date_string(
+                                   m.date, m.rate) for m in request.mileage_rates if m]
+    mdl.put()
+    return message_types.VoidMessage()
+
 application = service.service_mapping(StaffpositionApi, r'/staffposition_api')
