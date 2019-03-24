@@ -5,43 +5,33 @@ define(
         'text!app/templates/simple_form.html'
     ],
     function(bsdp, RoomFormView, template) {
-        var fields = [
-            {
-                name: "id",
-                label: "ID",
-                control: "input",
-                disabled: true
-            },
-            {
-                name: "name",
+        var fields = [{
+                name: "position_name",
                 label: "Position name",
                 control: "input",
                 type: "text",
                 required: true
-            },
-            {
-                label: "Hourly (new rate)",
-                name: "hourly_rate",
+            },{
+                name: "hourly_rates.rate",
+                label: "Hourly Rate",
                 control: "input",
-            },
-            {
+                type: "text"
+            },{
                 name: "hourly_rates.date",
-                label: "Hourly (start date)",
+                label: "Hourly Date",
                 control: "datepicker",
-                options: {autoclose: true, assumeNearbyYear: true, todayHiglight: true, format: "yyyy-mm-dd"},
-            },
-            {
-                name: "mileage_rate",
-                label: "Mileage (new rate)",
-                control: "input"
-            },
-            {
+                options: {autoclose: true, assumeNearbyYear: true, todayHighlight: true, format: "yyyy-mm-dd"},
+            },{
+                name: "mileage_rates.rate",
+                label: "Mileage Rate",
+                control: "input",
+                type: "text"
+            },{
                 name: "mileage_rates.date",
-                label: "Mileage (start date)",
+                label: "Mourly Date",
                 control: "datepicker",
-                options: {autoclose: true, assumeNearbyYear: true, todayHiglight: true, format: "yyyy-mm-dd"},
-            },
-            {
+                options: {autoclose: true, assumeNearbyYear: true, todayHighlight: true, format: "yyyy-mm-dd"},
+            },{
                 id: "submit",
                 control: "button",
                 extraClasses: ['btn-primary'],
@@ -55,7 +45,7 @@ define(
                     template: template,
                     model: app.models.staffposition,
                     loading: loading,
-                    fields: fields,
+                    fields: fields
             });
         }
         return ViewFactory;
