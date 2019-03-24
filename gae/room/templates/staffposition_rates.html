@@ -1,0 +1,20 @@
+{%extends "base.html"%}
+{%block breadcrumb%}
+  | Change a staffposition
+{%endblock%}
+{%block script%}
+<script type="text/javascript" data-main="/js/app/rooms" src="/js/lib/require.js"></script>
+{%endblock%}
+{%block about_this_page%}
+
+<h2>Create and edit rates for {{ position_name }}</h2>
+<p>
+  <a id="list_uri" href='{{ list_uri }}'>See the entire staffposition list</a>
+</p>
+<p>
+  <a id="rooms-form-after-save" href='{{ basic_uri }}'>Edit (<i>{{position_name|escape}}</i>) basic details</a>
+</p>
+{%endblock%}
+{%block body%}
+    <div id='simple-form-view'>Loading staffposition rates module ...</div>
+{%endblock%}

@@ -17,16 +17,26 @@
 </p>
 {%endblock%}
 {%block body%}
-<table class="list tablesorter">
+<table  class="tablesorter staffposition">
   <thead>
     <tr>
       <th>Position Name</th>
+      <th>Current Hourly Rate</th>
+      <th>Current Mileage Rate</th>
+      <th>Last Modified</th>
+      <th>Last Editor</th>
     </tr>
   </thead>
   <tbody>
     {% for entry in entries %}
       <tr>
-        <td><a href="{{ webapp2.uri_for('StaffPosition', id=entry.key.integer_id()) }}">{{entry.name|escape}}</a></td>
+        <td class="position">
+          <a href="{{ webapp2.uri_for('StaffPosition', id=entry.key.integer_id()) }}">{{entry.name|escape}}</a>
+        </td>
+        <td>{{ "{:.2f}".format(entry.GetHourlyRate(today))|escape }}</td>
+        <td>{{ "{:.2f}".format(entry.GetMileageRate(today))|escape }}</td>
+        <td>{{ entry.modified.strftime("%Y-%m-%d")|escape }}</td>
+        <td>{{ entry.last_editor|escape }}</td>
       </tr>
     {% endfor %}
   </tbody>

@@ -6,14 +6,13 @@
 <script type="text/javascript" data-main="/js/app/rooms" src="/js/lib/require.js"></script>
 {%endblock%}
 {%block about_this_page%}
+
 <h2>Create or edit a staffposition</h2>
 <p>
-  <a id="rooms-form-after-save" href='{{ list_uri }}'>see the entire staffposition list</a>
+  <a id="rooms-form-after-save" href='{{ list_uri }}'>See the entire staffposition list</a>
 </p>
 {% if position_name %}
-    <p>
-        <a id="staffposition-after-save" href='{{ rates_uri }}'>create or edit ({{position_name|escape}}) rates</a>
-    </p>
+    <p><a id="staffposition-after-save" href='{{ rates_uri }}'>Create or edit (<i>{{position_name|escape}}</i>) rates</a>  </p>
     <p>
         <i class="p-1 m-1">Hourly Rate ${{ "{:.2f}".format(hourly_rate)|escape }}</i><span>&nbsp;|&nbsp;</span>
         <i class="p-1 m-1">Mileage Rate ${{ "{:.2f}".format(mileage_rate)|escape }}</i>
@@ -22,5 +21,5 @@
 
 {%endblock%}
 {%block body%}
-<div class="w-50" id='simple-form-view'>Loading staffposition module ...</div>
+<div id='simple-form-view'>Loading staffposition module ...</div>
 {%endblock%}
