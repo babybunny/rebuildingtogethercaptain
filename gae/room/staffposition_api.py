@@ -36,7 +36,6 @@ class StaffpositionApi(base_api.BaseApi):
   @remote.method(StaffPosition, message_types.VoidMessage)
   def staffposition_create(self, request):
     self._authorize_staff()
-    print request
     if request.id:
       raise remote.ApplicationError('must not have id in create')
     if not request.position_name:

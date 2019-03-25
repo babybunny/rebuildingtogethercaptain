@@ -658,7 +658,6 @@ class StaffPosition(StaffHandler):
 
 
 class StaffPositionRates(StaffHandler):
-  searchable_model_class = ndb_models.StaffPosition
   model_class = ndb_models.StaffPosition
   list_view = 'StaffPositionList'
   template_value = 'staffposition'
