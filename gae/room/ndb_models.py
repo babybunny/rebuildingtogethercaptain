@@ -1163,6 +1163,10 @@ class StaffPosition(SearchableModel):
   last_editor = ndb.UserProperty()
   modified = ndb.DateTimeProperty(auto_now=True)
 
+  @property
+  def name(self):
+    return self.position_name
+
   def GetHourlyRate(self, activity_date):
     return _GetRateFromArray(self.hourly_rate, self.hourly_rate_after_date, activity_date)
 

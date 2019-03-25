@@ -178,6 +178,13 @@ $(function() {
 	.
       </div>
 
+    <div class="panel">
+      <h2>Staff Positions</h2>
+      <a href="{{ webapp2.uri_for('StaffPositionList') }}">View a list</a> of all Staff Positions.
+      <br>
+      <a href="{{ webapp2.uri_for('StaffPosition', id='') }}">Add a new Staff Position</a>.
+    </div>
+
       <div class="panel">
       <h2>Suppliers</h2>
 	<a href="{{ webapp2.uri_for('SupplierList') }}">View a list</a>

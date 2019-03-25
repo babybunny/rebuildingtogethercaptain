@@ -1,0 +1,25 @@
+{%extends "base.html"%}
+{%block breadcrumb%}
+  | Change a staffposition
+{%endblock%}
+{%block script%}
+<script type="text/javascript" data-main="/js/app/rooms" src="/js/lib/require.js"></script>
+{%endblock%}
+{%block about_this_page%}
+
+<h2>Create or edit a staffposition</h2>
+<p>
+  <a id="rooms-form-after-save" href='{{ list_uri }}'>See the entire staffposition list</a>
+</p>
+{% if position_name %}
+    <p><a id="staffposition-after-save" href='{{ rates_uri }}'>Create or edit (<i>{{position_name|escape}}</i>) rates</a>  </p>
+    <p>
+        <i class="p-1 m-1">Hourly Rate ${{ "{:.2f}".format(hourly_rate)|escape }}</i><span>&nbsp;|&nbsp;</span>
+        <i class="p-1 m-1">Mileage Rate ${{ "{:.2f}".format(mileage_rate)|escape }}</i>
+    </p>
+{% endif %}
+
+{%endblock%}
+{%block body%}
+<div id='simple-form-view'>Loading staffposition module ...</div>
+{%endblock%}

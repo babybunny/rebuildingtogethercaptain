@@ -411,3 +411,16 @@ div.form-group.thumbnail{border:none}
     border-top: none;
     margin-top: -5px;
 }
+
+/* red validation messages */
+div.form-group.has-error > div > span.error{
+  color: #a94442;
+}
+/* datepicker today hilight */
+td.today.day{
+  background: yellow;
+}
+/* highlight staffposition row light grey */
+table.staffposition tbody tr:hover td{
+  background: #e6eeee;
+}

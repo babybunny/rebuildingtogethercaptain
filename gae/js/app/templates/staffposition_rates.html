@@ -1,0 +1,53 @@
+<form class="col" id="rate-form"></form>
+<div class="row">
+    <div class="m-5">
+    <% if (hourly_rates.length) { %>
+    <h5 class="font-weight-bold">Hourly Rates</h5>
+    <table  class="staffposition table table-hover table-sm table-responsive">
+        <thead><tr>
+            <th>Start Date</th>
+            <th>Rate</th>
+        </tr></thead>
+        <tbody>
+
+            <% _.each(hourly_rates, function (rad) { %>
+            <tr>
+                <td><%= rad.get('date') %></td>
+                <td class="text-right">$<%= rad.get('rate') %></td>
+                <td><button class="edit-hourly-rate" id="<%= rad.cid %>">Edit</button>
+                </td>
+                <td><button class="remove-hourly-rate" id="<%= rad.cid %>">Remove</button>
+                </td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <% } else { %>
+        <h5 class="font-weight-bold">No Hourly Rates</h5>
+    <% } %>
+</div>
+<div class="m-5">
+    <% if (mileage_rates.length) { %>
+    <h5 class="font-weight-bold">Mileage Rates</h5>
+    <table  class="staffposition table table-sm table-responsive">
+        <thead><tr>
+            <th>Start Date</th>
+            <th>Rate</th>
+        </tr></thead>
+        <tbody>
+            <% _.each(mileage_rates, function (rad) { %>
+            <tr>
+                <td><%= rad.get('date') %></td>
+                <td class="text-right">$<%= rad.get('rate') %></td>
+
+                <td><button class="edit-mileage-rate" id="<%= rad.cid %>">Edit</button></td>
+                <td><button class="remove-mileage-rate" id="<%= rad.cid %>">Remove</button></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <% } else { %>
+         <h5 class="font-weight-bold">No Mileage Rates</h5>
+    <% } %>
+</div>
+</div>
