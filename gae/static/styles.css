@@ -416,3 +416,11 @@ div.form-group.thumbnail{border:none}
 div.form-group.has-error > div > span.error{
   color: #a94442;
 }
+/* datepicker today hilight */
+td.today.day{
+  background: yellow;
+}
+/* highlight staffposition row light grey */
+table.staffposition tbody tr:hover td{
+  background: #e6eeee;
+}
