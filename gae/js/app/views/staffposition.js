@@ -2,10 +2,9 @@ define(
     [
         'bootstrap-datepicker',
         'app/views/rooms_form',
-        'text!app/templates/simple_form.html',
-        'app/models/rate_after_date'
+        'text!app/templates/simple_form.html'
     ],
-    function(bsdp, RoomFormView, template, RateAfterDate) {
+    function(bsdp, RoomFormView, template) {
         var fields = [{
                 name: "position_name",
                 label: "Position name",
@@ -13,36 +12,33 @@ define(
                 type: "text",
                 required: true
             },{
-                name: "hourly_rate",
+                name: "hourly_rates.form_rad.attributes.rate",
                 label: "Hourly Rate",
                 control: "input",
                 type: "text",
             },{
-                name: "hourly_date",
+                name: "hourly_rates.form_rad.attributes.date",
                 label: "Hourly Date",
                 control: "datepicker",
                 options: {autoclose: true, assumeNearbyYear: true, todayHighlight: true, format: "yyyy-mm-dd"},
             },{
-                name: "mileage_rate",
+                name: "mileage_rates.form_rad.attributes.rate",
                 label: "Mileage Rate",
                 control: "input",
                 type: "text"
             },{
-                name: "mileage_date",
+                name: "mileage_rates.form_rad.attributes.date",
                 label: "Mileage Date",
                 control: "datepicker",
                 options: {autoclose: true, assumeNearbyYear: true, todayHighlight: true, format: "yyyy-mm-dd"},
             },{
-                id: "submit",
+                name: "submit",
                 control: "button",
                 extraClasses: ['btn-primary'],
                 label: "Save changes"
             }
         ];
         var ViewFactory = function(app, loading) {
-            var hrad = new RateAfterDate(app, 'hourly_');
-            var mrad = new RateAfterDate(app, 'mileage_');
-
             return new RoomFormView({
                 name: 'staffposition',
                     template: template,
@@ -50,8 +46,9 @@ define(
                     loading: loading,
                     fields: fields,
                     events: {
-                        'click button': function(e){
-                            this.model.trigger('submit', this.model);
+                        'click button[name=submit]': function(){
+                            this.model.get('hourly_rates').add_form_rad();
+                            this.model.get('mileage_rates').add_form_rad();
                         }
                     }
             });
