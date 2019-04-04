@@ -190,6 +190,13 @@ login_required = routes.PathPrefixRoute('/room', [
                 staff.Item,
                 name='Item'),
 
+  webapp2.Route(r'/staffposition',
+                staff.StaffPositionList,
+                name='StaffPositionList'),
+  webapp2.Route(r'/staffposition/<id:\d*>',
+                staff.StaffPosition,
+                name='StaffPosition'),
+
   # webapp2.Route(r'/example',
   #               staff.ExampleList,
   #               name='ExampleList'),
