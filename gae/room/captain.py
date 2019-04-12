@@ -1,3 +1,4 @@
+import logging
 import webapp2
 
 import common
@@ -43,8 +44,13 @@ class CaptainHome(CaptainHandler):
       site = sitecaptain.site.get()
       
       if site.program_key:
-        if site.program_key.get().status != ndb_models.Program.ACTIVE_STATUS:
-          continue
+        program = site.program_key.get()
+      else:
+        program = ndb_models.Program.query(ndb_models.Program.name == site.program).get()
+      if program.status != ndb_models.Program.ACTIVE_STATUS:
+        logging.info('skipping inactive site %s in program %s', site.number, program.name)
+        continue
+          
 
       # TODO:what's this? maybe clean it up.
       site.new_order_form = "site.new_order_form placeholder"

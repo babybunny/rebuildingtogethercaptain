@@ -28,15 +28,18 @@ def CreateAll():
   )[0].key
   KEYS['PROGRAM_2010_TEST'] = ndb_models.Program.get_or_create(
     program_type_key=KEYS['PROGRAM_TYPE_TEST'],
-    year=2010
+    year=2010,
+    status='Inactive'
   )[0].key
   KEYS['PROGRAM_2011_TEST'] = ndb_models.Program.get_or_create(
     program_type_key=KEYS['PROGRAM_TYPE_TEST'],
-    year=2011
+    year=2011,
+    status='Inactive'
   )[0].key
   KEYS['PROGRAM_2012_TEST'] = ndb_models.Program.get_or_create(
     program_type_key=KEYS['PROGRAM_TYPE_TEST'],
-    year=2012
+    year=2012,
+    status='Active'
   )[0].key
   KEYS['STAFFPOSITION'] = ndb_models.StaffPosition(
     position_name="position one",
@@ -159,7 +162,7 @@ def CreateAll():
     jurisdiction_choice=KEYS['JURISDICTION2'],
     number='111TEST',
     program=KEYS['PROGRAM_2011_TEST'].get().name,
-    program_key=KEYS['PROGRAM_2011_TEST'],
+    # no program_key program_key=KEYS['PROGRAM_2011_TEST'],
     name='Rainbows',
     applicant='Jordy Carolina',
     applicant_home_phone='650 1357205',
@@ -186,6 +189,16 @@ def CreateAll():
   ).put()
   KEYS['SITECAPTAIN2'] = ndb_models.SiteCaptain(
     site=KEYS['SITE'],
+    captain=KEYS['CAPTAIN'],
+    type='Volunteer'
+  ).put()
+  KEYS['SITECAPTAIN3'] = ndb_models.SiteCaptain(
+    site=KEYS['SITE2'],
+    captain=KEYS['CAPTAIN'],
+    type='Volunteer'
+  ).put()
+  KEYS['SITECAPTAIN4'] = ndb_models.SiteCaptain(
+    site=KEYS['SITE3'],
     captain=KEYS['CAPTAIN'],
     type='Volunteer'
   ).put()
