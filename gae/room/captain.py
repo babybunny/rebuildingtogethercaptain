@@ -66,7 +66,7 @@ class CaptainHome(CaptainHandler):
     captain_form = 'captain_form placeholder'
     return common.Respond(self.request, 'captain_home',
                           {'order_sheets': order_sheets,
-                           'entries': sites.values(),
+                           'entries': sorted(sites.values(), key=lambda(s): s.number),
                            'captain': captain,
                            'captain_form': captain_form,
                            'captain_contact_submit':
