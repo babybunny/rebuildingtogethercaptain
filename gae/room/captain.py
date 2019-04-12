@@ -37,7 +37,7 @@ class CaptainHome(CaptainHandler):
     if captain_id is not None:
       captain = ndb_models.Captain.get_by_id(int(captain_id))
     order_sheets = ndb_models.OrderSheet.query().order(ndb_models.OrderSheet.name)
-    sites = []
+    sites = {}
     scs = list(ndb_models.SiteCaptain.query(
       ndb_models.SiteCaptain.captain == captain.key))
     for sitecaptain in scs:
@@ -47,15 +47,18 @@ class CaptainHome(CaptainHandler):
         program = site.program_key.get()
       else:
         program = ndb_models.Program.query(ndb_models.Program.name == site.program).get()
+      if not program:
+        logging.warning('unable to find program for site %s', site.number)
+        continue
       if program.status != ndb_models.Program.ACTIVE_STATUS:
-        logging.info('skipping inactive site %s in program %s', site.number, program.name)
+        logging.info('skipping inactive site %s in program %s %s', site.number, program.name, program.status)
         continue
           
 
       # TODO:what's this? maybe clean it up.
       site.new_order_form = "site.new_order_form placeholder"
 
-      sites.append(site)
+      sites[site.number] = site
 
     if not sites:
       logging.warning('no sites in active programs. but found SiteCaptains: %s', scs)
@@ -63,7 +66,7 @@ class CaptainHome(CaptainHandler):
     captain_form = 'captain_form placeholder'
     return common.Respond(self.request, 'captain_home',
                           {'order_sheets': order_sheets,
-                           'entries': sites,
+                           'entries': sites.values(),
                            'captain': captain,
                            'captain_form': captain_form,
                            'captain_contact_submit':
