@@ -332,6 +332,7 @@ class CustomApi(base_api.BaseApi):
   @remote.method(OrderFull, protorpc_messages.SimpleId)
   def order_full_create(self, request):
     self._authorize_user()
+    logging.info("order_full_create(%s)", request)
     if request.id:
       raise remote.ApplicationError('must not have id in create')
     order_id = self._order_full_put(request)
@@ -340,6 +341,7 @@ class CustomApi(base_api.BaseApi):
   @remote.method(OrderFull, message_types.VoidMessage)
   def order_full_update(self, request):
     self._authorize_user()
+    logging.info("order_full_update(%s)", request)
     if not request.id:
       raise remote.ApplicationError('id is required')
     mdl = ndb.Key(ndb_models.Order, request.id).get()
