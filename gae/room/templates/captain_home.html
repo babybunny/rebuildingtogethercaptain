@@ -18,7 +18,7 @@
 <p class="captain_home_bottom"><b>You're a Captain for the following site(s):</b><br />
 {% for site in entries %}
   <a href="#site_{{ site.number }}">
-    {{ site.name }} (#{{ site.number }})
+    #{{ site.number }} {{ site.name }} 
   </a>
 {% if not loop.last %}
 <br>
