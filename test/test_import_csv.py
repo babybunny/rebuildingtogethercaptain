@@ -9,24 +9,33 @@ from test import test_models
 
 class TestImportCsv(unittest.TestCase):
 
-  @classmethod
-  def setUpClass(cls):
-    app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
-    test_models.CreateAll()
-
+  def setUp(self):
+    self.testbed = app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+    self.keys = test_models.CreateAll()
+    
+  def tearDown(self):
+    self.testbed.deactivate()
+    
   def testImportSitesAndCaptains(self):
 
+    db_captain_email = self.keys['CAPTAIN'].get().email
+    self.assertEqual(1, ndb_models.Captain.query(ndb_models.Captain.email == db_captain_email).count())
+    
     # dump test data to a tmp files
     path_to_sites_data = tempfile.mktemp()
     with open(path_to_sites_data, 'wb') as io:
       io.write(TestImportCsv.SITES_DATA)
     path_to_captains_data = tempfile.mktemp()
     with open(path_to_captains_data, 'wb') as io:
-      io.write(TestImportCsv.CAPTAINS_DATA)
+      io.write(TestImportCsv.CAPTAINS_DATA
+               + "\n50036SAM,Test Captain,,,%s,Volunteer Captain" % db_captain_email)
 
     import_csv.import_sites(path_to_sites_data)
     import_csv.import_captains(path_to_captains_data)
 
+    # still only one, no dupes
+    self.assertEqual(1, ndb_models.Captain.query(ndb_models.Captain.email == db_captain_email).count())
+    
     site = ndb_models.NewSite.query().filter(ndb_models.NewSite.number == "50010SAM").get()  # type: ndb_models.NewSite
     self.assertTrue(site)
     site_captains = list(site.sitecaptain_set)
@@ -40,7 +49,18 @@ class TestImportCsv(unittest.TestCase):
       else:
         self.assertEqual(captain.email, 'aristocratic@theorist.com')
 
+    site = ndb_models.NewSite.query().filter(ndb_models.NewSite.number == "50036SAM").get()  # type: ndb_models.NewSite
+    self.assertTrue(site)
+    site_captains = list(site.sitecaptain_set)
+    self.assertEqual(len(site_captains), 2)
+    for site_captain in site_captains:
+      ctype = site_captain.type
+      captain = site_captain.captain.get()
+      self.assertIn(ctype, ("Construction", "Volunteer"))
+      if ctype == "Volunteer":
+        self.assertEqual(captain.email, db_captain_email)
 
+        
   SITES_DATA = textwrap.dedent("""\
     Announcement Subject,Announcement Body,Site ID,Budgeted Cost in Campaign,Repair Application: Applicant's Name,Applicant Home Phone,Applicant Mobile Phone,Applicant Work Phone,Recipient's Street Address,Recipient's City,Recipient's Zip Code,Jurisdiction,Sponsor,Repair Application: RRP Test Results,Photos Link,Program Year
     subject,"announcement body, which has some commas",50001DAL,$1007,Malay Nothing,9999999999,(608) 123-4567,7777777777,123 Champaign St,"Row, Rectilinear",00000,Argue Wendy,Pompon,some test results,https://www.google.com,2050
@@ -148,5 +168,4 @@ class TestImportCsv(unittest.TestCase):
     50034SAM,Theoretician Votive,R00215,608) 123-4567,georgetown@schoolhouse.com,Construction Captain
     50034SAM,Gentle Davis,R00449,608) 123-4567,penguin@shish.com,Volunteer Captain
     50036SAM,Silicate Lanky,R00406,608) 123-4567,sacrilege@hijack.com,Construction Captain
-    50036SAM,Muzo Videotape,R00122,608) 123-4567,gait@giles.com,Volunteer Captain
     """)

@@ -118,15 +118,15 @@ def import_captains(input_csv):
       captain = ndb_models.Captain.get_by_id(int(key))
       if captain:
         logging.info('got captain from key %s', key)
-    if not captain:
+    if not captain and rooms_id:
       captain = ndb_models.Captain.query(ndb_models.Captain.rooms_id == rooms_id).get()
       if captain:
         logging.info('got captain from rooms_id %s', rooms_id)
-    if not captain:
+    if not captain and email:
       captain = ndb_models.Captain.query(ndb_models.Captain.email == email).get()
       if captain:
         logging.info('got captain from email %s', email)
-    if not captain:
+    if not captain and email:
       logging.info('creating captain key %s name %s email %s rooms_id %s',
                    key, name, email, rooms_id)
       captain = ndb_models.Captain(name=name, email=email, rooms_id=rooms_id)
