@@ -107,6 +107,14 @@ class CustomApiTest(unittest.TestCase):
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     
   def testOrderFullUpdate(self):
+    oim = test_models.ndb_models.OrderItem
+    oiq = oim.query(oim.order == test_models.ndb_models.ndb.Key('Order', self.keys['ORDER'].integer_id()))
+    self.assertEquals(3, oiq.count())
+    loi = list(oiq)
+    self.assertIn(self.keys['ORDERITEM'], [oi.key for oi in loi])
+    self.assertIn(self.keys['ORDERITEM2'], [oi.key for oi in loi])
+    self.assertIn(self.keys['ORDERITEM4'], [oi.key for oi in loi])
+    
     post_json_body = {
       "id": self.keys['ORDER'].integer_id(),
       "order": {
@@ -114,7 +122,8 @@ class CustomApiTest(unittest.TestCase):
         "order_sheet": self.keys['ORDERSHEET'].integer_id()
       },
       "order_items": [
-        {"item": self.keys['ITEM'].integer_id(),
+        {"id": self.keys['ORDERITEM'].integer_id(),
+         "item": self.keys['ITEM'].integer_id(),
          "order": self.keys['ORDER'].integer_id(),
          "quantity": "2"},
         {"id": self.keys['ORDERITEM2'].integer_id(),
@@ -125,6 +134,10 @@ class CustomApiTest(unittest.TestCase):
          "item": self.keys['ITEM4'].integer_id(),
          "order": self.keys['ORDER'].integer_id(),
          "quantity": "0"},
+        {"item": self.keys['ITEM3'].integer_id(),
+         "order": self.keys['ORDER'].integer_id(),
+         "quantity": "9"},
+
       ],
       "delivery": {
         "notes": "Please go around back.",
@@ -138,7 +151,17 @@ class CustomApiTest(unittest.TestCase):
                              status=200,
                              headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
     self.assertEquals('200 OK', response.status)
+    self.assertEquals(3, oiq.count())
+    loi = list(oiq)
+    self.assertIn(self.keys['ORDERITEM'], [oi.key for oi in loi])
+    self.assertIn(self.keys['ORDERITEM2'], [oi.key for oi in loi])
+    self.assertNotIn(self.keys['ORDERITEM4'], [oi.key for oi in loi])  # because it was updated with a 0 quantity
 
+    itemkeys = [oi.item for oi in loi]
+    self.assertEquals(3, len(itemkeys))
+    self.assertEquals(set((self.keys['ITEM'], self.keys['ITEM2'], self.keys['ITEM3'])), set(itemkeys))
+
+    
   def testOrderFullUpdateMissingId(self):
     post_json_body = {
       "order": {
