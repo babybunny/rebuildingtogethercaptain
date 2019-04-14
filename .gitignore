@@ -2,6 +2,7 @@ virtualenv/
 build/
 gae/js/lib
 gae/css/lib
+gae/index.yaml
 node_modules/
 *.pyc
 .idea/*
