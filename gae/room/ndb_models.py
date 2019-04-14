@@ -392,7 +392,7 @@ class OrderSheet(SearchableModel):
 
 
 class Item(SearchableModel):
-  """Represents a type of thing that may in the inventory."""
+  """Represents a type of thing that may be in the inventory or possible to order."""
   bar_code_number = ndb.IntegerProperty()
   # bar_code_number.unique = True
   name = ndb.StringProperty(required=True)
@@ -441,6 +441,9 @@ class Item(SearchableModel):
   def VisibleOrderFormSection(self):
     return self.VisibleSortableLabel(self.order_form_section)
 
+  def SupportsName(self):
+    return (self.supports_extra_name_on_order
+            or self.appears_on_order_form.get().supports_extra_name_on_order)
 
 class UploadedDocument(ndb.Model):
   filename = ndb.StringProperty()

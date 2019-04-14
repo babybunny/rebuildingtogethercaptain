@@ -646,6 +646,7 @@ def ItemModelToMessage(mdl):
     s.supplier = mdl.supplier.integer_id()
   s.visible_name = mdl.VisibleName()
   s.visible_section = mdl.VisibleOrderFormSection()
+  s.supports_name = mdl.SupportsName()
   return s
 
 
@@ -682,7 +683,8 @@ class Item(messages.Message):
   supplier = messages.IntegerField(12)
   visible_name = messages.StringField(13)
   visible_section = messages.StringField(14)
-
+  supports_name = messages.BooleanField(15)
+  
 
 ############
 # Order #

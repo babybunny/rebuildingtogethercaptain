@@ -114,12 +114,15 @@
             <%   }
                  prev_section = item.visible_section; %>
             <tr>
-              <td class="listpic">
-                TODO pic
+              <td class="itemdetail">
               </td>
               <td>
                 <b><%= item.visible_name %></b>
                 <%= item.description %>
+                <% if (item.supports_name) { %>
+                </br><span class="tiny move-right-1">Notes:<input type="text" class="item-notes" name="<%- item.id %>"
+                                  value="<%- notesForItem(item, order_items) %>" size="15"></span>
+                <% } %>
               </td>
               <td class="dollar">
                 <%= item.unit_cost %>
