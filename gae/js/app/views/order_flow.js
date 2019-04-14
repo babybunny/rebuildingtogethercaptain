@@ -163,6 +163,7 @@ define(
             events: {
                 'change #id_notes': 'savenotes',
                 'change .item-quantity': 'changeQuantity',
+                'change .item-notes': 'changeNotes',
                 'click #order-proceed-delivery': 'renderDelivery',
                 'click #order-proceed-pickup': 'renderPickup',
                 'click #order-proceed-borrow': 'renderBorrow',
@@ -185,6 +186,18 @@ define(
                     });
                 } else {
                     oi.set('quantity', new_quantity_float);
+                }
+                return false;
+            },
+            changeNotes: function(e) {
+                var oi = this.order_items.get(parseInt(e.target.name));
+                if (!oi) {
+                    this.order_items.add({
+                        item: parseInt(e.target.name),
+                        name: e.target.value
+                    });
+                } else {
+                    oi.set('name', e.target.value);
                 }
                 return false;
             },
@@ -328,6 +341,14 @@ define(
                         var oi = order_items.get(item.id);
                         if (oi) {
                             return oi.get('quantity');
+                        } else {
+                            return '';
+                        }
+                    },
+                    notesForItem: function(item, order_items) {
+                        var oi = order_items.get(item.id);
+                        if (oi) {
+                            return oi.get('name');
                         } else {
                             return '';
                         }
