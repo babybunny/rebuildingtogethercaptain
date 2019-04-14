@@ -1,0 +1,45 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+     $(function(){
+      $("table.tablesorter").tablesorter({
+        sortList: [[0, 0]]});
+  });
+</script>
+{%endblock%}
+{% block breadcrumb %}
+| List Staff Positions
+{% endblock %}
+{%block about_this_page%}
+<h2>List of Staff Positions</h2>
+  <a href="{{ webapp2.uri_for('StaffPosition', id='') }}" alt="new Staff-position">Add a new Staff Position</a>
+{%endblock%}
+{%block body%}
+<table  class="tablesorter staffposition">
+  <thead>
+    <tr>
+      <th>Position Name</th>
+      <th>Current Hourly Rate</th>
+      <th>Current Mileage Rate</th>
+      <th>Last Modified</th>
+      <th>Last Editor</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+      {% set hr = "{:.2f}".format(entry.GetHourlyRate(today))|escape  %}
+      {% set mr = "{:.2f}".format(entry.GetMileageRate(today))|escape %}
+      <tr>
+        <td class="position">
+          <a href="{{ webapp2.uri_for('StaffPosition', id=entry.key.integer_id()) }}">{{entry.name|escape}}</a>
+        </td>
+        <td>{{ hr|escape }}</td>
+        <td>{{ mr|escape }}</td>
+        <td>{{ entry.modified.strftime("%Y-%m-%d")|escape }}</td>
+        <td>{{ entry.last_editor|escape }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%endblock%}
