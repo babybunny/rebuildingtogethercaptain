@@ -1,4 +1,4 @@
-"""API for StaffPositions and their (hourly,mileage) info."""
+"""API for staffpositions and their hourly and mileage information."""
 
 from google.appengine.ext import ndb
 
@@ -9,7 +9,7 @@ from protorpc.wsgi import service
 
 import base_api
 import ndb_models
-from protorpc_messages import SimpleId
+import protorpc_messages
 
 package = 'rooms'
 
@@ -26,54 +26,70 @@ class StaffPosition(messages.Message):
   mileage_rates = messages.MessageField(RateAfterDate, 4, repeated=True)
 
 
-class StaffpositionApi(base_api.BaseApi):
+def RateAfterDateMessageToMdlString(msg):
+  if not msg.date:
+    raise remote.ApplicationError('Validation Error: Missing Date')
+  if msg.rate < 0:
+    raise remote.ApplicationError('Validation Error: Missing Rate')
+  return '{} {:.2f}'.format(msg.date, msg.rate)
 
-  def staffposition_message_to_model(self, msg, mdl):
-    if not msg.position_name:
-      raise remote.ApplicationError('Position name is required')
-    mdl.position_name = msg.position_name
-    mdl.hourly_rate_after_date = [
-      '{} {:.2f}'.format(r.date, r.rate) for r in msg.hourly_rates if r.date and r.rate]
-    mdl.mileage_rate_after_date = [
-      '{} {:.2f}'.format(r.date, r.rate) for r in msg.mileage_rates if r.date and r.rate]
-    return mdl
+
+def RateAfterDateMdlStringToMessage(s):
+  dt, rt = s.split()
+  return RateAfterDate(date=dt, rate=float(rt))
+
+
+def StaffPositionMessageToModel(msg, mdl):
+  if not msg.position_name:
+    raise remote.ApplicationError('position name is required')
+  mdl.position_name = msg.position_name
+  mdl.mileage_rate_after_date = list(RateAfterDateMessageToMdlString(s) for s in msg.mileage_rates)
+  mdl.hourly_rate_after_date = list(RateAfterDateMessageToMdlString(s) for s in msg.hourly_rates)
+  return mdl
+
+
+def StaffPositionModelToMessage(mdl):
+  s = StaffPosition(
+    position_name=mdl.position_name,
+    mileage_rates=list(RateAfterDateMdlStringToMessage(s) for s in mdl.mileage_rate_after_date),
+    hourly_rates=list(RateAfterDateMdlStringToMessage(s) for s in mdl.hourly_rate_after_date)
+    )
+  return s
+
+
+class StaffpositionApi(base_api.BaseApi):
 
   @remote.method(StaffPosition, message_types.VoidMessage)
   def staffposition_create(self, request):
     self._authorize_staff()
     if request.id:
       raise remote.ApplicationError('must not have id in create')
-    mdl = ndb_models.StaffPosition()
-    self.staffposition_message_to_model(request, mdl)
+    mdl = StaffPositionMessageToModel(request, ndb_models.StaffPosition())
     mdl.put()
     return message_types.VoidMessage()
+
+  @remote.method(protorpc_messages.SimpleId, StaffPosition)
+  def staffposition_read(self, request):
+    self._authorize_staff()
+    if not request.id:
+      raise remote.ApplicationError('id is required')
+    mdl = ndb.Key(ndb_models.StaffPosition, request.id).get()
+    if not mdl:
+      raise remote.ApplicationError(
+        'No staff position found with key {}'.format(request.id))
+    return StaffPositionModelToMessage(mdl)
 
   @remote.method(StaffPosition, message_types.VoidMessage)
   def staffposition_update(self, request):
     self._authorize_staff()
     if not request.id:
-      raise remote.ApplicationError('id is required to update staffposition')
+      raise remote.ApplicationError('id is required for update')
     mdl = ndb.Key(ndb_models.StaffPosition, request.id).get()
     if not mdl:
-      raise remote.ApplicationError('No staffposition fournd with key {}'.format(request.id))
-    self.staffposition_message_to_model(request, mdl)
+      raise remote.ApplicationError(
+        'No staff position found with key {}'.format(request.id))
+    mdl = StaffPositionMessageToModel(request, mdl)
     mdl.put()
     return message_types.VoidMessage()
-
-  @remote.method(SimpleId, StaffPosition)
-  def staffposition_read(self, request):
-    self._authorize_staff()
-    if not request.id:
-      raise remote.ApplicationError('id is required to read staffposition')
-    mdl = ndb.Key(ndb_models.StaffPosition, request.id).get()
-    if not mdl:
-      raise remote.ApplicationError('No staffposition found with key {}'.format(
-        request.id))
-    res = StaffPosition(position_name=mdl.position_name)
-    for d, r in (dr.split() for dr in mdl.mileage_rate_after_date):
-      res.mileage_rates.append(RateAfterDate(date=d, rate=float(r)))
-    for d, r in (dr.split() for dr in mdl.hourly_rate_after_date):
-      res.hourly_rates.append(RateAfterDate(date=d, rate=float(r)))
-    return res
 
 application = service.service_mapping(StaffpositionApi, r'/staffposition_api')
