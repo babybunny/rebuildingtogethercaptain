@@ -168,7 +168,19 @@ class StatefulTestStaffWithProgramCustom(StatefulTestStaffWithProgram):
     self.assertEquals('200 OK', response.status)
     self.assertIn('Being Filled', response.body)
 
+  def testVendorReceiptView(self):
+    response = self._get('/room/vendorreceipt_view/{:d}'.format(self.keys['VENDORRECEIPT'].integer_id()))
+    self.assertEquals('200 OK', response.status)
+    self.assertIn('110TEST', response.body)
+    self.assertIn('45.67', response.body)
 
+  def testVendorReceiptViewNoAmount(self):
+    response = self._get('/room/vendorreceipt_view/{:d}'.format(self.keys['VENDORRECEIPT2'].integer_id()))
+    self.assertEquals('200 OK', response.status)
+    self.assertIn('110TEST', response.body)
+    self.assertIn('0.0', response.body)
+
+    
 StatefulTestStaffWithProgramAuto.build()
 
 if __name__ == '__main__':

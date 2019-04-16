@@ -168,7 +168,6 @@ define(
                 'click #order-proceed-pickup': 'renderPickup',
                 'click #order-proceed-borrow': 'renderBorrow',
                 'click #order-proceed-retrieval': 'renderRetrieval',
-                'click #order-submit': 'save',
                 'click #order-proceed-no-logistics': 'save',
             },
             savenotes: function(e) {
@@ -229,6 +228,7 @@ define(
                 }
             },
             save: function() {
+                $('button[name="submit"]').attr('disabled', true);
                 $('span.status')
                     .css('color', '#909b27')
                     .text('Saving...')
@@ -245,21 +245,16 @@ define(
                             response.xhr.statusText = 'SAVED';
                             $('span.status')
                                 .css('color', '#409b27')
-                                .text('Saved')
-                                .show()
-                                .fadeOut({
-                                    duration: 1000,
-                                    complete: function() {
-                                        // redirect to the "back to site" URL
-                                        window.location = $('#rooms-form-after-save').attr('href');
-                                    }
-                                });
+                                .text('Saved. Now loading site ...')
+                                .show();
+                            window.location = $('#rooms-form-after-save').attr('href');
                         },
                         'error': function(model, response, error) {
                             $('span.status')
                                 .css('color', 'red')
                                 .text('Error: ' + response.responseText)
                                 .show();
+                            $('button[name="submit"]').attr('disabled', false);
                         },
                     });
             },

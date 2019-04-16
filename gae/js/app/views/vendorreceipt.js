@@ -12,7 +12,7 @@ define(
              RoomFormView,
              ModelSelectControl,
              CaptainChoice,
-	     CaptainForSiteChoice,
+	           CaptainForSiteChoice,
              SupplierChoice,
              template) {
         var fields = [
@@ -20,7 +20,7 @@ define(
                 name: "id",
                 label: "ID",
                 control: "input",
-		disabled: true
+		            disabled: true
             },
             {
                 name: "site",
@@ -43,6 +43,7 @@ define(
             {
                 name: "amount",
                 label: "Purchase Amount ($)",
+                required: true,
                 control: "input"
             },
             {
