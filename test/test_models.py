@@ -257,6 +257,16 @@ def CreateAll():
     state='submitted',
   ).put()
 
+  KEYS['VENDORRECEIPT2'] = ndb_models.VendorReceipt(
+    site=KEYS['SITE'],
+    captain=KEYS['CAPTAIN'],
+    program=KEYS['PROGRAM_2011_TEST'].get().name,
+    purchase_date=datetime.date(2012, 3, 4),
+    # no amount field
+    supplier=KEYS['SUPPLIER'],
+    state='submitted',
+  ).put()
+
   KEYS['INKINDDONATION'] = ndb_models.InKindDonation(
     site=KEYS['SITE'],
     captain=KEYS['CAPTAIN'],

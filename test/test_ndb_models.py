@@ -44,3 +44,6 @@ class ModelsTest(unittest.TestCase):
     self.assertIsNotNone(o.internal_invoice)
     self.assertEquals(10000, o.internal_invoice.get().invoice_number)
     
+  def testVendorReceipt(self):
+    mdl = self.keys['VENDORRECEIPT'].get()
+    self.assertEquals(None, mdl.amount)
