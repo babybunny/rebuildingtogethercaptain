@@ -64,7 +64,7 @@ define(
                         self.template = _.template(template);
                         self.model = new StaffPositionRateAfterDate({position_name: mdl.position_name});
                         self.loaded = true;
-                        self.makeForm().render();
+                        self.makeForm().setFirstField().render();
                     });
             },
             saveStep1: function(e) {
@@ -97,12 +97,13 @@ define(
                 this.$(e.target).parents('tr').addClass('fade');
                 this.updateFormLabels().render_form();
             },
-            getFirstField: function() {
+            setFirstField: function() {
                 var field_list = _.reject(
                     this.form.fields.models,
                     function(model) { return model.get('disabled'); }
                 );
-                return field_list[0]._previousAttributes;
+                this.firstfield = "[name="+field_list[0].get('name')+"]";
+                return this;
             },
              updateFormLabels: function() {
                  _.each(this.form.fields.models, function(model) {
@@ -140,10 +141,9 @@ define(
             },
             render_form: function(){
                 if (this.form){
-                    this.firstfield = this.getFirstField();
                     this.form.setElement('#rate-form').render();
                     this.$el.find('label.control-label:contains("*")').addClass('required');
-                    this.$el.find('[name=' + this.firstfield.name +']').focus();
+                    this.$el.find(this.firstfield).focus();
                 }
             },
             saveStep2: function(){
