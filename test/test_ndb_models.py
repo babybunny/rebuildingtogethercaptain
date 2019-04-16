@@ -46,4 +46,8 @@ class ModelsTest(unittest.TestCase):
     
   def testVendorReceipt(self):
     mdl = self.keys['VENDORRECEIPT'].get()
-    self.assertEquals(None, mdl.amount)
+    self.assertEquals(45.67, mdl.amount)
+
+  def testVendorReceipt2(self):
+    mdl = self.keys['VENDORRECEIPT2'].get()
+    self.assertEquals(0.0, mdl.amount)
