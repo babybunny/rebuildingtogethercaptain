@@ -64,7 +64,7 @@ define(
                         self.template = _.template(template);
                         self.model = new StaffPositionRateAfterDate({position_name: mdl.position_name});
                         self.loaded = true;
-                        self.makeForm().setFirstField().render();
+                        self.makeForm().render();
                     });
             },
             saveStep1: function(e) {
@@ -83,6 +83,7 @@ define(
                         .css('color', 'red')
                         .text(this.model.validationError)
                         .show();
+                        this.$el.find(this.firstfield).focus();
                 }
             },
             editRate: function(e){
@@ -103,7 +104,6 @@ define(
                     function(model) { return model.get('disabled'); }
                 );
                 this.firstfield = "[name="+field_list[0].get('name')+"]";
-                return this;
             },
              updateFormLabels: function() {
                  _.each(this.form.fields.models, function(model) {
@@ -123,6 +123,7 @@ define(
                     fields: fields,
                     showRequiredAsAsterisk: true,
                 });
+                this.setFirstField();
                 return this;
             },
             removeRate: function(e) {
@@ -163,6 +164,7 @@ define(
                             .css('color', 'red')
                             .text('Error: ' + response.responseText)
                             .show();
+                            self.$el.find(self.firstfield).focus();
                         },
                     });
             },
