@@ -1,0 +1,46 @@
+<p>Edit staffposition & rates</p>
+<div class="row">
+    <form class="w-50" id="rate-form"></form>
+    <div>
+    <% if (hourly_rates.length) { %>
+        <table  class="table-bordered table-hover">
+            <thead><tr class="text-center">
+                <th class="p-1">Hourly Date</th>
+                <th class="p-1">Hourly Rate</th>
+                <th class="p-1">Edit Options</th>
+            </tr></thead>
+            <tbody>
+                <% _.each(hourly_rates, function (rad) { %>
+                <tr class="text-center">
+                    <td><%= rad.get('date') %></td>
+                    <td class="text-right">$<%= rad.get('rate') %></td>
+                    <td class="p-1 btn btn-sm btn-light remove" id="<%= rad.cid %>" rt="hourly_rates">Remove</td>
+                    <td class="p-1 btn btn-sm btn-light edit"   id="<%= rad.cid %>" rt="hourly_rates">Edit</td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %> <h5 class="bg-light d-block text-center">No Hourly Details</h5><% } %>
+
+
+    <% if (mileage_rates.length) { %>
+        <table  class="table-bordered table-hover mt-5">
+            <thead><tr class="text-center">
+                <th class="p-1">Mileage Date</th>
+                <th class="p-1">Mileage Rate</th>
+                <th class="p-1">Edit Options</th>
+            </tr></thead>
+            <tbody>
+                <% _.each(mileage_rates, function (rad) { %>
+                <tr class="text-center">
+                    <td><%= rad.get('date') %></td>
+                    <td class="text-right">$<%= rad.get('rate') %></td>
+                    <td class="p-1 btn btn-sm btn-light remove" id="<%= rad.cid %>" rt="mileage_rates">Remove</td>
+                    <td class="p-1 btn btn-sm btn-light edit"   id="<%= rad.cid %>" rt="mileage_rates">Edit</td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %> <h5 class="bg-light d-block text-center mt-3">No Mileage Details</h5><% } %>
+    </div>
+</div>

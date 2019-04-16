@@ -1,9 +1,31 @@
+// StaffPosition (hourly or mileage) rate and start date.
 define(
     ['app/models/proto_model'],
     function(ProtoModel) {
         var Model = ProtoModel.extend({
             must_be_floats: ['rate'],
-            idAttribute: "cid"
+            idAttribute: "cid",
+
+            validate: function(attrs){
+                this.errorModel.clear();
+                if(!attrs.position_name){
+                    this.errorModel.set({position_name: "Position name is required"});
+                }
+                if(attrs.date || attrs.rate || attrs.type){
+                    if (!attrs.date){
+                        this.errorModel.set({date: "Date is required"});
+                    }
+                    if (!attrs.rate){
+                        this.errorModel.set({rate: "Rate is required"});
+                    }
+                    if (!attrs.type){
+                        this.errorModel.set({type: "Rate Type is required"});
+                    }
+                }
+                if (!_.isEmpty(_.compact(this.errorModel.toJSON()))) {
+                    return "Validation errors. Please fix.";
+                }
+            }
 
         });
 
