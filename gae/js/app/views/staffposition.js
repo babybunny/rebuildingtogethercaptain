@@ -3,9 +3,10 @@ define(
         'bootstrap-datepicker',
         'app/views/rooms_form',
         'text!app/templates/simple_form.html',
+        'text!app/templates/staffposition.html',
         'app/views/staffposition_existing',
     ],
-    function(bsdp, RoomFormView, template, StaffPositionExistingView) {
+    function(bsdp, RoomFormView, template, existing_template, StaffPositionExistingView) {
         var fields = [{
                 name: "position_name",
                 label: "Position name",
@@ -13,44 +14,28 @@ define(
                 type: "text",
                 required: true
             },{
-                name: "hourly_rates.rate",
-                label: "Hourly Rate",
-                control: "input",
-                type: "text"
-            },{
-                name: "hourly_rates.date",
-                label: "Hourly Date",
-                control: "datepicker",
-                options: {autoclose: true, assumeNearbyYear: true, todayHighlight: true, format: "yyyy-mm-dd"},
-            },{
-                name: "mileage_rates.rate",
-                label: "Mileage Rate",
-                control: "input",
-                type: "text"
-            },{
-                name: "mileage_rates.date",
-                label: "Mileage Date",
-                control: "datepicker",
-                options: {autoclose: true, assumeNearbyYear: true, todayHighlight: true, format: "yyyy-mm-dd"},
-            },{
-                id: "submit",
+                name: 'saveExit',
                 control: "button",
                 extraClasses: ['btn-primary'],
                 label: "Save changes"
             }
         ];
         var ViewFactory = function(app, loading) {
-
-            if (app.models['staffposition'].isNew()) {
-                return new RoomFormView({
-                    name: 'staffposition',
-                        template: template,
-                        model: app.models.staffposition,
+                if (app.models.staffposition.isNew()) {
+                   return  new RoomFormView({
+                        name: 'staffposition',
+                            template: template,
+                            model: app.models.staffposition,
+                            loading: loading,
+                            fields: fields
+                    });
+                }
+                return new StaffPositionExistingView({
+                        basicFields: fields,
+                        staffposition: app.models.staffposition,
                         loading: loading,
-                        fields: fields
+                        template: existing_template,
                 });
-            }
-            return new StaffPositionExistingView(app, app.models.staffposition.id);
         }
         return ViewFactory;
     }

@@ -1,13 +1,15 @@
 <p>Edit staffposition & rates</p>
+
 <div class="row">
-    <form class="w-50" id="rate-form"></form>
+    <div id="form" class="w-50"></div>
     <div>
-    <% if (hourly_rates.length) { %>
+
+<% if (hourly_rates.length) { %>
         <table  class="table-bordered table-hover">
             <thead><tr class="text-center">
                 <th class="p-1">Hourly Date</th>
                 <th class="p-1">Hourly Rate</th>
-                <th class="p-1">Edit Options</th>
+                <th rt="hourly_rates" class="new-rad btn-link">Add new</th>
             </tr></thead>
             <tbody>
                 <% _.each(hourly_rates, function (rad) { %>
@@ -20,7 +22,7 @@
                 <% }); %>
             </tbody>
         </table>
-    <% } else { %> <h5 class="bg-light d-block text-center">No Hourly Details</h5><% } %>
+    <% } else { %> <p>Click here to add <span rt="hourly_rates" class="new-rad btn-link">new Hourly Rate</span> details</p><% } %>
 
 
     <% if (mileage_rates.length) { %>
@@ -28,7 +30,7 @@
             <thead><tr class="text-center">
                 <th class="p-1">Mileage Date</th>
                 <th class="p-1">Mileage Rate</th>
-                <th class="p-1">Edit Options</th>
+                <th rt="mileage_rates" class="new-rad btn-link">Add new</th>
             </tr></thead>
             <tbody>
                 <% _.each(mileage_rates, function (rad) { %>
@@ -41,6 +43,7 @@
                 <% }); %>
             </tbody>
         </table>
-    <% } else { %> <h5 class="bg-light d-block text-center mt-3">No Mileage Details</h5><% } %>
+    <% } else { %> <p class="pt-3">Click here to add <span rt="mileage_rates" class="new-rad btn-link">new Mileage Rate</span> details</p><% } %>
     </div>
 </div>
+

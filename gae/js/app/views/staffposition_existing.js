@@ -4,170 +4,187 @@ define(
         'app/models/rate_after_date', 'text!app/templates/staffposition.html'
     ],
     function(Backbone, Backform, bootstrap, bsdp,
-              StaffPositionRateAfterDate, template) {
+              RateAfterDate, template) {
+
+        var labels = {
+            rates: {
+                hourly_rates: 'Hourly Rate',
+                mileage_rates: 'Mileage Rate'},
+            'dates': {
+                hourly_rates: 'Hourly Date',
+                mileage_rates: 'Mileage Date'},
+
+        };
         var fields = [
             {
-                name: "position_name",
-                label: "Position Name",
-                control: "input",
-                required: true
-            },
-            {
                 name: "rate",
-                label: "New Rate",
                 control: "input",
-                updateLabel: function(){
-                    return 'Edit Rate';
+                updateLabel: function(type){
+                    return labels.rates[type];
                 }
             },
             {
                 name: "date",
-                label: "New Date",
                 control: "datepicker",
                 options: {autoclose: true, assumeNearbyYear: true, todayHighlight: true, format: "yyyy-mm-dd"},
-                updateLabel: function(){
-                    return 'Edit Date';
+                updateLabel: function(type){
+                    return labels.dates[type];
                 }
-            },
-            {
-                name: "type",
-                control: "select",
-                options: [
-                    {label: "--- select Rate Type---", value: ""},
-                    {label: "Hourly", value: "hourly_rates"},
-                    {label: "Mileage", value: "mileage_rates"},
-                ],
-                changeDisabled: true
             },
             {
                 control: "button",
                 extraClasses: ['btn-primary', 'btn-sm'],
-                name: "saveChanges",
-                label: "Save changes"
+                name: "addRate",
+                label: "Save"
             }
         ];
         var View = Backbone.View.extend({
             el: '#simple-form-view',
             events: {
                 'click td.remove': 'removeRate',
-                'click button[name=saveChanges]': 'saveStep1',
-                'click td.edit': 'editRate'
+                'click button[name=addRate]': 'addRate',
+                'click button[name=saveExit]': 'saveExit',
+                'click td.edit': 'editRate',
+                'click th.new-rad': 'newRate',
+                'click span.new-rad': 'newRate',
             },
-            initialize: function(app, id) {
+            initialize: function(options) {
                 var self = this;
-                this.app = app;
+                this.options = options;
+                self.staffposition = options.staffposition;
+                self.basicFields = options.basicFields;
+                self.template = _.template(options.template);
+                self.loading = options.loading;
 
-                this.staffposition = self.app.models.staffposition;
-                this.staffposition.fetch().then(function(mdl) {
-                        self.hourly_rates = mdl.hourly_rates;
-                        self.mileage_rates = mdl.mileage_rates;
-                        self.template = _.template(template);
-                        self.model = new StaffPositionRateAfterDate({position_name: mdl.position_name});
-                        self.loaded = true;
-                        self.makeForm().render();
+                 this.listenTo(this.staffposition, 'change',
+                    function(staffposition){
+                        if (self.loading){
+                            self.loading = false;
+                            self.hourly_rates = self.staffposition.get('hourly_rates');
+                            self.mileage_rates = self.staffposition.get('mileage_rates');
+                            self.makeForm(this.staffposition, this.basicFields).render();
+                        }
                     });
             },
-            saveStep1: function(e) {
-                e.preventDefault();
-                this.model.validate_protorpc();
-                if (this.model.isValid()){
-                    var type = this.model.get('type');
-                    if (type){
-                        this[type].remove(this.model.editing);
-                        this[type].add(this.model);
-                    }
-                    this.saveStep2();
-                 }else{
-                    $('div.form-group.has-error > div > span').css('color', 'red');
-                    $('div.form-group.saveChanges > div > span.status')
-                        .css('color', 'red')
-                        .text(this.model.validationError)
-                        .show();
-                        this.$el.find(this.firstfield).focus();
-                }
-            },
-            editRate: function(e){
-                var type = e.target.attributes.rt.value;
-                var mdl = this[type].get(e.target.id);
-                this.model.editing = e.target.id;
-                this.model.set({
-                    type: type,
-                    rate: mdl.get('rate'),
-                    date: mdl.get('date')
-                });
-                this.$(e.target).parents('tr').addClass('fade');
-                this.updateFormLabels().render_form();
-            },
-            setFirstField: function() {
-                var field_list = _.reject(
-                    this.form.fields.models,
-                    function(model) { return model.get('disabled'); }
-                );
-                this.firstfield = "[name="+field_list[0].get('name')+"]";
-            },
-             updateFormLabels: function() {
-                 _.each(this.form.fields.models, function(model) {
-                        if(model.has('updateLabel')){
-                            model.set('label', model.get('updateLabel')());
-                       }
-                       else if(model.has('changeDisabled')){
-                            model.set('disabled', true);
-                       }
-                    }
-                );
-                 return this;
-            },
-            makeForm: function() {
-                this.form = new Backform.Form({
-                    model: this.model,
+            makeForm: function(mdl, fields){
+                this.form =  new Backform.Form({
+                    model: mdl,
                     fields: fields,
                     showRequiredAsAsterisk: true,
                 });
-                this.setFirstField();
+                this.firstfield = this.getFirstField();
+                this.form.setElement('#form');
                 return this;
             },
-            removeRate: function(e) {
-                var type = e.target.attributes.rt.value;
-                this[type].remove(e.target.id);
-                this.saveStep2();
+            renderForm: function(type){
+                if (type){
+                    _.each(this.form.fields.models, function(model) {
+                        if(model.has('updateLabel')){
+                            model.set('label', model.get('updateLabel')(type));
+                       }
+                    }
+                );
+                }
+                this.form.setElement('#form').render();
+                this.form.$el.find('label.control-label:contains("*")').addClass('required');
+                this.form.$el.find(this.firstfield).focus();
             },
-            render: function() {
-                if (this.loaded){
+            render: function(type) {
+                if (!this.loading){
                     this.$el.html(this.template({
                         hourly_rates:this.hourly_rates.models,
                         mileage_rates: this.mileage_rates.models
                     }));
-                }
-                this.render_form();
-            },
-            render_form: function(){
-                if (this.form){
-                    this.form.setElement('#rate-form').render();
-                    this.$el.find('label.control-label:contains("*")').addClass('required');
-                    this.$el.find(this.firstfield).focus();
+                    this.renderForm(type);
                 }
             },
-            saveStep2: function(){
+            getFirstField: function() {
+                var field_list = _.reject(
+                    this.form.fields.models,
+                    function(model) { return model.get('disabled'); }
+                );
+                return "[name="+field_list[0].get('name')+"]";
+            },
+            newRate: function(e){
+                var type = e.target.attributes.rt.value;
+                this.makeForm(new RateAfterDate(), fields);
+                this.form.type = e.target.attributes.rt.value;
+                this.render(type);
+            },
+            fadeRow:function(e){
+                this.$('tr').removeClass('fade');
+                this.$(e.target).parents('tr').addClass('fade');
+                return;
+            },
+            editRate: function(e){
+                this.fadeRow(e);
+                var type = e.target.attributes.rt.value;
+                this.makeForm(this[type].get(e.target.id), fields);
+                this.form.type = type;
+                this.form.editing = e.target.id;
+                this.renderForm(type);
+            },
+            removeRate: function(e) {
+                var type = e.target.attributes.rt.value;
+                this[type].remove(e.target.id);
+                this.saveContinue();
+            },
+            addRate: function(e){
+                e.preventDefault();
+                this.form.model.validate_protorpc();
+                if (this.form.model.isValid()) {
+                    var type = this.form.type;
+                    this[type].remove(this.form.model.editing);
+                    this[type].add(this.form.model);
+                    this.saveContinue();
+                } else {
+                    this.displayError(this.form.model.validationError);
+                }
+            },
+            displayError: function(msg){
+                $('div.form-group.has-error > div > span').css('color', 'red');
+                $('span.status').css('color', 'red').html(msg).show();
+            },
+            returnSuccess: function(msg, exit){
+                if (exit){
+                    console.log(exit)
+                    $('span.status').css('color', '#409b27').html(msg).show()
+                        .fadeOut({ duration: 1000,
+                            complete: function() {
+                                window.location = $('#rooms-form-after-save').attr('href');
+                            }
+                        });
+                } else {
+                    this.makeForm(this.staffposition, this.basicFields).render();
+                }
+            },
+            saveStaffPosition: function(exit){
                 var self = this;
+                this.staffposition.save(null,
+                    {'success': function(model, attrs, response) {
+                        self.returnSuccess('Saved!', exit);
+                    },
+                    'error': function(model, response, error) {
+                        self.displayError(response.responseText);
+                    },
+                });
+            },
+            saveExit: function(e) {
+                e.preventDefault();
                 this.staffposition.set({
-                    position_name: this.model.get('position_name'),
+                    'position_name': this.form.model.get('position_name'),
+                    'hourly_rates': this.hourly_rates,
+                    'mileage_rates': this.mileage_rates
+                });
+                this.saveStaffPosition(true);
+            },
+            saveContinue: function(){
+                this.staffposition.set({
                     hourly_rates: this.hourly_rates,
                     mileage_rates: this.mileage_rates
                 });
-                this.staffposition.save(null,
-                    {'success': function(){
-                        self.model = new StaffPositionRateAfterDate({position_name: self.staffposition.get('position_name')});
-                        self.makeForm().render();
-                    },
-                    'error': function(model, response, error) {
-                        $('div.form-group.saveChanges > div > span.status')
-                            .css('color', 'red')
-                            .text('Error: ' + response.responseText)
-                            .show();
-                            self.$el.find(self.firstfield).focus();
-                        },
-                    });
-            },
+                this.saveStaffPosition();
+            }
         });
         return View;
     }
