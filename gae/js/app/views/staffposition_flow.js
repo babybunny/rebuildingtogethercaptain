@@ -55,6 +55,8 @@ define(
                 self.basicFields = options.basicFields;
                 self.template = _.template(options.template);
                 self.loading = options.loading;
+                self.hourly_rates = self.staffposition.get('hourly_rates');
+                self.mileage_rates = self.staffposition.get('mileage_rates');
 
                  this.listenTo(this.staffposition, 'change',
                     function(staffposition){
@@ -62,9 +64,10 @@ define(
                             self.loading = false;
                             self.hourly_rates = self.staffposition.get('hourly_rates');
                             self.mileage_rates = self.staffposition.get('mileage_rates');
-                            self.makeForm(this.staffposition, this.basicFields).render();
+                            self.makeForm(self.staffposition, self.basicFields).render();
                         }
                     });
+                 this.makeForm(this.staffposition, this.basicFields).render();
             },
             makeForm: function(mdl, fields){
                 this.form =  new Backform.Form({

@@ -1,12 +1,9 @@
 define(
     [
-        'bootstrap-datepicker',
-        'app/views/rooms_form',
-        'text!app/templates/simple_form.html',
         'text!app/templates/staffposition.html',
-        'app/views/staffposition_existing',
+        'app/views/staffposition_flow',
     ],
-    function(bsdp, RoomFormView, template, existing_template, StaffPositionExistingView) {
+    function(template, StaffPositionFlow) {
         var fields = [{
                 name: "position_name",
                 label: "Position name",
@@ -21,20 +18,12 @@ define(
             }
         ];
         var ViewFactory = function(app, loading) {
-                if (app.models.staffposition.isNew()) {
-                   return  new RoomFormView({
-                        name: 'staffposition',
-                            template: template,
-                            model: app.models.staffposition,
-                            loading: loading,
-                            fields: fields
-                    });
-                }
-                return new StaffPositionExistingView({
+
+                return new StaffPositionFlow({
                         basicFields: fields,
                         staffposition: app.models.staffposition,
                         loading: loading,
-                        template: existing_template,
+                        template: template,
                 });
         }
         return ViewFactory;
