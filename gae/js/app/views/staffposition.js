@@ -11,16 +11,17 @@ define(
                 type: "text",
                 required: true
             },{
-                name: 'saveExit',
+                name: 'saveStaffPosition',
                 control: "button",
-                extraClasses: ['btn-primary'],
-                label: "Save changes"
+                extraClasses: ['btn-success btn-block'],
+                label: "Save All Changes",
+                helpMessage: '<br/>Click above when you have finished editing for your hourly & mileage updates to persist to the server.'
             }
         ];
         var ViewFactory = function(app, loading) {
 
                 return new StaffPositionFlow({
-                        basicFields: fields,
+                        fields: fields,
                         staffposition: app.models.staffposition,
                         loading: loading,
                         template: template,

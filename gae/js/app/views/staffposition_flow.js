@@ -41,9 +41,10 @@ define(
         var View = Backbone.View.extend({
             el: '#simple-form-view',
             events: {
+                'click button': 'disableSubmit',
                 'click td.remove': 'removeRate',
                 'click button[name=addRate]': 'addRate',
-                'click button[name=saveExit]': 'saveExit',
+                'click button[name=saveStaffPosition]': 'saveStaffPosition',
                 'click td.edit': 'editRate',
                 'click th.new-rad': 'newRate',
                 'click span.new-rad': 'newRate',
@@ -52,7 +53,7 @@ define(
                 var self = this;
                 this.options = options;
                 self.staffposition = options.staffposition;
-                self.basicFields = options.basicFields;
+                self.basicFields = options.fields;
                 self.template = _.template(options.template);
                 self.loading = options.loading;
                 self.hourly_rates = self.staffposition.get('hourly_rates');
@@ -101,6 +102,10 @@ define(
                     this.renderForm(type);
                 }
             },
+            renderBasic: function(){
+                this.makeForm(this.staffposition, this.basicFields);
+                this.render();
+            },
             getFirstField: function() {
                 var field_list = _.reject(
                     this.form.fields.models,
@@ -130,7 +135,8 @@ define(
             removeRate: function(e) {
                 var type = e.target.attributes.rt.value;
                 this[type].remove(e.target.id);
-                this.saveContinue();
+                this.staffposition.set(type, this[type]);
+                this.renderBasic();
             },
             addRate: function(e){
                 e.preventDefault();
@@ -139,55 +145,43 @@ define(
                     var type = this.form.type;
                     this[type].remove(this.form.model.editing);
                     this[type].add(this.form.model);
-                    this.saveContinue();
+                    this.staffposition.set(type, this[type]);
+                    this.renderBasic();
                 } else {
                     this.displayError(this.form.model.validationError);
                 }
             },
+            disableSubmit: function(e){
+                this.disabledBtn = $(e.target);
+                this.disabledBtn.attr('disabled', true);
+            },
             displayError: function(msg){
                 $('div.form-group.has-error > div > span').css('color', 'red');
                 $('span.status').css('color', 'red').html(msg).show();
+                this.disabledBtn.attr('disabled', false);
             },
-            returnSuccess: function(msg, exit){
-                if (exit){
-                    console.log(exit)
-                    $('span.status').css('color', '#409b27').html(msg).show()
-                        .fadeOut({ duration: 1000,
-                            complete: function() {
-                                window.location = $('#rooms-form-after-save').attr('href');
-                            }
-                        });
-                } else {
-                    this.makeForm(this.staffposition, this.basicFields).render();
-                }
-            },
-            saveStaffPosition: function(exit){
+            saveStaffPosition: function(e){
+                e.preventDefault();
                 var self = this;
+                this.staffposition.set({
+                    'position_name': this.form.model.get('position_name'),
+                    'hourly_rates': this.hourly_rates,
+                    'mileage_rates': this.mileage_rates
+                });
                 this.staffposition.save(null,
                     {'success': function(model, attrs, response) {
-                        self.returnSuccess('Saved!', exit);
+                        $('span.status').css('color', '#409b27').html('Saved!').show()
+                            .fadeOut({ duration: 1000,
+                                complete: function() {
+                                    window.location = $('#rooms-form-after-save').attr('href');
+                            }
+                        });
                     },
                     'error': function(model, response, error) {
                         self.displayError(response.responseText);
                     },
                 });
             },
-            saveExit: function(e) {
-                e.preventDefault();
-                this.staffposition.set({
-                    'position_name': this.form.model.get('position_name'),
-                    'hourly_rates': this.hourly_rates,
-                    'mileage_rates': this.mileage_rates
-                });
-                this.saveStaffPosition(true);
-            },
-            saveContinue: function(){
-                this.staffposition.set({
-                    hourly_rates: this.hourly_rates,
-                    mileage_rates: this.mileage_rates
-                });
-                this.saveStaffPosition();
-            }
         });
         return View;
     }
