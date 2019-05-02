@@ -1,49 +1,12 @@
-<p>Edit staffposition & rates</p>
-
-<div class="row">
-    <div id="form" class="w-50"></div>
-    <div>
-
-<% if (hourly_rates.length) { %>
-        <table  class="table-bordered table-hover">
-            <thead><tr class="text-center">
-                <th class="p-1">Hourly Date</th>
-                <th class="p-1">Hourly Rate</th>
-                <th rt="hourly_rates" class="new-rad btn-link">Add new</th>
-            </tr></thead>
-            <tbody>
-                <% _.each(hourly_rates, function (rad) { %>
-                <tr class="text-center">
-                    <td><%= rad.get('date') %></td>
-                    <td class="text-right">$<%= rad.get('rate') %></td>
-                    <td class="p-1 btn btn-sm btn-light remove" id="<%= rad.cid %>" rt="hourly_rates">Remove</td>
-                    <td class="p-1 btn btn-sm btn-light edit"   id="<%= rad.cid %>" rt="hourly_rates">Edit</td>
-                </tr>
-                <% }); %>
-            </tbody>
-        </table>
-    <% } else { %> <p>Click here to add <span rt="hourly_rates" class="new-rad btn-link">new Hourly Rate</span> details</p><% } %>
-
-
-    <% if (mileage_rates.length) { %>
-        <table  class="table-bordered table-hover mt-5">
-            <thead><tr class="text-center">
-                <th class="p-1">Mileage Date</th>
-                <th class="p-1">Mileage Rate</th>
-                <th rt="mileage_rates" class="new-rad btn-link">Add new</th>
-            </tr></thead>
-            <tbody>
-                <% _.each(mileage_rates, function (rad) { %>
-                <tr class="text-center">
-                    <td><%= rad.get('date') %></td>
-                    <td class="text-right">$<%= rad.get('rate') %></td>
-                    <td class="p-1 btn btn-sm btn-light remove" id="<%= rad.cid %>" rt="mileage_rates">Remove</td>
-                    <td class="p-1 btn btn-sm btn-light edit"   id="<%= rad.cid %>" rt="mileage_rates">Edit</td>
-                </tr>
-                <% }); %>
-            </tbody>
-        </table>
-    <% } else { %> <p class="pt-3">Click here to add <span rt="mileage_rates" class="new-rad btn-link">new Mileage Rate</span> details</p><% } %>
-    </div>
+<div class="text-center" style="position:relative;left:105px;bottom:35px;height:0">
+    <% if (display_alert){ %>
+        <span class="font-weight-bold" style="background:#ffff00;">This staff position has unsaved rate changes!</span>
+    <%}%>
 </div>
 
+<div id="staffposition-form"></div>
+
+<div class="row">
+    <div class="col" id="hourly-rates"></div>
+    <div class="col" id="mileage-rates"></div>
+</div>

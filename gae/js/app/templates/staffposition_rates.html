@@ -1,0 +1,39 @@
+<table  class="table-bordered table-hover staffposition-rates">
+    <thead><tr class="text-center">
+        <th scope="col"><%= templateName %> Date</th>
+        <th scope="col"><%= templateName %> Rate</th>
+        <th scope="col" class="new-rad staffposition-btn">Add new</th>
+    </tr></thead>
+    <tbody>
+        <% if (rates.length) { %>
+        <% _.each(rates, function (rad) { %>
+        <tr class="text-center">
+            <td><%= rad.get('date') %></td>
+            <td  class="dollar">$<%= rad.get('rate') %></td>
+            <td>
+                <span class="staffposition-btn remove" id="<%= rad.cid %>">remove</span>
+                <span class="m-1 border"></span>
+                <span class="staffposition-btn edit" id="<%= rad.cid %>">edit</span>
+            </td>
+        </tr>
+        <% }); %>
+        <% } %>
+    </tbody>
+</table>
+
+<div id="<%= name %>Modal" class="modal fade" role="form" aria-hidden="true">
+    <div class="modal-form modal-sm" style="margin:0 auto;">
+        <div class="modal-content">
+            <div class="modal-header modal-title h5"><%= position_name %>
+                <button name="cancel" class="tiny btn btn-outline-primary">X</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-form"  id="rates-form">
+                </div>
+            </div>
+            <div class="modal-footer small">
+                This <%= templateName.toLowerCase() %> update will be added to your unsaved rate changes.
+            </div>
+        </div>
+    </div>
+</div>
