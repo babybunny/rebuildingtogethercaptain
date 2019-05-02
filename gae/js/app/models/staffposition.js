@@ -1,5 +1,5 @@
 define(
-    ['backbone', 'app/models/staffposition_rate_collection'],
+    ['backbone', 'app/models/staffposition_rates'],
     function(Backbone, Rates) {
         var Model = Backbone.Model.extend({
             // matches first part of method name in @remote.method
