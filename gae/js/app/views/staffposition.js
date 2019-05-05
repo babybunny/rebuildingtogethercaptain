@@ -17,8 +17,6 @@ define(
                 self.staffposition = options.staffposition;
                 self.template = _.template(options.template);
                 self.loading = options.loading;
-                self.hourly_rates = self.staffposition.get('hourly_rates');
-                self.mileage_rates = self.staffposition.get('mileage_rates');
                 self.hourlyView = options.hourlyView;
                 self.mileageView = options.mileageView;
 
@@ -26,8 +24,6 @@ define(
                     function(staffposition){
                         if (self.loading){
                             self.loading = false;
-                            self.hourly_rates = self.staffposition.get('hourly_rates');
-                            self.mileage_rates = self.staffposition.get('mileage_rates');
                             self.makeForm(self.staffposition, self.options.fields).render();
                         }
                     });
@@ -60,11 +56,6 @@ define(
             saveStaffPosition: function(e){
                 var self = this;
                 $(e.target).prop('disabled', true);
-                this.staffposition.set({
-                    'position_name': this.form.model.get('position_name'),
-                    'hourly_rates': this.hourly_rates,
-                    'mileage_rates': this.mileage_rates
-                });
                 this.staffposition.save(null,
                     {'success': function(model, attrs, response) {
                         $('span.status').css('color', '#409b27').html('Saved!').show()
