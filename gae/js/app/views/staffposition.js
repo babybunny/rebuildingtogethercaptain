@@ -25,6 +25,10 @@ define(
                         if (self.loading){
                             self.loading = false;
                             self.makeForm(self.staffposition, self.options.fields).render();
+                            self.hourlyView.trigger('finished-loading', staffposition.get('hourly_rates'),
+                                                                        staffposition.get('position_name'));
+                            self.mileageView.trigger('finished-loading', staffposition.get('mileage_rates'),
+                                                                         staffposition.get('position_name'));
                         }
                     });
                  this.makeForm(this.staffposition, this.options.fields).render();
@@ -91,14 +95,14 @@ define(
             var hourlyView =  new RatesView({
                     name: 'hourly_rates',
                     templateName: 'Hourly',
-                    staffposition: app.models.staffposition,
+                    rates: app.models.staffposition.get('hourly_rates'),
                     loading: loading,
                     views: app.views
                 });
             var mileageView = new RatesView({
                     name: 'mileage_rates',
                     templateName: 'Mileage',
-                    staffposition: app.models.staffposition,
+                    rates: app.models.staffposition.get('mileage_rates'),
                     loading: loading,
                     views: app.views
                 });

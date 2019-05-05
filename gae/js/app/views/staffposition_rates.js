@@ -41,21 +41,19 @@ define(
                 this.options = options;
                 this.name = options.name;
                 this.templateName = options.templateName;
-                this.staffposition = options.staffposition;
                 this.loading = options.loading;
-                this.rates = this.staffposition.get(this.name);
+                this.rates = options.rates;
                 this.template = _.template(template);
                 this.views = options.views;
                 $.fn.modal.Constructor.Default.backdrop = false
                 this.modalId = "#".concat(this.name).concat('Modal');
 
-                this.listenTo(this.staffposition, 'change',
-                    function(staffposition){
-                        if(self.loading){
-                            self.loading = false;
-                            self.rates = self.staffposition.get(self.name);
-                        }
-                    });
+                this.on('finished-loading', function(rates, position_name){
+                    this.loading = false;
+                    self.rates = rates;
+                    self.position_name = position_name;
+                    this.render();
+                });
             },
             makeForm: function(mdl, action){
                 return new Backform.Form({
@@ -76,12 +74,14 @@ define(
                 });
             },
             render: function(){
-                this.$el.html(this.template({
-                    rates: this.rates.models,
-                    name: this.name,
-                    templateName: this.templateName,
-                    position_name: this.staffposition.get('position_name') || 'New Staff Position',
-                }));
+                if(!this.loading){
+                    this.$el.html(this.template({
+                        rates: this.rates.models,
+                        name: this.name,
+                        templateName: this.templateName,
+                        position_name: this.position_name || 'New Staff Position',
+                    }));
+                }
             },
             renderForm: function(){
                 if (this.form) {
@@ -108,7 +108,6 @@ define(
             },
             removeRate: function(e){
                 this.rates.remove(e.target.id);
-                this.staffposition.set(this.name, this.rates);
                 this.views.staffposition.trigger('change-rates');
             },
             updateRates: function(e){
@@ -117,7 +116,6 @@ define(
                 if (this.model.isValid()) {
                     this.rates.remove(this.form.editId);
                     this.rates.add(this.model);
-                    this.staffposition.set(this.name, this.rates);
                     this.views.staffposition.trigger('change-rates');
                 }else{
                     $(e.target).removeAttr('disabled');
