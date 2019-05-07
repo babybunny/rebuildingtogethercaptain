@@ -5,6 +5,18 @@ define(
         'text!app/templates/staffposition.html',
     ],
     function(Backbone, Backform, RatesView, template) {
+        var fields = [{
+                    name: "position_name",
+                    label: "Position name",
+                    control: "input",
+                    type: "text",
+                    required: true
+                },{
+                    name: 'saveStaffPosition',
+                    control: "button",
+                    extraClasses: ['btn-primary'],
+                    label: "Save Staff Position",
+                }];
 
         var StaffPositionFlow = Backbone.View.extend({
             el: '#simple-form-view',
@@ -15,24 +27,33 @@ define(
                 var self = this;
                 this.options = options;
                 self.staffposition = options.staffposition;
-                self.template = _.template(options.template);
+                self.template = _.template(template);
                 self.loading = options.loading;
-                self.hourlyView = options.hourlyView;
-                self.mileageView = options.mileageView;
-
-                 this.listenTo(this.staffposition, 'change',
+                self.hourlyView = new RatesView({
+                                        name: 'hourly_rates',
+                                        templateName: 'Hourly',
+                                        loading: options.loading,
+                                        rates: options.staffposition.get('hourly_rates'),
+                                        changeTrigger: this.trigger.bind(this, 'change-rates')});
+                self.mileageView = new RatesView({
+                                        name: 'mileage_rates',
+                                        templateName: 'Mileage',
+                                        loading: options.loading,
+                                        rates: options.staffposition.get('mileage_rates'),
+                                        changeTrigger: this.trigger.bind(this, 'change-rates')});
+                this.listenTo(this.staffposition, 'change',
                     function(staffposition){
                         if (self.loading){
                             self.loading = false;
-                            self.makeForm(self.staffposition, self.options.fields).render();
                             self.hourlyView.trigger('finished-loading', staffposition.get('hourly_rates'),
                                                                         staffposition.get('position_name'));
                             self.mileageView.trigger('finished-loading', staffposition.get('mileage_rates'),
                                                                          staffposition.get('position_name'));
+                            self.makeForm(self.staffposition, fields).render();
                         }
                     });
-                 this.makeForm(this.staffposition, this.options.fields).render();
-                 this.on('change-rates', function(){this.render(true);});
+                this.makeForm(this.staffposition, fields).render();
+                this.on('change-rates', function(){this.render(true);});
             },
             makeForm: function(mdl, fields){
                 this.form =  new Backform.Form({
@@ -77,45 +98,15 @@ define(
                 });
             },
         });
-        var fields = [{
-                name: "position_name",
-                label: "Position name",
-                control: "input",
-                type: "text",
-                required: true
-            },{
-                name: 'saveStaffPosition',
-                control: "button",
-                extraClasses: ['btn-primary'],
-                label: "Save Staff Position",
-            }
-        ];
+
         var ViewFactory = function(app, loading) {
 
-            var hourlyView =  new RatesView({
-                    name: 'hourly_rates',
-                    templateName: 'Hourly',
-                    rates: app.models.staffposition.get('hourly_rates'),
-                    loading: loading,
-                    views: app.views
-                });
-            var mileageView = new RatesView({
-                    name: 'mileage_rates',
-                    templateName: 'Mileage',
-                    rates: app.models.staffposition.get('mileage_rates'),
-                    loading: loading,
-                    views: app.views
-                });
-
                 return new StaffPositionFlow({
-                        fields: fields,
                         staffposition: app.models.staffposition,
                         loading: loading,
-                        template: template,
-                        hourlyView: hourlyView,
-                        mileageView: mileageView
                 });
         }
+
         return ViewFactory;
     }
 )

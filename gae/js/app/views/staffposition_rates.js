@@ -44,7 +44,9 @@ define(
                 this.loading = options.loading;
                 this.rates = options.rates;
                 this.template = _.template(template);
-                this.views = options.views;
+                this.position_name = 'New Staff Position';
+                this.changeTrigger = options.changeTrigger;
+
                 $.fn.modal.Constructor.Default.backdrop = false
                 this.modalId = "#".concat(this.name).concat('Modal');
 
@@ -79,7 +81,7 @@ define(
                         rates: this.rates.models,
                         name: this.name,
                         templateName: this.templateName,
-                        position_name: this.position_name || 'New Staff Position',
+                        position_name: this.position_name,
                     }));
                 }
             },
@@ -108,7 +110,7 @@ define(
             },
             removeRate: function(e){
                 this.rates.remove(e.target.id);
-                this.views.staffposition.trigger('change-rates');
+                this.changeTrigger();
             },
             updateRates: function(e){
                 $(e.target).prop('disabled', true);
@@ -116,7 +118,7 @@ define(
                 if (this.model.isValid()) {
                     this.rates.remove(this.form.editId);
                     this.rates.add(this.model);
-                    this.views.staffposition.trigger('change-rates');
+                    this.changeTrigger();
                 }else{
                     $(e.target).removeAttr('disabled');
                     this.$('div.form-group.has-error > div').css('color', 'red');
