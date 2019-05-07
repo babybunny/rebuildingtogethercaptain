@@ -47,9 +47,6 @@ define(
                 this.position_name = 'New Staff Position';
                 this.changeTrigger = options.changeTrigger;
 
-                $.fn.modal.Constructor.Default.backdrop = false
-                this.modalId = "#".concat(this.name).concat('Modal');
-
                 this.on('finished-loading', function(rates, position_name){
                     this.loading = false;
                     self.rates = rates;
@@ -87,7 +84,7 @@ define(
             },
             renderForm: function(){
                 if (this.form) {
-                    $(this.modalId).modal('show').css('background', '#000000b3');
+                    this.$el.find('.modal').modal({'backdrop': false}).css('background', '#00000099');
                     this.form.setElement(this.$el.find('#rates-form')).render();
                     this.form.$el.find('input').first().trigger('focus');
                 }
