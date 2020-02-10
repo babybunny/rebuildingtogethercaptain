@@ -154,6 +154,13 @@ define(
                 helpMessage: "http://rebuildingtogetherpeninsula.force.com/GW_Volunteers__VolunteersJobListingFS?&CampaignID=701U0000000rnvU"
             },
             {
+                name: "volunteer_roster",
+                label: "Volunteer roster",
+                control: "input",
+                type: "text",
+                helpMessage: "will link to the volunteer roster"
+            },
+            {
                 name: "latest_computed_expenses",
                 label: "Latest Compted Expenses",
                 control: "input"

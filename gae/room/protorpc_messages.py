@@ -216,6 +216,7 @@ def NewSiteModelToMessage(mdl):
     name=mdl.name,
     announcement_subject=mdl.announcement_subject,
     volunteer_signup_link=mdl.volunteer_signup_link,
+    volunteer_roster=mdl.volunteer_roster,
     announcement_body=mdl.announcement_body,
     jurisdiction=mdl.jurisdiction,
     budget=mdl.budget,
@@ -248,6 +249,7 @@ def NewSiteMessageToModel(msg, mdl):
   mdl.name = msg.name
   mdl.announcement_subject = msg.announcement_subject
   mdl.volunteer_signup_link = msg.volunteer_signup_link
+  mdl.volunteer_roster = msg.volunteer_roster
   mdl.announcement_body = msg.announcement_body
   mdl.budget = msg.budget
   mdl.applicant_email = msg.applicant_email
@@ -286,6 +288,7 @@ class NewSite(messages.Message):
   jurisdiction = messages.StringField(23)
   budget = messages.IntegerField(24)
   applicant_email = messages.StringField(25)
+  volunteer_roster = messages.StringField(26)
 
 
 ############

@@ -52,7 +52,7 @@ class _ActiveItems(object):
   def Items(self):
     for item in sorted(self._query,
                        key=lambda o: o.modified, reverse=True):
-      yield item
+     yield item
 
   def __iter__(self):
     return self.Items()
@@ -590,6 +590,7 @@ class NewSite(SearchableModel):
   search_prefixes = ndb.StringProperty(repeated=True)
   photo_link = ndb.StringProperty()
   volunteer_signup_link = ndb.StringProperty()
+  volunteer_roster = ndb.StringProperty()
   latest_computed_expenses = ndb.FloatProperty()
 
   @staticmethod

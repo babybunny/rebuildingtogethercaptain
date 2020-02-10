@@ -156,6 +156,7 @@ def CreateAll():
     budget=0,
     announcement_subject='announcement value',
     volunteer_signup_link='volunteer signup link value',
+    volunteer_roster='volunteer roster value',
   ).put()
 
   KEYS['SITE3'] = ndb_models.NewSite(

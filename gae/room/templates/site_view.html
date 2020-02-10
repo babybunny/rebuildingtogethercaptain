@@ -131,9 +131,15 @@
           </a>
         </p>
         <p>
+          Volunteers: 
           <a href="{{ site.volunteer_signup_link }}">
-            Volunteer Sign-Up Link
+            Sign-Up Link
           </a>
+          {% if site.volunteer_roster %} | 
+          <a href="{{ site.volunteer_roster }}">
+            Roster
+          </a>
+          {% endif %}
         </p>
         {% if site_list_detail %}
         <p>{{ site.StreetAddress() }}
