@@ -31,9 +31,14 @@ def clean_get(d, k):
         raise KeyError("No column named \"{}\"".format(ok))
   ### bit of dirty data coverage ###
 
-  return d[k].replace('\n', ' ').replace('\xe2', "'").replace('\x80', "'").replace('\x99', '').replace('\xc3',
-                                                                                                       '').replace(
-    '\x95', '').encode('ascii', 'replace')
+  return d[k].replace(
+    '\n', ' ').replace(
+      '\xe2', "'").replace(
+        '\x80', "'").replace(
+          '\x99', '').replace(
+            '\xc2', '').replace(
+              '\xc3', '').replace(
+                '\x95', '').encode('ascii', 'replace')
 
 
 def get_program(year):
@@ -63,50 +68,54 @@ def import_sites(input_csv):
                       "Applicant Phone", "Applicant Mobile Phone",
                       "Street Address",
                       "City", "Zipcode", "Jurisdiction", "Sponsor Name",
+                      "CDBG Funding Source"  # unused
                       }
   reader = csv.DictReader(open(input_csv))
   actual_headers = set(reader.fieldnames)
   sanity_check_headers(expected_headers, actual_headers, input_csv)
   for s in reader:
-    number = s["Site ID"]
-    site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
-    if site:
-      logging.info('site %s exists, skipping', number)
-      continue
-    else:
-      site = ndb_models.NewSite(number=number)
-    program = get_program(s['Program Year'])
-    site.program = program.name
-    site.program_key = program.key
-    budget = s.get("Budget", s.get("Budgeted Cost in Campaign"), "$0")
-    budget = budget.strip("$").replace(",", "").replace(".00", "") or '0'
-    site.budget = int(budget)
-    site.street_number = clean_get(s, "Street Address")
-    site.city_state_zip = "%s CA, %s" % (
-      clean_get(s, "City"),
-      clean_get(s, "Zipcode"))
-    site.name = clean_get(s, "Homeowner/Site Contact Name")
-    site.applicant = clean_get(s, "Homeowner/Site Contact Name")
-    site.applicant_home_phone = clean_get(s, 
-      "Applicant Phone")
-    site.applicant_mobile_phone = clean_get(s, 
-      "Applicant Mobile Phone")
-    site.sponsor = clean_get(s, "Sponsor Name")
-    # site.rrp_test = clean_get(s, "Repair Application: RRP Test Results")
-    # site.rrp_level = clean_get(s, "Repair Application: RRP Test Results")
-    # site.roof = clean_get(s, "Roof?")
-    site.jurisdiction = clean_get(s, "Jurisdiction")
-    site.announcement_subject = clean_get(s, "Announcement Subject")
-    site.announcement_body = clean_get(s, "Announcement Body")
-    site.put()
-    logging.info('put site %s', number)
+    try:
+      number = s["Site ID"]
+      site = ndb_models.NewSite.query(ndb_models.NewSite.number == number).get()
+      if site:
+        logging.info('site %s exists, skipping', number)
+        continue
+      else:
+        site = ndb_models.NewSite(number=number)
+      program = get_program(s['Program Year'])
+      site.program = program.name
+      site.program_key = program.key
+      budget = s.get("Budget", s.get("Budgeted Cost in Campaign", "$0"))
+      budget = budget.strip("$").replace(",", "").replace(".00", "") or '0'
+      site.budget = int(budget)
+      site.street_number = clean_get(s, "Street Address")
+      site.city_state_zip = "%s CA, %s" % (
+        clean_get(s, "City"),
+        clean_get(s, "Zipcode"))
+      site.name = clean_get(s, "Homeowner/Site Contact Name")
+      site.applicant = clean_get(s, "Homeowner/Site Contact Name")
+      site.applicant_home_phone = clean_get(s, 
+                                            "Applicant Phone")
+      site.applicant_mobile_phone = clean_get(s, 
+                                              "Applicant Mobile Phone")
+      site.sponsor = clean_get(s, "Sponsor Name")
+      # site.rrp_test = clean_get(s, "Repair Application: RRP Test Results")
+      # site.rrp_level = clean_get(s, "Repair Application: RRP Test Results")
+      # site.roof = clean_get(s, "Roof?")
+      site.jurisdiction = clean_get(s, "Jurisdiction")
+      site.announcement_subject = clean_get(s, "Announcement Subject")
+      site.announcement_body = clean_get(s, "Announcement Body")
+      site.put()
+    except:
+      logging.error("error (%s)\nparsing line (%s)", sys.exc_info()[0], s)
+  logging.info('put site %s', number)
 
 
 def import_captains(input_csv):
   """
   input_csv is a path like "../2012_ROOMS_site_info_sample.csv"
   """
-  expected_headers = {"Site ID", "Name", "ROOMS Captain ID", "Phone", "Email", "Project Role"}
+  expected_headers = {"Site ID", "Name", "ROOMS Captain ID", "Phone", "Email", "Captain Type"}
   reader = csv.DictReader(open(input_csv))
   actual_headers = set(reader.fieldnames)
   sanity_check_headers(expected_headers, actual_headers, input_csv)
