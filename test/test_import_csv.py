@@ -42,49 +42,49 @@ class TestImportCsv(unittest.TestCase):
 
 
   SITES_DATA = textwrap.dedent("""\
-    Announcement Subject,Announcement Body,Site ID,Budgeted Cost in Campaign,Repair Application: Applicant's Name,Applicant Home Phone,Applicant Mobile Phone,Applicant Work Phone,Recipient's Street Address,Recipient's City,Recipient's Zip Code,Jurisdiction,Sponsor,Repair Application: RRP Test Results,Photos Link,Program Year
-    subject,"announcement body, which has some commas",50001DAL,$1007,Malay Nothing,9999999999,(608) 123-4567,7777777777,123 Champaign St,"Row, Rectilinear",00000,Argue Wendy,Pompon,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50002SSF,"$1,007.00",Efficacious Gizzard,9999999999,(608) 123-4567,7777777777,123 Radii St,"Bronchi, Epsom",00000,Curie Thousand,Sibling,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50003SSF,$1007,Enthusiast Baffin,9999999999,(608) 123-4567,7777777777,123 Expositor St,"Placeable, Knives",00000,Egret Fume,Indirect,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50004SSF,$1007,Nordstrom Brindisi,9999999999,(608) 123-4567,7777777777,123 Dennis St,"Wavy, Lookout",00000,Airy Rib,Magnetic,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50005RWC,$1007,Incorrigible Isochronal,9999999999,(608) 123-4567,7777777777,123 Gerbil St,"Systemwide, Ergative",00000,Soundproof Orthodontic,Leguminous,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50006RWC,$1007,Paraxial Blackbody,9999999999,(608) 123-4567,7777777777,123 Glory St,"Worrisome, Valeur",00000,Slapdash Shipbuild,Heidegger,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50007RWC,$1007,Dialectic Alger,9999999999,(608) 123-4567,7777777777,123 Derivate St,"Utter, Fusion",00000,Politico Shore,Missionary,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50008RWC,$1007,Premonition Gasp,9999999999,(608) 123-4567,7777777777,123 Wove St,"Culvert, Holman",00000,Algiers Trifluoride,Midsection,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50009RWC,$1007,Embryology Dill,9999999999,(608) 123-4567,7777777777,123 Quartz St,"Oklahoma, Tyrannicide",00000,Dew Chateau,Alkali,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50010SAM,$1007,Phobic Calibrate,9999999999,(608) 123-4567,7777777777,123 Moorish St,"Hagiography, Saud",00000,Empathic Lehigh,Fishy,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50011SAM,$1007,Calculate Disastrous,9999999999,(608) 123-4567,7777777777,123 Shod St,"Commissariat, Equinoctial",00000,Tananarive Nomadic,Trigram,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50012SAM,$1007,Me Spoke,9999999999,(608) 123-4567,7777777777,123 Cern St,"Adrift, Tasteful",00000,Bitterroot Nashua,Premiere,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50013SAM,$1007,Byzantine Officio,9999999999,(608) 123-4567,7777777777,123 Scatterbrain St,"Organ, Regulatory",00000,Levulose Diffusive,Denudation,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50014SAM,$1007,Philip Committable,9999999999,(608) 123-4567,7777777777,123 Interpolatory St,"Cornflower, Sockeye",00000,Blockage Waste,Nought,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50015EPA,$1007,Devolve Hillmen,9999999999,(608) 123-4567,7777777777,123 Pelican St,"Slovenia, Patriarch",00000,Moderate Caroline,Gnomonic,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50016EPA,$1007,Sightsee Anomie,9999999999,(608) 123-4567,7777777777,123 Dross St,"Crept, Pap",00000,Hid Armstrong,Matrilineal,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50017EPA,$1007,Import Counterproductive,9999999999,(608) 123-4567,7777777777,123 Sagittarius St,"Kruger, Mackerel",00000,Otherwise Alvin,Suez,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50018EPA,$1007,Serology Harmonious,9999999999,(608) 123-4567,7777777777,123 Noodle St,"Camellia, Galloway",00000,Transferring Amphibole,Nevertheless,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50019EPA,$1007,Whitish Callus,9999999999,(608) 123-4567,7777777777,123 Damocles St,"Immediate, Trencherman",00000,Luminosity Tactic,Briton,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50020EPA,$1007,Alice Vendor,9999999999,(608) 123-4567,7777777777,123 Inconvenient St,"Hard, Anorthic",00000,Bimetallism Ames,Fairy,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50021EPA,$1007,Stony Monolith,9999999999,(608) 123-4567,7777777777,123 Matins St,"Spec, Exegesis",00000,Picnicking Equanimity,Millenarian,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50022MEN,$1007,Haney Buccaneer,9999999999,(608) 123-4567,7777777777,123 Antenna St,"Aborning, Batavia",00000,Heterogeneity Damascus,Auto,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50023RWU,$1007,Jam Ojibwa,9999999999,(608) 123-4567,7777777777,123 Jacobite St,"Comprehensive, Dud",00000,Gift Doe,Sorghum,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50024SUN,$1007,Eden Liable,9999999999,(608) 123-4567,7777777777,123 Quitter St,"Matriarchy, Accumulate",00000,Forfeiture Millionth,Reilly,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50025SSF,$1007,Woodcock Inactivate,9999999999,(608) 123-4567,7777777777,123 Genera St,"Mesozoic, Concatenate",00000,Funeral Immaterial,Treasonous,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50026RWC,$1007,Finger Awesome,9999999999,(608) 123-4567,7777777777,123 Canine St,"Honoraria, Whee",00000,Prussic Vortices,Genesco,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50027RWC,$1007,Segundo Need,9999999999,(608) 123-4567,7777777777,123 Reprise St,"Droplet, Conjuncture",00000,Witchcraft Gar,Abramson,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50028RWC,$1007,Rotate Exorcism,9999999999,(608) 123-4567,7777777777,123 Kowalski St,"Depression, Dahomey",00000,Banquet Dailey,Chit,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50029RWC,$1007,Chimney Shrapnel,9999999999,(608) 123-4567,7777777777,123 Recalcitrant St,"Citizen, Adulate",00000,Cardinal Inability,Ironwood,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50030MEN,$1007,Giraffe Beluga,9999999999,(608) 123-4567,7777777777,123 Sproul St,"Vodka, Hog",00000,Tantalum Grow,Salvage,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50031EPA,$1007,Accident Melamine,9999999999,(608) 123-4567,7777777777,123 Ellipsometer St,"Impractical, Quadrangular",00000,Semiramis Convivial,Daedalus,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50032EPA,$1007,Crunchy Crandall,9999999999,(608) 123-4567,7777777777,123 Mushroom St,"Blitz, Daddy",00000,Chinamen Alder,Beckon,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50033SAM,$1007,Aboard Lucy,9999999999,(608) 123-4567,7777777777,123 Prestidigitate St,"Jehovah, Grub",00000,Doctrine Albrecht,Delilah,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50034SAM,$1007,Past Ian,9999999999,(608) 123-4567,7777777777,123 Flea St,"Parentheses, Future",00000,Arclength Crete,Camelot,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50035MER,$1007,Catalpa Matrimony,9999999999,(608) 123-4567,7777777777,123 Conferring St,"Operable, Coprocessor",00000,Attention Yates,Yosemite,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50036SAM,$1007,Mcmullen Invitation,9999999999,(608) 123-4567,7777777777,123 Stonehenge St,"Kikuyu, Sum",00000,Nuance Onlooking,Thrash,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50037EPA,$1007,Automorphism Lisbon,9999999999,(608) 123-4567,7777777777,123 Onrushing St,"Otiose, Soggy",00000,Portraiture Siltstone,Godwin,some test results,https://www.google.com,2050
-    subject,"announcement body, which has some commas",50038EPA,$1007,Pbs Pecuniary,9999999999,(608) 123-4567,7777777777,123 Teleology St,"Lear, Latinate",00000,Glide Pilewort,Burial,some test results,https://www.google.com,2050\
+    Announcement Subject,Announcement Body,Site ID,Budget,Homeowner/Site Contact Name,Applicant Phone,Applicant Mobile Phone,Street Address,City,Zipcode,Jurisdiction,Sponsor Name,Program Year,CDBG Funding Source
+    subject,"announcement body, which has some commas",50001DAL,$1007,Malay Nothing,9999999999,(608) 123-4567,123 Champaign St,"Row, Rectilinear",00000,Argue Wendy,Pompon,2050
+    subject,"announcement body, which has some commas",50002SSF,"$1,007.00",Efficacious Gizzard,9999999999,(608) 123-4567,123 Radii St,"Bronchi, Epsom",00000,Curie Thousand,Sibling,2050
+    subject,"announcement body, which has some commas",50003SSF,$1007,Enthusiast Baffin,9999999999,(608) 123-4567,123 Expositor St,"Placeable, Knives",00000,Egret Fume,Indirect,2050
+    subject,"announcement body, which has some commas",50004SSF,$1007,Nordstrom Brindisi,9999999999,(608) 123-4567,123 Dennis St,"Wavy, Lookout",00000,Airy Rib,Magnetic,2050
+    subject,"announcement body, which has some commas",50005RWC,$1007,Incorrigible Isochronal,9999999999,(608) 123-4567,123 Gerbil St,"Systemwide, Ergative",00000,Soundproof Orthodontic,Leguminous,2050
+    subject,"announcement body, which has some commas",50006RWC,$1007,Paraxial Blackbody,9999999999,(608) 123-4567,123 Glory St,"Worrisome, Valeur",00000,Slapdash Shipbuild,Heidegger,2050
+    subject,"announcement body, which has some commas",50007RWC,$1007,Dialectic Alger,9999999999,(608) 123-4567,123 Derivate St,"Utter, Fusion",00000,Politico Shore,Missionary,2050
+    subject,"announcement body, which has some commas",50008RWC,$1007,Premonition Gasp,9999999999,(608) 123-4567,123 Wove St,"Culvert, Holman",00000,Algiers Trifluoride,Midsection,2050
+    subject,"announcement body, which has some commas",50009RWC,$1007,Embryology Dill,9999999999,(608) 123-4567,123 Quartz St,"Oklahoma, Tyrannicide",00000,Dew Chateau,Alkali,2050
+    subject,"announcement body, which has some commas",50010SAM,$1007,Phobic Calibrate,9999999999,(608) 123-4567,123 Moorish St,"Hagiography, Saud",00000,Empathic Lehigh,Fishy,2050
+    subject,"announcement body, which has some commas",50011SAM,$1007,Calculate Disastrous,9999999999,(608) 123-4567,123 Shod St,"Commissariat, Equinoctial",00000,Tananarive Nomadic,Trigram,2050
+    subject,"announcement body, which has some commas",50012SAM,$1007,Me Spoke,9999999999,(608) 123-4567,123 Cern St,"Adrift, Tasteful",00000,Bitterroot Nashua,Premiere,2050
+    subject,"announcement body, which has some commas",50013SAM,$1007,Byzantine Officio,9999999999,(608) 123-4567,123 Scatterbrain St,"Organ, Regulatory",00000,Levulose Diffusive,Denudation,2050
+    subject,"announcement body, which has some commas",50014SAM,$1007,Philip Committable,9999999999,(608) 123-4567,123 Interpolatory St,"Cornflower, Sockeye",00000,Blockage Waste,Nought,2050
+    subject,"announcement body, which has some commas",50015EPA,$1007,Devolve Hillmen,9999999999,(608) 123-4567,123 Pelican St,"Slovenia, Patriarch",00000,Moderate Caroline,Gnomonic,2050
+    subject,"announcement body, which has some commas",50016EPA,$1007,Sightsee Anomie,9999999999,(608) 123-4567,123 Dross St,"Crept, Pap",00000,Hid Armstrong,Matrilineal,2050
+    subject,"announcement body, which has some commas",50017EPA,$1007,Import Counterproductive,9999999999,(608) 123-4567,123 Sagittarius St,"Kruger, Mackerel",00000,Otherwise Alvin,Suez,2050
+    subject,"announcement body, which has some commas",50018EPA,$1007,Serology Harmonious,9999999999,(608) 123-4567,123 Noodle St,"Camellia, Galloway",00000,Transferring Amphibole,Nevertheless,2050
+    subject,"announcement body, which has some commas",50019EPA,$1007,Whitish Callus,9999999999,(608) 123-4567,123 Damocles St,"Immediate, Trencherman",00000,Luminosity Tactic,Briton,2050
+    subject,"announcement body, which has some commas",50020EPA,$1007,Alice Vendor,9999999999,(608) 123-4567,123 Inconvenient St,"Hard, Anorthic",00000,Bimetallism Ames,Fairy,2050
+    subject,"announcement body, which has some commas",50021EPA,$1007,Stony Monolith,9999999999,(608) 123-4567,123 Matins St,"Spec, Exegesis",00000,Picnicking Equanimity,Millenarian,2050
+    subject,"announcement body, which has some commas",50022MEN,$1007,Haney Buccaneer,9999999999,(608) 123-4567,123 Antenna St,"Aborning, Batavia",00000,Heterogeneity Damascus,Auto,2050
+    subject,"announcement body, which has some commas",50023RWU,$1007,Jam Ojibwa,9999999999,(608) 123-4567,123 Jacobite St,"Comprehensive, Dud",00000,Gift Doe,Sorghum,2050
+    subject,"announcement body, which has some commas",50024SUN,$1007,Eden Liable,9999999999,(608) 123-4567,123 Quitter St,"Matriarchy, Accumulate",00000,Forfeiture Millionth,Reilly,2050
+    subject,"announcement body, which has some commas",50025SSF,$1007,Woodcock Inactivate,9999999999,(608) 123-4567,123 Genera St,"Mesozoic, Concatenate",00000,Funeral Immaterial,Treasonous,2050
+    subject,"announcement body, which has some commas",50026RWC,$1007,Finger Awesome,9999999999,(608) 123-4567,123 Canine St,"Honoraria, Whee",00000,Prussic Vortices,Genesco,2050
+    subject,"announcement body, which has some commas",50027RWC,$1007,Segundo Need,9999999999,(608) 123-4567,123 Reprise St,"Droplet, Conjuncture",00000,Witchcraft Gar,Abramson,2050
+    subject,"announcement body, which has some commas",50028RWC,$1007,Rotate Exorcism,9999999999,(608) 123-4567,123 Kowalski St,"Depression, Dahomey",00000,Banquet Dailey,Chit,2050
+    subject,"announcement body, which has some commas",50029RWC,$1007,Chimney Shrapnel,9999999999,(608) 123-4567,123 Recalcitrant St,"Citizen, Adulate",00000,Cardinal Inability,Ironwood,2050
+    subject,"announcement body, which has some commas",50030MEN,$1007,Giraffe Beluga,9999999999,(608) 123-4567,123 Sproul St,"Vodka, Hog",00000,Tantalum Grow,Salvage,2050
+    subject,"announcement body, which has some commas",50031EPA,$1007,Accident Melamine,9999999999,(608) 123-4567,123 Ellipsometer St,"Impractical, Quadrangular",00000,Semiramis Convivial,Daedalus,2050
+    subject,"announcement body, which has some commas",50032EPA,$1007,Crunchy Crandall,9999999999,(608) 123-4567,123 Mushroom St,"Blitz, Daddy",00000,Chinamen Alder,Beckon,2050
+    subject,"announcement body, which has some commas",50033SAM,$1007,Aboard Lucy,9999999999,(608) 123-4567,123 Prestidigitate St,"Jehovah, Grub",00000,Doctrine Albrecht,Delilah,2050
+    subject,"announcement body, which has some commas",50034SAM,$1007,Past Ian,9999999999,(608) 123-4567,123 Flea St,"Parentheses, Future",00000,Arclength Crete,Camelot,2050
+    subject,"announcement body, which has some commas",50035MER,$1007,Catalpa Matrimony,9999999999,(608) 123-4567,123 Conferring St,"Operable, Coprocessor",00000,Attention Yates,Yosemite,2050
+    subject,"announcement body, which has some commas",50036SAM,$1007,Mcmullen Invitation,9999999999,(608) 123-4567,123 Stonehenge St,"Kikuyu, Sum",00000,Nuance Onlooking,Thrash,2050
+    subject,"announcement body, which has some commas",50037EPA,$1007,Automorphism Lisbon,9999999999,(608) 123-4567,123 Onrushing St,"Otiose, Soggy",00000,Portraiture Siltstone,Godwin,2050
+    subject,"announcement body, which has some commas",50038EPA,$1007,Pbs Pecuniary,9999999999,(608) 123-4567,123 Teleology St,"Lear, Latinate",00000,Glide Pilewort,Burial,2050\
     """)
 
   CAPTAINS_DATA = textwrap.dedent("""\
-    Site ID,Name,ROOMS Captain ID,Phone,Email,Project Role
+    Site ID,Name,ROOMS Captain ID,Phone,Email,Captain Type
     50001DAL,Assimilate Pacemake,R00438,608) 123-4567,flutter@telescope.com,Construction Captain
     50001DAL,Solidarity Countdown,R00238,608) 123-4567,neptune@flan.com,Volunteer Captain
     50002SSF,Paul Peppergrass,R00029,608) 123-4567,told@quadrivium.com,Construction Captain
