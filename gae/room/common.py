@@ -18,9 +18,9 @@ NRD = '04/29/2017'
 
 
 # TODO: use rebuildingtogether.rooms@gmail.com ?
-HELP_CONTACT = 'cari@rebuildingtogetherpeninsula.org'
-HELP_PERSON = 'Cari Pang Chen'
-HELP_PHONE = '650-366-6597 x224'
+HELP_CONTACT = 'greg@rebuildingtogetherpeninsula.org'
+HELP_PERSON = 'Greg'
+HELP_PHONE = '650-366-6597 x228'
 
 # From: address of outbound emails.
 EMAIL_SENDER = 'rebuildingtogether.rooms@gmail.com'
