@@ -226,3 +226,17 @@ class BugsTest(unittest.TestCase):
     self.assertEquals('200 OK', response.status)
     self.assertIsNone(self.keys['SITECAPTAIN'].get())
 
+  def testProgram(self):
+    self.assertEquals('Inactive', self.keys['PROGRAM_2010_TEST'].get().status)
+    post_json_body = {"id": self.keys['PROGRAM_2010_TEST'].integer_id(),
+                      "year": 2010,
+                      "name": "foo",       # ignored
+                      "status": "Active"}  # change 
+    response = app.post_json('/cru_api.program_update',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertEquals('Active', self.keys['PROGRAM_2010_TEST'].get().status)
+    self.assertEquals('2010 TEST', self.keys['PROGRAM_2010_TEST'].get().name)
+

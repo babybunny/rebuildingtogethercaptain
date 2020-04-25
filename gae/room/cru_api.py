@@ -12,6 +12,10 @@ package = 'rooms'
 
 
 basic_crud_config = (
+  (protorpc_messages.Program,
+   ndb_models.Program,
+   protorpc_messages.ProgramMessageToModel,
+   protorpc_messages.ProgramModelToMessage),
   (protorpc_messages.Jurisdiction,
    ndb_models.Jurisdiction,
    protorpc_messages.JurisdictionMessageToModel,

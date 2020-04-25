@@ -22,6 +22,38 @@ class SimpleId(messages.Message):
 
 
 ################
+# Program      #
+################
+
+def ProgramModelToMessage(mdl):
+  s = Program(
+    year=mdl.year,
+    status=mdl.status,
+    name=mdl.name,
+    program_type=mdl.program_type.integer_id(),
+    id=mdl.key.integer_id(),
+  )
+  return s
+
+
+def ProgramMessageToModel(msg, mdl):
+  mdl.year = msg.year
+  mdl.status = msg.status
+  if msg.program_type:
+    mdl.program_type = ndb.Key(ndb_models.ProgramType, msg.program_type)
+  # name is set automatically
+  return mdl
+
+
+class Program(messages.Message):
+  id = messages.IntegerField(1)
+  year = messages.IntegerField(2)
+  status = messages.StringField(3)
+  name = messages.StringField(4)
+  program_type = messages.IntegerField(5)
+
+
+################
 # Jurisdiction #
 ################
 

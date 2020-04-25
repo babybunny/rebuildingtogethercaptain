@@ -51,3 +51,8 @@ class ModelsTest(unittest.TestCase):
   def testVendorReceipt2(self):
     mdl = self.keys['VENDORRECEIPT2'].get()
     self.assertEquals(0.0, mdl.amount)
+
+  def testProgram(self):
+    mdl = self.keys['PROGRAM_2010_TEST'].get()
+    self.assertEquals(2010, mdl.year)
+    self.assertEquals("2010 TEST", mdl.name)
