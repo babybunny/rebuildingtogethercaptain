@@ -464,6 +464,18 @@ class Supplier(EditView):
   template_file = 'simple_form'
 
 
+class ProgramList(StaffHandler):
+  def get(self):
+    return _EntryList(self.request, ndb_models.Program, 'program_list')
+
+
+class Program(EditView):
+  searchable_model_class = ndb_models.Program
+  model_class = ndb_models.Program
+  list_view = 'ProgramList'
+  template_value = 'program'
+  template_file = 'simple_form'
+
 # SiteList is done by custom view SitesAndCaptains
 
 class Site(EditView):
