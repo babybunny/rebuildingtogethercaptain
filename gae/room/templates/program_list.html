@@ -3,7 +3,8 @@
 {% include "tablesorter_script.html" %}
 <script type="text/javascript">
 $(document).ready(function(){
-  $("table.tablesorter").tablesorter();
+  $("table.tablesorter").tablesorter({
+        sortList: [[0, 1], [1, 0]]});
 });
 </script>
 {%endblock%}
@@ -20,25 +21,25 @@ $(document).ready(function(){
 <table class="list tablesorter">
   <thead>
     <tr>
-      <th>Status</th>
-      <th>Name</th>
       <th>Year</th>
       <th>Program Type</th>
+      <th>Status</th>
+      <th>Name</th>
     </tr>
   </thead>
   <tbody>
     {% for entry in entries %}
     <tr><td>
+	{{ entry.year|escape }}
+      </td><td>
+	{{ entry.program_type.get().name |escape }}
+      </td><td>
 	{{ entry.status|escape }}
       </td><td>
 	<span class="sortorder">{{ entry.name }}</span>
 	<a href="{{ webapp2.uri_for('Program', id=entry.key.integer_id()) }}">
 	  {{entry.name|escape}}
 	</a>
-      </td><td>
-	{{ entry.year|escape }}
-      </td><td>
-	{{ entry.program_type.get().name |escape }}
     </td></tr>
     {% endfor %}
   </tbody>
