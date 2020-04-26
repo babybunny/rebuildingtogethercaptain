@@ -52,6 +52,10 @@ class ModelsTest(unittest.TestCase):
     mdl = self.keys['VENDORRECEIPT2'].get()
     self.assertEquals(0.0, mdl.amount)
 
+  def testProgramType(self):
+    mdl = self.keys['PROGRAM_TYPE_NRD'].get()
+    self.assertEquals("NRD", mdl.name)
+
   def testProgram(self):
     mdl = self.keys['PROGRAM_2010_TEST'].get()
     self.assertEquals(2010, mdl.year)

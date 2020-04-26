@@ -230,7 +230,7 @@ class BugsTest(unittest.TestCase):
     self.assertEquals('Inactive', self.keys['PROGRAM_2010_TEST'].get().status)
     post_json_body = {"id": self.keys['PROGRAM_2010_TEST'].integer_id(),
                       "year": 2010,
-                      "program_type": "NRD",
+                      "program_type": "TEST",
                       "name": "foo",       # ignored
                       "status": "Active"}  # change 
     response = app.post_json('/cru_api.program_update',

@@ -258,7 +258,7 @@ class Program(SearchableModel):
     result = query.get()
     if result is None:
       created = True
-      result = Program(program_type=program_type_key, year=year)
+      result = Program(program_type=program_type_key, year=year, status=status)
       result.put()
     elif status is not None:
       assert result.status == status
