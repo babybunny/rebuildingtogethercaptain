@@ -30,7 +30,7 @@ def ProgramModelToMessage(mdl):
     year=mdl.year,
     status=mdl.status,
     name=mdl.name,
-    program_type=mdl.program_type.integer_id(),
+    program_type=mdl.program_type.string_id(),
     id=mdl.key.integer_id(),
   )
   return s
@@ -50,7 +50,7 @@ class Program(messages.Message):
   year = messages.IntegerField(2)
   status = messages.StringField(3)
   name = messages.StringField(4)
-  program_type = messages.IntegerField(5)
+  program_type = messages.StringField(5)
 
 
 ################
