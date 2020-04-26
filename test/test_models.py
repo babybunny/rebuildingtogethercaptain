@@ -574,7 +574,6 @@ def CreateAll():
 def DeleteAll(KEYS):
   while KEYS:
     name, key = KEYS.popitem()
-    logging.info('deleting {}', name)
     key.delete()
 
 

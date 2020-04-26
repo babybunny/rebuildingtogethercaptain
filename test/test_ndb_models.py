@@ -7,12 +7,13 @@ import test_models
 
 class ModelsTest(unittest.TestCase):
   def setUp(self):
-    app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
+    self.tb = app_engine_test_utils.activate_app_engine_testbed_and_clear_cache()
 
     self.keys = test_models.CreateAll()
 
   def tearDown(self):
     test_models.DeleteAll(self.keys)
+    self.tb.deactivate()
 
   def testOrder(self):
     o = self.keys['ORDER'].get()
