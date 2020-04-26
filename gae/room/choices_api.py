@@ -20,6 +20,7 @@ class Site(messages.Message):
 class Choice(messages.Message):
   id = messages.IntegerField(1, required=True)
   label = messages.StringField(2)
+  string_id = messages.StringField(3)
 
 
 class Choices(messages.Message):
@@ -93,6 +94,15 @@ class ChoicesApi(base_api.BaseApi):
     mdls = ndb_models.OrderSheet.query(ndb_models.OrderSheet.visibility != 'Inactive')
     for mdl in sorted(mdls, key=lambda m: m.name):
       choices.choice.append(Choice(id=mdl.key.integer_id(), label=mdl.name))
+    return choices
+
+  @remote.method(message_types.VoidMessage,
+                 Choices)
+  def program_type_choices_read(self, request):
+    self._authorize_user()
+    choices = Choices()
+    for mdl in ndb_models.ProgramType.query().order(ndb_models.ProgramType.name):
+      choices.choice.append(Choice(id=0, string_id=mdl.key.string_id(),  label=mdl.name))  # using 0 as ID since this model actually has a string key.
     return choices
 
 

@@ -114,3 +114,15 @@ class ChoicesTest(unittest.TestCase):
     self.assertEquals(2, len(response.json['choice']))
     self.assertDictContainsSubset({u'label': u'House of Supply'},
                                   response.json['choice'][0])  # this is stable because the choices are ordered.
+
+  def testProgramType(self):
+    post_json_body = {}
+    response = app.post_json('/choices_api.program_type_choices_read',
+                             post_json_body,
+                             status=200,
+                             headers={'x-rooms-dev-signin-email': 'rebuildingtogether.staff@gmail.com'})
+    self.assertEquals('200 OK', response.status)
+    self.assertIn(u'choice', response.json)
+    self.assertEquals(2, len(response.json['choice']))
+    self.assertDictContainsSubset({u'label': u'NRD'},
+                                  response.json['choice'][0])  # this is stable because the choices are ordered.
