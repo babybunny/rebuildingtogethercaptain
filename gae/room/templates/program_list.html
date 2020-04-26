@@ -1,0 +1,47 @@
+{%extends "base.html"%}
+{% block script %}
+{% include "tablesorter_script.html" %}
+<script type="text/javascript">
+$(document).ready(function(){
+  $("table.tablesorter").tablesorter();
+});
+</script>
+{%endblock%}
+{% block breadcrumb %}
+  | List Programs
+{% endblock %}
+{%block about_this_page%}
+<h2>List of Programs</h2>
+<p>
+  <a href="{{ webapp2.uri_for('Supplier', id='') }}" alt="new supplier">Add a new Program</a>
+</p>
+{%endblock%}
+{%block body%}
+<table class="list tablesorter">
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Name</th>
+      <th>Year</th>
+      <th>Program Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+    <tr><td>
+	{{ entry.active|escape }}
+      </td><td>
+	<span class="sortorder">{{ entry.name }}</span>
+	<a href="{{ webapp2.uri_for('Program', id=entry.key.integer_id()) }}">
+	  {{entry.name|escape}}
+	</a>
+      </td><td>
+	{{ entry.year|escape }}
+      </td><td>
+	{{ entry.program_type.get().name |escape }}
+    </td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{%endblock%}
