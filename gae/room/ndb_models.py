@@ -220,6 +220,12 @@ class Program(SearchableModel):
   def get_sort_key(self):
     return -self.year, self.program_type
 
+  def put(self, *a, **k):
+    program_type_name = self.program_type.get().name
+    self.name = "{} {}".format(self.year, program_type_name)
+    self.status = self.status or Program.ACTIVE_STATUS
+    return super(Program, self).put(*a, **k)
+
   @staticmethod
   def from_fully_qualified_name(fully_qualified_name):
     query = Program.query()
@@ -252,10 +258,7 @@ class Program(SearchableModel):
     result = query.get()
     if result is None:
       created = True
-      program_type_name = program_type_key.get().name
       result = Program(program_type=program_type_key, year=year)
-      result.name = "{} {}".format(year, program_type_name)
-      result.status = status or Program.ACTIVE_STATUS
       result.put()
     elif status is not None:
       assert result.status == status

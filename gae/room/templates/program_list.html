@@ -13,7 +13,7 @@ $(document).ready(function(){
 {%block about_this_page%}
 <h2>List of Programs</h2>
 <p>
-  <a href="{{ webapp2.uri_for('Supplier', id='') }}" alt="new supplier">Add a new Program</a>
+  <a href="{{ webapp2.uri_for('Program', id='') }}" alt="new supplier">Add a new Program</a>
 </p>
 {%endblock%}
 {%block body%}
@@ -29,7 +29,7 @@ $(document).ready(function(){
   <tbody>
     {% for entry in entries %}
     <tr><td>
-	{{ entry.active|escape }}
+	{{ entry.status|escape }}
       </td><td>
 	<span class="sortorder">{{ entry.name }}</span>
 	<a href="{{ webapp2.uri_for('Program', id=entry.key.integer_id()) }}">
