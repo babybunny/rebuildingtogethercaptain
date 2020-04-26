@@ -4,7 +4,11 @@
 {% endblock %}
 {% block body %}
 <p>
-  Choose the program you're working on.  This will affect the sites that are listed.
+  Choose the Program you're working on.  This will affect the sites that are listed.
+</p>
+<p>
+  <a href="{{ webapp2.uri_for('ProgramList') }}" alt="manage programs">Manage the Programs</a>
+</p>
 <ul>
 {% for program in user.programs %}
 <li>
