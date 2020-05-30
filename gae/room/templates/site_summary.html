@@ -34,7 +34,8 @@ $(function(){
   <a href="{{ webapp2.uri_for("SiteView", id=site.key.integer_id()) }}">
     Site #{{ site.number}}</a>
   Reporting Summary</h2>
-
+<a href="{{ webapp2.uri_for("SiteSummaryCSV", id=site.key.integer_id()) }}">download as CSV</a>
+<br/>
 {{ site.name }}
 <br/>
 {{ site.StreetAddress() }}

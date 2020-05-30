@@ -236,6 +236,10 @@ login_required = routes.PathPrefixRoute('/room', [
                 staff.SiteSummary,
                 name='SiteSummary'),
 
+  webapp2.Route(r'/site_summary_csv/<id:\d+>',
+                staff.SiteSummaryCSV,
+                name='SiteSummaryCSV'),
+
   webapp2.Route(r'/site_scope_of_work/<id:\d+>',
                 staff.SiteScopeOfWork,
                 name='SiteScopeOfWork'),

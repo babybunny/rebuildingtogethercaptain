@@ -659,6 +659,11 @@ class NewSite(SearchableModel):
         self.mileage_subtotal = 0.0
         self.stafftimes = []
 
+      @property
+      def subtotal(self):
+        return self.hours_subtotal + self.mileage_subtotal
+
+      
     by_pos = collections.defaultdict(Pos)
     for s in self.StaffTimes:
       name = str(s.position.get())

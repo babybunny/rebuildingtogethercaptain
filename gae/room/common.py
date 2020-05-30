@@ -187,7 +187,7 @@ def Respond(request_handler, template_name, params=None):
   params['help_contact'] = HELP_CONTACT
   params['help_phone'] = HELP_PHONE
   params['help_person'] = HELP_PERSON
-  if not template_name.endswith('.html'):
+  if '.' not in template_name:
     template_name += '.html'
   template = jinja_environment.get_template(template_name)
   request_handler.response.out.write(template.render(params))

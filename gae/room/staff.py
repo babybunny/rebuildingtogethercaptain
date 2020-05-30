@@ -248,6 +248,14 @@ class SiteSummary(StaffHandler):
     return common.Respond(self.request, 'site_summary', {'site': site})
 
 
+class SiteSummaryCSV(StaffHandler):
+  def get(self, id=None):
+    id = int(id)
+    site = ndb.Key(ndb_models.NewSite, id).get()
+    self.request.response.headers['Content-Type'] = 'text/csv'
+    return common.Respond(self.request, 'site_summary.csv', {'site': site})
+
+  
 SITE_EXPENSE_TYPES = dict((c.__name__, c) for c in (
   ndb_models.CheckRequest,
   ndb_models.VendorReceipt,
