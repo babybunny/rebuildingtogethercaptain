@@ -1,0 +1,43 @@
+Site #{{ site.number}} Reporting Summary
+"{{ site.name|replace('"', '""') }}"
+"{{ site.StreetAddress()|replace('"', '""') }}"
+Total Expenses: $,{{ "%0.2f" % site.Expenses() }}
+
+Final Scope of Work
+"{{ site.ScopeOfWork|replace('"', '""') }}"
+
+{% set entries = site.Orders %}{% if entries.Count() %}
+Orders,,Total: $,{{ "%0.2f" % site.OrderTotal() }}
+Vendor,Form,Invoice Date,$
+{% for order in entries %}{% if order.GrandTotal() != 0 %}{% if order.vendor %}"{{ order.vendor.get().name|replace('"', '""') }}"{% else %}Vendor is added when order is reconciled.{% endif %},"{{ order.order_sheet.get().name|replace('"', '""') }}",{% if order.invoice_date %}{{ order.invoice_date.strftime("%b %d %Y") }}{% else %}Invoice Date is added when order is reconciled.{% endif %},{{ "%0.2f" % order.GrandTotal() }}{% endif %}
+{% endfor %}{% endif %}
+
+{% set entries = site.CheckRequests %}{% if entries.Count() %}
+Check Requests,,Total: $,{{ "%0.2f" % site.CheckRequestTotal() }}  
+Payable To,Payment Date,Description,$ Total
+{% for cr in entries %}{% if cr.Total() != 0 %}"{{ cr.name|replace('"', '""') }}",{% if cr.payment_date %}{{ cr.payment_date.strftime("%b %d %Y") }}{% endif %},"{{ cr.description|replace('"', '""') }}",{{ "%0.2f" % cr.Total() }}{% endif %}
+{% endfor %}{% endif %}
+
+{% set entries = site.VendorReceipts %}{% if entries.Count() %}
+Vendor Receipts,,Total: $,{{ "%0.2f" % site.VendorReceiptTotal() }}
+Vendor,Purchase Date,Description,$ Total
+{% for vr in entries %}{% if vr.Total() != 0 %}"{{ vr.supplier.get().name|replace('"', '""') }}",{% if vr.purchase_date %}{{ vr.purchase_date.strftime("%b %d %Y") }}{% endif %},"{{ vr.description|replace('"', '""') }}",{{ "%0.2f" % vr.Total() }}{% endif %}
+{% endfor %}{% endif %}
+
+{% set entries = site.InKindDonations %}{% if entries.Count() %}
+In-kind Donations,,Total: $,{{ "%0.2f" % site.InKindDonationTotal() }}
+Donor,$ Labor Amount,$ Materials Amount,Description,$ Total
+{% for ik in entries %}{% if ik.Total() != 0 %}"{{ ik.donor|replace('"', '""') }}",{{ "%0.2f" % ik.labor_amount}},{{ "%0.2f" % ik.materials_amount}},"{{ ik.description|replace('"', '""') }}",{{ "%0.2f" % ik.Total() }}{% endif %}
+{% endfor %}{% endif %}
+
+{% set by_pos = site.StaffTimesByPosition %}{% if by_pos %}
+Staff Time,,Total: $,{{ "%0.2f" % site.StaffTimeTotal() }}
+{% for pos in by_pos %}"{{ pos.name|replace('"', '""') }}",,Total: $,{{ "%0.2f" % pos.subtotal }}
+Hours:,{{ "%0.2f" % pos.hours }},Hours Subtotal: $,{{ "%0.2f" % pos.hours_subtotal }}
+Miles:,{{ "%0.2f" % pos.miles }},Mileage Subtotal: $,{{ "%0.2f" % pos.mileage_subtotal }}
+Position,Activity Date,Hours,Miles,$ Total
+{% for st in pos.stafftimes %}{% if st.Total() != 0 %}"{{ st.position.get().position_name|replace('"', '""') }}",{{ st.activity_date }},{{ st.hours }},{{ st.miles }},{{ "%0.2f" % st.Total() }}{% endif %}
+{% endfor %}
+
+{% endfor %}{% endif %}
+
