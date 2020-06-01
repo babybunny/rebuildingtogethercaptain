@@ -249,7 +249,9 @@ class SiteSummary(StaffHandler):
 
 
 class SiteSummaryCSV(StaffHandler):
-  def get(self, id=None):
+  def get(self, id=None, number=None):
+    if not id or not number:
+      self.error(404)
     id = int(id)
     site = ndb.Key(ndb_models.NewSite, id).get()
     self.request.response.headers['Content-Type'] = 'text/csv'
