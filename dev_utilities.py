@@ -1,5 +1,7 @@
 import argparse
 import logging
+import urllib2
+import time
 
 import path_utils
 
@@ -26,12 +28,21 @@ def init_stubs_and_models(port=None):
   port = port or parse_port_from_command_line_args()
   servername = 'localhost:{}'.format(port)
   remote_api_stub.RemoteStub._SetRequestId("otherwise it spams error messages")
-  remote_api_stub.ConfigureRemoteApi(
-    app_id=None,  # don't contact prod server!
-    servername=servername,
-    path='/_ah/remote_api',
-    auth_func=lambda: ('', ''),
-    secure=False)
+  retries = 0
+  while(retries < 4):
+    try:
+      remote_api_stub.ConfigureRemoteApi(
+        app_id=None,  # don't contact prod server!
+        servername=servername,
+        path='/_ah/remote_api',
+        auth_func=lambda: ('', ''),
+        secure=False)
+      logging.info('remote_api_stub.ConfigureRemoteApi success')
+      break
+    except urllib2.URLError, e:
+      logging.warn('could not open URL for remote_api_stub.ConfigureRemoteApi, retrying.  %s' % e)
+      retries += 1
+      time.sleep(retries)
 
   logging.info("creating test models in the datastore ... this may take a few seconds")
   keys = test_models.CreateAll()
