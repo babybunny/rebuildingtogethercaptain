@@ -94,7 +94,11 @@ Sites - Budget View</h2>
         {% endif %}
       </td>
       <td class="dollar">
+        {% if site.budget == None %}
+        no budget
+        {% else %}
 	      {{ "%0.2f" % site.budget }}
+        {% endif %}
       </td>
       <td class="dollar">
 	      <span
