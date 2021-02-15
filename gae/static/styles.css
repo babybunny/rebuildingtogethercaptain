@@ -411,3 +411,27 @@ div.form-group.thumbnail{border:none}
     border-top: none;
     margin-top: -5px;
 }
+.staffposition-btn{
+  color:#007bff;
+  font-weight: 400;
+  box-sizing: border-box;
+}
+.staffposition-btn:hover{
+  text-decoration: underline;
+  color: #048a23;
+  cursor: pointer;
+}
+.staffposition-btn.remove:hover{
+  color:red;
+}
+#rates-form.modal-form > div.form-group label,
+#rates-form.modal-form > div.form-group span.status{
+  white-space: nowrap;
+}
+table.staffposition-rates{
+  width: 327px;
+  margin: 30px 0;
+}
+table.staffposition-rates  th{
+  background-color: #e6EEEE;
+}
