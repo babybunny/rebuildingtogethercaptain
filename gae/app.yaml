@@ -42,6 +42,11 @@ handlers:
   login: required
   secure: always
 
+- url: /staffposition_api.*
+  script: room.staffposition_api.application
+  login: required
+  secure: always
+
 # Handlers for most of the pages.
 - url: /room/.*
   script: main.app
