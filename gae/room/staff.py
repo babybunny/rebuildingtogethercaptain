@@ -1124,6 +1124,9 @@ class StaffPositionList(StaffHandler):
                       {'today': datetime.date.today()})
 
 
-
-class StaffPosition():
-  pass
+class StaffPosition(EditView):
+  searchable_model_class = ndb_models.StaffPosition
+  model_class = ndb_models.StaffPosition
+  list_view = 'StaffPositionList'
+  template_value = 'Staff Position'
+  template_file = 'simple_form'
